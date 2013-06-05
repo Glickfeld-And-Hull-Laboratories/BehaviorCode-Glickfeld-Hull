@@ -1,0 +1,564 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices">
+        <iodevice tag="LabJackU6" priority="" type="LabJackU6" pulse_duration="juice" pulse_on="juice" lever_press="FIO1" alt="FakeMonkey" lever_solenoid="FIO2" 
+		  laser_trigger="laserTriggerFIO" strobed_digital_word="strobedDigitalWord"/>
+        <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+        <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+    </io_devices>
+
+    <variables tag="Variables">
+
+        <folder tag="Behavioral Control">
+            <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"></variable>
+            <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="12" type="integer" persistant="1"></variable>
+
+            <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1"></variable>
+            <variable tag="itiRandTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"></variable>
+
+            <variable tag="rampPostTimeMs" default_value="400" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="trainPostTimeMs" default_value="400" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+
+            <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0.001" type="float" persistant="1"></variable>
+            <variable tag="laserTransitionDoExpRamp" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="laserTransitionRampUpDownMs" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1"></variable>
+
+            <variable tag="rewardProb" scope="global" logging="when_changed" default_value="0.2" type="float" persistant="1"></variable>
+            <!--reward can be given during iti, stim or poststim-->
+            <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"></variable>
+
+            <variable tag="stopAfterNTrials" scope="global" logging="when_changed" default_value="-1" type="integer" persistant="1"></variable>
+
+            <!-- level specify params -->
+            <!-- note, odds are out of 100 -->
+            <variable tag="level1PeakPowerMw" default_value="0.3" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level2PeakPowerMw" default_value="1" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level3PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level4PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level5PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level6PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level7PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level8PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level9PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level10PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level11PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level12PeakPowerMw" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+
+            <variable tag="level1Odds" default_value="12" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level2Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level3Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level4Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level5Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level6Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level7Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level8Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level9Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level10Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level11Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>            
+            <variable tag="level12Odds" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+
+            <!-- 10 is ramp, 11 is train, 0 is off -->
+            <variable tag="level1RampTrain" default_value="10" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level2RampTrain" default_value="11" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level3RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level4RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level5RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level6RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level7RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level8RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level9RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level10RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level11RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level12RampTrain" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+
+            <variable tag="level1TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level2TrainPeriodMs" default_value="50" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level3TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level4TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level5TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level6TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level7TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level8TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level9TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level10TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level11TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level12TrainPeriodMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+
+            <variable tag="level1TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level2TrainNPulses" default_value="8" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level3TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level4TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level5TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level6TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level7TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level8TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level9TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level10TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level11TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+            <variable tag="level12TrainNPulses" default_value="0" scope="global" logging="when_changed" type="integer" persistant="1"></variable>
+
+            <variable tag="level1TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level2TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level3TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level4TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level5TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level6TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level7TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level8TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level9TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level10TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level11TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level12TrainPulseLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+
+            <variable tag="level1RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level2RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level3RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level4RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level5RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level6RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level7RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level8RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level9RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level10RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level11RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level12RampLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+
+            <variable tag="level1RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level2RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level3RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level4RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level5RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level6RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level7RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level8RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level9RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level10RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level11RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+            <variable tag="level12RampExtraConstantLengthMs" default_value="0" scope="global" logging="when_changed" type="float" persistant="1"></variable>
+
+        </folder>
+        <folder tag="Visual Stimuli">
+        </folder>
+        <folder tag="Task Status">
+        </folder>
+        <folder tag="Online Display">
+            <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        </folder>
+        <folder tag="Hardware variables">
+            <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"></variable>
+            <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"></variable>
+            <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"></variable>
+            <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"></variable>
+            <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"></variable>
+            <variable tag="sendLaserParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+        </folder>
+        <folder tag="Internal Variables">
+	    <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tPeakPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"></variable>
+            <variable tag="tRampTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tTrainPeriodMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"></variable>
+            <variable tag="tTrainNPulses" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tTrainPulseLengthMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"></variable>
+            <variable tag="tRampLengthMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"></variable>
+            <variable tag="tRampExtraConstantLengthMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"></variable>
+            <variable tag="tLevel" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+
+            <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tRunningOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tItiTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tItiStartTimeUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tDuringStimTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tPostStimTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tDuringAndPostStimTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="stimOnTimeUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tGiveRewardThisTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tRewardTimeFromItiOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tIsRewardGiven" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+            <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"></variable>
+        </folder>
+    </variables>
+
+    <sounds tag="Sounds">
+        <sound tag="rewardSound" type="wav_file" path="../wavs/shortCorrect.wav"></sound>
+    </sounds>
+    <stimuli tag="Stimuli">
+        <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    </stimuli>
+    <experiment tag="Experiment" full_name="DigitalInExample">
+        <protocol tag="JuiceOnHoldProtocol" full_name="Protocol" interruptable="YES" selection="sequential_ascending" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="background"></action>
+            <action tag="Update Stimulus 3" type="update_stimulus_display"></action>
+            <action type="assignment" variable="juice" value="0"></action>
+            <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
+
+            <block tag="New Block" nsamples="99999" sampling_method="cycles" selection="sequential" interruptible="1">
+            <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
+            <trial tag="New List" nsamples="12" sampling_method="samples" selection="random_without_replacement">  <!-- change this too -->
+            <range_replicator tag="New Replicator" from="0" to="11" step="1" variable="rrStimulusNumber">  <!-- must set 'to' here and nsamples above  to stimulusNSteps-1 manually!-->
+                <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+                    <task_system_state tag="Intertrial" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                        <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
+                        <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart >= stopAfterNTrials">
+                          <action type="report" message="** Stopping after completing $stopAfterNTrials trials"/>
+                          <action type="stop_experiment"/>  
+                        </action>
+
+                        <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+                        
+			<action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
+
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+
+                        <!--Transmit the trial timestamp so strobed code sequences are unique -->
+                        <action type="assert" condition="tTrialStartMWTimestampMs &lt;= 2147483648" 
+                                message="tTrialStartMWTimestampMs is too large - should happen only after several days of running!?"
+                                stop_on_failure="1"/>  
+                                <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
+                        <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
+			<action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
+			<action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
+			<action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
+			<action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
+			<action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
+			<action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
+
+
+
+                        <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+                        <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
+                        <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+                        <action type="assignment" tag="-" variable="laserTriggerFIO" value="0"></action> 
+
+                        <action type="assignment" tag="-" variable="experimentXmlTrialId" value="12"></action>
+
+			<!-- choose correct stimulus number based on odds -->
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="0"></action> 
+                        <action type="assignment" tag="-" variable="tItiTimeMs" value="itiTimeMs + rand(0, itiRandTimeMs)"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level1Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="1"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level1PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level1RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level1TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level1TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level1TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level1RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level1RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level1Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level2Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="2"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level2PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level2RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level2TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level2TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level2TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level2RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level2RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level2Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level3Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="3"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level3PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level3RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level3TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level3TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level3TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level3RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level3RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level3Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level4Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="4"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level4PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level4RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level4TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level4TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level4TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level4RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level4RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level4Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level5Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="5"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level5PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level5RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level5TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level5TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level5TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level5RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level5RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level5Odds"></action> 
+                        
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level6Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="6"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level6PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level6RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level6TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level6TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level6TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level6RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level6RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level6Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level7Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="7"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level7PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level7RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level7TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level7TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level7TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level7RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level7RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level7Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level8Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="8"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level8PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level8RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level8TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level8TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level8TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level8RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level8RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level8Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level9Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="9"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level9PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level9RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level9TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level9TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level9TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level9RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level9RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level9Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level10Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="10"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level10PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level10RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level10TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level10TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level10TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level10RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level10RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level10Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level11Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="11"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level11PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level11RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level11TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level11TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level11TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level11RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level11RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level11Odds"></action> 
+
+                        <action type="if" tag="-" condition="rrStimulusNumber >= tRunningOdds &amp;&amp; rrStimulusNumber &lt; level12Odds + tRunningOdds"> 
+                          <action type="assignment" tag="-" variable="tLevel" value="12"></action> 
+                          <action type="assignment" tag="-" variable="tPeakPowerMw" value="level12PeakPowerMw"></action> 
+                          <action type="assignment" tag="-" variable="tRampTrain" value="level12RampTrain"></action> 
+                          <action type="assignment" tag="-" variable="tTrainPeriodMs" value="level12TrainPeriodMs"></action> 
+                          <action type="assignment" tag="-" variable="tTrainNPulses" value="level12TrainNPulses"></action> 
+                          <action type="assignment" variable="tTrainPulseLengthMs" value="level12TrainPulseLengthMs"></action> 
+                          <action type="assignment" variable="tRampLengthMs" value="level12RampLengthMs"></action> 
+                          <action type="assignment" variable="tRampExtraConstantLengthMs" value="level12RampExtraConstantLengthMs"></action> 
+                        </action>
+                        <action type="assignment" tag="-" variable="tRunningOdds" value="tRunningOdds+level12Odds"></action> 
+
+                        <!-- *** Done with parameter choice, now perform final actions -->
+
+                        <!-- error checks -->
+                        <action type="assert" condition="rrStimulusNumber &lt;= tRunningOdds" message="**!!!** Error: rrStimulusNumber > total odds!" stop_on_failure="1"/>
+                        <action type="assert" stop_on_failure="1"  
+                                condition="tRunningOdds == 12"
+                                message="stim odds must sum to max!  (sum now is $tTempStimOdds )"/>
+
+                        <!-- figure out stimulus timing -->
+                        <action type="if" tag="-" condition="tRampTrain == 10">  <!-- ramp --> 
+                          <action type="assignment" tag="-" variable="tDuringStimTimeMs" value="tRampLengthMs+tRampExtraConstantLengthMs+laserTransitionRampUpDownMs+10"></action>  <!-- 10ms fuzz -->
+                          <action type="assignment" tag="-" variable="tPostStimTimeMs" value="rampPostTimeMs"></action>
+                        </action>
+                        <action type="if" tag="-" condition="tRampTrain == 11">  <!-- train -->
+                          <action type="assignment" tag="-" variable="tDuringStimTimeMs"
+                                  value="((tTrainNPulses-1) * tTrainPeriodMs) + tTrainPulseLengthMs+2*laserTransitionRampUpDownMs+10"></action> <!-- add one pulse length plus 10ms fuzz -->
+                          <action type="assignment" tag="-" variable="tPostStimTimeMs" value="trainPostTimeMs"></action>
+                        </action>
+                        <action type="report" tag="-" message="stim time $tPostStimTimeMs $tDuringStimTimeMs"></action>
+
+                        <action type="assignment" tag="-" variable="tDuringAndPostStimTimeMs" value="tDuringStimTimeMs+tPostStimTimeMs"></action>
+
+                        <!-- choose to give reward and time: range [0,stimulusOnTimeMs+postStimulusTimeMs] -->
+                        <action type="assignment" tag="-" variable="tRewardTimeFromItiOnMs" 
+                                value="rand(0,tItiTimeMs+tDuringAndPostStimTimeMs)"></action>
+                        <action type="assignment" tag="-" variable="tGiveRewardThisTrial" 
+                                value="rand(0,1000) &lt; rewardProb*1000"></action>
+                        <action type="assignment" tag="-" variable="tIsRewardGiven" value="0"></action>
+
+                        <!-- send params to laser -->
+                        <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
+                        <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
+
+                        <!-- notify what we chose -->
+                        <action type="if" tag="-" condition="tRampTrain == 10"> <!-- ramp -->
+                          <action type="report" tag="-" message="    Ramp: power __ $tPeakPowerMw __"></action>
+                        </action>
+                        <action type="if" tag="-" condition="tRampTrain == 11"> <!-- train -->
+                          <action type="report" tag="-" message="   Train: power __ $tPeakPowerMw __, period __ $tTrainPeriodMs __ "></action>
+                        </action>
+
+                        <!-- initialize ITI wait -->
+                        <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
+				timebase="" duration="tItiTimeMs" duration_units="ms"></action>
+
+			<action type="assignment" tag="-" variable="tItiStartTimeUs" value="now()"></action>
+                        <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="direct" tag="-" target="RewardDuringIti"></transition> 
+                    </task_system_state>
+
+                    <task_system_state tag="RewardDuringIti" full_name="" description="" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+			<!-- Give reward if all conditions are met -->
+                        <action type="if" tag="-" condition="tGiveRewardThisTrial == 1">
+			  <action type="if" tag="-" condition="tIsRewardGiven == 0">
+			    <action type="if" tag="-" condition="((now()-tItiStartTimeUs)/1000.0) > tRewardTimeFromItiOnMs ">
+			      
+			      <action type="assignment" tag="-" variable="juice" value="rewardTimeUs"></action>
+			      <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
+			      <action type="report" tag="Report" message="juice = $juice"></action>
+			      <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
+
+			      <action type="assignment" tag="-" variable="tIsRewardGiven" value="1"></action> <!--only 1 rew per tr-->
+			    </action>
+			  </action>
+			</action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" tag="If Expired, Go To StartTrial" target="StartTrialStimOn" timer="interTrialTimer"></transition>
+                        <transition type="direct" tag="-" target="RewardDuringIti"></transition> <!-- loop actions -->
+		    </task_system_state>
+
+
+                    <task_system_state tag="StartTrialStimOn" full_name="" description="" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        
+                        <!-- trigger laser activation -->
+                        <action type="assignment" tag="-" variable="laserTriggerFIO" value="1"></action> 
+                        <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+
+                        <action type="start_timer" tag="-" timer="stimDurationTimer"   
+				timebase="" duration="tDuringStimTimeMs" duration_units="ms"></action> <!-- only used to keep track of stim offset for state transitions -->
+			<action type="assignment" tag="-" variable="stimOnTimeUs" value="now()"></action>
+			
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="direct" tag="Always Go to RewardDuringStim" target="RewardDuringStim"></transition>
+                    </task_system_state>
+
+                    <task_system_state tag="RewardDuringStim" full_name="" description="" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <!-- Chr2 stim is runniing during this state, but we don't have to do anything to turn it off, the controller does it -->                        
+
+			<!-- Give reward if all conditions are met -->
+                        <action type="if" tag="-" condition="tGiveRewardThisTrial == 1">
+			  <action type="if" tag="-" condition="tIsRewardGiven == 0">
+			    <action type="if" tag="-" condition="((now()-tItiStartTimeUs)/1000.0) > tRewardTimeFromItiOnMs ">
+			      
+			      <action type="assignment" tag="-" variable="juice" value="rewardTimeUs"></action>
+			      <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
+			      <action type="report" tag="Report" message="juice = $juice"></action>
+			      <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
+
+			      <action type="assignment" tag="-" variable="tIsRewardGiven" value="1"></action> <!--only 1 rew per tr-->
+			    </action>
+			  </action>
+			</action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" tag="-" target="TurnStimOff" timer="stimDurationTimer"></transition>
+                        <transition type="direct" tag="-" target="RewardDuringStim"></transition> <!-- loop actions -->
+		    </task_system_state>
+
+                    <task_system_state tag="TurnStimOff" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                        <action type="report" tag="-" message="Laser controller turns off stimulus now, after $tDuringStimTimeMs ms"></action>
+
+                        <action type="start_timer" tag="-" timer="postStimulusTimer"
+				timebase="" duration="tPostStimTimeMs" duration_units="ms"></action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="direct" tag="-" target="RewardDuringPostStim"></transition>
+                    </task_system_state>
+
+                    <task_system_state tag="RewardDuringPostStim" full_name="" description="" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+			<!-- Give reward if all conditions are met -->
+                        <action type="if" tag="-" condition="tGiveRewardThisTrial == 1">
+			  <action type="if" tag="-" condition="tIsRewardGiven == 0">
+			    <action type="if" tag="-" condition="((now()-tItiStartTimeUs)/1000.0) > tRewardTimeFromItiOnMs ">
+			      
+			      <action type="assignment" tag="-" variable="juice" value="rewardTimeUs"></action>
+			      <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
+			      <action type="report" tag="Report" message="juice = $juice"></action>
+			      <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
+
+			      <action type="assignment" tag="-" variable="tIsRewardGiven" value="1"></action> <!--only 1 rew per tr-->
+			    </action>
+			  </action>
+			</action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" tag="-" target="EndTrial" timer="postStimulusTimer"></transition>
+                        <transition type="direct" tag="-" target="RewardDuringPostStim"></transition> <!-- loop actions -->
+		    </task_system_state>
+
+                    <task_system_state tag="EndTrial" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                        <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+                        <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
+
+                        <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+                        <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+                        <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+
+                        <!-- trigger serial param dump to cyberkinetics -->
+                        <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="1"></action>
+                        <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="0"></action>
+
+                        <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="yield" tag="return to parent task system"></transition>
+                    </task_system_state>
+                </task_system>
+            </range_replicator>
+            </trial>
+            </trial>
+            </block>
+        </protocol>
+    </experiment>
+</monkeyml>
+

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices">
+        <iodevice tag="LabJackU6" priority="" type="LabJackU6" pulse_duration="juice" pulse_on="juice" lever_press="FIO1" alt="FakeMonkey" lever_solenoid="FIO2" 
+		  laser_trigger="laserTriggerFIO" strobed_digital_word="strobedDigitalWord"></iodevice>
+    </io_devices>
+    <variables tag="Variables">
+        <folder tag="Hardware variables">
+            <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"></variable>
+            <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"></variable>
+            <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"></variable>
+            <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"></variable>
+            <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"></variable>
+        </folder>
+    </variables>
+    <sounds tag="Sounds">
+    </sounds>
+    <stimuli tag="Stimuli">
+    </stimuli>
+    <experiment tag="Experiment" full_name="DigitalInExample">
+        <protocol tag="JuiceOnHoldProtocol" full_name="Protocol" interruptable="YES" selection="sequential_ascending" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+            <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1000" sampling_method="cycles">
+                <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain at least one transition that yields to the Task System parent">
+                    <task_system_state tag="Intertrial" interruptible="YES">
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="2"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="4"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="8"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="16"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="32"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="64"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="128"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="256"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="512"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="1024"></action>
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="4095"></action>
+			
+			<!-- should give error 
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="4096"></action> 
+			-->
+
+			<action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="0"></action> 
+
+                        <action type="start_timer" tag="-" timer="pauseTimer" timebase="" duration="1000" duration_units="ms"></action>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" tag="-" target="Intertrial" timer="pauseTimer"></transition>
+
+                    </task_system_state>
+                </task_system>
+            </trial>
+        </protocol>
+    </experiment>
+</monkeyml>

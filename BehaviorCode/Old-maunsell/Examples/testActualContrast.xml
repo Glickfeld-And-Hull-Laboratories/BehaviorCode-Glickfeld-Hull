@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices"/>
+    <variables tag="Variables">
+        <variable tag="diameter" scope="global" logging="when_changed" default_value="20" type="float"/>
+        <variable tag="diameterbig" scope="global" logging="when_changed" default_value="20" type="float"/>
+        <variable tag="contrast" scope="global" logging="when_changed" default_value="0.5" type="float"/>
+
+        <variable tag="bigSpeedCps" scope="global" logging="when_changed" default_value="2" type="float"/>
+        <variable tag="smallSpeedCps" scope="global" logging="when_changed" default_value="4" type="float"/>
+
+        <variable tag="bigFreqCpd" scope="global" logging="when_changed" default_value="0.01" type="float"/>
+        <variable tag="smallFreqCpd" scope="global" logging="when_changed" default_value="6" type="float"/>
+    </variables>
+    <sounds tag="Sounds"/>
+    <stimuli tag="Stimuli">
+
+        <stimulus tag="background" type="blank_screen" color="0.5, 0.5, 0.5"/>
+
+        <stimulus type="drifting_grating" tag="d1_big" 
+		  frames_per_second="60" direction="0" starting_phase="0" 
+		  spatial_frequency="bigFreqCpd"
+		  speed="bigSpeedCps" 
+		  grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+		  x_size="300" y_size="300" 
+		  x_position="0" y_position="0" 
+		  rotation="0" 
+		  alpha_multiplier="1.0"></stimulus>
+        <stimulus type="rectangle" tag="d1_big_mask" color="0.5,0.5,0.5" x_size="200" y_size="200" 
+                  x_position="5" y_position="5" rotation="0" alpha_multiplier="1-contrast"/>
+
+        <stimulus type="drifting_grating" tag="d1_small" 
+		  frames_per_second="60" direction="0" starting_phase="0" 
+		  spatial_frequency="smallFreqCpd"
+		  speed="smallSpeedCps" 
+		  grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+		  x_size="300" y_size="300" 
+		  x_position="0" y_position="0" 
+		  rotation="0" 
+		  alpha_multiplier="1.0"></stimulus>
+        <stimulus type="rectangle" tag="d1_small_mask" color="0.5,0.5,0.5" x_size="200" y_size="200" 
+                  x_position="5" y_position="5" rotation="0" alpha_multiplier="1-contrast"/>
+
+    </stimuli>
+    <filters tag="Filters"/>
+    <optimizers tag="Optimizers"/>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential">
+
+          <!-- background -->
+          <action tag="Queue real background" type="queue_stimulus" stimulus="background"/>
+          <action tag="Update Stimulus" type="update_stimulus_display"/>
+          <action type="report" tag="-" message="* background start"></action>
+          <action type="wait" tag="Wait" duration="3" duration_units="s"/>
+
+          <!-- small stimulus -->
+          <!-- <action tag="Q" type="queue_stimulus" stimulus="d1_small"/> -->
+          <!-- <action tag="Q" type="queue_stimulus" stimulus="d1_small_mask"/> -->
+          <!-- <action type="play_dynamic_stimulus" stimulus="d1_small" tag="start"></action> -->
+          <!-- <action tag="Update Stimulus" type="update_stimulus_display"/> -->
+          <!-- <action type="report" tag="-" message="** small start"></action> -->
+          <!-- <action type="wait" tag="Wait" duration="5" duration_units="s"/> -->
+
+          <!-- big stimulus -->
+          <action tag="Q" type="live_queue_stimulus" stimulus="d1_big"/>
+          <action tag="Q" type="queue_stimulus" stimulus="d1_big_mask"/>
+          <action type="play_dynamic_stimulus" stimulus="d1_big" tag="start"></action>
+          <action tag="Update Stimulus" type="update_stimulus_display"/>
+          <action type="report" tag="-" message="*** big start"></action>
+          <action type="wait" tag="Wait" duration="30" duration_units="s"/>
+
+        </protocol>
+    </experiment>
+</monkeyml>

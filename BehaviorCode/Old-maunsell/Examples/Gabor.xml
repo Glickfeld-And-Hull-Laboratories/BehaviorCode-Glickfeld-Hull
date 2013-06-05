@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices"/>
+    <variables tag="Variables">
+        <variable tag="diameter" scope="global" logging="when_changed" default_value="20" type="float"/>
+    </variables>
+    <sounds tag="Sounds"/>
+    <stimuli tag="Stimuli">
+        <stimulus tag="background" full_name="background" type="blank_screen" color="0.5, 0.5, 0.5"/>
+        <stimulus type="drifting_grating" tag="d1" 
+                  direction="0" starting_phase="0" 
+                  frames_per_second="10"
+                  spatial_frequency="1" speed="0" grating_type="sinusoid" 
+                  mask="gaussian" mean="-0.1" std_dev="0.2"
+                  x_size="10" y_size="10" x_position="0" y_position="0" rotation="0"
+                  alpha_multiplier="0.1"/>
+        <stimulus type="rectangle" tag="green_rectangle" color="0,1,0" x_size="diameter" y_size="diameter" x_position="5" y_position="5" rotation="0" alpha_multiplier="0.5"/>
+        <stimulus type="rectangle" tag="blue_rectangle" color="0,0,1" x_size="diameter" y_size="diameter" x_position="0" y_position="-5" rotation="0" alpha_multiplier="0.5"/>
+    </stimuli>
+    <filters tag="Filters"/>
+    <optimizers tag="Optimizers"/>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="New Protocol" nsamples="10" sampling_method="cycles" selection="sequential">
+            <action tag="Queue background" type="queue_stimulus" stimulus="background"/>
+            <action tag="Queue red rectangle" type="queue_stimulus" stimulus="d1"/>
+            <action tag="Update Stimulus" type="update_stimulus_display"/>
+            <action type="wait" tag="Wait" duration="1" duration_units="s"/>
+        </protocol>
+    </experiment>
+</monkeyml>

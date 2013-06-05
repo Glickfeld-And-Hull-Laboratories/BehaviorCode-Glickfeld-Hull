@@ -1,0 +1,44 @@
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices"/>
+  <variables tag="Variables">  
+    <variable tag="x0" scope="global" logging="when_changed" default_value="85.444" type="integer"/>
+    <variable tag="y0" scope="global" logging="when_changed" default_value="85.444" type="integer"/>
+  </variables>
+  <sounds tag="Sounds"/>
+
+  <stimuli tag="Stimuli">
+    <stimulus type="blank_screen" tag="gray_bg" color="0.50,0.50,0.50"/>
+
+    <stimulus type="rectangle" tag="gray_rect" color="0.49,0.49,0.49" 
+	      x_size="10" y_size="10" x_position="0" y_position="0" 
+	      rotation="0" alpha_multiplier="1.0"/>
+    
+    <stimulus type="image_file" tag="image0"
+	      path="/Users/histed/Library/Application Support/MWorks/ContrastDetectGeneratedImages/generated-0.png" 
+	      x_size="x0" y_size="y0"
+	      x_position="0.0" y_position="0.0" rotation="0.0" alpha_multiplier="1.0"/>
+
+  </stimuli>
+  <filters tag="Filters"/>
+  <optimizers tag="Optimizers"/>
+  <experiment tag="New Experiment" full_name="" description="">
+    <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential">
+      <action tag="Queue background" type="queue_stimulus" stimulus="gray_bg"/>
+      <action tag="Update display" type="update_stimulus_display"/>
+      <action type="wait" tag="Wait" duration="2" duration_units="s"/>
+
+      <block tag="New Block" nsamples="100" sampling_method="cycles" selection="sequential">
+
+
+	<action tag="Queue grating" type="queue_stimulus" stimulus="image0"/>
+	<action tag="Update display" type="update_stimulus_display"/>
+	<action type="wait" tag="Wait" duration="1" duration_units="s"/>
+
+	<action tag="dQueue grating" type="dequeue_stimulus" stimulus="image0"/>
+	<action tag="Update display" type="update_stimulus_display"/>
+	<action type="wait" tag="Wait" duration="1" duration_units="s"/>
+      </block>
+    </protocol>
+  </experiment>
+</monkeyml>
+
