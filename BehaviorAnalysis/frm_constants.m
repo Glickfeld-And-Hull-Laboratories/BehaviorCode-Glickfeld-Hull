@@ -1,0 +1,19 @@
+function xc = frm_constants;
+%frm_constants - constant values useful for processing Excel files
+%
+%   constStruct = frm_constants;
+%
+%   This contains numeric values of type fields, for example
+%
+%  MH - http://github.com/histed/tools-mh
+
+% histed 120531
+
+xc.typeNums = struct(...
+    'NUMERIC', 0, ...
+    'STRING', 1, ...
+    'FORMULA', 2, ...
+    'BOOLEAN', 3, ...
+    'BLANK', 4, ...
+    'ERROR', 5);
+    
