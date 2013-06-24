@@ -8,7 +8,7 @@ function [retval] = HoldAndDetectConstant(data_struct, input)
 if nargin < 2, input = []; end
 
 ds = data_struct;
-addpath('~/ExperimentXML-git/MatlabSharedCode');
+addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/MatlabSharedCode');
 
 varsOneValEachTrial = { ...
     ...%'holdStartsMs', ...
