@@ -149,9 +149,6 @@
             <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
-
-
-
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
@@ -254,17 +251,16 @@
             <action tag="p" type="play_sound" sound="louderPressSound"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
-
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
 
-            <!-- turn on trial laser if requested -->
-
-
+            <!-- If fakeMouse, then time transitions based on variables variables -->
             <action type="if" tag="if fakeMouse" condition="!doLever">
               <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="rand(0, fakeMouseMaxReactMs)"></action>
               <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tFakeMouseReactMs" duration_units="ms"></action>
               <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="fake mouse to react in $tFakeMouseReactMs ms"></action>
             </action>
+              
+            <!-- If not fakeMouse, then start trial on lever press -->
             <action type="if" tag="if ! fakeMouse" condition="doLever">
               <action type="start_timer" tag="Start fakeMouseTimer infinite" timer="fakeMouseTimer" timebase="" duration="100000" duration_units="ms"></action>
             </action>
@@ -278,7 +274,8 @@
 
           <task_system_state tag="StimOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
+            
+            <action tag="p" type="play_sound" sound="louderPressSound"></action>
             <action type="start_timer" tag="Start Too Fast Timer" timer="tooFastTimer" timebase="" duration="tooFastTimeMs" duration_units="ms"></action>
             <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="reactTimeMs" duration_units="ms"></action>
 
