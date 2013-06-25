@@ -55,10 +55,6 @@ reactV = celleqel2mat_padded(input.reactTimesMs);
 holdV = celleqel2mat_padded(input.holdTimesMs);  % sometimes on client restart have empty elements here; should figure out why
 juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% disp
-
 tTrialN = input.trialSinceReset;
 
 %fprintf(1,'%d %d\n', sum(block2Tr1Ix&~earlyIx), sum(block2Tr2Ix&~earlyIx));  %% debug # of block2 trials
@@ -212,9 +208,7 @@ if ~isempty(Nf)
           'Color', 'r');
 end
 
-title('total hold times');
-
-
+title('Total Hold Times');
 if ~isempty(input.tooFastTimeMs)
   yLim = get(gca, 'YLim');
   plot(double(input.tooFastTimeMs) * [1 1], yLim, 'k--');
