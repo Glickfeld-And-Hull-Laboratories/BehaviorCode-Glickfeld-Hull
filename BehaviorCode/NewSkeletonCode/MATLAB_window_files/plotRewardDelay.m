@@ -8,9 +8,6 @@ subplotSz = {4,3};
 
 smoothType = 'lowess';
 
-%% other consts
-yColor = [1 1 0]*0.5;
-
 %% draw figure
 figH = figure(figNum);
 set(figH, 'ToolBar', 'none');
@@ -34,9 +31,7 @@ end
 % some data processing
 nPts = length(input.holdTimesMs);
 nTrial = length(input.trialOutcomeCell);
-
 reqHoldV = celleqel2mat_padded(input.tTotalReqHoldTimeMs);
-
 successIx = strcmp(input.trialOutcomeCell, 'success');
 failureIx = strcmp(input.trialOutcomeCell, 'failure');
 earlyIx = failureIx;
@@ -47,18 +42,12 @@ nFail = sum(failureIx);
 nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
-
-%  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
 tGotLongBonusThisTrialV = celleqel2mat_padded(input.tGotLongBonusThisTrial);
 
 reactV = celleqel2mat_padded(input.reactTimesMs);
 holdV = celleqel2mat_padded(input.holdTimesMs);  % sometimes on client restart have empty elements here; should figure out why
 juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% disp
-
 tTrialN = input.trialSinceReset;
 
 %fprintf(1,'%d %d\n', sum(block2Tr1Ix&~earlyIx), sum(block2Tr2Ix&~earlyIx));  %% debug # of block2 trials
@@ -86,7 +75,7 @@ if length(holdStarts) > 2
         set(gcf, 'Visible', 'off'); % hide figure during text
                                     % drawing - kludge
 
-        text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 14);
+        text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 16);
 
         elMin = round((now - datenum(input.startDateVec)) * 24*60);
         startStr = datestr(input.startDateVec, 'HH:MM');
@@ -136,7 +125,7 @@ if length(holdStarts) > 2
           randTypeStr = 'geo';
           geoExtraStr = sprintf('(geo m%d)', input.geomHoldMeanMs);
         else 
-          randTypeStr = 'unif';
+          randTypeStr = 'Uniform';
           geoExtraStr = '';
         end
 
@@ -212,9 +201,7 @@ if ~isempty(Nf)
           'Color', 'r');
 end
 
-title('total hold times');
-
-
+title('Total Hold Times');
 if ~isempty(input.tooFastTimeMs)
   yLim = get(gca, 'YLim');
   plot(double(input.tooFastTimeMs) * [1 1], yLim, 'k--');
@@ -229,12 +216,13 @@ set(gca, 'XLim', [-1000 1000], ...
 hold on;
 vH = vert_lines(0:200:1000);
 set(vH, 'LineStyle', ':', 'Color', 0.5*[1 1 1]);
-title('');
-xlabel('');
+title('Reaction Time CDF');
+xlabel('Time from Reward Window (ms)');
+ylabel('Percent of Trials');
 
 %%%%%%%%%%%%%%%%
 
-%% 3 - react time PDF
+%% 3 - React Time PDF
 axH = subplot(subplotSz{:},7);
 nPts = length(input.reactTimesMs);
 visIx = reactV<=maxX;
@@ -270,7 +258,9 @@ yLim = get(gca, 'YLim');
 plot([0 0], yLim, 'k');
 
 set(gca, 'XLim', [-1010 1010]);
-title('reaction times');
+title('Reaction Time PDF');
+ylabel('Percent of Trials');
+xlabel('Time from Reward Window (ms)')
 %%%%%%%%%%%%%%%%
 
 %% 4 - smoothed perf curve
@@ -305,8 +295,8 @@ if input.doLongBonus
   set(lH5, 'Color', 0.5*[1 1 1], ...
            'LineWidth', 2);
 end
-
-ylabel('pct correct');
+title('Outcomes Plotted by Trials')
+ylabel('Percent of Trials');
 set(gca, 'YLim', [0 1]);
 
 trXLim = [0 nTrials]; %get(gca, 'XLim');
@@ -406,7 +396,7 @@ xs = 1:length(hSDiffsRealSec);
 pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
 maxMin = sum(hSDiffsRealSec)./60;
 
-ylabel('Time working (min)');
+ylabel('Total Training Time (min)');
 %set(gca, 'DataAspectRatio', [100 10 1]);
 xLim = trXLim;
 set(gca, 'XLim', xLim);
@@ -481,8 +471,7 @@ title('mean react/hold over time (robust fit)');
 % used to have % 9 - reward sizes over correct trials
 
 
-%% 10 -  number of responses during react window - only for 1 stim
-%level
+%% 10 -  Percentage of Responses in the Reward Window (Target)
 nStims=1;
 
 if nStims == 1
@@ -520,77 +509,7 @@ if nStims == 1
   set(v2H, 'Color', 'g', 'LineStyle', '--');
 end
 
-%%%%%%%%%%%%%%%%
 
-%% 12: error rate with hold time?
-axH = subplot(subplotSz{:}, 12);
-maxReqX = double(max(input.fixedReqHoldTimeMs)+ ...
-          max(input.randReqHoldMaxMs));
-if nVisPts > 50
-  binWidth = iqr(reqHoldV(visIx)) ./ nVisPts.^(1/3);	% robust version of std
-  nBins = ceil(maxReqX ./ binWidth);
-else
-  nBins = 10;
-end
-edges = linspace(0,maxReqX,nBins);
-
-zVec = edges*0;
-if sum(successIx) == 0
-  N1 = zVec;
-else
-  N1 = histc(reqHoldV(successIx), edges); 
-end
-if sum(earlyIx) == 0
-  N2 = zVec;
-else
-  N2 = histc(reqHoldV(earlyIx), edges);
-end
-if sum(ignoreIx) == 0
-  N3 = zVec;
-else
-  N3 = histc(reqHoldV(ignoreIx), edges);
-end
-
-totN = N1+N2+N3;
-totN(totN==0) = Inf;
-
-hold on;
-clear('pH', 'axH')
-
-[axH] = plotyy(0,1,0,1);
-set(axH, 'NextPlot', 'add');
-
-% axes 1
-pH(1) = plot(axH(1), edges, N1./totN*100, 'k');
-pH(2) = plot(axH(1), edges, N2./totN*100, 'c--');
-pH(3) = plot(axH(1), edges, N3./totN*100, 'm--');
-set(pH, 'LineWidth', 2)
-
-set(axH(1), 'YLim', [0 100]);
-ylabel(axH(1), '% of trials');
-title(axH(1), 'trial outcome by hold time');
-
-%axes(axH(2)); hold on;
-% axes 2
-nPts = 50;
-edges=linspace(min(reqHoldV),max(reqHoldV),nPts);
-N = histc(reqHoldV, edges);
-g = smooth(N, 20, 'lowess');
-y0 =  g./max(N);
-plot(axH(2), edges, y0, 'b');
-set(axH(2), 'YLim', [0 1])
-
-set(axH, 'XLim', [0 ceil(maxReqX/500)*500], ...
-         'YTickMode', 'auto');
-
-set(axH(1), 'YColor', 'k');
-set(axH(2), 'YColor', 'b');
-anystack(axH(2), 'top');
-
-
-
-%%%%%%%%%%%%%%%%
-%% testing plots
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -651,24 +570,6 @@ if nTrial > 1
        'HorizontalAlignment', 'left', ...
        'VerticalAlignment', 'top');
 end
-
-%%%%%%%%%%%%%%%%
-% debug numbers of trials/odds
-
-%axH = subplot(4,3,9);
-%hold on;
-%for i=1:8
-%    for j=1:2
-%        nT(i,j) = sum(tStimulusNumberV == (i-1) & tBlock2TrialNumberV == (j-1));
-%    end
-%end
-%
-%plot( (nT./nTrial*80) , '.-');
-%set(gca, 'Visible', 'on', ...
-%         'YLim', [0 15])
-%grid on;
-
-%%%%%%%%%%%%%%%%
 
 
 %% Add a save button
