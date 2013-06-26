@@ -89,7 +89,6 @@
   </variables>
   <sounds tag="Sounds">
     <sound tag="louderPressSound" type="wav_file" path="wavs/louderFlatterPress.wav" amplitude="1"></sound>
-    <sound tag="waitingForLeverSound" type="wav_file" path="wavs/trialStart-F10e-short.wav" amplitude="1"></sound>
     <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
     <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
     <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
@@ -164,8 +163,6 @@
             </action>
             <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
 
-            <!-- debug -->
-
 
             <!-- compute ITI time -->
             <!-- initialize with a const value -->
@@ -213,10 +210,10 @@
               <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
+              
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
 
             <action type="assignment" tag="Encode StartTrialWaitForPress" variable="strobedDigitalWord" value="7"></action>
-            <action tag="Play waitingForLeverSound" type="play_sound" sound="waitingForLeverSound"></action>
 
             <!-- fake mouse calculations -->
             <action type="if" tag="if fakeMouse" condition="!doLever">
