@@ -433,50 +433,6 @@ end
 
 title('Mean Reaction(blue) & Hold (black) Times');
 
-% used to have % 9 - reward sizes over correct trials
-
-
-%% 10 -  Percentage of Responses in the Reward Window (Target)
-nStims=1;
-
-if nStims == 1
-  axH = subplot(subplotSz{:}, 10);
-  winLen = 200;
-  winStart = 200;
-  winReal = reactV > winStart & reactV <= (winStart+winLen);
-  baselineRange = [-winLen*2 winLen];
-  nBaseWins = range(baselineRange)./winLen;
-  winBaseline = reactV > baselineRange(1) & reactV <= baselineRange(2);
-  winBefore = winBaseline ./ nBaseWins;
-  
-  
-  hold on;
-  p1H = plot(smooth(double(winReal), ceil(nTrial/10), 'lowess'));
-  nSm = 5;
-  v1 = smooth(double(winReal), ceil(nTrial./nSm), 'lowess');
-  v2 = smooth(double(winBefore), ceil(nTrial./nSm), 'lowess');
-  v0 = v1 ./ (v1+v2);
-  p2H = plot(v0, 'k');
-  set(p2H, 'LineWidth', 3);
-  %p2H = plot(smooth(double(winBefore), ceil(nTrial/10), 'lowess'));
-  %p3H = plot(smooth(double(winAfter), ceil(nTrial/10), 'lowess'));
-  title('trs inside react win')
-  
-  %xLim = [0 nTrials];
-  xLim = trXLim;
-  set(gca, 'YLim', [0 1], ...
-           'XLim', xLim);
-  plot(xLim, 0.5*[1 1], '--');
-  
-  axH = subplot(subplotSz{:}, 3);
-  hold on;
-  v2H = vert_lines([winStart winStart+winLen]);
-  set(v2H, 'Color', 'g', 'LineStyle', '--');
-end
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generic code below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
