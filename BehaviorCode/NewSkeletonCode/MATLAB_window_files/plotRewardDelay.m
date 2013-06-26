@@ -78,7 +78,7 @@ if length(holdStarts) > 2
 
         elMin = round((now - datenum(input.startDateVec)) * 24*60);
         startStr = datestr(input.startDateVec, 'HH:MM');
-        text(0.00, 1.05, {'Subject:', 'Start time + elapsed:', 'Reward vol (m\pm std):'});
+        text(0.00, 1.05, {'Subject Number:', 'Start time + elapsed:', 'Reward vol (m\pm std):'});
 	text(0.60, 1.05, ...
              { sprintf('%2d', input.subjectNum), ...
                sprintf('%s + %2dm', ...
@@ -109,25 +109,14 @@ if length(holdStarts) > 2
         text(0.8, 0.9, tStr, ...
              'VerticalAlignment', 'top', ...
              'HorizontalAlignment', 'left');
-        
-        if input.doGeomHoldDist
-          randTypeStr = 'geo';
-          geoExtraStr = sprintf('(geo m%d)', input.geomHoldMeanMs);
-        else 
-          randTypeStr = 'Uniform';
-          geoExtraStr = '';
-        end
 
         
-        tStr = sprintf( ['Hold (f+r/%s, tf): \t%3d+%3d,%3d ms %s\n', ...
-                         'Timeouts (e,m):\t%4.1f, %4.1f s\n', ...
-                         'React:\t%5.2f s;   ITI %d +%d ms\n', ...
+        tStr = sprintf( ['Required Hold (fixed): \t%3d ms \n', ...
+                         'Timeouts (e,m):\t%4.1fs, %4.1fs\n', ...
+                         'Reaction Time:\t%5.2f s \n',...
+                         'Inter Trial Interval: %d +%d ms\n', ...
                          'Reward min, max: %3.0f, %3.0f ms   %s\n'], ...
-                        randTypeStr, ...
                         input.fixedReqHoldTimeMs, ...
-                        input.randReqHoldMaxMs, ...
-                        input.tooFastTimeMs, ...
-                        geoExtraStr, ...
                         input.earlyTimeoutMs/1000, ...
                         input.missedTimeoutMs/1000, ...
                         input.reactTimeMs/1000, ...
@@ -138,7 +127,7 @@ if length(holdStarts) > 2
 
         text(0.0, 0.55, tStr, ...
              'HorizontalAlignment', 'left', ...
-             'VerticalAlignment', 'top');
+             'VerticalAlignment', 'top', 'FontSize', 11);
 
         set(gcf, 'Visible', 'on');
 
@@ -151,11 +140,11 @@ end
 %%%%%%%%%%%%%%%%%%%%%
 % Hold time histogram
 
-axH = subplot(subplotSz{:}, 3);
-if input.fixedReqHoldTimeMs+input.randReqHoldMaxMs < 1000
+axH = subplot(subplotSz{:}, 8);
+if input.fixedReqHoldTimeMs < 1000
   maxX = 2000;
 else
-  maxFail = double(input.reactTimeMs+input.fixedReqHoldTimeMs+input.randReqHoldMaxMs);
+  maxFail = double(input.reactTimeMs+input.fixedReqHoldTimeMs);
   maxX = ceil((maxFail+45)./500)*500;  % round up to nearest 500 ms.
 end
 
@@ -191,14 +180,11 @@ if ~isempty(Nf)
 end
 
 title('Total Hold Times');
-if ~isempty(input.tooFastTimeMs)
-  yLim = get(gca, 'YLim');
-  plot(double(input.tooFastTimeMs) * [1 1], yLim, 'k--');
-end
+
 %%%%%%%%%%%%%%%%
 
 %% 2 - react time CDF
-axH = subplot(subplotSz{:},4);
+axH = subplot(subplotSz{:}, 3);
 cdfplot([input.reactTimesMs{:}]);
 set(gca, 'XLim', [-1000 1000], ...
          'YLim', [0 1]);
@@ -212,7 +198,7 @@ ylabel('Percent of Trials');
 %%%%%%%%%%%%%%%%
 
 %% 3 - React Time PDF
-axH = subplot(subplotSz{:},7);
+axH = subplot(subplotSz{:}, 9);
 nPts = length(input.reactTimesMs);
 visIx = reactV<=maxX;
 nVisPts = sum(visIx);
@@ -289,7 +275,7 @@ set(gca, 'XLim', trXLim);
 %%%%%%%%%%%%%%%%
 
 %% 6 - trial length plot
-axH = subplot(subplotSz{:},6);
+axH = subplot(subplotSz{:}, 12);
 hold on;
 holdStarts = double(cellvect2mat_padded(input.holdStartsMs));
 hSDiffsSec = diff(holdStarts)/1000;
@@ -300,9 +286,6 @@ hSCapped = hSDiffsSec;
 hSCapped(largeIx) = 120;  
 
 xs = 1:length(hSDiffsSec);
-
-
-
 
 if ~isempty(hSDiffsSec) && sum(~isnan(hSDiffsSec)) > 1
   % computations here
@@ -393,7 +376,7 @@ pH2 = plot(xLim, xLim/10, 'k--');
 % %%%%%%%%%%%%%%%%
 
 % 6 - hold times over time
-axH = subplot(subplotSz{:}, 8);
+axH = subplot(subplotSz{:}, 6);
 hold on;
 
 % do smooth on only corrects and earlies, then plot by true trial number
@@ -448,7 +431,7 @@ if ~isempty(vy1) && ~isempty(vy2)
     ylabel(axH(2), 'React time (ms) - corr');
 end
 
-title('mean react/hold over time (robust fit)');
+title('Mean Reaction(blue) & Hold (black) Times');
 
 % used to have % 9 - reward sizes over correct trials
 
@@ -485,7 +468,7 @@ if nStims == 1
            'XLim', xLim);
   plot(xLim, 0.5*[1 1], '--');
   
-  axH = subplot(subplotSz{:}, 4);
+  axH = subplot(subplotSz{:}, 3);
   hold on;
   v2H = vert_lines([winStart winStart+winLen]);
   set(v2H, 'Color', 'g', 'LineStyle', '--');
@@ -499,7 +482,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% List changed text
-axH = subplot(subplotSz{:}, 9);
+axH = subplot(subplotSz{:}, 4);
 hold on;
 set(axH, 'Visible', 'off');
 if nTrial > 1 
