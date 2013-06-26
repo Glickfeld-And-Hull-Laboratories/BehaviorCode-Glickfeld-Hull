@@ -36,9 +36,6 @@
       <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1"/>
       <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1"/>
       <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="120" type="integer" persistant="1"/>
-      <variable tag="doLongBonus" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="longBonusExtraHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="longBonusExtraRewardUs" scope="global" logging="when_changed" default_value="120000" type="integer" persistant="1"/>
     </folder>
     <folder tag="Stimuli">
 
@@ -84,7 +81,6 @@
       <variable tag="tNRewards" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tInterRewardIntervalMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tRewardAddPerMsHoldUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tGotLongBonusThisTrial" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tItiWaitTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -155,7 +151,6 @@
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
-            <action type="assignment" variable="tGotLongBonusThisTrial" value="0"></action>
             <action type="assignment" variable="tStimTurnedOn" value="0"></action>
 
             <!-- choose hold time this trial -->
@@ -279,17 +274,6 @@
             <action type="start_timer" tag="Start Too Fast Timer" timer="tooFastTimer" timebase="" duration="tooFastTimeMs" duration_units="ms"></action>
             <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="reactTimeMs" duration_units="ms"></action>
 
-            <action type="if" condition="!doLongBonus">
-              <!-- if doLongBonus, don't turn on the stimulus now, do it later -->
-
-              <action type="assignment" tag="Set StimulusOn" variable="stimulusOn" value="1"></action>
-              <action tag="Report StimOn" full_name="ReportDigital" type="report" message="StimOn (still holding; signaling release ok)"></action>
-
-              <!-- update display, finalize variables -->
-              <action type="assignment" variable="tStimTurnedOn" value="1"></action>
-
-            </action> <!-- if !doLongBonus -->
-
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="direct" tag="Always Go to CheckTooFastTime" target="CheckTooFastTime"></transition>
           </task_system_state>
@@ -307,20 +291,7 @@
 
           <task_system_state tag="React" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
-            <!-- turn off stimulus if longer than gratingDurationMs -->                     
-            <action type="if" condition="tStimTurnedOn == 1">  <!-- so we only turn it off once here -->
-
-            </action>
-
-            <!-- turn ON stimulus if doLongBonus and time has elapsed -->
-            <action type="if" condition="doLongBonus">
-              <action type="if" condition="tStimTurnedOn == 0 &amp;&amp; ((now()/1000) - pressTimestampMs) >= tTotalReqHoldTimeMs+longBonusExtraHoldTimeMs">
-              
-
-              </action>
-            </action> <!-- if doLongBonus -->
-
+         
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
@@ -369,13 +340,6 @@
             <action type="assignment" tag="success++" variable="success" value="success+1"></action>
             <action type="assignment" variable="tConsecErrors" value="0"></action>
 
-
-
-            <!-- give long bonus reward if extra time exceeded -->
-            <action type="if" condition="doLongBonus &amp;&amp; actualHoldTimeMs >= tTotalReqHoldTimeMs+longBonusExtraHoldTimeMs">
-              <action type="assignment" variable="tTotalRewardTimeUs" value="tTotalRewardTimeUs+longBonusExtraRewardUs"/>
-              <action type="assignment" variable="tGotLongBonusThisTrial" value="1"/>
-            </action>
 
             <!-- scale based on consec corrects -->
             <action type="if" tag="if consecCorrects &lt; max" condition="consecCorrects &lt; maxConsecCorrects">

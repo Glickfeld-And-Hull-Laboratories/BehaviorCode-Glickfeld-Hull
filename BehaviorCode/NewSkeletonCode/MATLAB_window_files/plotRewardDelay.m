@@ -42,7 +42,6 @@ nFail = sum(failureIx);
 nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
-tGotLongBonusThisTrialV = celleqel2mat_padded(input.tGotLongBonusThisTrial);
 
 reactV = celleqel2mat_padded(input.reactTimesMs);
 holdV = celleqel2mat_padded(input.holdTimesMs);  % sometimes on client restart have empty elements here; should figure out why
@@ -99,23 +98,13 @@ if length(holdStarts) > 2
         set(t2H, 'VerticalAlignment', 'top', ...
                  'HorizontalAlignment', 'left');
 
-        
-        if input.doLongBonus
-          lbStr = sprintf('Long bonus:\n    t +%d, rew +%d ms', ...
-                          input.longBonusExtraHoldTimeMs, ...
-                          round(input.longBonusExtraRewardUs/ ...
-                                1000));
-        else
-          lbStr = 'Long bonus: off';
-        end
 
         tStr = sprintf(['Hold, react median:\n', ...
                         '   %5.1f ms, %5.1f ms\n', ...
                         '\n', ...
                         '%s'], ...
                        median(holdV), ...
-                       median(reactV(successIx)), ...
-                       lbStr);
+                       median(reactV(successIx)));
                
         text(0.8, 0.9, tStr, ...
              'VerticalAlignment', 'top', ...
@@ -287,14 +276,7 @@ lH4 = plot(smooth(double(failureIx), 100, smoothType));
 
 anystack(lH3, 'bottom');
 
-if input.doLongBonus
-  %tV = smooth(double(tGotLongBonusThisTrialV(successIx)), 50, smoothType);
-  %lH5 = plot(find(successIx), tV);
-  tV = smooth(double(tGotLongBonusThisTrialV), 100, smoothType);
-  lH5 = plot(tV);
-  set(lH5, 'Color', 0.5*[1 1 1], ...
-           'LineWidth', 2);
-end
+
 title('Outcomes Plotted by Trials')
 ylabel('Percent of Trials');
 set(gca, 'YLim', [0 1]);
