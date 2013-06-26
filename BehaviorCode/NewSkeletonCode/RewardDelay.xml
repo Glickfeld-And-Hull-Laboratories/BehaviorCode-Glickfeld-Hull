@@ -18,7 +18,9 @@
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="fixedReqHoldTimeMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1"/>       
+      <variable tag="doCycleBeforeReqHold" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="fixedReqHoldTimeMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1"/>
+      <variable tag="delayMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
       <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
       <variable tag="missedTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1"/>
@@ -89,6 +91,7 @@
     <sound tag="louderPressSound" type="wav_file" path="wavs/louderFlatterPress.wav" amplitude="1"></sound>
     <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
     <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
+    <sound tag="delaySound" type="wav_file" path="wavs/8000Hz_.3s.wav"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -223,10 +226,23 @@
             <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
                         condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="HoldLever"></transition>
           </task_system_state>
-
+            
           <task_system_state tag="HoldLever" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>              
+            <action type="start_timer" tag="Hold Time Before Timing Trial Timer" timer="reqHoldTimeTimerMs" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
+              
+              
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+              <transition type="conditional" tag="If release lever with cycle variable off, go to Early Release"
+                        condition="doCycleBeforeReqHold==0 &amp;&amp; doLever==1 &amp;&amp; FIO1==0" target="EarlyRelease"></transition>
+                 <transition type="conditional" tag="If release lever, cycle to Trial Start"
+                  condition="doCycleBeforeReqHold==1 &amp;&amp; doLever==1 &amp;&amp; FIO1==0" target="StartTrial"></transition>
+              <transition type="timer_expired" tag="If holdTimer expired, send to start timing" target="Delay" timer="reqHoldTimeTimerMs"></transition>
+          </task_system_state>
+            
+          <task_system_state tag="Delay" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action tag="p" type="play_sound" sound="louderPressSound"></action>
+            <action type="play_sound" sound="delaySound"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
@@ -242,25 +258,25 @@
             <action type="if" tag="if ! fakeMouse" condition="doLever">
               <action type="start_timer" tag="Start fakeMouseTimer infinite" timer="fakeMouseTimer" timebase="" duration="100000" duration_units="ms"></action>
             </action>
-            <action type="start_timer" tag="Start LeverHold Timer" timer="leverHoldTimer" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
-            <action tag="Report LeverDown" full_name="ReportDigital" type="report" message="LeverDown (need to hold for $tTotalReqHoldTimeMs)"></action>
+            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="delayMs" duration_units="ms"></action>
+            <action tag="Report Delay Start" full_name="ReportDigital" type="report" message="Delay Started (need to hold for $delayMs)"></action>
+              
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
-            <transition type="timer_expired" tag="If leverHoldTimer Expired, Go To StimOn" target="StimOn" timer="leverHoldTimer"></transition>
+            <transition type="timer_expired" tag="If delayTimer Expired, Go To StartReactTimer" target="StartReactTimer" timer="delayTimerMs"></transition>
           </task_system_state>
 
-          <task_system_state tag="StimOn" interruptible="YES">
+          <task_system_state tag="StartReactTimer" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             
-            <action tag="p" type="play_sound" sound="louderPressSound"></action>
             <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="reactTimeMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="direct" tag="Go to React" target="React"></transition>
+            <transition type="direct" tag="Go WaitForAction" target="WaitForAction"></transition>
           </task_system_state>
 
-          <task_system_state tag="React" interruptible="YES">
+          <task_system_state tag="WaitForAction" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
          
 
@@ -268,7 +284,7 @@
             <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="timer_expired" tag="If fakeMouse expired, Transition to Reward" target="Reward" timer="fakeMouseTimer"></transition>
             <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
-            <transition type="direct" target="React"></transition> <!-- spin on this state to turn off stim if necessary -->
+            <transition type="direct" target="WaitForAction"></transition> <!-- spin on this state to turn off stim if necessary -->
           </task_system_state>
 
           <task_system_state tag="EarlyRelease" interruptible="YES">
