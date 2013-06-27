@@ -16,14 +16,14 @@
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="doLeverSolenoidOnLate" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doCycleBeforeReqHold" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
-      <variable tag="fixedReqHoldTimeMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1"/>
-      <variable tag="delayMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
-      <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
+      <variable tag="reqHoldToStartMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1"/>
+      <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
+      <variable tag="rewardWindowWidthMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
-      <variable tag="missedTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1"/>
+      <variable tag="lateTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1"/>
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1"/>
       <variable tag="itiExtraRandTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -38,17 +38,17 @@
     <folder tag="Stimuli">
 
     </folder>
-    <folder tag="Fake Mouse">
-      <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
-      <variable tag="fakeMouseMaxPressMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1"/>
-      <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1"/>
+    <folder tag="Test Robot">
+      <variable tag="doRobot" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="testRobotMaxPressMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1"/>
+      <variable tag="testRobotMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1"/>
     </folder>
     <folder tag="Task Status">
-      <variable tag="failure" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="early" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="leverResult" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="late" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -67,10 +67,10 @@
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tReqHoldToStartMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tFakeMouseReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tFakeMousePressMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tTestRobotReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tTestRobotPressMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="consecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
@@ -107,7 +107,7 @@
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
 
       <!-- init actions run only on first trial after loading experiment -->
-      <action type="if" condition="success+ignore+failure == 0">
+      <action type="if" condition="success+late+early == 0">
         <action type="report" message="**** First trial since experiment load - initializing"></action>
         <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
         <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
@@ -150,7 +150,7 @@
             <action type="assignment" variable="tStimTurnedOn" value="0"></action>
 
             <!-- Assign the variable for this trial's hold time -->
-            <action type="assignment" variable="tTotalReqHoldTimeMs" value="fixedReqHoldTimeMs"></action>
+            <action type="assignment" variable="tReqHoldToStartMs" value="reqHoldToStartMs"></action>
 
                <!-- initialize trial start/end times -->
             <action type="if" condition="tThisTrialStartTimeMs == -1">  
@@ -176,7 +176,7 @@
             <!-- extend based on previous hold and max stim time, if asked for -->
             <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
               <action type="assignment" variable="tempMs"  
-                      value="fixedReqHoldTimeMs-lastActualHoldTimeMs"></action> 
+                      value="reqHoldToStartMs-lastActualHoldTimeMs"></action>
               <action type="if" condition="tempMs > 0">
                 <!--add to ITI-->
                 <action type="assignment" tag="-"
@@ -205,7 +205,7 @@
           </task_system_state>
 
           <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
-            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
+            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnLate || doLeverSolenoidOnEarly">
               <!-- Lower solenoid at beginning of trial for any solenoid -->
               <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
@@ -215,29 +215,29 @@
 
             <action type="assignment" tag="Encode StartTrialWaitForPress" variable="strobedDigitalWord" value="7"></action>
 
-            <!-- fake mouse calculations -->
-            <action type="if" tag="if fakeMouse" condition="!doLever">
-              <action type="assignment" variable="tFakeMousePressMs" value="rand(0, fakeMouseMaxPressMs)"></action>
+            <!-- Fake Mouse Testing Calculations -->
+            <action type="if" tag="if testRobot" condition="doRobot==1">
+              <action type="assignment" variable="tTestRobotPressMs" value="rand(0, testRobotMaxPressMs)"></action>
             </action>
 
-            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
-            <transition type="conditional" tag="If fakeMouse elapsed, go to HoldLever" 
-                        condition="!doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tFakeMousePressMs" target="HoldLever"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doRobot==0 &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
+            <transition type="conditional" tag="If testRobot elapsed, go to HoldLever" 
+                        condition="doRobot &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tTestRobotPressMs" target="HoldLever"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
-                        condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="HoldLever"></transition>
+                        condition="doRobot==0 &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="HoldLever"></transition>
           </task_system_state>
             
           <task_system_state tag="HoldLever" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>              
-            <action type="start_timer" tag="Hold Time Before Timing Trial Timer" timer="reqHoldTimeTimerMs" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
+            <action type="start_timer" tag="Hold Time Before Timing Trial Timer" timer="holdToStartTrialTimerMs" timebase="" duration="tReqHoldToStartMs" duration_units="ms"></action>
               
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
               <transition type="conditional" tag="If release lever with cycle variable off, go to Early Release"
-                        condition="doCycleBeforeReqHold==0 &amp;&amp; doLever==1 &amp;&amp; FIO1==0" target="EarlyRelease"></transition>
+                        condition="doCycleBeforeReqHold==0 &amp;&amp; doRobot==0 &amp;&amp; FIO1==0" target="EarlyRelease"></transition>
                  <transition type="conditional" tag="If release lever, cycle to Trial Start"
-                  condition="doCycleBeforeReqHold==1 &amp;&amp; doLever==1 &amp;&amp; FIO1==0" target="StartTrial"></transition>
-              <transition type="timer_expired" tag="If holdTimer expired, send to start timing" target="Delay" timer="reqHoldTimeTimerMs"></transition>
+                  condition="doCycleBeforeReqHold==1 &amp;&amp; doRobot==0 &amp;&amp; FIO1==0" target="StartTrial"></transition>
+              <transition type="timer_expired" tag="If holdTimer expired, send to start timing" target="Delay" timer="holdToStartTrialTimerMs"></transition>
           </task_system_state>
             
           <task_system_state tag="Delay" interruptible="YES">
@@ -247,30 +247,32 @@
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
 
-            <!-- If fakeMouse, then time transitions based on variables variables -->
-            <action type="if" tag="if fakeMouse" condition="!doLever">
-              <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="rand(0, fakeMouseMaxReactMs)"></action>
-              <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tFakeMouseReactMs" duration_units="ms"></action>
-              <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="fake mouse to react in $tFakeMouseReactMs ms"></action>
+            <!-- If testRobot, then time transitions based on variables variables -->
+            <action type="if" tag="if testRobot" condition="doRobot==1">
+              <action type="assignment" tag="Assign tTestRobotReactMs" variable="tTestRobotReactMs" value="rand(0, testRobotMaxReactMs)"></action>
+              <action type="start_timer" tag="Start Test Robot Reaction Timer" timer="testRobotTimer" timebase="" duration="tTestRobotReactMs" duration_units="ms"></action>
+              <action tag="Report testRobotTimer" full_name="Report Press" type="report" message="Test Robot to React in $tTestRobotReactMs ms"></action>
             </action>
               
-            <!-- If not fakeMouse, then start trial on lever press -->
-            <action type="if" tag="if ! fakeMouse" condition="doLever">
-              <action type="start_timer" tag="Start fakeMouseTimer infinite" timer="fakeMouseTimer" timebase="" duration="100000" duration_units="ms"></action>
+            <!-- If not testRobot, then start trial on lever press -->
+            <action type="if" tag="if not testRobot" condition="doRobot">
+              <action type="start_timer" tag="Start testRobotTimer infinite" timer="testRobotTimer" timebase="" duration="100000" duration_units="ms"></action>
             </action>
-            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="delayMs" duration_units="ms"></action>
-            <action tag="Report Delay Start" full_name="ReportDigital" type="report" message="Delay Started (need to hold for $delayMs)"></action>
+              
+              
+            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="delayTimeMs" duration_units="ms"></action>
+            <action tag="Report Delay Start" full_name="ReportDigital" type="report" message="Delay Started (need to hold for $delayTimeMs)"></action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-            <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="If testRobotTimer expired, go to EarlyRelease" target="EarlyRelease" timer="testRobotTimer"></transition>
             <transition type="timer_expired" tag="If delayTimer Expired, Go To StartReactTimer" target="StartReactTimer" timer="delayTimerMs"></transition>
           </task_system_state>
 
           <task_system_state tag="StartReactTimer" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            
-            <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="reactTimeMs" duration_units="ms"></action>
+            <action tag="report target time" full_name="ReportDigital" type="report" message="Delay Time Passed - Reward Widow $rewardWindowWidthMs"></action>
+            <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="rewardWindowWidthMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="direct" tag="Go WaitForAction" target="WaitForAction"></transition>
@@ -281,9 +283,9 @@
          
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
-            <transition type="timer_expired" tag="If fakeMouse expired, Transition to Reward" target="Reward" timer="fakeMouseTimer"></transition>
-            <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="Reward"></transition>
+            <transition type="timer_expired" tag="If testRobot expired, Transition to Reward" target="Reward" timer="testRobotTimer"></transition>
+            <transition type="timer_expired" tag="If React Time Expired, Go To Late" target="Late" timer="reactTimeTimer"></transition>
             <transition type="direct" target="WaitForAction"></transition> <!-- spin on this state to turn off stim if necessary -->
           </task_system_state>
 
@@ -296,7 +298,7 @@
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
               
             <!-- update running variables -->
-            <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
+            <action type="assignment" tag="early++" variable="early" value="early+1"></action>
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             
@@ -366,26 +368,26 @@
             <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
           </task_system_state>
 
-          <task_system_state tag="Missed" interruptible="YES">
+          <task_system_state tag="Late" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
-            <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
-            <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
+            <action type="report" tag="Report" message="ActualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action type="assignment" tag="late++" variable="late" value="late + 1"></action>
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
-            <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
+            <action tag="Report Late Trial" full_name="ReportDigital" type="report" message="** Late Response -- No Reward"></action>
             <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
 
-            <action type="start_timer" tag="start timer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
-            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
+            <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="lateTimeoutMs" duration_units="ms"></action>
+            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnLate">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" target="PossibleEndTimeout" timer="missedTimeoutTimer"></transition>
+            <transition type="timer_expired" target="PossibleEndTimeout" timer="lateTimeoutTimer"></transition>
           </task_system_state>
 
 
