@@ -24,17 +24,11 @@ varsOneValEachTrial = { ...
     'tStimTurnedOn', ...
     'tItiWaitTimeMs', ...
     'tThisTrialStartTimeMs', ...
-    'tLastTrialStartTimeMs'
-};
+    'tLastTrialStartTimeMs'};
 
 exptSetupBridge;
-
 [input eventsConsts eventsTrial] ...
     = exptProcessBridgeInput(data_struct, input, varsOneValEachTrial);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 trN = input.trialSinceReset;
 
 %% Process reaction and hold times for this trial
@@ -44,7 +38,7 @@ leverUpUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 2, 0);
 startingHoldTimeMs = input.tReqHoldToStartMs{trN};
 delayTimeMs = input.tDelayTimeMs{trN};
 holdTimeMs = (leverUpUs - leverDownUs) / 1000;
-reactTimeMs = (holdTimeMs - delayTimeMs)
+reactTimeMs = (holdTimeMs - delayTimeMs);
 
 
 % Add calculated values to array

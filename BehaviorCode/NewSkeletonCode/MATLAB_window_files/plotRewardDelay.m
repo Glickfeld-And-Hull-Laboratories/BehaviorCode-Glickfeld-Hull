@@ -7,15 +7,10 @@ consts = reward_delay_constants;
 subplotSz = {3,3};
 
 smoothType = 'lowess';
-
 %% draw figure
 figH = figure(figNum);
 set(figH, 'ToolBar', 'none');
 clf;
-%set(figH, 'Visible', 'off');
-
-
-
 figPos = [930 140 905 905];
 set(figH, 'Position', figPos);
 
@@ -69,29 +64,29 @@ if length(holdStarts) > 2
         set(gcf, 'Visible', 'off'); % hide figure during text
                                     % drawing - kludge
 
-        text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 16);
+        text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 18);
 
         elMin = round((now - datenum(input.startDateVec)) * 24*60);
         startStr = datestr(input.startDateVec, 'HH:MM');
-        text(0.00, 1.05, {'Subject Number:', 'Start time + elapsed:', 'Reward vol (m\pm std):'});
-	text(0.60, 1.05, ...
+        text(0.00, 1.0, {'Subject Number:', 'Start time + elapsed:', 'Reward vol (m\pm std):'}, 'FontSize', 12);
+	text(0.70, 1.0, ...
              { sprintf('%2d', input.subjectNum), ...
                sprintf('%s + %2dm', ...
                        startStr, elMin), ...
-               sprintf('%.1f s     \t(%g ms\\pm %g ms)', ...
+               sprintf('%.1f s \t(%g ms\\pm %g ms)', ...
                        nansum(juiceTimesMsV./1000), ...
                        chop(nanmean(juiceTimesMsV),2), ...
                        chop(nanstd(juiceTimesMsV),2)), ...
-             });
-	t2H(1) = text(0.00, 0.9, {'Trials:', 'Correct:', 'Early:', 'Failed:'});
-	t2H(2) = text(0.35, 0.9, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
+             }, 'FontSize', 12);
+	t2H(1) = text(0.00, 0.8, {'Trials:', 'Correct:', 'Early:', 'Late:'});
+	t2H(2) = text(0.35, 0.8, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
 				sprintf('%d', nFail), sprintf('%d', nIg)});
-	t2H(3) = text(0.54, 0.9, {' ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
+	t2H(3) = text(0.54, 0.8, {' ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
 				sprintf('%.0f%%', nFail / numTrials * 100.0), ...
 				sprintf('%.0f%%', nIg / numTrials * ...
                                         100.0)});
         set(t2H, 'VerticalAlignment', 'top', ...
-                 'HorizontalAlignment', 'left');
+                 'HorizontalAlignment', 'left', 'FontSize', 12);
 
 
         tStr = sprintf(['Hold, react median:\n', ...
@@ -101,16 +96,16 @@ if length(holdStarts) > 2
                        median(holdV), ...
                        median(reactV(successIx)));
                
-        text(0.8, 0.9, tStr, ...
+        text(0.8, 0.8, tStr, ...
              'VerticalAlignment', 'top', ...
-             'HorizontalAlignment', 'left');
+             'HorizontalAlignment', 'left', 'FontSize', 12);
 
         
-        tStr = sprintf( ['Hold To Start Trial: \t%3d ms \n', ...
+        tStr = sprintf( ['Hold Time To Start Trial: \t%3d ms \n', ...
                          'Delay Time: \t%3d ms \n', ...
                          'Timeouts (e,m):\t%4.1fs, %4.1fs\n', ...
                          'Reward Window Width:\t%5.2f s \n',...
-                         'Inter Trial Interval: %d +%d ms\n', ...
+                         'Inter Trial Interval: %d + %d ms\n', ...
                          'Reward min, max: %3.0f, %3.0f ms   %s\n'], ...
                         input.reqHoldToStartMs, ...
                         input.delayTimeMs, ...
@@ -122,9 +117,9 @@ if length(holdStarts) > 2
                         input.minRewardUs/1000, ...
                         input.maxRewardUs/1000);
 
-        text(0.0, 0.55, tStr, ...
+        text(0.0, 0.3, tStr, ...
              'HorizontalAlignment', 'left', ...
-             'VerticalAlignment', 'top', 'FontSize', 11);
+             'VerticalAlignment', 'top', 'FontSize', 12);
 
         set(gcf, 'Visible', 'on');
 
@@ -165,33 +160,32 @@ xLim = [0 maxX];
 set(gca, 'XLim', xLim);
 yLim = get(gca, 'YLim');
 if (length(get(gca, 'XTick')) > 4)
-  xT = (0:(round(maxX/1000)))*1000;
+  xT = (0:500:maxX);
   set(gca, 'XTick', xT);
 end
-
+maxX
 
 if ~isempty(Nf)
   pH = plot(edges, Nf);
   set(pH, 'LineStyle', '--', ...
           'Color', 'r');
 end
-
+grid on
 title('Trial Hold Times');
 
 %%%%%%%%%%%%%%%%
 
 %% 2 - react time CDF
-axH = subplot(subplotSz{:}, 7);
+axH = subplot(subplotSz{:}, 8);
 cdfplot([input.reactTimesMs{:}]);
 set(gca, 'XLim', [-1000 1000], ...
          'YLim', [0 1]);
 hold on;
-vH = vert_lines(0:200:1000);
-set(vH, 'LineStyle', ':', 'Color', 0.5*[1 1 1]);
+vH = vert_lines([0 input.rewardWindowWidthMs]);
+set(vH, 'Color','g');
 title('Reaction Time CDF');
 grid on
 xlabel('Time from Reward Window (ms)');
-ylabel('Number of Trials');
 
 %%%%%%%%%%%%%%%%
 
@@ -229,7 +223,7 @@ end
 hold on;
 yLim = get(gca, 'YLim');
 plot([0 0], yLim, 'k');
-
+grid on
 set(gca, 'XLim', [-1010 1010]);
 title('Reaction Time PDF');
 ylabel('Percent of Trials');
@@ -239,20 +233,20 @@ xlabel('Time from Reward Window (ms)')
 %% 4 - smoothed perf curve
 axH = subplot(subplotSz{:},2:3);
 hold on;
-plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
+%plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
 lH = plot(smooth(double(successIx), nTrial, smoothType));
 set(lH, 'Color', 'r', ...
         'LineWidth', 3);
-lH2 = plot(smooth(double(successIx), 100, smoothType));
+lH2 = plot(smooth(double(successIx), 15, smoothType));
 set(lH2, 'Color', 'k', ...
         'LineWidth', 2);
 
-lH3 = plot(smooth(double(lateIx), 100, smoothType));
+lH3 = plot(smooth(double(lateIx), 15, smoothType));
 set(lH3, 'Color', 'm', ...
          'LineWidth', 2, ...
          'LineStyle', '-.');
 
-lH4 = plot(smooth(double(earlyIx), 100, smoothType));
+lH4 = plot(smooth(double(earlyIx), 15, smoothType));
   set(lH4, 'Color', 0.8*[0 1 1], ...
            'LineWidth', 2, ...
            'LineStyle', '-.');
@@ -273,7 +267,7 @@ set(gca, 'XLim', trXLim);
 %%%%%%%%%%%%%%%%
 
 %% 6 - trial length plot
-axH = subplot(subplotSz{:}, 8);
+axH = subplot(subplotSz{:}, 7);
 hold on;
 holdStarts = double(cellvect2mat_padded(input.holdStartsMs));
 hSDiffsSec = diff(holdStarts)/1000;
@@ -307,7 +301,7 @@ if ~isempty(hSDiffsSec) && sum(~isnan(hSDiffsSec)) > 1
 
   [axesH pH1 pH1a]=plotyy(xs,hSCapped, xs, avgRatePerMin);
   set(pH1, 'LineStyle', 'none', ...
-           'Marker', 'x');
+           'Marker', '.');
   set(axesH, 'NextPlot', 'add');
 
   if sum(largeIx) > 0
@@ -325,7 +319,7 @@ else
   axesH(2) = NaN;
 end
 
-ylabel('Trial Start time(s)');
+ylabel('Trial Start Time (s)');
 xLim = trXLim;
 set(axesH(~isnan(axesH)), 'XLim', xLim);
 lH = plot(xLim, 20*[1 1], '--k');
@@ -336,7 +330,7 @@ set(axesH(1),'YLim', [0 121], ...
              'YColor', 'k');
 
 if ~isnan(axesH(2)) 
-  ylabel(axesH(2), 'Trials/min; avg rew (ms/sec)');
+  ylabel(axesH(2), 'Trials/min; Avg Reward (ms/sec)');
   yLim2 = get(axesH(2), 'YLim');
   yLim2 = [0 max(yLim2(2), 6)];
   set(axesH(2), 'YLim', yLim2, ...
@@ -386,7 +380,7 @@ if ~isempty(v1) && ~isempty(v2)
     yLim(1) = 0;
     set(axH(1), 'YLim', yLim);
   end
-  ylabel('Hold time (ms) - corr+early');
+  ylabel('Hold time (ms) - Corrects & Earlies');
 end
 
 % 2nd axes
@@ -402,10 +396,10 @@ if ~isempty(vy1) && ~isempty(vy2)
                 'YTickMode', 'auto', ...
                 'YTickLabelMode', 'auto', ...
                 'YColor', c2)
-    ylabel(axH(2), 'React time (ms) - corr');
+    ylabel(axH(2), 'React time (ms) - Corrects');
 end
 
-title('Mean Reaction(blue) & Hold (black) Times');
+title('Mean Reaction (blue) & Hold (black) Times');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generic code below
