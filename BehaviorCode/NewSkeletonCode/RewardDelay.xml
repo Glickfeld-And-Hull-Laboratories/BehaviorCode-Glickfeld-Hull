@@ -18,7 +18,7 @@
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doLeverSolenoidOnLate" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="doCycleBeforeReqHold" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="doCycleBeforeReqHold" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1"/>
       <variable tag="reqHoldToStartMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1"/>
       <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
       <variable tag="rewardWindowWidthMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
@@ -36,7 +36,6 @@
       <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="120" type="integer" persistant="1"/>
     </folder>
     <folder tag="Stimuli">
-
     </folder>
     <folder tag="Test Robot">
       <variable tag="doRobot" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
@@ -44,12 +43,12 @@
       <variable tag="testRobotMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1"/>
     </folder>
     <folder tag="Task Status">
-      <variable tag="early" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="leverResult" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="early" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="late" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
@@ -69,6 +68,7 @@
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tReqHoldToStartMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tDelayTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTestRobotReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTestRobotPressMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -99,14 +99,14 @@
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
 
-      <!-- init actions before running trials after any press of start-->
+      <!-- Initial Actions before running trials after any press of start-->
       <action type="queue_stimulus" stimulus="background"></action>
       <action type="update_stimulus_display" tag="-"></action>
       <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
       <action type="assignment" variable="tConsecErrors" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
 
-      <!-- init actions run only on first trial after loading experiment -->
+      <!-- Initial Actions run ONLY on FIRST TRIAL after loading experiment -->
       <action type="if" condition="success+late+early == 0">
         <action type="report" message="**** First trial since experiment load - initializing"></action>
         <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
@@ -117,13 +117,13 @@
       <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
         <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" 
                      _error="Task Systems must contain >=1 transition that yields to parent">
+            
+            
           <task_system_state tag="Intertrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            
+            <!-- Start IO Device and Encode Trial Start -->
             <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
-
-            <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
-
+            <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>
             <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
             <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
             <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
@@ -131,16 +131,17 @@
             <!--Transmit the trial timestamp so strobed code sequences are unique -->
             <action type="assert" condition="tTrialStartMWTimestampMs &lt;= 2147483648" 
                     message="tTrialStartMWTimestampMs is too large - should happen only after several days of running!?"
-                    stop_on_failure="1"/>  
-            <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
-            <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
+                    stop_on_failure="1"/>
+              
+            <!-- Encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
             <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
             <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
             <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
             <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
+              
+            
             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
-
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
@@ -255,13 +256,14 @@
             </action>
               
             <!-- If not testRobot, then start trial on lever press -->
-            <action type="if" tag="if not testRobot" condition="doRobot">
+            <action type="if" tag="if not testRobot" condition="doRobot==0">
               <action type="start_timer" tag="Start testRobotTimer infinite" timer="testRobotTimer" timebase="" duration="100000" duration_units="ms"></action>
             </action>
+            <action type="assignment" tag="Assign tDelayTimeMs from delayTimeMs" variable="tDelayTimeMs" value="delayTimeMs"></action>
               
               
-            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="delayTimeMs" duration_units="ms"></action>
-            <action tag="Report Delay Start" full_name="ReportDigital" type="report" message="Delay Started (need to hold for $delayTimeMs)"></action>
+            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="tDelayTimeMs" duration_units="ms"></action>
+            <action tag="Report Delay Start" full_name="ReportDigital" type="report" message="Delay Started (need to hold for $tDelayTimeMs)"></action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="EarlyRelease"></transition>

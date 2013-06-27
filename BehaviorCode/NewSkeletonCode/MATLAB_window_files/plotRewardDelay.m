@@ -4,7 +4,7 @@ function input = plotRewardDelay(data_struct, input)
 figNum = 4;
 name = 'RewardDelay';
 consts = reward_delay_constants;
-subplotSz = {4,3};
+subplotSz = {3,3};
 
 smoothType = 'lowess';
 
@@ -15,12 +15,8 @@ clf;
 %set(figH, 'Visible', 'off');
 
 
-switch hostname
- case 'MaunsellMouse1'
-  figPos = [1111 208 806 923];
- otherwise
-  figPos = [930 140 780 905];
-end
+
+figPos = [930 140 905 905];
 set(figH, 'Position', figPos);
 
 %% set up arrays
@@ -31,15 +27,15 @@ end
 % some data processing
 nPts = length(input.holdTimesMs);
 nTrial = length(input.trialOutcomeCell);
-reqHoldV = celleqel2mat_padded(input.tTotalReqHoldTimeMs);
+reqHoldStartV = celleqel2mat_padded(input.tReqHoldToStartMs);
 successIx = strcmp(input.trialOutcomeCell, 'success');
-failureIx = strcmp(input.trialOutcomeCell, 'failure');
-earlyIx = failureIx;
-ignoreIx = strcmp(input.trialOutcomeCell, 'ignore');
-missIx = ignoreIx;
+earlyIx = strcmp(input.trialOutcomeCell, 'early');
+earlyIx = earlyIx;
+lateIx = strcmp(input.trialOutcomeCell, 'late');
+missIx = lateIx;
 nCorr = sum(successIx);
-nFail = sum(failureIx);
-nIg = sum(ignoreIx);
+nFail = sum(earlyIx);
+nIg = sum(lateIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
 
@@ -49,7 +45,6 @@ juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
 tTrialN = input.trialSinceReset;
 
-%fprintf(1,'%d %d\n', sum(block2Tr1Ix&~earlyIx), sum(block2Tr2Ix&~earlyIx));  %% debug # of block2 trials
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Performance Values
 
@@ -58,10 +53,10 @@ if length(holdStarts) > 2
 	switch input.trialOutcomeCell{end}
 	case 'success'
 		outcomeString = 'correct';
-	case 'failure'
+	case 'early'
 		outcomeString = 'early';
-	case 'ignore'
-		outcomeString = 'failed';
+	case 'late'
+		outcomeString = 'late';
 	end
 
         axH = subplot(subplotSz{:}, 1);						% default axes are 0 to 1
@@ -111,15 +106,17 @@ if length(holdStarts) > 2
              'HorizontalAlignment', 'left');
 
         
-        tStr = sprintf( ['Required Hold (fixed): \t%3d ms \n', ...
+        tStr = sprintf( ['Hold To Start Trial: \t%3d ms \n', ...
+                         'Delay Time: \t%3d ms \n', ...
                          'Timeouts (e,m):\t%4.1fs, %4.1fs\n', ...
-                         'Reaction Time:\t%5.2f s \n',...
+                         'Reward Window Width:\t%5.2f s \n',...
                          'Inter Trial Interval: %d +%d ms\n', ...
                          'Reward min, max: %3.0f, %3.0f ms   %s\n'], ...
-                        input.fixedReqHoldTimeMs, ...
+                        input.reqHoldToStartMs, ...
+                        input.delayTimeMs, ...
                         input.earlyTimeoutMs/1000, ...
-                        input.missedTimeoutMs/1000, ...
-                        input.reactTimeMs/1000, ...
+                        input.lateTimeoutMs/1000, ...
+                        input.rewardWindowWidthMs/1000, ...
                         input.itiTimeMs, ...
                         input.itiExtraRandTimeMs, ...
                         input.minRewardUs/1000, ...
@@ -140,11 +137,11 @@ end
 %%%%%%%%%%%%%%%%%%%%%
 % Hold time histogram
 
-axH = subplot(subplotSz{:}, 8);
-if input.fixedReqHoldTimeMs < 1000
+axH = subplot(subplotSz{:}, 5);
+if input.reqHoldToStartMs < 1000
   maxX = 2000;
 else
-  maxFail = double(input.reactTimeMs+input.fixedReqHoldTimeMs);
+  maxFail = double(input.reactTimeMs+input.reqHoldToStartMs);
   maxX = ceil((maxFail+45)./500)*500;  % round up to nearest 500 ms.
 end
 
@@ -158,7 +155,7 @@ else
 end
 edges = linspace(0, maxX, nBins);
 Ns = histc(holdV(find(successIx)), edges);
-Nf = histc(holdV(find(failureIx)), edges);
+Nf = histc(holdV(find(earlyIx)), edges);
 if sum(Ns) + sum(Nf) > 0
   bH = bar(edges, [Ns(:),Nf(:)], 'stacked');
   set(bH, 'BarWidth', 1, 'LineStyle', 'none');
@@ -179,12 +176,12 @@ if ~isempty(Nf)
           'Color', 'r');
 end
 
-title('Total Hold Times');
+title('Trial Hold Times');
 
 %%%%%%%%%%%%%%%%
 
 %% 2 - react time CDF
-axH = subplot(subplotSz{:}, 3);
+axH = subplot(subplotSz{:}, 7);
 cdfplot([input.reactTimesMs{:}]);
 set(gca, 'XLim', [-1000 1000], ...
          'YLim', [0 1]);
@@ -192,13 +189,14 @@ hold on;
 vH = vert_lines(0:200:1000);
 set(vH, 'LineStyle', ':', 'Color', 0.5*[1 1 1]);
 title('Reaction Time CDF');
+grid on
 xlabel('Time from Reward Window (ms)');
-ylabel('Percent of Trials');
+ylabel('Number of Trials');
 
 %%%%%%%%%%%%%%%%
 
 %% 3 - React Time PDF
-axH = subplot(subplotSz{:}, 9);
+axH = subplot(subplotSz{:}, 6);
 nPts = length(input.reactTimesMs);
 visIx = reactV<=maxX;
 nVisPts = sum(visIx);
@@ -217,7 +215,7 @@ emptyIx = cellfun(@isempty, input.reactTimesMs);   % see above holdTimesM
 if sum(emptyIx) > 0, input.reactTimesMs{emptyIx} = NaN; end
 
 Ns = histc(reactV(successIx), edges);
-Nf = histc(reactV(failureIx), edges);
+Nf = histc(reactV(earlyIx), edges);
 if sum(Ns)+sum(Nf) > 0
   bH = bar(edges+binSize/2, [Nf(:),Ns(:)], 'stacked');
   set(bH, 'BarWidth', 1, ...
@@ -239,7 +237,7 @@ xlabel('Time from Reward Window (ms)')
 %%%%%%%%%%%%%%%%
 
 %% 4 - smoothed perf curve
-axH = subplot(subplotSz{:},2);
+axH = subplot(subplotSz{:},2:3);
 hold on;
 plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
 lH = plot(smooth(double(successIx), nTrial, smoothType));
@@ -249,12 +247,12 @@ lH2 = plot(smooth(double(successIx), 100, smoothType));
 set(lH2, 'Color', 'k', ...
         'LineWidth', 2);
 
-lH3 = plot(smooth(double(ignoreIx), 100, smoothType));
+lH3 = plot(smooth(double(lateIx), 100, smoothType));
 set(lH3, 'Color', 'm', ...
          'LineWidth', 2, ...
          'LineStyle', '-.');
 
-lH4 = plot(smooth(double(failureIx), 100, smoothType));
+lH4 = plot(smooth(double(earlyIx), 100, smoothType));
   set(lH4, 'Color', 0.8*[0 1 1], ...
            'LineWidth', 2, ...
            'LineStyle', '-.');
@@ -275,7 +273,7 @@ set(gca, 'XLim', trXLim);
 %%%%%%%%%%%%%%%%
 
 %% 6 - trial length plot
-axH = subplot(subplotSz{:}, 12);
+axH = subplot(subplotSz{:}, 8);
 hold on;
 holdStarts = double(cellvect2mat_padded(input.holdStartsMs));
 hSDiffsSec = diff(holdStarts)/1000;
@@ -327,7 +325,7 @@ else
   axesH(2) = NaN;
 end
 
-ylabel('trial start time diff (s)');
+ylabel('Trial Start time(s)');
 xLim = trXLim;
 set(axesH(~isnan(axesH)), 'XLim', xLim);
 lH = plot(xLim, 20*[1 1], '--k');
@@ -350,33 +348,9 @@ nDiffs = length(hSDiffsSec);
 fN = max(1, nDiffs-5);  % if first 6 trials, start at 1
 title(sprintf('Last 6 (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
 
-%%%%%%%%%%%%%%%%
-
-%% 5 cumulative time elapsed
-axH = subplot(subplotSz{:},5);
-hold on;
-
-hSDiffsRealSec = diff(holdStarts)/1000;
-xs = 1:length(hSDiffsRealSec);
-pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
-maxMin = sum(hSDiffsRealSec)./60;
-
-ylabel('Total Training Time (min)');
-%set(gca, 'DataAspectRatio', [100 10 1]);
-xLim = trXLim;
-set(gca, 'XLim', xLim);
-% compute data aspect ratio manually: matlab will keep y dim of
-% plot box fixed and change x and we want the reverse
-yLim = [0 max(xLim(2)/10, maxMin*1.1)];   
-set(gca, 'YLim', yLim);
-pH2 = plot(xLim, xLim/10, 'k--');
-
-%%%%%%%%%%%%%%%
-
-% %%%%%%%%%%%%%%%%
-
-% 6 - hold times over time
-axH = subplot(subplotSz{:}, 6);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 6 - Hold Times Over Time
+axH = subplot(subplotSz{:}, 9);
 hold on;
 
 % do smooth on only corrects and earlies, then plot by true trial number
