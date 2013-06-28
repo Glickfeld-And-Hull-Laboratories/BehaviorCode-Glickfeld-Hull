@@ -181,7 +181,9 @@ cdfplot([input.reactTimesMs{:}]);
 set(gca, 'XLim', [-1000 1000], ...
          'YLim', [0 1]);
 hold on;
-vH = vert_lines([0 input.rewardWindowWidthMs]);
+%This change adds green vertical lines to mark off the reward window, now
+%centered around the target time.
+vH = vert_lines([-0.5*input.rewardWindowWidthMs 0.5*input.rewardWindowWidthMs]);
 set(vH, 'Color','g');
 title('Reaction Time CDF');
 grid on
