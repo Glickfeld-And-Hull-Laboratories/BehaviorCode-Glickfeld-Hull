@@ -319,7 +319,6 @@
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             
-            <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
 
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
@@ -395,7 +394,6 @@
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             <action tag="Report Late Trial" full_name="ReportDigital" type="report" message="** Late Response -- No Reward"></action>
-            <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
 
             <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="lateTimeoutMs" duration_units="ms"></action>
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnLate">
@@ -418,8 +416,7 @@
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             <action tag="Report Late Trial" full_name="ReportDigital" type="report" message="** No Release -- No Reward"></action>
-            <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
-                
+              
             <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="noReleaseTimeoutMs" duration_units="ms"></action>
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnLate">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
