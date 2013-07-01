@@ -22,8 +22,10 @@
       <variable tag="reqHoldToStartMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1"/>
       <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
       <variable tag="rewardWindowWidthMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
+      <variable tag="waitForLateTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
       <variable tag="lateTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1"/>
+      <variable tag="noReleaseTimeoutMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1"/>
       <variable tag="itiExtraRandTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -49,6 +51,7 @@
       <variable tag="early" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="late" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="norelease" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
@@ -69,6 +72,8 @@
       <variable tag="tReqHoldToStartMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tDelayTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tWaitForLateTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tRewardWindowWidthMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTestRobotReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTestRobotPressMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -244,6 +249,7 @@
           <task_system_state tag="Delay" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="play_sound" sound="delaySound"></action>
+            <action type="assignment" tag="Assign tRewardWindowWidth" variable="tRewardWindowWidthMs" value="rewardWindowWidthMs"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
@@ -262,7 +268,7 @@
             <action type="assignment" tag="Assign tDelayTimeMs from delayTimeMs" variable="tDelayTimeMs" value="delayTimeMs"></action>
               
               
-            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="tDelayTimeMs-(rewardWindowWidthMs*0.5)" duration_units="ms"></action>
+            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="tDelayTimeMs-(tRewardWindowWidthMs*0.5)" duration_units="ms"></action>
             <action tag="Report Delay Start" full_name="ReportDigital" type="report" message="Delay Started (need to hold for $tDelayTimeMs)"></action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -273,7 +279,7 @@
 
           <task_system_state tag="StartReactTimer" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action tag="report target time" full_name="ReportDigital" type="report" message="Delay Time Passed - Reward Widow $rewardWindowWidthMs"></action>
+            <action tag="report target time" full_name="ReportDigital" type="report" message="Delay Time Passed - Reward Widow $tRewardWindowWidthMs"></action>
             <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="rewardWindowWidthMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -287,8 +293,17 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="Reward"></transition>
             <transition type="timer_expired" tag="If testRobot expired, Transition to Reward" target="Reward" timer="testRobotTimer"></transition>
-            <transition type="timer_expired" tag="If React Time Expired, Go To Late" target="Late" timer="reactTimeTimer"></transition>
-            <transition type="direct" target="WaitForAction"></transition> <!-- spin on this state to turn off stim if necessary -->
+            <transition type="timer_expired" tag="If React Time Expired, Go To Late" target="WaitForLate" timer="reactTimeTimer"></transition>
+            <transition type="direct" target="WaitForAction"></transition> <!-- Spin on this state -->
+          </task_system_state>
+            
+          <task_system_state tag="WaitForLate" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="start_timer" timer="waitForLateTimer" timebase="" duration="waitForLateTimeMs" duration_units="ms"></action>
+              <action type="report" message="Made it to WaitFor"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If release in WaitForLate, send to Late" condition="FIO1==0 &amp;&amp; doRobot==0" target="Late"></transition>
+            <transition type="timer_expired" tag="If waitForLateTime expired, go to NoRelease" target="NoRelease" timer="waitForLateTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="EarlyRelease" interruptible="YES">
@@ -391,6 +406,29 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" target="PossibleEndTimeout" timer="lateTimeoutTimer"></transition>
           </task_system_state>
+            
+          
+          <task_system_state tag="NoRelease" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
+            <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
+            <action type="report" tag="Report" message="ActualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action type="assignment" tag="late++" variable="norelease" value="norelease + 1"></action>
+            <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
+            <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
+            <action tag="Report Late Trial" full_name="ReportDigital" type="report" message="** No Release -- No Reward"></action>
+            <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
+                
+            <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="noReleaseTimeoutMs" duration_units="ms"></action>
+            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnLate">
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+            </action>
+                
+                <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                <transition type="timer_expired" target="PossibleEndTimeout" timer="lateTimeoutTimer"></transition>
+            </task_system_state>
 
 
           <task_system_state tag="PossibleEndTimeout" interruptible="YES">    

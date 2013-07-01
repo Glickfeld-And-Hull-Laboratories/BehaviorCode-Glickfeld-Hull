@@ -13,6 +13,7 @@ set(figH, 'ToolBar', 'none');
 clf;
 figPos = [930 140 905 905];
 set(figH, 'Position', figPos);
+orange = [1 0.64 0];
 
 %% set up arrays
 if ~isfield(input, 'changedStr')
@@ -25,12 +26,12 @@ nTrial = length(input.trialOutcomeCell);
 reqHoldStartV = celleqel2mat_padded(input.tReqHoldToStartMs);
 successIx = strcmp(input.trialOutcomeCell, 'success');
 earlyIx = strcmp(input.trialOutcomeCell, 'early');
-earlyIx = earlyIx;
 lateIx = strcmp(input.trialOutcomeCell, 'late');
-missIx = lateIx;
+noreleaseIx = strcmp(input.trialOutcomeCell, 'norelease');
 nCorr = sum(successIx);
 nFail = sum(earlyIx);
 nIg = sum(lateIx);
+nNR = sum(noreleaseIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
 
@@ -52,6 +53,8 @@ if length(holdStarts) > 2
 		outcomeString = 'early';
 	case 'late'
 		outcomeString = 'late';
+    case 'norelease'
+        outcomeString = 'norelease';  
 	end
 
         axH = subplot(subplotSz{:}, 1);						% default axes are 0 to 1
@@ -78,13 +81,13 @@ if length(holdStarts) > 2
                        chop(nanmean(juiceTimesMsV),2), ...
                        chop(nanstd(juiceTimesMsV),2)), ...
              }, 'FontSize', 12);
-	t2H(1) = text(0.00, 0.8, {'Trials:', 'Correct:', 'Early:', 'Late:'});
-	t2H(2) = text(0.35, 0.8, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
-				sprintf('%d', nFail), sprintf('%d', nIg)});
+	t2H(1) = text(0.00, 0.8, {'Trials:', 'Correct:', 'Early:', 'Late:', 'No Release:'});
+	t2H(2) = text(0.38, 0.8, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
+				sprintf('%d', nFail), sprintf('%d', nIg), sprintf('%d', nNR)});
 	t2H(3) = text(0.54, 0.8, {' ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
 				sprintf('%.0f%%', nFail / numTrials * 100.0), ...
-				sprintf('%.0f%%', nIg / numTrials * ...
-                                        100.0)});
+				sprintf('%.0f%%', nIg / numTrials *100.0), ...
+                sprintf('%.0f%%', nNR / numTrials *100.0)});
         set(t2H, 'VerticalAlignment', 'top', ...
                  'HorizontalAlignment', 'left', 'FontSize', 12);
 
@@ -103,15 +106,16 @@ if length(holdStarts) > 2
         
         tStr = sprintf( ['Hold Time To Start Trial: \t%3d ms \n', ...
                          'Delay Time: \t%3d ms \n', ...
-                         'Timeouts (e,m):\t%4.1fs, %4.1fs\n', ...
-                         'Reward Window Width:\t%5.2f s \n',...
-                         'Inter Trial Interval: %d + %d ms\n', ...
+                         'Timeouts (e,m,nr):\t%4.1fs, %4.1fs, %4.1fs\n', ...
+                         'Reward Window Width:\t%5.0f ms \n',...
+                         'Inter-Trial Interval: %d + %d ms\n', ...
                          'Reward min, max: %3.0f, %3.0f ms   %s\n'], ...
                         input.reqHoldToStartMs, ...
                         input.delayTimeMs, ...
                         input.earlyTimeoutMs/1000, ...
                         input.lateTimeoutMs/1000, ...
-                        input.rewardWindowWidthMs/1000, ...
+                        input.noReleaseTimeoutMs/1000, ...
+                        input.rewardWindowWidthMs, ...
                         input.itiTimeMs, ...
                         input.itiExtraRandTimeMs, ...
                         input.minRewardUs/1000, ...
@@ -133,10 +137,11 @@ end
 % Hold time histogram
 
 axH = subplot(subplotSz{:}, 5);
-if input.reqHoldToStartMs < 1000
+if input.delayTimeMs  < 500
   maxX = 2000;
+  disp('true');
 else
-  maxFail = double(input.reactTimeMs+input.reqHoldToStartMs);
+  maxFail = double(input.delayTimeMs+input.reqHoldToStartMs+input.waitForLateTimeMs);
   maxX = ceil((maxFail+45)./500)*500;  % round up to nearest 500 ms.
 end
 
@@ -151,9 +156,15 @@ end
 edges = linspace(0, maxX, nBins);
 Ns = histc(holdV(find(successIx)), edges);
 Nf = histc(holdV(find(earlyIx)), edges);
-if sum(Ns) + sum(Nf) > 0
-  bH = bar(edges, [Ns(:),Nf(:)], 'stacked');
+Nl = histc(holdV(find(lateIx)), edges);
+Nnr = histc(holdV(find(noreleaseIx)), edges);
+if sum(Ns) + sum(Nf) + sum(Nl) + sum(Nnr) > 0
+  bH = bar(edges, [Ns(:) Nf(:) Nl(:) Nnr(:)], 'stacked');%, edges, Nf, 'c', edges, Nl, 'm');
   set(bH, 'BarWidth', 1, 'LineStyle', 'none');
+  set(bH(1),'facecolor','g')
+  set(bH(2),'facecolor','c')
+  set(bH(3),'facecolor','m')
+  set(bH(4), 'facecolor', orange)
 end
 hold on;
 xLim = [0 maxX];
@@ -163,15 +174,23 @@ if (length(get(gca, 'XTick')) > 4)
   xT = (0:500:maxX);
   set(gca, 'XTick', xT);
 end
-maxX
 
 if ~isempty(Nf)
   pH = plot(edges, Nf);
   set(pH, 'LineStyle', '--', ...
-          'Color', 'r');
+          'Color', 'c');
 end
+if ~isempty(Nl)
+  pH = plot(edges, Nl);
+  set(pH, 'LineStyle', '--', ...
+          'Color', 'm');
+end
+
 grid on
-title('Trial Hold Times');
+axis tight
+ylabel('Number of Trials')
+xlabel('Lever Hold Time (ms)')
+title('Trial Hold Times Histogram');
 
 %%%%%%%%%%%%%%%%
 
@@ -212,14 +231,16 @@ if sum(emptyIx) > 0, input.reactTimesMs{emptyIx} = NaN; end
 
 Ns = histc(reactV(successIx), edges);
 Nf = histc(reactV(earlyIx), edges);
-if sum(Ns)+sum(Nf) > 0
-  bH = bar(edges+binSize/2, [Nf(:),Ns(:)], 'stacked');
+Nl = histc(reactV(lateIx), edges);
+if sum(Ns)+sum(Nf)+sum(Nl) > 0
+  bH = bar(edges+binSize/2, [Nf(:),Ns(:), Nl(:)], 'stacked');
   set(bH, 'BarWidth', 1, ...
           'LineStyle', 'none');
   cMap = get(gcf, 'Colormap');
   % flip colors, keep blue on top of red, note flipped in bar.m above
-  set(bH(1), 'FaceColor', [0.6 0 0]);
-  set(bH(2), 'FaceColor', [0 0 0.6]);      
+  set(bH(1), 'FaceColor', 'c');
+  set(bH(2), 'FaceColor', 'g'); 
+  set(bH(3), 'FaceColor', 'm');
 end
 
 hold on;
@@ -227,8 +248,8 @@ yLim = get(gca, 'YLim');
 plot([0 0], yLim, 'k');
 grid on
 set(gca, 'XLim', [-1010 1010]);
-title('Reaction Time PDF');
-ylabel('Percent of Trials');
+title('Reaction Times Histogram');
+ylabel('Number of Trials');
 xlabel('Time from Reward Window (ms)')
 %%%%%%%%%%%%%%%%
 
@@ -253,6 +274,12 @@ lH4 = plot(smooth(double(earlyIx), 15, smoothType));
            'LineWidth', 2, ...
            'LineStyle', '-.');
   anystack(lH4, 'bottom');
+
+lH5 = plot(smooth(double(noreleaseIx), 15, smoothType));
+  set(lH5, 'Color', orange, ...
+           'LineWidth', 2, ...
+           'LineStyle', '-.');
+  anystack(lH5, 'bottom');
 
 anystack(lH3, 'bottom');
 
@@ -345,12 +372,12 @@ fN = max(1, nDiffs-5);  % if first 6 trials, start at 1
 title(sprintf('Last 6 (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 6 - Hold Times Over Time
+%% 6 - Hold and React Times Over Trials
 axH = subplot(subplotSz{:}, 9);
 hold on;
 
 % do smooth on only corrects and earlies, then plot by true trial number
-desIx = successIx|earlyIx;
+desIx = successIx|earlyIx|lateIx;
 xVals = find(desIx);
 v1 = smooth(holdV(desIx), 25, 'rloess');
 v2 = smooth(holdV(desIx), 250, 'rlowess');
@@ -382,7 +409,7 @@ if ~isempty(v1) && ~isempty(v2)
     yLim(1) = 0;
     set(axH(1), 'YLim', yLim);
   end
-  ylabel('Hold time (ms) - Corrects & Earlies');
+  ylabel('Hold time (ms) - Excluding NoReleases');
 end
 
 % 2nd axes
