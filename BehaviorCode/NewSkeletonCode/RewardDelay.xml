@@ -194,15 +194,10 @@
                     timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
             <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
-            <action type="if" condition="doLeverSolenoidAllTrials">
-              <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
-              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
-              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
-            </action>
-            <action type="if" condition="!doLeverSolenoidAllTrials">
-              <action type="assignment" variable="FIO2" value="0"></action>
-              <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
-            </action>
+    
+              <!-- Turn on solenoid during ITI for all trials.-->
+            <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+            <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>
 
 
@@ -211,14 +206,12 @@
           </task_system_state>
 
           <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
-            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnLate || doLeverSolenoidOnEarly">
-              <!-- Lower solenoid at beginning of trial for any solenoid -->
-              <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
-              <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
-            </action>
+            
+            <!-- Lower solenoid at beginning of trial for any solenoid -->
+            <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
+            <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
               
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
-
             <action type="assignment" tag="Encode StartTrialWaitForPress" variable="strobedDigitalWord" value="7"></action>
 
             <!-- Fake Mouse Testing Calculations -->
