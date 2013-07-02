@@ -142,7 +142,7 @@ if input.delayTimeMs  < 500
   maxX = 2000;
   disp('true');
 else
-  maxFail = double(input.delayTimeMs+input.reqHoldToStartMs+input.waitForLateTimeMs);
+  maxFail = double(input.delayTimeMs+input.waitForLateTimeMs+500);
   maxX = ceil((maxFail)./500)*500;  % round up to nearest 500 ms.
 end
 visIx = holdV <= maxX;
@@ -162,7 +162,7 @@ if sum(Ns) + sum(Nf) + sum(Nl) + sum(Nnr) > 0
   bH = bar(edges, [Ns(:) Nf(:) Nl(:) Nnr(:)], 'stacked');%, edges, Nf, 'c', edges, Nl, 'm');
   set(bH, 'BarWidth', 1, 'LineStyle', 'none');
   set(bH(1),'facecolor','g')
-  set(bH(2),'facecolor','c')
+  set(bH(2),'facecolor', 0.8*[0 1 1])
   set(bH(3),'facecolor','m')
   set(bH(4), 'facecolor', orange)
 end
@@ -173,17 +173,6 @@ yLim = get(gca, 'YLim');
 if (length(get(gca, 'XTick')) > 4)
   xT = (0:500:maxX);
   set(gca, 'XTick', xT);
-end
-
-if ~isempty(Nf)
-  pH = plot(edges, Nf);
-  set(pH, 'LineStyle', '--', ...
-          'Color', 'c');
-end
-if ~isempty(Nl)
-  pH = plot(edges, Nl);
-  set(pH, 'LineStyle', '--', ...
-          'Color', 'm');
 end
 
 vH = vert_lines([input.delayTimeMs-(0.5*input.rewardWindowWidthMs) input.delayTimeMs input.delayTimeMs+(0.5*input.rewardWindowWidthMs)]);
@@ -240,7 +229,7 @@ if sum(Ns)+sum(Nf)+sum(Nl) > 0
           'LineStyle', 'none');
   cMap = get(gcf, 'Colormap');
   % flip colors, keep blue on top of red, note flipped in bar.m above
-  set(bH(1), 'FaceColor', 'c');
+  set(bH(1), 'FaceColor', 0.8*[0 1 1]);
   set(bH(2), 'FaceColor', 'g'); 
   set(bH(3), 'FaceColor', 'm');
 end
