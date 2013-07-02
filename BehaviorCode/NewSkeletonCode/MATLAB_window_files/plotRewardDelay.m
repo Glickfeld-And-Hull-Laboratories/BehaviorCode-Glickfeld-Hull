@@ -186,6 +186,8 @@ if ~isempty(Nl)
           'Color', 'm');
 end
 
+vH = vert_lines([input.delayTimeMs-(0.5*input.rewardWindowWidthMs) input.delayTimeMs input.delayTimeMs+(0.5*input.rewardWindowWidthMs)]);
+set(vH, 'Color','k');
 grid on
 axis tight
 ylabel('Number of Trials')
@@ -242,6 +244,8 @@ if sum(Ns)+sum(Nf)+sum(Nl) > 0
   set(bH(2), 'FaceColor', 'g'); 
   set(bH(3), 'FaceColor', 'm');
 end
+vH = vert_lines([-0.5*input.rewardWindowWidthMs 0.5*input.rewardWindowWidthMs]);
+set(vH, 'Color','k');
 
 hold on;
 yLim = get(gca, 'YLim');
