@@ -15,10 +15,10 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="doLeverSolenoidOnLate" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="doCycleBeforeReqHold" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1"/>
+      <variable tag="doSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="doSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="doSolenoidOnLate" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="doSolenoidOnNR" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="reqHoldToStartMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1"/>
       <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
       <variable tag="rewardWindowWidthMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
@@ -27,7 +27,6 @@
       <variable tag="lateTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1"/>
       <variable tag="noReleaseTimeoutMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1"/>
-      <variable tag="itiExtraRandTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="minRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
@@ -169,16 +168,9 @@
             </action>
             <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
 
-
-            <!-- compute ITI time -->
-            <!-- initialize with a const value -->
-            <action type="assignment" 
-                    variable="tItiWaitTimeMs" 
-                    value="itiTimeMs"></action>
-            <!-- add random -->
-            <action type="if" condition="itiExtraRandTimeMs > 0">
-              <action type="assignment" variable="tItiWaitTimeMs" value="tItiWaitTimeMs + rand(0, itiExtraRandTimeMs)"/>
-            </action>
+            <!-- Compute constant ITI Time. -->
+            <action type="assignment" variable="tItiWaitTimeMs" value="itiTimeMs"></action>
+          
             <!-- extend based on previous hold and max stim time, if asked for -->
             <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
               <action type="assignment" variable="tempMs"  
@@ -222,8 +214,6 @@
             <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doRobot==0 &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
             <transition type="conditional" tag="If testRobot elapsed, go to HoldLever" 
                         condition="doRobot &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tTestRobotPressMs" target="HoldLever"></transition>
-            <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
-                        condition="doRobot==0 &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="HoldLever"></transition>
           </task_system_state>
             
           <task_system_state tag="HoldLever" interruptible="YES">
@@ -232,11 +222,9 @@
               
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" tag="If release lever with cycle variable off, go to Early Release"
-                        condition="doCycleBeforeReqHold==0 &amp;&amp; doRobot==0 &amp;&amp; FIO1==0" target="EarlyRelease"></transition>
-                 <transition type="conditional" tag="If release lever, cycle to Trial Start"
-                  condition="doCycleBeforeReqHold==1 &amp;&amp; doRobot==0 &amp;&amp; FIO1==0" target="StartTrial"></transition>
-              <transition type="timer_expired" tag="If holdTimer expired, send to start timing" target="Delay" timer="holdToStartTrialTimerMs"></transition>
+            <transition type="conditional" tag="If release lever, cycle to Trial Start"
+                  condition="doRobot==0 &amp;&amp; FIO1==0" target="StartTrial"></transition>
+            <transition type="timer_expired" tag="If holdTimer expired, send to start timing" target="Delay" timer="holdToStartTrialTimerMs"></transition>
           </task_system_state>
             
           <task_system_state tag="Delay" interruptible="YES">
@@ -313,12 +301,13 @@
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             
 
-            <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
+            <action type="if" tag="if doSolenoid/Early" condition="doSolenoidAllTrials || doSolenoidOnEarly">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
-
             <action type="start_timer" tag="Start earlyTimeoutTimer" timer="earlyTimeoutTimer" timebase="" duration="earlyTimeoutMs" duration_units="ms"></action>
+            <action tag="ReportEarlyTO" full_name="ReportDigital" type="report" message="* In Early Time Out for $earlyTimeoutMs ms"></action>
+              
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" target="PossibleEndTimeout" timer="earlyTimeoutTimer"></transition>
           </task_system_state>
@@ -389,7 +378,9 @@
             <action tag="Report Late Trial" full_name="ReportDigital" type="report" message="** Late Response -- No Reward"></action>
 
             <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="lateTimeoutMs" duration_units="ms"></action>
-            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnLate">
+            <action tag="ReportLateTO" full_name="ReportDigital" type="report" message="* In Late Time Out for $lateTimeoutMs ms"></action>
+
+            <action type="if" tag="if doSolenoid/ErrorsOnly" condition="doSolenoidAllTrials || doSolenoidOnLate">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
@@ -411,7 +402,9 @@
             <action tag="Report Late Trial" full_name="ReportDigital" type="report" message="** No Release -- No Reward"></action>
               
             <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="noReleaseTimeoutMs" duration_units="ms"></action>
-            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnLate">
+            <action tag="ReportNoReleaseTO" full_name="ReportDigital" type="report" message="* In N.R. Time Out for $noReleaseTimeoutMs"></action>
+
+            <action type="if" tag="if doSolenoid/ErrorsOnly" condition="doSolenoidAllTrials || doSolenoidOnNR">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
