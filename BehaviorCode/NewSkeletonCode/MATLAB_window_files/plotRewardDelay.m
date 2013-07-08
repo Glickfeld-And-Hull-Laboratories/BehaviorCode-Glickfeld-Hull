@@ -74,7 +74,7 @@ if length(holdStarts) > 2
         text(0.00, 1.0, {'Subject Number:', 'Start time + elapsed:', 'Reward vol (m\pm std):'}, 'FontSize', 12);
 	text(0.70, 1.0, ...
              { sprintf('%2d', input.subjectNum), ...
-               sprintf('%s + %2dm', ...
+               sprintf('%s + %2d min.', ...
                        startStr, elMin), ...
                sprintf('%.1f s \t(%g ms\\pm %g ms)', ...
                        nansum(juiceTimesMsV./1000), ...
@@ -278,7 +278,8 @@ anystack(lH3, 'bottom');
 
 
 title('Outcomes Plotted by Trials')
-ylabel('Percent of Trials');
+ylabel('Percent of Trials (smoothed)');
+xlabel('Trials')
 set(gca, 'YLim', [0 1]);
 
 trXLim = [0 nTrials]; %get(gca, 'XLim');
@@ -362,7 +363,8 @@ end
   
 nDiffs = length(hSDiffsSec);
 fN = max(1, nDiffs-5);  % if first 6 trials, start at 1
-title(sprintf('Last 6 (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
+xlabel('Trials')
+title(sprintf('Last 6 Start Times (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 6 - Hold and React Times Over Trials
@@ -420,7 +422,7 @@ if ~isempty(vy1) && ~isempty(vy2)
                 'YColor', c2)
     ylabel(axH(2), 'React time (ms) - Corrects');
 end
-
+xlabel('Trials')
 title('Mean Reaction (blue) & Hold (black) Times');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -459,25 +461,25 @@ if nTrial > 1
           else
               tChangedToStr = sprintf('%g', tChangedTo);
           end
-          changedStrOut{end+1} = sprintf('Tr %3d - %s: -> %s', ...
+          changedStrOut{end+1} = sprintf('Trial %3d: %s: -> %s', ...
                                          tDesN, tVarName, ...
                                          tChangedToStr);
       end
     end
     if trPer80Changed && tDesN > 1
       tStr = mat2str(input.trPer80History{tDesN});
-      changedStrOut{end+1} = sprintf('Tr %3d - trPer80LevelN: -> %s', ...
+      changedStrOut{end+1} = sprintf('Tr %3d - trPer80LevelN -> %s', ...
                                      tDesN, tStr);
     end
     if block2TrPer80Changed && tDesN > 1
       tStr = mat2str(input.block2TrPer80History{tDesN});
-      changedStrOut{end+1} = sprintf('Tr %3d - Block2TrPer80LevelN: -> %s', ...
+      changedStrOut{end+1} = sprintf('Tr %3d - Block2TrPer80LevelN -> %s', ...
                                      tDesN, tStr);
     end
   end
   input.changedStr = changedStrOut;
-
-  text(0,1,input.changedStr, ...
+  text(0, 1.01, 'Changed Variables List:', 'FontSize', 12);
+  text(0, .95,input.changedStr, ...
        'HorizontalAlignment', 'left', ...
        'VerticalAlignment', 'top');
 end
