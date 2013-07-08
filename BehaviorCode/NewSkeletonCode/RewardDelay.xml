@@ -39,9 +39,9 @@
     <folder tag="Stimuli">
     </folder>
     <folder tag="Test Robot">
-      <variable tag="doRobot" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
-      <variable tag="testRobotMaxPressMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1"/>
-      <variable tag="testRobotMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1"/>
+      <variable tag="doRobot" scope="global" logging="when_changed" default_value="0" type="boolean" groups="Testing/Debugging" persistant="1"/>
+      <variable tag="testRobotMaxPressMs" scope="global" logging="when_changed" default_value="300" groups="Testing/Debugging" type="integer" persistant="1"/>
+      <variable tag="testRobotMaxReactMs" scope="global" logging="when_changed" default_value="5000" groups="Testing/Debugging" type="integer" persistant="1"/>
     </folder>
     <folder tag="Task Status">
       <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
@@ -207,9 +207,10 @@
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
             <action type="assignment" tag="Encode StartTrialWaitForPress" variable="strobedDigitalWord" value="7"></action>
 
-            <!-- Fake Mouse Testing Calculations -->
+            <!-- Test Robot Calculations -->
             <action type="if" tag="if testRobot" condition="doRobot==1">
               <action type="assignment" variable="tTestRobotPressMs" value="rand(0, testRobotMaxPressMs)"></action>
+                
             </action>
 
             <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doRobot==0 &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
@@ -220,7 +221,7 @@
           <task_system_state tag="HoldLever" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>              
             <action type="start_timer" tag="Hold Time Before Timing Trial Timer" timer="holdToStartTrialTimerMs" timebase="" duration="tReqHoldToStartMs" duration_units="ms"></action>
-              
+            <action type="assignment" tag="Set Test Robot React" variable="tTestRobotReactMs" value="rand(0, testRobotMaxReactMs)"></action>              
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If release lever, cycle to Trial Start"
@@ -235,6 +236,7 @@
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
+
 
             <!-- If testRobot, then time transitions based on variables variables -->
             <action type="if" tag="if testRobot" condition="doRobot==1">
@@ -286,6 +288,7 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If release in WaitForLate, send to Late" condition="FIO1==0 &amp;&amp; doRobot==0" target="Late"></transition>
             <transition type="timer_expired" tag="If waitForLateTime expired, go to NoRelease" target="NoRelease" timer="waitForLateTimer"></transition>
+            <transition type="timer_expired" tag="If testRobot expired, Transition to Reward" target="Late" timer="testRobotTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="EarlyRelease" interruptible="YES">
