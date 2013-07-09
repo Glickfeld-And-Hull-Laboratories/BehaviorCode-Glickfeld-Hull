@@ -142,13 +142,14 @@ if input.delayTimeMs  < 500
   maxX = 2000;
   disp('true');
 else
-  maxFail = double(input.delayTimeMs+input.waitForLateTimeMs+500);
+  maxFail = double(input.delayTimeMs+input.waitForLateTimeMs+(0.5*input.rewardWindowWidthMs));
   maxX = ceil((maxFail)./500)*500;  % round up to nearest 500 ms.
 end
+
 visIx = holdV <= maxX;
 nVisPts = sum(visIx);
 if nVisPts > 50
-  binWidth = iqr(holdV(visIx)) ./ nVisPts.^(1/3);	% robust version of std
+  binWidth = 49;	% robust version of std
   nBins = ceil(maxX ./ binWidth);
 else
   nBins = 10;
@@ -207,7 +208,7 @@ nPts = length(input.reactTimesMs);
 visIx = reactV<=maxX;
 nVisPts = sum(visIx);
 if nVisPts > 50
-  binWidth = iqr(reactV(visIx))./nVisPts.^(1/3); % robust version of std
+  binWidth = 49; % robust version of std
   nBins = ceil(2000./binWidth);
 else
   nBins = 10;
@@ -216,7 +217,6 @@ if nBins < 10; nBins=10; end
 
 edges = linspace(-1000, 1000, nBins);
 binSize = edges(2)-edges(1);
-
 emptyIx = cellfun(@isempty, input.reactTimesMs);   % see above holdTimesM
 if sum(emptyIx) > 0, input.reactTimesMs{emptyIx} = NaN; end
 
@@ -249,26 +249,32 @@ xlabel('Time from Reward Window (ms)')
 %% 4 - smoothed perf curve
 axH = subplot(subplotSz{:},2:3);
 hold on;
+if nTrial > 100,
+    amtSmooth = round(nTrial*0.10);
+else
+    amtSmooth = 10;
+end
+
 %plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
 lH = plot(smooth(double(successIx), nTrial, smoothType));
 set(lH, 'Color', 'r', ...
         'LineWidth', 3);
-lH2 = plot(smooth(double(successIx), 15, smoothType));
+lH2 = plot(smooth(double(successIx), amtSmooth, smoothType));
 set(lH2, 'Color', 'k', ...
         'LineWidth', 2);
 
-lH3 = plot(smooth(double(lateIx), 15, smoothType));
+lH3 = plot(smooth(double(lateIx), amtSmooth, smoothType));
 set(lH3, 'Color', 'm', ...
          'LineWidth', 2, ...
          'LineStyle', '-.');
 
-lH4 = plot(smooth(double(earlyIx), 15, smoothType));
+lH4 = plot(smooth(double(earlyIx), amtSmooth, smoothType));
   set(lH4, 'Color', 0.8*[0 1 1], ...
            'LineWidth', 2, ...
            'LineStyle', '-.');
   anystack(lH4, 'bottom');
 
-lH5 = plot(smooth(double(noreleaseIx), 15, smoothType));
+lH5 = plot(smooth(double(noreleaseIx), amtSmooth, smoothType));
   set(lH5, 'Color', orange, ...
            'LineWidth', 2, ...
            'LineStyle', '-.');
