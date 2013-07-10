@@ -1,12 +1,12 @@
-function [out] = dataLoad(subjMat, dateMat)
+function [dataStru] = dataLoad(subjMat, dateMat)
 %% Script to load data acquired on MWDataCentral into a structure (dataStruct) for analysis.
 % To work, subjMat and datesMat must be 1xN matrices with YYMMDD format. Ex.[61 62 63 108 110
 % 111...] or [130523 130524 130525...]
-persistent dataStru
+
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
 % Data Path Formatting
 disp('Loading data from MWorks Data folder...')
-dataPath = '~/Desktop/TestData';
+dataPath = '~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis/testdata';
 dirListing = dir(dataPath);
 fileNames= {dirListing.name};
 nSubjs= length(subjMat);
@@ -30,12 +30,11 @@ for j= subjMat;
     dateIx = ismember(dateStrList, dateMat);
     subjDateIx = subjIx & dateIx; 
     dataStru(j).dates= dateMat;
-
     desNames = fileNames(subjDateIx);
     nNames = length(desNames);
     for iN = 1:nNames;
         tName = fullfile(dataPath, desNames{iN});
-        dataStru(j).check.downloadedname{1,iN}= tName;       
+        dataStru(j).check.downloadedname{1,iN}= tName; 
         ds=mwLoadData(tName, 'max');    
         rawHoldTimes = cell2mat(ds.holdTimesMs);
         medianHold = nanmedian(rawHoldTimes);
