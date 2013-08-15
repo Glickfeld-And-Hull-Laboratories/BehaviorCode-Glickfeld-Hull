@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" lever2=""
+              lever1_solenoid="FIO2"
+              lever2_solenoid=""
+              laser_trigger=""
+              strobed_digital_word=""/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Testing Control">
+      
+      <variable tag="nTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/> 
+      <variable tag="nCounts" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="tTrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="pulsePeriodS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/> 
+        
+    </folder>
+    <folder tag="Hardware variables">
+      
+      <variable tag="Counter FIO" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
+      <variable tag="TTL Pulse" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+        
+    </folder>
+  </variables>
+  <stimuli tag="Stimuli">
+  </stimuli>
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <block tag="New Block" nsamples="99999" sampling_method="cycles" selection="sequential" interruptible="1">
+      <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
+    <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+      <task_system_state tag="Initialization" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          
+          <!-- Trial Start Report and nTrials Determined Stopping -->
+          <action type="if" condition="tTrialNumber == 0">
+              <action type="report" message="***** First Trial *****"/>
+          </action>          
+          <action type="if" condition="tTrialNumber > 0 &amp;&amp; tTrialNumber >= nTrials">
+              <action type="report" message="** Stopping after completing $nTrials trials "/>
+              <action type="stop_experiment"/>  
+          </action>
+          <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+          
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="conditional" tag="If Expired, Go To StimOn" target="StimOn" timer="interTrialTimer"></transition>
+      </task_system_state>
+
+      <task_system_state tag="Send TTL" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="Send TTL Pulse" variable="FIO1" value=""></action>
+            <action type="report" message="Stim ON, presenting $gratingFramesON frames"></action>
+          
+          <!-- Future Home of TTL Counter -->
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" tag="Go Next Trial" target="EndTrial"></transition>
+      </task_system_state>
+        
+      <task_system_state tag="EndTrial" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="" variable="nTrials" value="tTrialNumber"/>
+            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="yield" tag="return to parent task system"></transition>
+        </task_system_state>
+
+        </task_system>
+      </trial>
+    </protocol>
+  </experiment>
+</monkeyml>
+
