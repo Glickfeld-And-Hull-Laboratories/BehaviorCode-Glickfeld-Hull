@@ -188,9 +188,12 @@
             <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
     
-              <!-- Turn on solenoid during ITI for all trials.-->
-            <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
-            <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+              <!-- Turn on solenoid during ITI or not based on doSolenoidAllTrials.-->
+            <action type="if" condition="doSolenoidAllTrials==1">
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+            </action>
+              
             <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>
 
 
