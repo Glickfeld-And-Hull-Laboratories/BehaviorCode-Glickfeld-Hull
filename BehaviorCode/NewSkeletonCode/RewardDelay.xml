@@ -22,7 +22,8 @@
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" groups="Task Timing" persistant="1"/>
       <variable tag="reqHoldToStartMs" scope="global" logging="when_changed" default_value="400" type="integer" groups="Task Timing" persistant="1"/>
       <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" groups="Task Timing" persistant="1"/>
-      <variable tag="rewardWindowWidthMs" scope="global" logging="when_changed" default_value="1000" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="preRewardWindowMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="postRewardWindowMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Task Timing" persistant="1"/>
       <variable tag="waitForLateTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" groups="Task Timing" persistant="1"/>
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" groups="Time-Outs" persistant="1"/>
       <variable tag="lateTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
@@ -72,7 +73,8 @@
       <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tDelayTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tWaitForLateTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tRewardWindowWidthMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tPreRewardWindowMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tPostRewardWindowMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTestRobotReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTestRobotPressMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -175,7 +177,7 @@
             <!-- extend based on previous hold and max stim time, if asked for -->
             <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
               <action type="assignment" variable="tempMs"  
-                      value="reqHoldToStartMs-lastActualHoldTimeMs"></action>
+                      value=" delayTimeMs -lastActualHoldTimeMs"></action>
               <action type="if" condition="tempMs > 0">
                 <!--add to ITI-->
                 <action type="assignment" tag="-"
@@ -235,7 +237,8 @@
           <task_system_state tag="Delay" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="play_sound" sound="delaySound"></action>
-            <action type="assignment" tag="Assign tRewardWindowWidth" variable="tRewardWindowWidthMs" value="rewardWindowWidthMs"></action>
+            <action type="assignment" tag="Assign tPreRewardWindow" variable="tPreRewardWindowMs" value="preRewardWindowMs"></action>
+            <action type="assignment" tag="Assign tPostRewardWindow" variable="tPostRewardWindowMs" value="postRewardWindowMs"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
@@ -255,7 +258,7 @@
             <action type="assignment" tag="Assign tDelayTimeMs from delayTimeMs" variable="tDelayTimeMs" value="delayTimeMs"></action>
               
               
-            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="tDelayTimeMs-(tRewardWindowWidthMs*0.5)" duration_units="ms"></action>
+            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="tDelayTimeMs-(tPreRewardWindowMs)" duration_units="ms"></action>
             <action tag="Report Delay Start" full_name="ReportDigital" type="report" message="Delay Started (need to hold for $tDelayTimeMs)"></action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -266,8 +269,8 @@
 
           <task_system_state tag="StartReactTimer" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action tag="report target time" full_name="ReportDigital" type="report" message="Delay Time Passed - Reward Widow $tRewardWindowWidthMs"></action>
-            <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="rewardWindowWidthMs" duration_units="ms"></action>
+            <action tag="report target time" full_name="ReportDigital" type="report" message="Delay Time Passed - In Reward Widow"></action>
+            <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="tPreRewardWindowMs+tPostRewardWindowMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="direct" tag="Go WaitForAction" target="WaitForAction"></transition>
