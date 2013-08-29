@@ -66,8 +66,8 @@ if length(holdStarts) > 2
         
         set(gcf, 'Visible', 'off'); % hide figure during text
                                     % drawing - kludge
-
         text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 18);
+        text(0.70, 1.25, date, 'FontWeight', 'light', 'FontSize', 18);
 
         elMin = round((now - datenum(input.startDateVec)) * 24*60);
         startStr = datestr(input.startDateVec, 'HH:MM');
