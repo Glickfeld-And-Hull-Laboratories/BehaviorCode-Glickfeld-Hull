@@ -28,6 +28,8 @@
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" groups="Time-Outs" persistant="1"/>
       <variable tag="lateTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
       <variable tag="noReleaseTimeoutMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Time-Outs" persistant="1"/>
+      <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="rewardSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" groups="Task Timing" persistant="1"/>
       <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Reward Control" persistant="1"/>
       <variable tag="minRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" groups="Reward Control" persistant="1"/>
@@ -96,8 +98,8 @@
   <sounds tag="Sounds">
     <sound tag="louderPressSound" type="wav_file" path="wavs/louderFlatterPress.wav" amplitude="1"></sound>
     <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
-    <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
-    <sound tag="delaySound" type="wav_file" path="wavs/8000Hz_.3s.wav"></sound>
+    <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="rewardSoundVolume"></sound>
+    <sound tag="delaySound" type="wav_file" path="wavs/8000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
