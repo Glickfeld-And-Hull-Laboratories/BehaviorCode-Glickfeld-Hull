@@ -365,7 +365,7 @@
                   
                   <!-- If the hold is longer or equal to delayTimeMs -->
                   <action type="if" condition="actualHoldTimeMs &gt;= delayTimeMs">
-                      <action type="assignment" tag="Scale Reward to Favor the Targeted DelayTimeMs" variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-delayTimeMs)/(postRewardWindowMs)))+minRewardUs"></action>
+                      <action type="assignment" tag="Scale Reward to Favor the Targeted DelayTimeMs" variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((postRewardWindowMs-(actualHoldTimeMs-delayTimeMs))/(postRewardWindowMs)))+minRewardUs"></action>
                   </action>
                   
               </action>
