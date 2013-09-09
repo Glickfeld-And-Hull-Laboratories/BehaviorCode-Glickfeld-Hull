@@ -31,7 +31,7 @@
       <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
       <variable tag="rewardSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" groups="Task Timing" persistant="1"/>
-      <variable tag="doScaleRewardWithHoldTime " scope="global" logging="when_changed" default_value="0" type="boolean" groups="Reward Control" persistant="1"/>
+      <variable tag="doScaleRewardWithHoldTime" scope="global" logging="when_changed" default_value="0" type="boolean" groups="Reward Control" persistant="1"/>
       <variable tag="doScaleRewardToTarget" scope="global" logging="when_changed" default_value="0" type="boolean" groups="Reward Control" persistant="1"/>
       <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Reward Control" persistant="1"/>
       <variable tag="minRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" groups="Reward Control" persistant="1"/>
@@ -329,33 +329,6 @@
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-              
-            <!-- Normal (Randomly Assigned between Min and Max) Reward Code-->  
-            <action type="if" condition="doScaleRewardToTarget==0 &amp;&amp; doScaleRewardWithHoldTime==0">
-                <action type="assignment" tag="Determine Reward from min-max range" variable="tTotalRewardTimeUs" value="rand(minRewardUs, maxRewardUs)"></action>
-            </action>
-              
-            <!-- Reward Scaled to Length of Hold Times Code-->  
-            <action type="if" condition="doScaleRewardToTarget==0 &amp;&amp; doScaleRewardWithHoldTime==1">
-                <action type="assigmnent" tag="Scale Reward to Favor Long Hold Times" variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-(delayTimeMs - preRewardWindowMs))/(preRewardWindowMs+postRewardWindowMs)))+minRewardUs"></action>
-            </action>
-              
-            <!-- Reward Hold Times Close to DelayTimeMs -->
-            <action type="if" condition="doScaleRewardToTarget==1 &amp;&amp; doScaleRewardWithHoldTime==0">
-                
-                <!-- If the hold is shorter than delayTimeMs-->
-                <action type="if" condition="actualHoldTimeMs &lt; delayTimeMs">
-                    <action type="assigmnent" tag="Scale Reward to Favor the Targeted DelayTimeMs " variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-(delayTimeMs - preRewardWindowMs))/(preRewardWindowMs)))+minRewardUs"></action>
-                </action>
-                
-                <!-- If the hold is longer or equal to delayTimeMs -->
-                <action type="if" condition="actualHoldTimeMs &gt;= delayTimeMs">
-                    <action type="assigmnent" tag="Scale Reward to Favor the Targeted DelayTimeMs" variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-delayTimeMs)/(postRewardWindowMs)))+minRewardUs"></action>
-                </action>
-                
-            </action>
-
-              
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
 
 
@@ -370,7 +343,32 @@
             <action type="if" tag="if consecCorrects &lt; max" condition="consecCorrects &lt; maxConsecCorrects">
               <action type="assignment" tag="consecCorrects++" variable="consecCorrects" value="consecCorrects+1"></action>
             </action>
+              
             <action type="assignment" tag="set tNRewards" variable="tNRewards" value="consecCorrects"></action>
+              <!-- Normal (Randomly Assigned between Min and Max) Reward Code-->
+              <action type="if" condition="doScaleRewardToTarget==0 &amp;&amp; doScaleRewardWithHoldTime==0">
+                  <action type="assignment" tag="Determine Reward from min-max range" variable="tTotalRewardTimeUs" value="rand(minRewardUs, maxRewardUs)"></action>
+              </action>
+              
+              <!-- Reward Scaled to Length of Hold Times Code-->
+              <action type="if" condition="doScaleRewardToTarget==0 &amp;&amp; doScaleRewardWithHoldTime==1">
+                  <action type="assignment" tag="Scale Reward to Favor Long Hold Times" variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-(delayTimeMs - preRewardWindowMs))/(preRewardWindowMs+postRewardWindowMs)))+minRewardUs"></action>
+              </action>
+              
+              <!-- Reward Hold Times Close to DelayTimeMs -->
+              <action type="if" condition="doScaleRewardToTarget==1 &amp;&amp; doScaleRewardWithHoldTime==0">
+                  
+                  <!-- If the hold is shorter than delayTimeMs-->
+                  <action type="if" condition="actualHoldTimeMs &lt; delayTimeMs">
+                      <action type="assignment" tag="Scale Reward to Favor the Targeted DelayTimeMs " variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-(delayTimeMs - preRewardWindowMs))/(preRewardWindowMs)))+minRewardUs"></action>
+                  </action>
+                  
+                  <!-- If the hold is longer or equal to delayTimeMs -->
+                  <action type="if" condition="actualHoldTimeMs &gt;= delayTimeMs">
+                      <action type="assignment" tag="Scale Reward to Favor the Targeted DelayTimeMs" variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-delayTimeMs)/(postRewardWindowMs)))+minRewardUs"></action>
+                  </action>
+                  
+              </action>
 
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
