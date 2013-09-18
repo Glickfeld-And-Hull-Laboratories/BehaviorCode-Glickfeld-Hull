@@ -315,7 +315,7 @@
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             
 
-            <action type="if" tag="if doSolenoid/Early" condition="doSolenoidAllTrials || doSolenoidOnEarly">
+            <action type="if" tag="if doSolenoid/Early" condition="doSolenoidOnEarly==1">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
@@ -417,7 +417,7 @@
             <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="lateTimeoutMs" duration_units="ms"></action>
             <action tag="ReportLateTO" full_name="ReportDigital" type="report" message="* In Late Time Out for $lateTimeoutMs ms"></action>
 
-            <action type="if" tag="if doSolenoid/ErrorsOnly" condition="doSolenoidAllTrials || doSolenoidOnLate">
+            <action type="if" tag="if doSolenoid/ErrorsOnly" condition="doSolenoidOnLate==1">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
@@ -441,7 +441,7 @@
             <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="noReleaseTimeoutMs" duration_units="ms"></action>
             <action tag="ReportNoReleaseTO" full_name="ReportDigital" type="report" message="* In N.R. Time Out for $noReleaseTimeoutMs"></action>
 
-            <action type="if" tag="if doSolenoid/ErrorsOnly" condition="doSolenoidAllTrials || doSolenoidOnNR">
+            <action type="if" tag="if doSolenoid/ErrorsOnly" condition="doSolenoidOnNR==1">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
