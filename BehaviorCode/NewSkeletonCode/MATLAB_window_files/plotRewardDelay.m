@@ -41,6 +41,7 @@ juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
 tTrialN = input.trialSinceReset;
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Performance Values
 
@@ -66,8 +67,8 @@ if length(holdStarts) > 2
         
         set(gcf, 'Visible', 'off'); % hide figure during text
                                     % drawing - kludge
-
         text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 18);
+        text(0.70, 1.25, date, 'FontWeight', 'light', 'FontSize', 18);
 
         elMin = round((now - datenum(input.startDateVec)) * 24*60);
         startStr = datestr(input.startDateVec, 'HH:MM');
@@ -108,7 +109,7 @@ if length(holdStarts) > 2
                          'Delay Time: \t%3d ms \n', ...
                          'WaitForLate Time: \t%3d ms \n', ...
                          'Timeouts (e,l,nr):\t%4.1fs, %4.1fs, %4.1fs\n', ...
-                         'Reward Window Width:\t%5.0f ms \n',...
+                         'Reward Window (pre,post):\t%5.0f ms, %5.0f ms \n',...
                          'Inter-Trial Interval: %d ms\n', ...
                          'Reward min, max: %3.0f, %3.0f ms   %s\n'], ...
                         input.reqHoldToStartMs, ...
@@ -117,12 +118,30 @@ if length(holdStarts) > 2
                         input.earlyTimeoutMs/1000, ...
                         input.lateTimeoutMs/1000, ...
                         input.noReleaseTimeoutMs/1000, ...
-                        input.rewardWindowWidthMs, ...
+                        input.preRewardWindowMs, ...
+                        input.postRewardWindowMs, ...
                         input.itiTimeMs, ...
                         input.minRewardUs/1000, ...
                         input.maxRewardUs/1000);
+       
+        if (input.doScaleRewardWithHoldTime==1 && input.doScaleRewardToTarget==0);
+            rewSchemeTxt = text(0.0, -0.45, ['Reward Type: Increasing With Hold Time'],...
+                'HorizontalAlignment', 'left', ...
+                'VerticalAlignment', 'top', 'FontSize', 12);
+            
+            sprintf(['Reward Type: Random Distribution']);
+        elseif (input.doScaleRewardWithHoldTime==0 && input.doScaleRewardToTarget==1);
+            rewSchemeTxt = text(0.0, -0.45, ['Reward Type: Targeting Delay Time'],...
+                'HorizontalAlignment', 'left', ...
+                'VerticalAlignment', 'top', 'FontSize', 12);
+        else
+            rewSchemeTxt = text(0.0, -0.45, ['Reward Type: Random Distribution'],...
+                'HorizontalAlignment', 'left', ...
+                'VerticalAlignment', 'top', 'FontSize', 12);
+        end
+        
 
-        text(0.0, 0.3, tStr, ...
+        text(0.0, 0.25, tStr, ...
              'HorizontalAlignment', 'left', ...
              'VerticalAlignment', 'top', 'FontSize', 12);
 
@@ -142,7 +161,7 @@ if input.delayTimeMs  < 500
   maxX = 2000;
   disp('true');
 else
-  maxFail = double(input.delayTimeMs+input.waitForLateTimeMs+(0.5*input.rewardWindowWidthMs));
+  maxFail = double(input.delayTimeMs+input.waitForLateTimeMs+(input.postRewardWindowMs));
   maxX = ceil((maxFail)./500)*500;  % round up to nearest 500 ms.
 end
 
@@ -176,7 +195,7 @@ if (length(get(gca, 'XTick')) > 4)
   set(gca, 'XTick', xT);
 end
 
-vH = vert_lines([input.delayTimeMs-(0.5*input.rewardWindowWidthMs) input.delayTimeMs input.delayTimeMs+(0.5*input.rewardWindowWidthMs)]);
+vH = vert_lines([input.delayTimeMs-(input.preRewardWindowMs) input.delayTimeMs input.delayTimeMs+(input.postRewardWindowMs)]);
 set(vH, 'Color','k');
 grid on
 axis tight
@@ -194,7 +213,7 @@ set(gca, 'XLim', [-1000 1000], ...
 hold on;
 %This change adds green vertical lines to mark off the reward window, now
 %centered around the target time.
-vH = vert_lines([-0.5*input.rewardWindowWidthMs 0.5*input.rewardWindowWidthMs]);
+vH = vert_lines([-1*input.preRewardWindowMs input.postRewardWindowMs]);
 set(vH, 'Color','g');
 title('Reaction Time CDF');
 grid on
@@ -233,7 +252,7 @@ if sum(Ns)+sum(Nf)+sum(Nl) > 0
   set(bH(2), 'FaceColor', 'g'); 
   set(bH(3), 'FaceColor', 'm');
 end
-vH = vert_lines([-0.5*input.rewardWindowWidthMs 0.5*input.rewardWindowWidthMs]);
+vH = vert_lines([-1*input.preRewardWindowMs input.postRewardWindowMs]);
 set(vH, 'Color','k');
 
 hold on;
