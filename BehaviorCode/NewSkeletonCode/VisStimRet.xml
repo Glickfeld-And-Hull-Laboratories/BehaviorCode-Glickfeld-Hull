@@ -3,7 +3,7 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              ttl="FIO1" lever2=""
+              lever1="FIO1" lever2=""
               lever1_solenoid="FIO2"
               lever2_solenoid=""
               laser_trigger="laserTriggerFIO"
@@ -16,10 +16,9 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
-      <variable tag="rewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
       <variable tag="interStimulusIntervalMs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
-      <variable tag="nScans" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
+      <variable tag="nScansOn" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
+      <variable tag="nScansOff" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
     </folder>
     <folder tag="Stimuli">
       <variable tag="gratingFramesOn" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
@@ -66,9 +65,15 @@
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tCounterOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tCounterOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+      <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
+      <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
+      <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
+      <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
         
-      <variable tag="rrStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -83,8 +88,6 @@
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
-
-      <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="frameCountN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -92,11 +95,6 @@
     </folder>
   </variables>
   <sounds tag="Sounds">
-    <sound tag="louderPressSound" type="wav_file" path="../wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
-    <sound tag="waitingForLeverSound" type="wav_file" path="../wavs/trialStart-F10e-short.wav" amplitude="soundTrialStartAmplitude"></sound>
-    <sound tag="correctSound" type="wav_file" path="../wavs/shortCorrect.wav"></sound>
-    <sound tag="incorrectSound" type="wav_file" path="../wavs/incorrectMouse.wav"></sound>
-    <sound tag="rewardSound" type="wav_file" path="../wavs/shortCorrect.wav"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -117,17 +115,9 @@
       <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
 
-
-      <block tag="New Block" nsamples="99999" sampling_method="cycles" selection="sequential" interruptible="1">
       <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
-          <action type = "if" condition = "doRand = 1">
-              <trial tag="New List" nsamples="90" sampling_method="samples" selection="random_without_replacement">
-          <action/>
-          <action type = "if" condition = "doRand = 0">
-              <trial tag="New List" nsamples="90" sampling_method="samples" selection="sequential_ascending">
-          <action/>
-                  <!-- change this too -->
-      <range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber">  <!-- must set 'to' here and nsamples above  to stimulusNSteps-1 manually!-->
+      <trial tag="New List" nsamples="90" sampling_method="samples" selection="random_without_replacement">
+      <range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber">
       
     <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
       <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
@@ -135,8 +125,8 @@
                                   
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart >= stopAfterNTrials">
-              <action type="report" message="** Stopping after completing $stopAfterNTrials trials"/>
-              <action type="stop_experiment"/>  
+              <action type="report" message="** Stopping after completing $stopAfterNTrials trials"></action>
+              <action type="stop_experiment"></action>  
           </action>
           <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
 
@@ -167,13 +157,13 @@
           <action type="assignment" tag="-" variable="experimentXmlTrialId" value="90"></action>
           
           <!-- choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 -->
-          <action type="assignment" variable="tStimulusNumber" value="rrStimulusNumber"/>  <!-- choose a value from selection var, 0-origin -->
+          <action type="assignment" variable="tStimulusNumber" value="rrStimulusNumber"></action>  <!-- choose a value from selection var, 0-origin -->
 
           <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>
           <action type="if" condition="tTempStim = 0">
               <action type="assignment" variable="tTempStim" value= "gratingElevationStepN * gratingAzimuthStepN"/>
           </action>
-          <action type="if" condition="tTempStim <= gratingAzimuthStepN">
+          <action type="if" condition="tTempStim &lt;= gratingAzimuthStepN">
               <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim-1))"/>
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
@@ -184,17 +174,7 @@
               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
           </action>
           
-          <action type ="if" condition = "tTrialsDoneSinceStart>0 &amp;&amp; tGiveRewardThisTrial == 1">
-              <action type="assignment" variable="juice" value="tTotalRewardTimeUs / 1000 "/>
-          </action>
 
-          <!-- choose to give reward -->
-          <action type="assignment" variable="tGiveRewardThisTrial" value= "0"/>
-          <action type="assignment" variable="tTotalRewardTimeUs" value="0"/>
-          <action type="if" condition = "rand(0,1000) &gt; rewardProb*1000">
-              <action type="assignment" tag="-" variable="tGiveRewardThisTrial" value="1">
-              <action type="assignment" variable="tTotalRewardTimeUs" value="rewardUs"/>    
-          </action>
           
           <!-- assign trial values -->
           <action type="assignment" variable="tGratingContrast" value="gratingContrast"></action>
@@ -203,7 +183,7 @@
           <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                         
           <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                             
           <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>
-          <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
+          <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>
           
 
           <!-- initialize trial start/end times -->
@@ -227,17 +207,18 @@
           <!-- initialize with a const value.  Do we want this or just to start with counter?-->
           
               
-          <!--<action type="assignment" variable="tItiWaitTimeMs" value="1000*(gratingFramesOff / frameRateHz)"></action> <!--estimate ITI time by approx frame rate-->
+          <!--<action type="assignment" variable="tItiWaitTimeMs" value="1000*(gratingFramesOff / frameRateHz)"></action> -->
            
           <!-- insert counter here -->
-          <action type="start_timer" tag="Start InterStimulusInterval Timer" timer="interStimulusTimer" timebase="" duration="tInterStimulusTimeMs" duration_units="ms"></action>
+          <action type="assignment" tag="Set tCounterOff" variable="tCounterOff" value="counter"></action>
           <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
           <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action> 
            -->
 
-          <action type="report" message="In InterStim, waiting for $gratingFramesOff frames"></action>                        
+          <action type="report" message="In InterStimInterval, waiting for $gratingFramesOff frames"></action>
+          
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If Expired, Go To StimOn" target="StimOn" timer="interTrialTimer"></transition>
+          <transition type="conditional" tag="If nScansOff, move to StimOn" condition="(counter - tCounterOff) >= nScansOff" target="StimOn"></transition>
       </task_system_state>
 
       <task_system_state tag="StimOn" interruptible="YES">
@@ -245,18 +226,17 @@
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
             <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
             <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
-            <action type="assignment" tag="Set tCounter to current Counter Value" variable="tCounter" value="counter"></action>
+            <action type="assignment" tag="Set tCounter to current Counter Value" variable="tCounterOn" value="counter"></action>
           
           <!-- update display, finalize variables -->
             <action tag="Update Display" type="update_stimulus_display"></action>
-            <action type="assignment" variable="tStimTurnedOn" value="1"></action>
           
             <action type="report" message="Stim ON, presenting $gratingFramesON frames"></action>
           
           
           <!-- Future Home of TTL Counter -->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="When nScans is equaled or exceeded, end trial" condition="(counter - tCounter) >= nScans" target="EndTrial" ></transition>
+            <transition type="conditional" tag="When nScansOn is equaled or exceeded, end trial" condition="(counter - tCounterOn) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
                     
       <task_system_state tag="EndTrial" interruptible="YES">
@@ -285,9 +265,9 @@
         </task_system_state>
 
         </task_system>
+      </range_replicator>
       </trial>
-      <action type="dequeue_stimulus" stimulus="base_grating"></action>
-      <action tag="Update Stimulus" type="update_stimulus_display"></action>
+      </trial>
     </protocol>
   </experiment>
 </monkeyml>
