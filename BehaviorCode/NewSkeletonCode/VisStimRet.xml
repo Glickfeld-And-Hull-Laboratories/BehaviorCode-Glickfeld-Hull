@@ -18,6 +18,8 @@
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="rewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
+      <variable tag="interStimulusIntervalMs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
+      <variable tag="nScans" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
     </folder>
     <folder tag="Stimuli">
       <variable tag="gratingFramesOn" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
@@ -64,6 +66,8 @@
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        
       <variable tag="rrStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -78,6 +82,7 @@
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      
 
       <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         
@@ -125,7 +130,7 @@
       <range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber">  <!-- must set 'to' here and nsamples above  to stimulusNSteps-1 manually!-->
       
     <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
-      <task_system_state tag="Intertrial" interruptible="YES">
+      <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                   
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
@@ -220,17 +225,17 @@
               
           <!-- compute ITI time -->
           <!-- initialize with a const value.  Do we want this or just to start with counter?-->
-          <action type="assignment" variable="tItiWaitTimeMs" value="1000*(gratingFramesOff / frameRateHz)"></action> <!--estimate ITI time by approx frame rate-->
+          
+              
+          <!--<action type="assignment" variable="tItiWaitTimeMs" value="1000*(gratingFramesOff / frameRateHz)"></action> <!--estimate ITI time by approx frame rate-->
            
           <!-- insert counter here -->
-          <!--<action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
+          <action type="start_timer" tag="Start InterStimulusInterval Timer" timer="interStimulusTimer" timebase="" duration="tInterStimulusTimeMs" duration_units="ms"></action>
           <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
-          <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action> 
+          <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action> 
            -->
 
-          <action type="report" message="In ITI, waiting for $gratingFramesOff frames"></action>                        
-
-
+          <action type="report" message="In InterStim, waiting for $gratingFramesOff frames"></action>                        
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" tag="If Expired, Go To StimOn" target="StimOn" timer="interTrialTimer"></transition>
       </task_system_state>
@@ -240,6 +245,7 @@
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
             <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
             <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
+            <action type="assignment" tag="Set tCounter to current Counter Value" variable="tCounter" value="counter"></action>
           
           <!-- update display, finalize variables -->
             <action tag="Update Display" type="update_stimulus_display"></action>
@@ -250,7 +256,7 @@
           
           <!-- Future Home of TTL Counter -->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="direct" tag="Go Next Trial" target="EndTrial"></transition>
+            <transition type="conditional" tag="When nScans is equaled or exceeded, end trial" condition="(counter - tCounter) >= nScans" target="EndTrial" ></transition>
       </task_system_state>
                     
       <task_system_state tag="EndTrial" interruptible="YES">
