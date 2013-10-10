@@ -26,9 +26,11 @@
         <variable tag="laser_trigger_SINK" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
         <variable tag="strobed_digital_word" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
         <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"></variable>
-        <variable tag="tempCount" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="tempCount1" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="tempCount2" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
         <variable tag="nScans1" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
         <variable tag="nScans2" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
+        <variable tag="nScans3" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
     </variables>
     <sounds tag="Sounds"></sounds>
     <stimuli tag="Stimuli"></stimuli>
@@ -37,23 +39,30 @@
     <experiment tag="New Experiment" full_name="" description="">
         <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential" interruptible="YES">
             <task_system tag="New Task System" interruptible="YES">
-                <task_system_state tag="Begin State System" interruptable="YES">
+                <task_system_state tag="Task State One" interruptable="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                     <action type="assignment" tag="Reset counter" variable="counter" value="0"></action>
                     <action tag="Start labjack" type="start_device_IO" device="labjack"></action>
-                    <action type="report" message="**** In Beginning Task State"></action>
+                    <action type="report" message="**** In First Task State"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="counter > nScans1" target="Middle Task State"></transition>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="counter >= nScans1" target="Task State Two"></transition>
                 </task_system_state>
-                <task_system_state tag="Middle Task State" interruptable="YES">
+                <task_system_state tag="Task State Two" interruptable="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                    <action type="report" message="**** In Middle Task State"></action>
+                    <action type="report" message="**** In Second Task State"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                    <action type="assignment" tag="Set tempCount" variable="tempCount" value="counter"></action>
-                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="(counter - tempCount) > nScans2" target="Exit State System"></transition>
+                    <action type="assignment" tag="Set tempCount1" variable="tempCount1" value="counter"></action>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="(counter - tempCount1) >= nScans2" target="Task State Three"></transition>
+                </task_system_state>
+                <task_system_state tag="Task State Three" interruptable="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="report" message="**** In Third Task State"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <action type="assignment" tag="Set tempCount2" variable="tempCount2" value="counter"></action>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="(counter - tempCount2) >= nScans3" target="Exit State System"></transition>
                 </task_system_state>
                 <task_system_state tag="Exit State System" interruptable="YES">
-                    <action type="report" message="**** In Exit Task State"></action>
+                    <action type="report" message="**** Exiting Task State"></action>
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                     <action tag="Stop labjack" type="stop_device_IO" device="labjack"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
