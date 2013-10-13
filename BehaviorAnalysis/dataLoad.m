@@ -15,13 +15,12 @@ if nargin<2,
     a = today;
     d = (735472:[today]);
     dateMat = datestr(d, 'yymmdd');
-    dateMat = str2num(dateMat)
+    dateMat = str2num(dateMat);
 end
 
 % Next line skips ".", "..", and ".DS_Store" hidden files. May not be applicable
 % in systems where hidden files are still hidden and should be removed if
 % it leads to data skippage.
-fileNames(:)
 fileNames = fileNames(11:end);
 %% Data File Indexing and Pre-Processing
 outR = regexp(fileNames, 'data-i([0-9]*)-([0-9]*).mat', 'tokens');
@@ -43,13 +42,30 @@ for j = subjMat;
         tName = fullfile(dataPath, desNames{iN});
         dataStru(j).check.downloadedname{1,iN}= tName; 
         ds=mwLoadData(tName, 'max');    
+        
+        % This bit makes windowStart calculating code compatible with early window width code.
+        if isfield(ds, 'preRewardWindowMs'),
+            dataStru(j).values.windowStart(1, iN) = ds.delayTimeMs - ds.preRewardWindowMs;
+        elseif isfield(ds, 'rewardWindowWidthMs'),
+            rewWindowStart = ds.delayTimeMs - (ds.rewardWindowWidthMs./2);
+            if rewWindowStart > 0;
+                dataStru(j).values.windowStart(1, iN) = rewWindowStart;
+            else
+                dataStru(j).values.windowStart(1, iN) = 0;
+            end
+        end
+        
         rawHoldTimes = cell2mat(ds.holdTimesMs);
         medianHold = nanmedian(rawHoldTimes);
-
         meanHold = nanmean(rawHoldTimes);
         holdSTD = nanstd(double(rawHoldTimes));
         uSTD = meanHold+holdSTD;
-        lSTD = meanHold-holdSTD;
+        tLSTD = meanHold-holdSTD;
+        if (meanHold-holdSTD)>0,
+          lSTD = tLSTD;
+        else
+          lSTD = 0;
+        end
         nTrials= length(ds.trialOutcomeCell);
         
         nCorrect = sum(strcmp(ds.trialOutcomeCell, 'success'));
