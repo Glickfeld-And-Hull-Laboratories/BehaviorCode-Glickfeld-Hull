@@ -21,6 +21,7 @@ for i=1:length(subjs),
     xlabel('Training Day');
     axis tight
     grid on
+    ylim([0 2500])
     tName = strcat('Lever Hold Performance -- i', num2str(sub), ' -- Generated:', datestr(today, 'dd mmmm yyyy'));
     title(tName);
     legend('\pm 1 SD', 'Median Hold Time', 'Reward Window Start');

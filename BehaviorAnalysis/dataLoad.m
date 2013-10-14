@@ -102,3 +102,7 @@ end
 
 beep
 disp('Loading complete!')
+
+%% Plotting Functions Here
+plotPerformance(subjMat)
+
