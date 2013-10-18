@@ -50,7 +50,7 @@ beep
 
 R1Cell = cat(2, waterStru(1).values.avgJuiceTime, waterStru(1).values.waterPerCorrect, waterStru(1).values.nCorrect);
 R1Cell = sortrows(R1Cell);
-ltIx1 = R1Cell(:,3)<75;
+ltIx1 = R1Cell(:,3)<50;
 R1Juice = R1Cell(:,1);
 R1Juice = R1Juice(~ltIx1);
 
@@ -66,7 +66,7 @@ end
 
 R2Cell = cat(2, waterStru(2).values.avgJuiceTime, waterStru(2).values.waterPerCorrect, waterStru(2).values.nCorrect);
 R2Cell = sortrows(R2Cell);
-ltIx2 = R2Cell(:,3)<75;
+ltIx2 = R2Cell(:,3)<50;
 R2Juice = R2Cell(:,1);
 R2Juice = R2Juice(~ltIx2);
 R2JuiceA = roundn(R2Juice, 1);
@@ -81,7 +81,7 @@ end
 
 R3Cell = cat(2, waterStru(3).values.avgJuiceTime, waterStru(3).values.waterPerCorrect, waterStru(3).values.nCorrect);
 R3Cell = sortrows(R3Cell);
-ltIx3 = R3Cell(:,3)<75;
+ltIx3 = R3Cell(:,3)<50;
 R3Juice = R3Cell(:,1);
 R3Juice = R3Juice(~ltIx3);
 R3JuiceA = roundn(R3Juice, 1);
@@ -95,7 +95,7 @@ end
 
 R4Cell = cat(2, waterStru(4).values.avgJuiceTime, waterStru(4).values.waterPerCorrect, waterStru(4).values.nCorrect);
 R4Cell = sortrows(R4Cell);
-ltIx4 = R4Cell(:,3)<75;
+ltIx4 = R4Cell(:,3)<50;
 R4Juice = R4Cell(:,1);
 R4Juice = R4Juice(~ltIx4);
 R4JuiceA = roundn(R4Juice, 1);
@@ -123,5 +123,6 @@ grid on
 
 sName = strcat('waterCalibration-', datestr(today, 'yymmdd'), '.pdf');
     saveas(gcf, sName)
+    close
     
 
