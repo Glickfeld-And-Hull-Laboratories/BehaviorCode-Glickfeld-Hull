@@ -17,7 +17,6 @@ for i=1:length(subjs),
     xDays = 1:nDays;
     
     axH = subplot(subPlotSz{:}, 1);
-    
     hold on
     plot(pCorr, 'k', 'LineWidth', 2);
     plot(pEarly, 'c', 'LineWidth', 2);
@@ -29,17 +28,14 @@ for i=1:length(subjs),
     title(tName);
     axis tight
     ylim([0 1]);
-    legend('Correct', 'Early', 'Late', 'No Release') ;
+    %legend('Correct', 'Early', 'Late', 'No Release', 'Location', 'Best') ;
     grid on;
 
     axH = subplot(subPlotSz{:}, 2);
-    
-    SD = jbfill(xDays, uSTD, lSTD, [0 0 1], [0 0 1], 1, 0.5);
-    %plot(uSTD, 'b--', 'LineWidth', 1)
-    %plot(lSTD, 'b--', 'LineWidth', 1)
     hold on
     medPlot = plot(medH, 'k', 'LineWidth', 2);
     winPlot = plot(winS, 'r', 'LineWidth', 2);
+    SD = jbfill(xDays, uSTD, lSTD, [0.25 0.25 1], [0.25 0.25 1], 1, 0.5);
     ylabel('Hold Time (ms)');
     xlabel('Training Day');
     axis tight
@@ -47,7 +43,7 @@ for i=1:length(subjs),
     ylim([0 2500]);
     tName = strcat('Lever Hold Performance -- i', num2str(sub));%' -- Generated:', datestr(today, 'dd mmmm yyyy'));
     title(tName);
-    legend('\pm 1 SD', 'Median Hold Time', 'Reward Window Start');
+    %legend('\pm 1 SD', 'Median Hold Time', 'Reward Window Start', 'Location', 'Best');
     
     axH = subplot(subPlotSz{:}, 3);
     [Ax, H1, H2] = plotyy(xDays, nCorr, xDays, nTrials);
@@ -72,6 +68,10 @@ for i=1:length(subjs),
     
     
     sName = strcat('graphPerformance-i', num2str(sub),'-', datestr(today, 'yymmdd'), '.pdf');
-    saveas(gcf, sName)
-    close
+    epParams = { gcf, sName, ...
+             'FileFormat', 'pdf', ...
+             'Size', [12 12], ...
+             'PrintUI', false };
+         exportfig_print(epParams{:});
+         close
 end
