@@ -44,6 +44,7 @@
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
 
       <variable tag="doRand" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="selectionType" scope="local" logging="when_changed" default_value="0" type="float" persistant="1"/>  
       
     </folder>
     <folder tag="Task Status">
@@ -75,8 +76,6 @@
         
       <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -114,11 +113,15 @@
       <action type="queue_stimulus" stimulus="background"></action>
       <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
-
+      <!--  <action type = "if" condition = "doRand = 1">
+            <action type="assignment" tag="juice = 0" variable="selectionType" value="random_without_replacement"></action>
+            <action/>
+            <action type = "if" condition = "doRand = 0">
+                <action type="assignment" tag="juice = 0" variable="selectionType" value="sequential_ascending"></action>
+                <action/> -->
       <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
       <trial tag="New List" nsamples="90" sampling_method="samples" selection="random_without_replacement">
       <range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber">
-      
     <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
       <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
