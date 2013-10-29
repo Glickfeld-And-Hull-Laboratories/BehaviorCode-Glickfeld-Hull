@@ -34,7 +34,7 @@ rewReg(1).values.nCorrect = xlsCorrect(rigIx);
 for i = 1:length(rewReg(1).values.date),
     fName = strcat('~/Documents/MWorks/Data/data-', char(rewReg(1).values.subjN(i)), '-', mat2str(rewReg(1).values.date(i)), '.mat');
     ds = mwLoadData(fName, 'max');
-    rewReg(1).values.avgJuiceTime(i,1) = mean(cell2mat(ds.juiceTimesMsCell));
+    rewReg(1).values.avgJuiceTime(i,1) = nanmean(cell2mat(ds.juiceTimesMsCell));
 end
 rewReg(1).values.waterPerCorrect = rewReg(1).values.water./rewReg(1).values.nCorrect;
 %% Sorting into 10ms bins, averaging, and throwing out nCorr < minCorrect

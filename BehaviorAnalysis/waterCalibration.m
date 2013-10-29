@@ -7,7 +7,7 @@ xlsSubj = xlsSubj(2:end, :);
 xlsDate = numSheet(:,1);
 xlsRig = numSheet(:,4);
 xlsWater = numSheet(:,9);
-xlsCorrect = numSheet(:, 8);
+%xlsCorrect = numSheet(:, 8);
 
 %%
 r1Ix = xlsRig == 1;
@@ -30,10 +30,26 @@ waterStru(2).values.subjN = xlsSubj(r2Ix);
 waterStru(3).values.subjN = xlsSubj(r3Ix);
 waterStru(4).values.subjN = xlsSubj(r4Ix);
 
-waterStru(1).values.nCorrect = xlsCorrect(r1Ix);
-waterStru(2).values.nCorrect = xlsCorrect(r2Ix);
-waterStru(3).values.nCorrect = xlsCorrect(r3Ix);
-waterStru(4).values.nCorrect = xlsCorrect(r4Ix);
+%waterStru(1).values.nCorrect = xlsCorrect(r1Ix);
+%waterStru(2).values.nCorrect = xlsCorrect(r2Ix);
+%waterStru(3).values.nCorrect = xlsCorrect(r3Ix);
+%waterStru(4).values.nCorrect = xlsCorrect(r4Ix);
+
+todayNum = datenum(today);
+monthAgoNum = todayNum - 10;
+
+for y=1:4;
+    tDates = [];
+    for yy = 1:length(waterStru(y).values.date);
+        tDates(yy) = datenum(mat2str(waterStru(y).values.date(yy)), 'yymmdd');
+    end
+    dateIx = tDates < todayNum & (tDates >= monthAgoNum);
+    waterStru(y).values.water = waterStru(y).values.water(dateIx);
+    waterStru(y).values.date = waterStru(y).values.date(dateIx);
+    waterStru(y).values.subjN = waterStru(y).values.subjN(dateIx);
+%    waterStru(y).values.nCorrect = waterStru(y).values.nCorrect(dateIx);
+end
+    
 
 %%
 for x = 1:4,
@@ -41,6 +57,7 @@ for x = 1:4,
         fName = strcat('~/Documents/MWorks/Data/data-', char(waterStru(x).values.subjN(i)), '-', mat2str(waterStru(x).values.date(i)), '.mat');
         ds = mwLoadData(fName, 'max');
         waterStru(x).values.avgJuiceTime(i,1) = mean(cell2mat(ds.juiceTimesMsCell));
+        waterStru(x).values.nCorrect(i,1) = sum(strcmp(ds.trialOutcomeCell, 'success'));
     end
     waterStru(x).values.waterPerCorrect = waterStru(x).values.water./waterStru(x).values.nCorrect;
 end
@@ -50,7 +67,7 @@ beep
 
 R1Cell = cat(2, waterStru(1).values.avgJuiceTime, waterStru(1).values.waterPerCorrect, waterStru(1).values.nCorrect);
 R1Cell = sortrows(R1Cell);
-ltIx1 = R1Cell(:,3)<50;
+ltIx1 = R1Cell(:,3)<1;
 R1Juice = R1Cell(:,1);
 R1Juice = R1Juice(~ltIx1);
 
@@ -66,7 +83,7 @@ end
 
 R2Cell = cat(2, waterStru(2).values.avgJuiceTime, waterStru(2).values.waterPerCorrect, waterStru(2).values.nCorrect);
 R2Cell = sortrows(R2Cell);
-ltIx2 = R2Cell(:,3)<50;
+ltIx2 = R2Cell(:,3)<1;
 R2Juice = R2Cell(:,1);
 R2Juice = R2Juice(~ltIx2);
 R2JuiceA = roundn(R2Juice, 1);
@@ -81,7 +98,7 @@ end
 
 R3Cell = cat(2, waterStru(3).values.avgJuiceTime, waterStru(3).values.waterPerCorrect, waterStru(3).values.nCorrect);
 R3Cell = sortrows(R3Cell);
-ltIx3 = R3Cell(:,3)<50;
+ltIx3 = R3Cell(:,3)<1;
 R3Juice = R3Cell(:,1);
 R3Juice = R3Juice(~ltIx3);
 R3JuiceA = roundn(R3Juice, 1);
@@ -95,7 +112,7 @@ end
 
 R4Cell = cat(2, waterStru(4).values.avgJuiceTime, waterStru(4).values.waterPerCorrect, waterStru(4).values.nCorrect);
 R4Cell = sortrows(R4Cell);
-ltIx4 = R4Cell(:,3)<50;
+ltIx4 = R4Cell(:,3)<1;
 R4Juice = R4Cell(:,1);
 R4Juice = R4Juice(~ltIx4);
 R4JuiceA = roundn(R4Juice, 1);
@@ -114,7 +131,7 @@ r3p = plot(uIx3, AvgJ3.*1000, 'b.-')
 r4p = plot(uIx4, AvgJ4.*1000, 'k.-')
 legend('1', '2', '3', '4', 'Location', 'Best')
 todayStr = datestr(today, 'dd mmmm yyyy');
-tName = strcat('Water Calibration Plot - Generated  ', todayStr);
+tName = strcat('Water Calibration Plot - Generated : ', todayStr);
 title(tName);
 xlabel('Average Reward Size (ms)')
 ylabel('Saccharin Solution Dispensed (\muL)')
