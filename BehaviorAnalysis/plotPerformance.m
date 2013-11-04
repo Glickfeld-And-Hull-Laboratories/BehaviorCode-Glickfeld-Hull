@@ -15,6 +15,7 @@ for i=1:length(subjs),
     nCorr = dataStru(sub).values.nCorrects;
     nDays = length(medH);
     xDays = 1:nDays;
+    hTS = 0 - (dataStru(sub).values.holdToStart);
     
     axH = subplot(subPlotSz{:}, 1);
     hold on
@@ -35,12 +36,13 @@ for i=1:length(subjs),
     hold on
     medPlot = plot(medH, 'k', 'LineWidth', 2);
     winPlot = plot(winS, 'r', 'LineWidth', 2);
+    hTSPlot = plot(hTS, 'g', 'LineWidth', 2);
     SD = jbfill(xDays, uSTD, lSTD, [0.25 0.25 1], [0.25 0.25 1], 1, 0.5);
     ylabel('Hold Time (ms)');
     xlabel('Training Day');
     axis tight
     grid on
-    ylim([0 2500]);
+    ylim([min(hTS)-100 2500]);
     tName = strcat('Lever Hold Performance -- i', num2str(sub));%' -- Generated:', datestr(today, 'dd mmmm yyyy'));
     title(tName);
     %legend('\pm 1 SD', 'Median Hold Time', 'Reward Window Start', 'Location', 'Best');
