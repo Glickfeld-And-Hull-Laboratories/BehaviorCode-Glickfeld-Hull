@@ -2,7 +2,6 @@ function [dataStru] = dataLoad(subjMat, dateMat)
 %% Script to load data acquired on MWDataCentral into a structure (dataStruct) for analysis.
 % To work, subjMat and datesMat must be 1xN matrices with YYMMDD format. Ex.[61 62 63 108 110
 % 111...] or [130523 130524 130525...]
-
 global dataStru
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
 % Data Path Formatting
@@ -42,7 +41,6 @@ for j = subjMat;
         tName = fullfile(dataPath, desNames{iN});
         dataStru(j).check.downloadedname{1,iN}= tName; 
         ds=mwLoadData(tName, 'max');    
-        
         % This bit makes windowStart calculating code compatible with early window width code.
         if isfield(ds, 'preRewardWindowMs'),
             dataStru(j).values.windowStart(1, iN) = ds.delayTimeMs - ds.preRewardWindowMs;
@@ -105,5 +103,5 @@ beep
 disp('Loading complete!')
 
 %% Plotting Functions Here
-plotPerformance(subjMat)
+%plotPerformance(subjMat)
 
