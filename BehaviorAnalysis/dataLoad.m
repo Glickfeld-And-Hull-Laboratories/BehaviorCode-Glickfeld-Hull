@@ -93,6 +93,7 @@ for j = subjMat;
         dataStru(j).values.ITI(1, iN)= ds.itiTimeMs;
         dataStru(j).values.nTrials(1, iN)= nTrials;
         dataStru(j).values.holdToStart(1, iN) = ds.reqHoldToStartMs;
+        dataStru(j).values.holdTimesCell{iN} = histc(double(cell2mat(ds.holdTimesMs)), 0:100:5000);
        
        disp('Daily Data Loaded')  
     end

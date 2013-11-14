@@ -18,11 +18,8 @@ for i=1:length(subjs),
     hTS = 0 - (dataStru(sub).values.holdToStart);
     
     weight = dataStru(sub).values.weight;
-    size(weight)
     earnedmL = dataStru(sub).values.earnedWaterMl;
-    size(earnedmL)
     totalmL =  dataStru(sub).values.totalWaterMl;
-    size(totalmL)
     
     axH = subplot(subPlotSz{:}, 1);
     hold on
@@ -81,18 +78,17 @@ for i=1:length(subjs),
     set(H1,'LineWidth', 2);
     set(H1,'Color', 'b');
     set(H2,'LineWidth', 2);
-    set(H1,'LineStyle', '--')
     set(H2,'Color', 'k');
     set(Ax(1), 'XLim', [1 max(xDays)]);
     set(Ax(2), 'XLim', [1 max(xDays)]);
-    set(Ax(2), 'YLim', [15 max(weight)]);
+    set(Ax(2), 'YLim', [16 25]);
     set(Ax(1), 'YLim', [0 max(earnedmL)]);
     set(Ax(1),'YColor', [0 0 1])
     set(Ax(2),'YColor', [0 0 0])
     xlabel('Training Day');
     set(get(Ax(1),'YLabel'), 'String', 'Earned Water Volume (mL)');
     set(get(Ax(2),'YLabel'), 'String', 'Weight (g)');
-    set(Ax(2), 'YTick', [15:5:ceil(max(weight)/5)*5]);
+    set(Ax(2), 'YTick', [16:1:25]);
     set(Ax(1), 'YTick', [0:0.2:ceil(max(earnedmL)/0.2)*0.2]);
     grid on
     title('Weight and Water')
@@ -100,7 +96,7 @@ for i=1:length(subjs),
     set(gcf, 'Name', fName);
     
     
-    sName = strcat('graphPerformance-i', num2str(sub),'-', datestr(today, 'yymmdd'), '.pdf');
+    sName = strcat('~/Documents/MWorks/DailyPlots/graphPerformance-i', num2str(sub),'-', datestr(today, 'yymmdd'), '.pdf');
     epParams = { gcf, sName, ...
              'FileFormat', 'pdf', ...
              'Size', [12 12], ...

@@ -3,8 +3,6 @@ function [ dataStru ] = wwLoad(subjMat)
 %   Detailed explanation goes here
 %subjMat = [1 5 6 7 202 205 206 209];
 [numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullMouseTrainingProtocol.xlsx');
-global wwStru
-wwStru = struct;
 global dataStru
 %%Quick XLSX sheet casting
 xlsSubj = allSheet(:,1);
@@ -40,10 +38,21 @@ for i=1:length(subjMat),
     elseif a == [209]
         subStr = 'i209';
     end
+    %% Clear Weight/Earned/Total in dataStru for incoming data.
+    dataStru(a).values.weight = {};
+    dataStru(a).values.earnedWaterMl = {};
+    dataStru(a).values.totalWaterMl = {};
     
     %% Subject indexing
+    
+    outR = regexp(dataStru(a).check.downloadedname, 'data-i([0-9]*)-([0-9]*).mat', 'tokens');
+    outRV = cat(1, outR{:});
+    outRM = cat(1, outRV{:});
+    dateStrList = str2double(outRM(:,2));
+    
     subjIx = strcmp(xlsSubj, subStr);
-    nDates = length(dataStru(a).dates);
+    nDates = length(dateStrList);
+    
     subjDates = xlsDate(subjIx);
     subjEarned = xlsEarned(subjIx);
     subjTotal = xlsTotal(subjIx);
@@ -51,11 +60,11 @@ for i=1:length(subjMat),
     
     %% Find weight and earned/total water values based on dataStru dates.
     for ii=1:nDates,
-        dataRow = find(subjDates==dataStru(a).dates(ii));
+        dataRow = find(subjDates==dateStrList(ii));
         if isempty(dataRow)
-            dataStru(a).values.weight{ii} = [];
-            dataStru(a).values.earnedWaterMl{ii} = [];
-            dataStru(a).values.totalWaterMl{ii} = [];
+            dataStru(a).values.weight{ii} = [NaN];
+            dataStru(a).values.earnedWaterMl{ii} = [NaN];
+            dataStru(a).values.totalWaterMl{ii} = [NaN];
         elseif ~isempty(dataRow)
             dataStru(a).values.weight{ii} = subjWeight(dataRow);
             dataStru(a).values.earnedWaterMl{ii} = subjEarned(dataRow);
