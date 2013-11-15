@@ -208,7 +208,7 @@ title('Trial Hold Times Histogram');
 %% 2 - react time CDF
 axH = subplot(subplotSz{:}, 8);
 cdfplot([input.reactTimesMs{:}]);
-set(gca, 'XLim', [-1000 1000], ...
+set(gca, 'XLim', [-(input.delayTimeMs) 1000], ...
          'YLim', [0 1]);
 hold on;
 %This change adds green vertical lines to mark off the reward window, now
