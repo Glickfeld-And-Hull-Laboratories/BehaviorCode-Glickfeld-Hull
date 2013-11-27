@@ -8,5 +8,6 @@ dataStru = struct;
 dataStru = dataLoad(subjMat);
 dataStru = wwLoad(subjMat);
 plotPerformance(subjMat);
+quit
 end
 

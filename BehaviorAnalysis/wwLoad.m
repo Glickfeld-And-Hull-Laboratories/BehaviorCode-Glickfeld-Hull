@@ -2,7 +2,7 @@ function [ dataStru ] = wwLoad(subjMat)
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 %subjMat = [1 5 6 7 202 205 206 209];
-[numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullMouseTrainingProtocol.xlsx');
+[numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullTrainingSpreadsheet.xlsx');
 global dataStru
 %%Quick XLSX sheet casting
 xlsSubj = allSheet(:,1);
