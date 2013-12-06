@@ -20,9 +20,9 @@ if nargin < 3 || isempty(fFormat), fFormat = 'pdf'; end
 % file export path
 %fPath = '~/shared/snapshots';
 %fPath = 'i:/users/histed/snapshots';
-dirs = directories;
-assert(isfield(dirs, 'toolsSnapshots'), ....
-       'needed dir entry is missing, edit directories.m');
+%dirs = directories;
+%assert(isfield(dirs, 'toolsSnapshots'), ....
+%       'needed dir entry is missing, edit directories.m');
 
 nFigs = length(figH);
 allNameC = {};
@@ -32,7 +32,7 @@ for iFig = 1:nFigs
     fName = [mfilename '-' datestr(now, 'yymmdd-HHMM_SS_FFF')];
     allNameC{iFig} = fName;
     
-    fullF = fullfileMH(dirs.toolsSnapshots, fName);
+    fullF = fullfileMH('~/Desktop', fName);
     exportfig_print(tFig, fullF, ...
                     'FileFormat', fFormat, ...
                     'Size', tSize, ...

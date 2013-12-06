@@ -41,6 +41,10 @@ juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
 tTrialN = input.trialSinceReset;
 
+delayTimes = cell2mat_padded(input.tDelayTimeMs);
+hT = double(cell2mat_padded(input.holdTimesMs));
+errorRatioMat = (hT-delayTimes)./delayTimes;
+percentErrorMat = errorRatioMat.*100;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Performance Values
@@ -208,7 +212,7 @@ title('Trial Hold Times Histogram');
 %% 2 - react time CDF
 axH = subplot(subplotSz{:}, 8);
 cdfplot([input.reactTimesMs{:}]);
-set(gca, 'XLim', [-1000 1000], ...
+set(gca, 'XLim', [-(input.delayTimeMs) 1000], ...
          'YLim', [0 1]);
 hold on;
 %This change adds green vertical lines to mark off the reward window, now
@@ -221,48 +225,28 @@ xlabel('Time from Reward Window (ms)');
 
 %%%%%%%%%%%%%%%%
 
-%% 3 - React Time PDF
+%% Percent Estimation Error Plot
 axH = subplot(subplotSz{:}, 6);
 nPts = length(input.reactTimesMs);
-visIx = reactV<=maxX;
-nVisPts = sum(visIx);
-if nVisPts > 50
-  binWidth = 49; % robust version of std
-  nBins = ceil(2000./binWidth);
-else
-  nBins = 10;
+preRW = ((input.delayTimeMs - input.preRewardWindowMs)/input.delayTimeMs)-1;
+postRW = ((input.delayTimeMs + input.postRewardWindowMs)/input.delayTimeMs)-1;
+hold on
+if nTrial<=200,
+    plot(errorRatioMat, 'k');
 end
-if nBins < 10; nBins=10; end
+plot([1 nTrial], [0 0], 'g--')
+plot([1 nTrial], [preRW preRW], 'g')
+plot([1 nTrial], [postRW postRW], 'g')
 
-edges = linspace(-1000, 1000, nBins);
-binSize = edges(2)-edges(1);
-emptyIx = cellfun(@isempty, input.reactTimesMs);   % see above holdTimesM
-if sum(emptyIx) > 0, input.reactTimesMs{emptyIx} = NaN; end
-
-Ns = histc(reactV(successIx), edges);
-Nf = histc(reactV(earlyIx), edges);
-Nl = histc(reactV(lateIx), edges);
-if sum(Ns)+sum(Nf)+sum(Nl) > 0
-  bH = bar(edges+binSize/2, [Nf(:),Ns(:), Nl(:)], 'stacked');
-  set(bH, 'BarWidth', 1, ...
-          'LineStyle', 'none');
-  cMap = get(gcf, 'Colormap');
-  % flip colors, keep blue on top of red, note flipped in bar.m above
-  set(bH(1), 'FaceColor', 0.8*[0 1 1]);
-  set(bH(2), 'FaceColor', 'g'); 
-  set(bH(3), 'FaceColor', 'm');
+if nTrial>=10,
+    plot(smooth(errorRatioMat, 'moving', ceil(nTrial/10)), 'k', 'LineWidth', 2)
 end
-vH = vert_lines([-1*input.preRewardWindowMs input.postRewardWindowMs]);
-set(vH, 'Color','k');
-
-hold on;
-yLim = get(gca, 'YLim');
-plot([0 0], yLim, 'k');
+axis tight
 grid on
-set(gca, 'XLim', [-1010 1010]);
-title('Reaction Times Histogram');
-ylabel('Number of Trials');
-xlabel('Time from Reward Window (ms)')
+xlabel('Trial Number')
+ylabel('Percent Error')
+title('Percent Estimation Error')
+
 %%%%%%%%%%%%%%%%
 
 %% 4 - smoothed perf curve

@@ -28,8 +28,7 @@
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" groups="Time-Outs" persistant="1"/>
       <variable tag="lateTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
       <variable tag="noReleaseTimeoutMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Time-Outs" persistant="1"/>
-      <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
-      <variable tag="rewardSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
+      
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" groups="Task Timing" persistant="1"/>
       <variable tag="doScaleRewardWithHoldTime" scope="global" logging="when_changed" default_value="0" type="boolean" groups="Reward Control" persistant="1"/>
       <variable tag="doScaleRewardToTarget" scope="global" logging="when_changed" default_value="0" type="boolean" groups="Reward Control" persistant="1"/>
@@ -38,8 +37,16 @@
       <variable tag="maxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" groups="Reward Control" persistant="1"/>
       <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" groups="Reward Control" persistant="1"/>
       <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1"/>
-      <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1"/>
-      <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="120" type="integer" persistant="1"/>
+      <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" groups="Time-Outs" persistant="1"/>
+      <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="120" type="integer" groups="Time-Outs" persistant="1"/>
+      
+      
+      <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="rewardSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="itiEndSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="delaySoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      
+      
     </folder>
     <folder tag="Stimuli">
     </folder>
@@ -67,7 +74,7 @@
       <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
       <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
-      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward Control" />
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
@@ -101,7 +108,9 @@
     <sound tag="louderPressSound" type="wav_file" path="wavs/louderFlatterPress.wav" amplitude="1"></sound>
     <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
     <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="rewardSoundVolume"></sound>
-    <sound tag="delaySound" type="wav_file" path="wavs/8000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
+    <sound tag="startSound" type="wav_file" path="wavs/8000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
+    <sound tag="itiEndSound" type="wav_file" path="wavs/8000Hz_.3s.wav" amplitude="itiEndSoundVolume"></sound>
+    <sound tag="delaySound" type="wav_file" path="wavs/8000Hz_.3s.wav" amplitude="delaySoundVolume"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -211,7 +220,8 @@
             
             <!-- Lower solenoid at beginning of trial for any solenoid -->
             <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
-            <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
+            <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>            
+            <action type="play_sound" sound="itiEndSound"></action>
               
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
             <action type="assignment" tag="Encode StartTrialWaitForPress" variable="strobedDigitalWord" value="7"></action>
@@ -240,7 +250,7 @@
             
           <task_system_state tag="Delay" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="play_sound" sound="delaySound"></action>
+            <action type="play_sound" sound="startSound"></action>
             <action type="assignment" tag="Assign tPreRewardWindow" variable="tPreRewardWindowMs" value="preRewardWindowMs"></action>
             <action type="assignment" tag="Assign tPostRewardWindow" variable="tPostRewardWindowMs" value="postRewardWindowMs"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
@@ -275,15 +285,34 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action tag="report target time" full_name="ReportDigital" type="report" message="Delay Time Passed - In Reward Widow"></action>
             <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="tPreRewardWindowMs+tPostRewardWindowMs" duration_units="ms"></action>
+			<action type="start_timer" tag="Start delaySound Timer" timer="delaySoundTimer" timebase="" duration="tPreRewardWindowMs" duration_units="ms"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" tag="Go WaitForAction" target="DelaySoundTimerState"></transition>
+          </task_system_state>
+
+          <task_system_state tag="DelaySoundTimerState" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+         
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="direct" tag="Go WaitForAction" target="WaitForAction"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="Reward"></transition>
+            <transition type="timer_expired" tag="If testRobot expired, Transition to Reward" target="Reward" timer="testRobotTimer"></transition>
+            <transition type="timer_expired" tag="If delaySoundTimer expires, move to playDelaySound where delaySound plays" target="PlayDelaySound" timer="delaySoundTimer"></transition>
+            <transition type="timer_expired" tag="If React Time Expired, Go To Late" target="WaitForLate" timer="reactTimeTimer"></transition>
+          </task_system_state>
+          
+          <task_system_state tag="PlayDelaySound" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+         	<action type="play_sound" sound="delaySound"></action>
+              
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" target="WaitForAction"></transition> <!-- Spin on this state -->  
           </task_system_state>
 
           <task_system_state tag="WaitForAction" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-         
-
+              
+              
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="Reward"></transition>
             <transition type="timer_expired" tag="If testRobot expired, Transition to Reward" target="Reward" timer="testRobotTimer"></transition>

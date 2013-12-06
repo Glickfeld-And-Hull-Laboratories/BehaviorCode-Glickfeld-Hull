@@ -7,6 +7,7 @@
 # MH 130102: broke out from HoldAndDetectLaserPython.py
 
 import sys
+sys.path.append('/usr/share/pyshared')
 import socket
 import sys
 import cPickle as p
@@ -43,17 +44,17 @@ def chop(x, sig=2):
 
 thisHostname = socket.gethostname()
 thisHostname = string.replace(thisHostname, '.local', '')
-if thisHostname == "MaunsellMouse1":
+if thisHostname == "hullglick1.dhe.duke.edu":
     PORT = 9990
     doTransmitCodesToBlackrock = True
-elif thisHostname == "MaunsellMouse2":
+elif thisHostname == "hullglick2.dhe.duke.edu":
     PORT = 9991
     doTransmitCodesToBlackrock = False
-elif thisHostname == "MaunsellMouse3":
+elif thisHostname == "hullglick3.dhe.duke.edu":
     PORT = 9992
     PORT2 = 9993  # use same as rig 4
     doTransmitCodesToBlackrock = False
-elif thisHostname == "MaunsellMouse4":
+elif thisHostname == "hullglick4.dhe.duke.edu":
     PORT = 9993
     doTransmitCodesToBlackrock = False
 elif thisHostname == "MaunsellMouseTest":
