@@ -228,12 +228,15 @@ xlabel('Time from Reward Window (ms)');
 %% Percent Estimation Error Plot
 axH = subplot(subplotSz{:}, 6);
 nPts = length(input.reactTimesMs);
-
+preRW = ((input.delayTimeMs - input.preRewardWindowMs)/input.delayTimeMs)-1;
+postRW = ((input.delayTimeMs + input.postRewardWindowMs)/input.delayTimeMs)-1;
 hold on
 if nTrial<=200,
     plot(errorRatioMat, 'k');
 end
 plot([1 nTrial], [0 0], 'g--')
+plot([1 nTrial], [preRW preRW], 'g')
+plot([1 nTrial], [postRW postRW], 'g')
 
 if nTrial>=10,
     plot(smooth(errorRatioMat, 'moving', ceil(nTrial/10)), 'k', 'LineWidth', 2)
