@@ -15,7 +15,7 @@ mount -t smbfs //andrew:dukegrad@crash.dhe.duke.edu/andrew/behavior ~/Desktop/Cr
 scp -r ~/Documents/MWorks/BehavOutputPdfs ~/Desktop/Crash_server/
 scp -r ~/Documents/MWorks/Data ~/Desktop/Crash_server/
 
-/Applications/MATLAB_R2012b.app/bin/matlab -nosplash -nodesktop -r "dailyScript([1 5 6 7 9 10 202 205]);"
+/Applications/MATLAB_R2012b.app/bin/matlab -nosplash -nodesktop -r "dailyScript([1 5 7 9 10 202 205]);"
 /Applications/MATLAB_R2012b.app/bin/matlab -nosplash -nodesktop -r "quit"
 scp -r ~/Documents/MWorks/DailyPlots ~/Desktop/Crash_server/
 
