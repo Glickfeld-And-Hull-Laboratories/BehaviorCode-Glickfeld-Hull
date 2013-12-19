@@ -5,8 +5,10 @@ if nargin<2,
     date = datestr(today, 'yymmdd');
 end
 
-%dataPath = '~/Documents/MWorks/Data';
-dataPath = '~/Downloads/i10zip';
+
+dataPath = '~/Documents/MWorks/Data';
+%dataPath = '~/Downloads/i10zip';
+
 fName = strcat(dataPath, '/data-', subj, '-', date, '.mat');
 ds = mwLoadData(fName, 'max');
 
@@ -18,17 +20,20 @@ trChanged(1) = 1;
 %occurred
 ix3 = regexp(ds.changedStr, 'Trial *([0-9]*): delaySoundVolume: -> (\d*\.?\d*)', 'tokens');
 ix2 = cat(1, ix3{:});
-ix = cat(1, ix2{:});
+ix = cat(1, ix2{:})
 nTrs = length(ds.holdTimesMs);
+sz = size(ix);
+nChanges = sz(1);
+ix
 
-for i=1:length(ix)
+for i=1:nChanges
     n = i+1;
     thisVol = ix(i,2);
     thisTrN = ix(i,1);
     vol(n,1)= str2double(ix(i,2));
     trChanged(n,1) = str2double(ix(i,1)); 
     holdTimes{i} = cell2mat_padded(ds.holdTimesMs(trChanged(i):trChanged(n)));
-    if i==length(ix)
+    if i==nChanges
         trChanged(end+1)= nTrs;
         holdTimes{n} = cell2mat_padded(ds.holdTimesMs(trChanged(n):nTrs));
     end
@@ -38,7 +43,6 @@ for k=1:length(holdTimes)
 end
 holdTimes = holdTimes(~gtIx);
 vol = vol(~gtIx);
-
 
 % Hold time histogram
 
@@ -61,7 +65,7 @@ for j=1:length(holdTimes),
     elseif j==2,
         lColor = [1 0.64 0]; %orange
     elseif j==3,
-        lColor = 'y';
+        lColor = [0.75 0.75 0];
     elseif j==4,
         lColor = 'g';
     elseif j==5,
@@ -97,10 +101,10 @@ elseif length(holdTimes)==3,
     legend(num2str(vol(1)), num2str(vol(2)), num2str(vol(3)), num2str(vol(4)));
 end
 
-sName = strcat('~/Documents/MATLAB/SoundAnalysis/soundAnalysis-', subj,'-', date, '.pdf');
+sName = strcat('~/Documents/MWorks/SoundAnalysis/soundAnalysis-', subj,'-', date, '.pdf');
 epParams = { gcf, sName, ...
     'FileFormat', 'pdf', ...
     'Size', [12 12], ...
     'PrintUI', false };
 exportfig_print(epParams{:});
-%close
+close
