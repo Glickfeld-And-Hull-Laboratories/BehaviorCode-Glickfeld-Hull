@@ -102,6 +102,7 @@
       <variable tag="lastActualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tempMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tDelaySoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -184,8 +185,9 @@
             </action>
             <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
 
-            <!-- Compute constant ITI Time. -->
+            <!-- Assign tVariables based on constants. -->
             <action type="assignment" variable="tItiWaitTimeMs" value="itiTimeMs"></action>
+            <action type="assignment" variable="tDelaySoundVolume" value="delaySoundVolume"></action>
           
             <!-- extend based on previous hold and max stim time, if asked for -->
             <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
