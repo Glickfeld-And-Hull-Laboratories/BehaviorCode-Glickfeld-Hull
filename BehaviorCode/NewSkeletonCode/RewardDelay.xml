@@ -44,7 +44,15 @@
       <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
       <variable tag="rewardSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
       <variable tag="itiEndSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      
       <variable tag="delaySoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      
+      <variable tag="dsLevel1" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="dsNCorrLvl1" scope="global" logging="when_changed" default_value="0" type="integer" groups="Volume Control" persistant="1"/>
+      <variable tag="dsLevel2" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="dsNCorrLvl2" scope="global" logging="when_changed" default_value="0" type="integer" groups="Volume Control" persistant="1"/>
+      <variable tag="dsLevel3" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      
       
       
     </folder>
@@ -133,6 +141,17 @@
         <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
         <action type="assignment" variable="lastActualHoldTimeMs" value="0"></action>
       </action>
+        
+        <!-- Assign volume based on number of corrects -->
+        <action type="if" condition="success &lt; dsNCorrLvl1">
+            <action type="assignment" tag="Assign level1 of rewardSound " variable="delaySoundVolume" value="dsLevel1"/>
+        </action>
+        <action type="if" condition="(success &lt; (dsNCorrLvl2+dsNCorrLvl1)) &amp;&amp; (success &gt; dsNCorrLvl1)">
+            <action type="assignment" tag="Assign level2 of rewardSound " variable="delaySoundVolume" value="dsLevel2"/>
+        </action>
+        <action type="if" condition="success &gt; (dsNCorrLvl1 + dsNCorrLvl2)">
+            <action type="assignment" tag="Assign level3 of rewardSound " variable="delaySoundVolume" value="dsLevel3"/>
+        </action>
 
       <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
         <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" 
@@ -188,6 +207,7 @@
             <!-- Assign tVariables based on constants. -->
             <action type="assignment" variable="tItiWaitTimeMs" value="itiTimeMs"></action>
             <action type="assignment" variable="tDelaySoundVolume" value="delaySoundVolume"></action>
+            
           
             <!-- extend based on previous hold and max stim time, if asked for -->
             <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
