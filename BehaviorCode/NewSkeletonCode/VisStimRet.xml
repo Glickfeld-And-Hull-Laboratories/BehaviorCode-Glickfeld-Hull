@@ -35,7 +35,7 @@
       <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="gratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="StimulusSpecs"/>
 
       <variable tag="doRand" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="StimulusSpecs"/>
@@ -92,7 +92,7 @@
       <variable tag="tGratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="frameCountN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -195,8 +195,9 @@
           <action type="assignment" variable="tGratingDirectionDeg" value="gratingDirectionDeg"></action>
           <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>
           <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                         
-          <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                             
-          <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>          
+          <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>        
+          <action type="assignment" variable="tGratingTemporalFreqCPS" value="gratingTemporalFreqCPS"</action>
+          <action type="assignment" variable="tGratingSpeedDPS" value="gratingTemporalFreqCPS / gratingSpatialFreqCPD"></action>          
 
           <!-- initialize trial start/end times -->
           <action type="if" condition="tThisTrialStartTimeMs == -1">  
