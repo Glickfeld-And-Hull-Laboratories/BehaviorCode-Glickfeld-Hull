@@ -93,6 +93,7 @@
       <variable tag="tGratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="frameCountN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -196,7 +197,7 @@
           <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>
           <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                         
           <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>        
-          <action type="assignment" variable="tGratingTemporalFreqCPS" value="gratingTemporalFreqCPS"</action>
+          <action type="assignment" variable="tGratingTemporalFreqCPS" value="gratingTemporalFreqCPS"></action>
           <action type="assignment" variable="tGratingSpeedDPS" value="gratingTemporalFreqCPS / gratingSpatialFreqCPD"></action>          
 
           <!-- initialize trial start/end times -->
@@ -259,7 +260,7 @@
       		<transition type="conditional" tag="When nScansOn is equaled or exceeded, end trial" condition="(counter - tCounterOn) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
-      <task_system_state tag="speedCounter=3" interruptible="YES">
+      <task_system_state tag="speedCounter3" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
       		<action type="start_timer" tag="Start speedTimer2" timer="speedTimer4" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
       		<action type="assignment" tag="Log First Speed Interval" variable="spCounter3" value="counter2 - spCounter2" />
