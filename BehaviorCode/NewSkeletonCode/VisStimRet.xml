@@ -21,7 +21,8 @@
       <variable tag="stopAfterNTrials" scope="local" logging="when_changed" default_value="90" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="nScansOn" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="nScansOff" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="StimulusSpecs"/>
-    
+      
+      <variable tag="doMatrix" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="StimulusSpecs"/> 
       <variable tag="doRetStim" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="StimulusSpecs"/>
       <variable tag="doConStim" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="StimulusSpecs"/>
       <variable tag="doDirStim" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="StimulusSpecs"/>
@@ -37,7 +38,8 @@
       <variable tag="gratingAzimuthStepN" scope="global" logging="when_changed" default_value="3" type="float" persistant="1" groups="StimulusSpecs"/>
       
       <variable tag="gratingContrast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="gratingContrastLogStep" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="gratingContrastStepLog" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="gratingContrastStepDir" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="gratingContrastStepN" scope="global" logging="when_changed" default_value="6" type="integer" persistant="1" groups="StimulusSpecs"/>
        
       <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="StimulusSpecs"/>
@@ -45,11 +47,13 @@
       <variable tag="gratingDirectionStepN" scope="global" logging="when_changed" default_value="12" type="integer" persistant="1" groups="StimulusSpecs"/>
 
       <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.02" type="float" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="gratingSpatialFreqLogStep" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="gratingSpatialFreqStepLog" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="gratingSpatialFreqStepDir" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="gratingSpatialFreqStepN" scope="global" logging="when_changed" default_value="6" type="float" persistant="1" groups="StimulusSpecs"/>
 
       <variable tag="gratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="gratingTemporalFreqLogStep" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="gratingTemporalFreqStepLog" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="gratingTemporalFreqStepDir" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="gratingTemporalFreqStepN" scope="global" logging="when_changed" default_value="6" type="integer" persistant="1" groups="StimulusSpecs"/>
 
       <variable tag="gratingDiameterDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="StimulusSpecs"/>
@@ -80,8 +84,6 @@
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tempFeatNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="totFeatNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCounterOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCounterOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
@@ -192,50 +194,6 @@
               <action type="assignment" variable="tStimulusNumber" value="svSeqStimNumber"/>
           </action>
           
-          <!--check number of features changing -->
-          <action type="if" condition="doRetStim = 1">
-              <action type="assignment" variable="tempFeatNum" value= "2";
-          </action>
-          <action type="if" condition="doRetStim = 0">
-              <action type="assignment" variable="tempFeatNum" value= "0";
-          </action>
-          <action type="if" condition="doConStim = 1">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+1";
-          </action>
-          <action type="if" condition="doConStim = 0">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+0";
-          </action>
-          <action type="if" condition="doDirStim = 1">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+1";
-          </action>
-          <action type="if" condition="doDirtim = 0">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+0";
-          </action>
-          <action type="if" condition="doOriStim = 1">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+1";
-          </action>
-          <action type="if" condition="doOriStim = 0">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+0";
-          </action>
-          <action type="if" condition="doSFStim = 1">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+1";
-          </action>
-          <action type="if" condition="doSFStim = 0">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+0";
-          </action>
-          <action type="if" condition="doTFStim = 1">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+1";
-          </action>
-          <action type="if" condition="doTFStim = 0">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+0";
-          </action>
-          <action type="if" condition="doSizeStim = 1">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+2";
-          </action>
-          <action type="if" condition="doSizeStim = 0">
-              <action type="assignment" variable="tempFeatNum" value= "tempFeatNum+0";
-          </action>
-          <action type="assignment" variable="totFeatNum" value= "tempFeatNum"/>  
           
           <!--Select retinotopy position; choose a value from selection var, 0-origin -->
 		  <action type="if" condition="doRetStim = 1">	
@@ -258,6 +216,8 @@
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
           </action>
 
+<!--Select features if not in matrix mode -->
+          <action type="if" condition="doMatrix = 0">	
                     <!--Select size -->
           <action type="if" condition="doSizeStim = 1">	
           		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDiameterStepN"/>
@@ -277,7 +237,7 @@
           	 	<action type="if" condition="tTempStim = 0">
               		<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN"/>
               	</action>	
-              		<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqLogStep^(tTempStim-1))"/>
+              		<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog^(gratingSpatialFreqStepDir*(tTempStim-1)))"/>
               		<action type="report" message="Spatial Frequency is $tGratingSpatialFreqCPD"/>
           </action>		
           <action type="if" condition="doSFStim = 0">
@@ -290,7 +250,7 @@
           	 	<action type="if" condition="tTempStim = 0">
               		<action type="assignment" variable="tTempStim" value= "gratingTemporalFreqStepN"/>
               	</action>	
-              		<action type="assignment" variable="tGratingTemporalFreqCPD" value= "gratingTemporalFreqCPS * (gratingTemporalFreqLogStep^(tTempStim-1))"/>
+              		<action type="assignment" variable="tGratingTemporalFreqCPD" value= "gratingTemporalFreqCPS * (gratingTemporalFreqStepLog^(gratingTemporalFreqStepDir*(tTempStim-1)))"/>
               		<action type="report" message="Temporal Frequency is $tGratingTemporalFreqCPS"/>
           </action>		
           <action type="if" condition="doSFStim = 0">
@@ -317,12 +277,74 @@
           	 	<action type="if" condition="tTempStim = 0">
               		<action type="assignment" variable="tTempStim" value= "gratingContrastStepN"/>
               	</action>	
-              		<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (gratingContrastLogStep ^ (tTempStim-1))"/>
+              		<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (gratingContrastStepLog ^ (gratingContrastStepDir*(tTempStim-1)))"/>
               		<action type="report" message="Contrast is $tGratingContrast"/>
           </action>		
           <action type="if" condition="doConStim = 0">
 			  <action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
           </action>
+          </action>
+          
+          <!--Select features if IN matrix mode -->
+          <action type="if" condition="doMatrix = 1">
+          		<!-- Make SFxTF Matrix-->	
+				<action type="if" condition="doTFStim = 1 & doSFStim = 1">
+					<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingTemporalFreqStepN)"/>
+          			<action type="if" condition="tTempStim = 0">
+              			<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN * gratingTemporalFreqStepN"/>
+          			</action>
+          			<action type="if" condition="tTempStim &lt;= gratingSpatialFreqStepN">
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog ^ (gratingSpatialFreqStepDir*(tTempStim-1)))"/>
+              			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
+              			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS"/>
+          			</action>
+          			<action type="if" condition="tTempStim > gratingSpatialFreqStepN">
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog ^ (gratingSpatialFreqStepDir*((tTempStim-1) % gratingSpatialFreqStepN)))"/>
+              			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (gratingTemporalFreqStepLog ^ (gratingTemporalFreqStepDir*(ceil(tTempStim / gratingSpatialFreqStepN)-1)))"/>
+              			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS"/>
+          			</action>
+          			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
+          			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
+          			<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
+              		<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
+              		<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+          		</action>
+
+	      		<!-- Make SF x Dir Matrix -->
+	      		<action type="if" condition="doDirStim = 1 & doSFStim = 1">
+					<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingDirectionStepN)"/>
+          			<action type="if" condition="tTempStim = 0">
+              			<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN * gratingDirectionStepN"/>
+          			</action>
+          			<action type="if" condition="tTempStim &lt;= gratingSpatialFreqStepN">
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog ^ (gratingSpatialFreqStepDir*(tTempStim-1)))"/>
+              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
+              			<action type="report" message="SF is $tGratingSpatialFreqCPD ; Direction is $tGratingDirectionDeg"/>
+          			</action>
+          			<action type="if" condition="tTempStim > gratingSpatialFreqStepN">
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog ^ (gratingSpatialFreqStepDir*((tTempStim-1) % gratingSpatialFreqStepN)))"/>
+              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (ceil(tTempStim / gratingSpatialFreqStepN)-1)))"/>
+              			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingDirectionDeg"/>
+          			</action>
+          			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
+			  		<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
+              		<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
+              		<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
+              		<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+	      		</action>
+	      	
+	      	<!-- check for errors in feature combos -->
+	      		<action type="assert" condition= "doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2) > 2"
+                  message="Too many stim features selected for matrix mode"
+                  stop_on_failure="1"/>
+                  <action type="assert" condition= "doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2) < 2"
+                  message="Too few stim features selected for matrix mode"
+                  stop_on_failure="1"/>
+	      		<action type="assert" condition= "doTFStim+doSFStim < 2 & doDirStim+doSFStim < 2"
+                  message="Code not written to do matrix for these features"
+                  stop_on_failure="1"/>
+	      	</action>
+
                                        
           <!-- convert TF/SF to speed -->
           <action type="assignment" variable="tGratingSpeedDPS" value="gratingTemporalFreqCPS / gratingSpatialFreqCPD"></action> 
