@@ -216,6 +216,7 @@
 			  <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
           </action>
+          </action>
 
 <!--Select features if not in matrix mode -->
           <action type="if" condition="doMatrix = 0">	
@@ -289,7 +290,7 @@
           <!--Select features if IN matrix mode -->
           <action type="if" condition="doMatrix = 1">
           		<!-- Make SFxTF Matrix-->	
-				<action type="if" condition="doTFStim = 1 & doSFStim = 1">
+				<action type="if" condition="(doTFStim == 1) &amp;&amp; (doSFStim == 1)">
 					<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingTemporalFreqStepN)"/>
           			<action type="if" condition="tTempStim = 0">
               			<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN * gratingTemporalFreqStepN"/>
@@ -312,7 +313,7 @@
           		</action>
 
 	      		<!-- Make SF x Dir Matrix -->
-	      		<action type="if" condition="doDirStim = 1 & doSFStim = 1">
+	      		<action type="if" condition="(doDirStim == 1) &amp;&amp; (doSFStim) == 1">
 					<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingDirectionStepN)"/>
           			<action type="if" condition="tTempStim = 0">
               			<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN * gratingDirectionStepN"/>
@@ -335,13 +336,13 @@
 	      		</action>
 	      	
 	      	<!-- check for errors in feature combos -->
-	      		<action type="assert" condition= "doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2) > 2"
+	      		<action type="assert" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+doRetStim*2) &lt; 2"
                   message="Too many stim features selected for matrix mode"
                   stop_on_failure="1"/>
-                  <action type="assert" condition= "doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2) < 2"
+                  <action type="assert" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+doRetStim*2) &lt; 2"
                   message="Too few stim features selected for matrix mode"
                   stop_on_failure="1"/>
-	      		<action type="assert" condition= "doTFStim+doSFStim < 2 & doDirStim+doSFStim < 2"
+	      		<action type="assert" condition= "((doTFStim+doSFStim) &lt; 2) &amp;&amp; ((doDirStim+doSFStim) &lt; 2)"
                   message="Code not written to do matrix for these features"
                   stop_on_failure="1"/>
 	      	</action>
