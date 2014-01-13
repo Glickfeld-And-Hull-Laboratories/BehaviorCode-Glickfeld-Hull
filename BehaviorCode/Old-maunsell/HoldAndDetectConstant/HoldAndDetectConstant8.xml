@@ -1026,8 +1026,10 @@
             <!-- update running variables -->
             <action type="assignment" tag="success++" variable="success" value="success+1"></action>
             <action type="assignment" variable="tConsecErrors" value="0"></action>
+            <action type="assignment" tag="Assign reward" variable="tTotalRewardTimeUs" value="minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
 
             <!-- assign reward size based on elapsed rand if rampdown == 0 -->
+            <action type="if" condition="doBlock2 == 1">
             <action type="if" condition="doBlock2SeparateReward == 0">
                 <action type="assignment" tag="Compute tRewardAddPerMsHoldUs" variable="tRewardAddPerMsHoldUs" 
                     value="(maxRewardUs - minRewardUs) / ( randReqHoldMaxMs )"></action>
@@ -1048,6 +1050,8 @@
                         value="block2MinRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
                 </action>
             </action>
+            </action>
+            
 
 
             <!-- scale based on consec corrects -->
