@@ -960,7 +960,7 @@ axH = subplot(spSz{:}, 12);
 maxReqX = double(max(input.fixedReqHoldTimeMs)+ ...
           max(input.randReqHoldMaxMs));
 if nVisPts > 50
-  binWidth = iqr(reqHoldV(visIx)) ./ nVisPts.^(1/3);	% robust version of std
+  binWidth = 100;	% Mark's code crashed -- pulger
   nBins = ceil(maxReqX ./ binWidth);
 else
   nBins = 10;
