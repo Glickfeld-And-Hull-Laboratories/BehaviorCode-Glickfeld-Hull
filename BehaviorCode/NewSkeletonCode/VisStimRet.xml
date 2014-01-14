@@ -134,7 +134,7 @@
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
-              x_size="tGratingDiamterDeg" y_size="tGratingDiameterDeg" 
+              x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg" 
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tGratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
@@ -239,7 +239,7 @@
           	 	<action type="if" condition="tTempStim = 0">
               		<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN"/>
               	</action>	
-              		<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog^(gratingSpatialFreqStepDir*(tTempStim-1)))"/>
+              		<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim-1))))"/>
               		<action type="report" message="Spatial Frequency is $tGratingSpatialFreqCPD"/>
           </action>		
           <action type="if" condition="doSFStim = 0">
@@ -252,7 +252,7 @@
           	 	<action type="if" condition="tTempStim = 0">
               		<action type="assignment" variable="tTempStim" value= "gratingTemporalFreqStepN"/>
               	</action>	
-              		<action type="assignment" variable="tGratingTemporalFreqCPD" value= "gratingTemporalFreqCPS * (gratingTemporalFreqStepLog^(gratingTemporalFreqStepDir*(tTempStim-1)))"/>
+              		<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog,(gratingTemporalFreqStepDir*(tTempStim-1))))"/>
               		<action type="report" message="Temporal Frequency is $tGratingTemporalFreqCPS"/>
           </action>		
           <action type="if" condition="doSFStim = 0">
@@ -279,7 +279,7 @@
           	 	<action type="if" condition="tTempStim = 0">
               		<action type="assignment" variable="tTempStim" value= "gratingContrastStepN"/>
               	</action>	
-              		<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (gratingContrastStepLog ^ (gratingContrastStepDir*(tTempStim-1)))"/>
+              		<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (pow(gratingContrastStepLog,(gratingContrastStepDir*(tTempStim-1))))"/>
               		<action type="report" message="Contrast is $tGratingContrast"/>
           </action>		
           <action type="if" condition="doConStim = 0">
@@ -296,13 +296,13 @@
               			<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN * gratingTemporalFreqStepN"/>
           			</action>
           			<action type="if" condition="tTempStim &lt;= gratingSpatialFreqStepN">
-              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog ^ (gratingSpatialFreqStepDir*(tTempStim-1)))"/>
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD *(pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim-1))))"/>
               			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS"/>
           			</action>
           			<action type="if" condition="tTempStim > gratingSpatialFreqStepN">
-              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog ^ (gratingSpatialFreqStepDir*((tTempStim-1) % gratingSpatialFreqStepN)))"/>
-              			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (gratingTemporalFreqStepLog ^ (gratingTemporalFreqStepDir*(ceil(tTempStim / gratingSpatialFreqStepN)-1)))"/>
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*((tTempStim-1) % gratingSpatialFreqStepN))))"/>
+              			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog, (gratingTemporalFreqStepDir*(ceil(tTempStim / gratingSpatialFreqStepN)-1))))"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS"/>
           			</action>
           			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
@@ -319,13 +319,13 @@
               			<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN * gratingDirectionStepN"/>
           			</action>
           			<action type="if" condition="tTempStim &lt;= gratingSpatialFreqStepN">
-              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog ^ (gratingSpatialFreqStepDir*(tTempStim-1)))"/>
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*(tTempStim-1))))"/>
               			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; Direction is $tGratingDirectionDeg"/>
           			</action>
           			<action type="if" condition="tTempStim > gratingSpatialFreqStepN">
-              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (gratingSpatialFreqStepLog ^ (gratingSpatialFreqStepDir*((tTempStim-1) % gratingSpatialFreqStepN)))"/>
-              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (ceil(tTempStim / gratingSpatialFreqStepN)-1)))"/>
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*((tTempStim-1) % gratingSpatialFreqStepN))))"/>
+              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (ceil(tTempStim / gratingSpatialFreqStepN)-1))"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingDirectionDeg"/>
           			</action>
           			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
