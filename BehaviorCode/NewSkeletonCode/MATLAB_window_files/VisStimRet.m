@@ -157,7 +157,7 @@ input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
 save(input.savedDataName, 'input');
 
 disp(sprintf('Trial %d: Azimuth %d, Elevation %d, Contrast %1.2f \n \t Height/Width: %d x %d deg.', ...
-    trN, input.tGratingAzimuthDeg{trN}, input.tGratingElevationDeg{trN}, input.tGratingContrast{trN}, input.tGratingHeightDeg{trN}, input.tGratingWidthDeg{trN}));
+    trN, input.tGratingAzimuthDeg{trN}, input.tGratingElevationDeg{trN}, input.tGratingContrast{trN}, input.tGratingDiameterDeg{trN}));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
