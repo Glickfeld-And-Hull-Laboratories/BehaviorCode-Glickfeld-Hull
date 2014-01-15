@@ -198,21 +198,22 @@
           
           <!--Select retinotopy position; choose a value from selection var, 0-origin -->
 		  <action type="if" condition="doRetStim = 1">
-		  <action type="if" condition="tStimulusNumber &lt; (gratingElevationStepN * gratingAzimuthStepN)">
+		  	<action type="if" condition="tStimulusNumber &lt; (gratingElevationStepN * gratingAzimuthStepN)">
 		  	  <action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
-		  </action>
-		  <action type="if" condition="tStimulusNumber &gt;= (gratingElevationStepN * gratingAzimuthStepN)"/>
-          <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>
-          <action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
-              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim))"/>
-              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
-              <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
-          </action>
-          <action type="if" condition="tTempStim &gt;= gratingAzimuthStepN">
-              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg+ (gratingAzimuthStepDeg * ((tTempStim) % gratingAzimuthStepN))"/>
-              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg+ (gratingElevationStepDeg * (ceil(tTempStim / gratingAzimuthStepN)))"/>
-              <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
-          </action>
+		  	</action>
+		  	<action type="if" condition="tStimulusNumber &gt;= (gratingElevationStepN * gratingAzimuthStepN)">
+          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>
+          	</action>	
+          	<action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
+              	<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim))"/>
+              	<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+        		<action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
+      		</action>
+      		<action type="if" condition="tTempStim &gt;= gratingAzimuthStepN">
+              	<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg+ (gratingAzimuthStepDeg * ((tTempStim) % gratingAzimuthStepN))"/>
+              	<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg+ (gratingElevationStepDeg * (ceil(tTempStim / gratingAzimuthStepN)))"/>
+        		<action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
+      		</action>
           </action>
           
           <action type="if" condition="doRetStim = 0">
@@ -225,12 +226,14 @@
           <action type="if" condition="doMatrix = 0">	
                     <!--Select size -->
           <action type="if" condition="doSizeStim = 1">	
+          	<action type="if" condition="tStimulusNumber &lt; gratingDiameterStepN">
+          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+		  	</action>
+		  	<action type="if" condition="tStimulusNumber &gt;= gratingDiameterStepN">
           		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDiameterStepN"/>
-          	 	<action type="if" condition="tTempStim = 0">
-              		<action type="assignment" variable="tTempStim" value= "gratingDiameterStepN"/>
-              	</action>	
-              	<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim-1))"/>
-              	<action type="report" message="Direction is $tGratingDiameterDeg"/>
+          	</action>	
+            <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))"/>
+          	<action type="report" message="Direction is $tGratingDiameterDeg"/>
           </action>		
           <action type="if" condition="doSizeStim = 0">
 			  <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
@@ -238,12 +241,14 @@
           
           <!--Select spatial frequency -->
           <action type="if" condition="doSFStim = 1">	
-          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingSpatialFreqStepN"/>
-          	 	<action type="if" condition="tTempStim = 0">
-              		<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN"/>
-              	</action>	
-              		<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim-1))))"/>
-              		<action type="report" message="Spatial Frequency is $tGratingSpatialFreqCPD"/>
+          	<action type="if" condition="tStimulusNumber &lt; gratingSpatialFreqStepN">
+          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+		  	</action>
+		  	<action type="if" condition="tStimulusNumber &gt;= gratingSpatialFreqStepN">
+    			<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingSpatialFreqStepN"/>
+	      	</action>
+		  	<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim))))"/>
+          	<action type="report" message="Spatial Frequency is $tGratingSpatialFreqCPD"/>
           </action>		
           <action type="if" condition="doSFStim = 0">
 			  <action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
@@ -251,12 +256,14 @@
           
          <!--Select temporal frequency -->
           <action type="if" condition="doTFStim = 1">	
-          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingTemporalFreqStepN"/>
-          	 	<action type="if" condition="tTempStim = 0">
-              		<action type="assignment" variable="tTempStim" value= "gratingTemporalFreqStepN"/>
-              	</action>	
-              		<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog,(gratingTemporalFreqStepDir*(tTempStim-1))))"/>
-              		<action type="report" message="Temporal Frequency is $tGratingTemporalFreqCPS"/>
+          	<action type="if" condition="tStimulusNumber &lt; gratingTemporalFreqStepN">
+          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+		  	</action>
+		  	<action type="if" condition="tStimulusNumber &gt;= gratingTemporalFreqStepN">
+    			<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingTemporalFreqStepN"/>
+	      	</action>
+            <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog,(gratingTemporalFreqStepDir*(tTempStim))))"/>
+            <action type="report" message="Temporal Frequency is $tGratingTemporalFreqCPS"/>
           </action>		
           <action type="if" condition="doSFStim = 0">
 			  <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
@@ -264,12 +271,14 @@
           
           <!--Select direction -->
           <action type="if" condition="doDirStim = 1">	
+          	<action type="if" condition="tStimulusNumber &lt; gratingDirectionStepN">
+          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+		  	</action>
+		  	<action type="if" condition="tStimulusNumber &gt;= gratingDirectionStepN">
           		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDirectionStepN"/>
-          	 	<action type="if" condition="tTempStim = 0">
-              		<action type="assignment" variable="tTempStim" value= "gratingDirectionStepN"/>
-              	</action>	
-              		<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim-1))"/>
-              		<action type="report" message="Direction is $tGratingDirectionDeg"/>
+          	</action>
+            <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim))"/>
+            <action type="report" message="Direction is $tGratingDirectionDeg"/>
           </action>		
           <action type="if" condition="doDirStim = 0">
 			  <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
@@ -278,12 +287,14 @@
           
           <!--Select contrast -->
           <action type="if" condition="doConStim = 1">	
+          	<action type="if" condition="tStimulusNumber &lt; gratingContrastStepN">
+          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+		  	</action>
+		  	<action type="if" condition="tStimulusNumber &gt;= gratingContrastStepN">
           		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingContrastStepN"/>
-          	 	<action type="if" condition="tTempStim = 0">
-              		<action type="assignment" variable="tTempStim" value= "gratingContrastStepN"/>
-              	</action>	
-              		<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (pow(gratingContrastStepLog,(gratingContrastStepDir*(tTempStim-1))))"/>
-              		<action type="report" message="Contrast is $tGratingContrast"/>
+          	</action>	
+              	<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (pow(gratingContrastStepLog,(gratingContrastStepDir*(tTempStim))))"/>
+              	<action type="report" message="Contrast is $tGratingContrast"/>
           </action>		
           <action type="if" condition="doConStim = 0">
 			  <action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
@@ -294,18 +305,20 @@
           <action type="if" condition="doMatrix = 1">
           		<!-- Make SFxTF Matrix-->	
 				<action type="if" condition="(doTFStim == 1) &amp;&amp; (doSFStim == 1)">
-					<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingTemporalFreqStepN)"/>
-          			<action type="if" condition="tTempStim = 0">
-              			<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN * gratingTemporalFreqStepN"/>
+					<action type="if" condition="tStimulusNumber &lt; (gratingSpatialFreqStepN * gratingTemporalFreqStepN)">
+		  	  			<action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+		  			</action>
+		  			<action type="if" condition="tStimulusNumber &gt;= (gratingSpatialFreqStepN * gratingTemporalFreqStepN)">
+          				<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingTemporalFreqStepN)"/>
           			</action>
           			<action type="if" condition="tTempStim &lt;= gratingSpatialFreqStepN">
-              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD *(pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim-1))))"/>
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD *(pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*tTempStim)))"/>
               			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS"/>
           			</action>
           			<action type="if" condition="tTempStim > gratingSpatialFreqStepN">
-              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*((tTempStim-1) % gratingSpatialFreqStepN))))"/>
-              			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog, (gratingTemporalFreqStepDir*(ceil(tTempStim / gratingSpatialFreqStepN)-1))))"/>
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*(tTempStim % gratingSpatialFreqStepN))))"/>
+              			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog, (gratingTemporalFreqStepDir*(ceil(tTempStim / gratingSpatialFreqStepN)))))"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS"/>
           			</action>
           			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
@@ -317,18 +330,20 @@
 
 	      		<!-- Make SF x Dir Matrix -->
 	      		<action type="if" condition="(doDirStim == 1) &amp;&amp; (doSFStim) == 1">
-					<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingDirectionStepN)"/>
-          			<action type="if" condition="tTempStim = 0">
-              			<action type="assignment" variable="tTempStim" value= "gratingSpatialFreqStepN * gratingDirectionStepN"/>
+					<action type="if" condition="tStimulusNumber &lt; (gratingSpatialFreqStepN * gratingDirectionStepN)">
+		  	  			<action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+		  			</action>
+		  			<action type="if" condition="tStimulusNumber &gt;= (gratingSpatialFreqStepN * gratingDirectionStepN)">
+          				<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingTemporalFreqStepN)"/>
           			</action>
           			<action type="if" condition="tTempStim &lt;= gratingSpatialFreqStepN">
-              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*(tTempStim-1))))"/>
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*(tTempStim))))"/>
               			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; Direction is $tGratingDirectionDeg"/>
           			</action>
           			<action type="if" condition="tTempStim > gratingSpatialFreqStepN">
-              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*((tTempStim-1) % gratingSpatialFreqStepN))))"/>
-              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (ceil(tTempStim / gratingSpatialFreqStepN)-1))"/>
+              			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*((tTempStim) % gratingSpatialFreqStepN))))"/>
+              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (ceil(tTempStim / gratingSpatialFreqStepN)))"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingDirectionDeg"/>
           			</action>
           			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
@@ -339,7 +354,7 @@
 	      		</action>
 	      	
 	      	<!-- check for errors in feature combos -->
-	      		<action type="assert" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+doRetStim*2) &lt; 2"
+	      		<action type="assert" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+doRetStim*2) &gt; 2"
                   message="Too many stim features selected for matrix mode"
                   stop_on_failure="1"/>
                   <action type="assert" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+doRetStim*2) &lt; 2"
