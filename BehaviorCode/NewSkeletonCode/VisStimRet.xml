@@ -197,26 +197,29 @@
           
           
           <!--Select retinotopy position; choose a value from selection var, 0-origin -->
-		  <action type="if" condition="doRetStim = 1">	
+		  <action type="if" condition="doRetStim = 1">
+		  <action type="if" condition="tStimulusNumber &lt; (gratingElevationStepN * gratingAzimuthStepN)">
+		  	  <action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+		  </action>
+		  <action type="if" condition="tStimulusNumber &gt;= (gratingElevationStepN * gratingAzimuthStepN)"/>
           <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>
-          <action type="if" condition="tTempStim = 0">
-              <action type="assignment" variable="tTempStim" value= "gratingElevationStepN * gratingAzimuthStepN"/>
-          </action>
-          <action type="if" condition="tTempStim &lt;= gratingAzimuthStepN">
-              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim-1))"/>
+          <action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
+              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim))"/>
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
           </action>
-          <action type="if" condition="tTempStim > gratingAzimuthStepN">
-              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg+ (gratingAzimuthStepDeg * ((tTempStim-1) % gratingAzimuthStepN))"/>
-              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg+ (gratingElevationStepDeg * (ceil(tTempStim / gratingAzimuthStepN)-1))"/>
+          <action type="if" condition="tTempStim &gt;= gratingAzimuthStepN">
+              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg+ (gratingAzimuthStepDeg * ((tTempStim) % gratingAzimuthStepN))"/>
+              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg+ (gratingElevationStepDeg * (ceil(tTempStim / gratingAzimuthStepN)))"/>
               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
           </action>
+          </action>
+          
           <action type="if" condition="doRetStim = 0">
 			  <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
           </action>
-          </action>
+          
 
 <!--Select features if not in matrix mode -->
           <action type="if" condition="doMatrix = 0">	
