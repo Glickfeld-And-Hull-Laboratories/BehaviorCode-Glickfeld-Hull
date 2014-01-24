@@ -90,6 +90,7 @@ if isempty(input),
     input.eventCodecs = {};
     input.eventCodecs{1} = ds.event_codec;
     nOne = length(oneValEachTrialNames);
+    input.save_time = datestr(now, 'yymmdd-HHMM');
     
     for iV = 1:nOne
         input.(oneValEachTrialNames{iV}) = {};
@@ -98,9 +99,8 @@ else
     input.trialSinceReset = input.trialSinceReset+1;
 end
 trN = input.trialSinceReset;
-if trN == 1
-    save_time = datestr(now, 'yymmdd-HHMM');
-end
+
+
 for iV = 1:length(oneValEachTrialNames)
     tName = oneValEachTrialNames{iV};
     input.(tName){trN} = mwGetEventValue(eventsTrial, ds.event_codec, tName, 'last', 1);
@@ -156,7 +156,7 @@ input.constChangedOnTrial{input.trialSinceReset} = b;
 
 input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
                               '~/Documents/MWorks/Data', ...
-                              mat2str(input.subjectNum), save_time);
+                              mat2str(input.subjectNum), input.save_time);
 save(input.savedDataName, 'input');
 
 disp(sprintf('Trial %d: Az %d, El %d, Con %1.2f, Direction %d deg, SF %1.2f CPD, TF %d Hz', ...
