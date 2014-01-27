@@ -72,7 +72,7 @@ for j=1:length(holdTimes),
         lColor = 'b'
     end
     binnedTrs = histc(double(holdTimes{j}), edges);
-    bH = plot(edges, binnedTrs, 'Color', lColor, 'LineWidth', 2)
+    bH = plot(edges, smooth(binnedTrs, 'moving', 10), 'Color', lColor, 'LineWidth', 2)
     hold on
 end
 hold on;
@@ -101,7 +101,7 @@ elseif length(holdTimes)==3,
     legend(num2str(vol(1)), num2str(vol(2)), num2str(vol(3)), num2str(vol(4)));
 end
 
-sName = strcat('~/Documents/MWorks/SoundAnalysis/soundAnalysis-', subj,'-', date, '.pdf');
+sName = strcat('~/Documents/MWorks/SoundAnalysis/soundAnalysisSmoo-', subj,'-', date, '.pdf');
 epParams = { gcf, sName, ...
     'FileFormat', 'pdf', ...
     'Size', [12 12], ...
