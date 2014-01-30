@@ -1107,8 +1107,10 @@
             <action type="if" condition= "tempNCorrect == 0">
             <action type="report" tag="Report" message="juice = $juice"></action>	
 			</action>
+			<action type="if" condition= "tempNCorrect &gt; 0">
 			<action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
             <action type="report" tag="Report" message="juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect"></action>	
+			</action>
 			</action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
