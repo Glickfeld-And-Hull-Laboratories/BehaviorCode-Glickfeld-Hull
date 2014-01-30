@@ -44,7 +44,7 @@
       <variable tag="maxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
       <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Reward"/>
       <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Reward"/>
-      <variable tag="rewardEveryNCorrects" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
+      <variable tag="rewardEveryNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
       
     </folder>
     <folder tag="Stimuli">
@@ -274,7 +274,7 @@
       </action>
       <action type="update_stimulus_display" tag="-"></action>
       <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
-      <action type="assignment" tag="tempNcorrect = 0" variable="tempNcorrect" value="0"></action>
+      <action type="assignment" tag="tempNCorrect = 0" variable="tempNCorrect" value="0"></action>
       <action type="assignment" variable="tConsecErrors" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
 
@@ -1096,10 +1096,14 @@
             <action type="assignment" tag="interRewardInterval minimum to juiceTime" variable="tInterRewardIntervalMs" value="interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )"></action>
             <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
             <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
-
             <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
-            <action type="report" tag="Report" message="juice = $juice"></action>
             <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
+            <action type="if" condition= "tempNCorrect == 0">
+            <action type="report" tag="Report" message="juice = $juice"></action>	
+			</action>
+			<action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+            <action type="report" tag="Report" message="juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect"></action>	
+			</action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
           </task_system_state>
