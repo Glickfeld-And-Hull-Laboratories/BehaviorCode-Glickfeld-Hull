@@ -1030,13 +1030,11 @@
             <!-- update running variables -->
             <action type="assignment" tag="success++" variable="success" value="success+1"></action>
             <action type="assignment" variable="tConsecErrors" value="0"></action>
-<<<<<<< HEAD
-            <action type="assignment" tag="Assign reward" variable="tTotalRewardTimeUs" value="minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
 
-=======
+            <action type="assignment" tag="Assign reward" variable="tTotalRewardTimeUs" value="minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
 			<action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
 			
->>>>>>> origin/HoldAndDetect
+
             <!-- assign reward size based on elapsed rand if rampdown == 0 -->
             <action type="if" condition="doBlock2 == 1">
             <action type="if" condition="doBlock2SeparateReward == 0">
@@ -1059,11 +1057,8 @@
                         value="block2MinRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
                 </action>
             </action>
-<<<<<<< HEAD
             </action>
-            
 
-=======
 			
 			<!-- give reward on every N corrects -->
 			<action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
@@ -1072,7 +1067,6 @@
 			<action type="if" condition="tempNCorrect == rewardEveryNCorrect">
 			<action type="assignment" tag="rezero tempNCorrect" variable="tempNCorrect" value="0"></action>
 			</action>
->>>>>>> origin/HoldAndDetect
 
             <!-- scale based on consec corrects -->
             <action type="if" tag="if consecCorrects &lt; max" condition="consecCorrects &lt; maxConsecCorrects">
