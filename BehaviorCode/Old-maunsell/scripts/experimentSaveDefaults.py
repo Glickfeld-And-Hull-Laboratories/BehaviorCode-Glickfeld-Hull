@@ -7,6 +7,7 @@
 #  searches for home directory in each key by string matching and replaces w/ '$HOME'
 #
 #  histed 121022
+#  edited mckinney 140115
 
 from __future__ import with_statement
 
@@ -18,7 +19,7 @@ import re
 
 domainName = "org.mworks-project.MWClient"
 
-outFile = os.path.expanduser(os.path.join('~/Desktop', 'org.histed.MWClientSavedVars.plist'))
+outFile = os.path.expanduser(os.path.join('~/Desktop', 'org.Behavior.MWClientSavedVars.plist'))
 keyNames = [ 
   'MATLAB client window - selected variables',
   'MATLAB client window - MATLAB .m file',
