@@ -36,15 +36,16 @@
       
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Timeouts"/>
       <variable tag="missedTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1" groups="Timeouts"/>
-      
+      <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Timeouts"/>
+      <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Timeouts"/>
+
       <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Reward"/>
       <variable tag="minRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
       <variable tag="maxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
       <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Reward"/>
       <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Reward"/>
-      <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Reward"/>
-      <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
-
+      <variable tag="rewardEveryNCorrects" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
+      
     </folder>
     <folder tag="Stimuli">
       <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
@@ -151,9 +152,9 @@
 
     </folder>
     <folder tag="Fake Mouse">
-      <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Laser"/>
-      <variable tag="fakeMouseMaxPressMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Laser"/>
-      <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
+      <variable tag="fakeMouseMaxPressMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Fake Mouse"/>
+      <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Fake Mouse"/>
     </folder>
     <folder tag="Task Status">
       <variable tag="failure" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -163,7 +164,8 @@
       <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>'
+      
     </folder>
     <folder tag="Online Display">
       <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -173,7 +175,7 @@
       <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
       <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
-      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
@@ -187,6 +189,7 @@
       <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="consecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
+      <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
       <variable tag="tConsecTimeoutStartTime" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
       <variable tag="tNRewards" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tInterRewardIntervalMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -271,6 +274,7 @@
       </action>
       <action type="update_stimulus_display" tag="-"></action>
       <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
+      <action type="assignment" tag="tempNcorrect = 0" variable="tempNcorrect" value="0"></action>
       <action type="assignment" variable="tConsecErrors" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
 
@@ -1026,7 +1030,8 @@
             <!-- update running variables -->
             <action type="assignment" tag="success++" variable="success" value="success+1"></action>
             <action type="assignment" variable="tConsecErrors" value="0"></action>
-
+			<action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
+			
             <!-- assign reward size based on elapsed rand if rampdown == 0 -->
             <action type="if" condition="doBlock2SeparateReward == 0">
                 <action type="assignment" tag="Compute tRewardAddPerMsHoldUs" variable="tRewardAddPerMsHoldUs" 
@@ -1048,7 +1053,14 @@
                         value="block2MinRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
                 </action>
             </action>
-
+			
+			<!-- give reward on every N corrects -->
+			<action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+			<action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="0"></action>
+			</action>
+			<action type="if" condition="tempNCorrect == rewardEveryNCorrect">
+			<action type="assignment" tag="rezero tempNCorrect" variable="tempNCorrect" value="0"></action>
+			</action>
 
             <!-- scale based on consec corrects -->
             <action type="if" tag="if consecCorrects &lt; max" condition="consecCorrects &lt; maxConsecCorrects">
