@@ -14,7 +14,7 @@
   </io_devices>
   <variables tag="Variables">
     <folder tag="Behavioral Control">
-      <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
     </folder>
     <folder tag="Stimuli">
@@ -22,6 +22,11 @@
       <variable tag="doMatrix" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
       <variable tag="doRand" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
 
+ 	  <variable tag="nTotalImagingFrames" scope="global" logging="when_changed" default_value="3600" type="integer" persistant="1" groups="ImagingVars"/>
+      <variable tag="frameImagingRateMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="ImagingVars"/>
+      <variable tag="frameImagingExposureMs" scope="global" logging="when_changed" default_value="450" type="integer" persistant="1" groups="ImagingVars"/>	 
+	  <variable tag="frameImagingBinning" scope="global" logging="when_changed" default_value="4" type="integer" persistant="1" groups="ImagingVars"/>
+	 
       <variable tag="doRetStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doConStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doDirStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
@@ -99,7 +104,7 @@
 	  <variable tag="spCounter8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
 	  <variable tag="spCounter9" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
 	  <variable tag="spCounter10" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+	  <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="0" groups="ExptStruct"/>
 
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
@@ -248,8 +253,20 @@
     			<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingSpatialFreqStepN"/>
 	      	</action>
 		  	<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim))))"/>
+          	
+          	<!--Select spatial frequency with Retinotopy -->
+          	<action type="if" condition="doRetStim = 1">
+          		<action type="if" condition="tStimulusNumber &lt; (gratingElevationStepN * gratingAzimuthStepN)">
+          			<action type="assignment" variable="tTempStim" value= "1"/>
+          		</action>
+		  		<action type="if" condition="tStimulusNumber &gt;= (gratingElevationStepN * gratingAzimuthStepN)">
+    				<action type="assignment" variable="tTempStim" value= "ceil(tTempStim/(gratingElevationStepN * gratingAzimuthStepN))"/>
+	      		</action>
+	      		<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim))))"/>
+	      	</action>	
           	<action type="report" message="Spatial Frequency is $tGratingSpatialFreqCPD"/>
-          </action>		
+          </action>
+          		
           <action type="if" condition="doSFStim = 0">
 			  <action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
           </action>
@@ -263,6 +280,17 @@
     			<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingTemporalFreqStepN"/>
 	      	</action>
             <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog,(gratingTemporalFreqStepDir*(tTempStim))))"/>
+            
+            <!--Select temporal frequency with Retinotopy -->
+          	<action type="if" condition="doRetStim = 1">
+          		<action type="if" condition="tStimulusNumber &lt; (gratingElevationStepN * gratingAzimuthStepN)">
+          			<action type="assignment" variable="tTempStim" value= "1"/>
+          		</action>
+		  		<action type="if" condition="tStimulusNumber &gt;= (gratingElevationStepN * gratingAzimuthStepN)">
+    				<action type="assignment" variable="tTempStim" value= "ceil(tTempStim/(gratingElevationStepN * gratingAzimuthStepN))"/>
+	      		</action>
+	      		<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog,(gratingTemporalFreqStepDir*(tTempStim))))"/>
+	      	</action>	
             <action type="report" message="Temporal Frequency is $tGratingTemporalFreqCPS"/>
           </action>		
           <action type="if" condition="doTFStim = 0">
