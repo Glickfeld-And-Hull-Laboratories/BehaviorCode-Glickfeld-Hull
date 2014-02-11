@@ -56,7 +56,37 @@ for i=1:length(subjMat),
             dataStru(a).values.totalWaterMl{ii} = subjTotal(dataRow);
         end
     end
+    
     dataStru(a).values.weight = cell2mat(dataStru(a).values.weight);
     dataStru(a).values.earnedWaterMl = cell2mat(dataStru(a).values.earnedWaterMl);
     dataStru(a).values.totalWaterMl = cell2mat(dataStru(a).values.totalWaterMl);
+    
+    %% Actual Plotting here
+     %Ren
+    weight = dataStru(a).values.weight;
+    earnedmL = dataStru(a).values.earnedWaterMl;
+    totalmL =  dataStru(a).values.totalWaterMl;   
+        
+    %plot(xDays, totalmL, 'b', 'LineWidth', 2)
+    [Ax, H1, H2] = plotyy(xDays, earnedmL, xDays, weight);
+    set(H1,'LineWidth', 2);
+    set(H1,'Color', 'b');
+    set(H2,'LineWidth', 2);
+    set(H2,'Color', 'k');
+    set(Ax(1), 'XLim', [1 max(xDays)]);
+    set(Ax(2), 'XLim', [1 max(xDays)]);
+    set(Ax(2), 'YLim', [16 25]);
+    set(Ax(1), 'YLim', [0 max(earnedmL)]);
+    set(Ax(1),'YColor', [0 0 1])
+    set(Ax(2),'YColor', [0 0 0])
+    xlabel('Training Day');
+    set(get(Ax(1),'YLabel'), 'String', 'Earned Water Volume (mL)');
+    set(get(Ax(2),'YLabel'), 'String', 'Weight (g)');
+    set(Ax(2), 'YTick', [16:1:25]);
+    set(Ax(1), 'YTick', [0:0.2:ceil(max(earnedmL)/0.2)*0.2]);
+    grid on
+    title('Weight and Water')
+    fName = strcat('Performance -- i', num2str(a), '-- Generated:', datestr(today, 'dd mmmm yyyy'));
+    set(gcf, 'Name', fName);
+    
 end
