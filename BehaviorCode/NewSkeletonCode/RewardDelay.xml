@@ -45,7 +45,7 @@
       <variable tag="rewardSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
       <variable tag="itiEndSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
       
-      <variable tag="delaySoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="delaySoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="0"/>
       
       <variable tag="dsLevel1" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
       <variable tag="dsNCorrLvl1" scope="global" logging="when_changed" default_value="0" type="integer" groups="Volume Control" persistant="1"/>
@@ -141,17 +141,6 @@
         <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
         <action type="assignment" variable="lastActualHoldTimeMs" value="0"></action>
       </action>
-        
-        <!-- Assign volume based on number of corrects -->
-        <action type="if" condition="success &lt; dsNCorrLvl1">
-            <action type="assignment" tag="Assign level1 of rewardSound " variable="delaySoundVolume" value="dsLevel1"/>
-        </action>
-        <action type="if" condition="(success &lt; (dsNCorrLvl2+dsNCorrLvl1)) &amp;&amp; (success &gt; dsNCorrLvl1)">
-            <action type="assignment" tag="Assign level2 of rewardSound " variable="delaySoundVolume" value="dsLevel2"/>
-        </action>
-        <action type="if" condition="success &gt; (dsNCorrLvl1 + dsNCorrLvl2)">
-            <action type="assignment" tag="Assign level3 of rewardSound " variable="delaySoundVolume" value="dsLevel3"/>
-        </action>
 
       <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
         <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" 
@@ -189,6 +178,17 @@
             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
             <action type="assignment" variable="tStimTurnedOn" value="0"></action>
+
+            <!-- Assign delay sound volume based on number of corrects -->
+            <action type="if" condition="success &lt; dsNCorrLvl1">
+              <action type="assignment" tag="Assign level1 of rewardSound " variable="delaySoundVolume" value="dsLevel1"/>
+            </action>
+            <action type="if" condition="(success &lt; (dsNCorrLvl1 + dsNCorrLvl2)) &amp;&amp; (success &gt;= dsNCorrLvl1)">
+              <action type="assignment" tag="Assign level2 of rewardSound " variable="delaySoundVolume" value="dsLevel2"/>
+            </action>
+            <action type="if" condition="success &gt;= (dsNCorrLvl1 + dsNCorrLvl2)">
+              <action type="assignment" tag="Assign level3 of rewardSound " variable="delaySoundVolume" value="dsLevel3"/>
+            </action>
 
             <!-- Assign the variable for this trial's hold time -->
             <action type="assignment" variable="tReqHoldToStartMs" value="reqHoldToStartMs"></action>
@@ -307,7 +307,7 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action tag="report target time" full_name="ReportDigital" type="report" message="Delay Time Passed - In Reward Widow"></action>
             <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="tPreRewardWindowMs+tPostRewardWindowMs" duration_units="ms"></action>
-			<action type="start_timer" tag="Start delaySound Timer" timer="delaySoundTimer" timebase="" duration="tPreRewardWindowMs" duration_units="ms"></action>
+			      <action type="start_timer" tag="Start delaySound Timer" timer="delaySoundTimer" timebase="" duration="tPreRewardWindowMs" duration_units="ms"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="direct" tag="Go WaitForAction" target="DelaySoundTimerState"></transition>
           </task_system_state>
@@ -325,7 +325,7 @@
           
           <task_system_state tag="PlayDelaySound" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-         	<action type="play_sound" sound="delaySound"></action>
+         	  <action type="play_sound" sound="delaySound"></action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="direct" target="WaitForAction"></transition> <!-- Spin on this state -->  
