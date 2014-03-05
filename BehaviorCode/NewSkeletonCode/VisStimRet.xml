@@ -22,10 +22,10 @@
       <variable tag="doMatrix" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
       <variable tag="doRand" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
 
- 	  <variable tag="nTotalImagingFrames" scope="global" logging="when_changed" default_value="3600" type="integer" persistant="1" groups="ImagingVars"/>
+ 	    <variable tag="nTotalImagingFrames" scope="global" logging="when_changed" default_value="3600" type="integer" persistant="1" groups="ImagingVars"/>
       <variable tag="frameImagingRateMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="ImagingVars"/>
       <variable tag="frameImagingExposureMs" scope="global" logging="when_changed" default_value="450" type="integer" persistant="1" groups="ImagingVars"/>	 
-	  <variable tag="frameImagingBinning" scope="global" logging="when_changed" default_value="4" type="integer" persistant="1" groups="ImagingVars"/>
+      <variable tag="frameImagingBinning" scope="global" logging="when_changed" default_value="4" type="integer" persistant="1" groups="ImagingVars"/>
 	 
       <variable tag="doRetStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doConStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
@@ -94,17 +94,20 @@
       <variable tag="tCounterOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       
-	  <variable tag="spCounter1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter9" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="spCounter10" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-	  <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="0" groups="ExptStruct"/>
+	    <variable tag="spCounter1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+	    <variable tag="spCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+	    <variable tag="spCounter3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="spCounter4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="spCounter5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="spCounter6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="spCounter7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="spCounter8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="spCounter9" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="spCounter10" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="0" groups="ExptStruct"/>
+
+      <variable tag="itiWheelCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="tITIWheelCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
 
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
@@ -363,6 +366,7 @@
           </action>
           <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
           <action type="assignment" tag="Set tCounterOff" variable="tCounterOff" value="counter"></action>
+          <action type="assignment" tag="Set tITICounter2" variable="tITIWheelCounter" value="counter2"></action>
           <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
           <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action> 
 
@@ -373,6 +377,9 @@
 
       <task_system_state tag="StimOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+            <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="itiWheelCounter" value="counter2 - tITIWheelCounter"></action>
+            
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
             <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
             <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
@@ -395,7 +402,7 @@
       <task_system_state tag="speedCounter1" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
       		<action type="start_timer" tag="Start speedTimer2" timer="speedTimer2" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
-      		<action type="assignment" tag="Log First Speed Interval" variable="spCounter1" value="counter2 - tCounter2" />
+      		<action type="assignment" tag="Log First Speed Interval" variable="spCounter1" value="counter2 - tCounter2"></action>
       		
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" tag="Move from speedCounter1 to speedCounter2" target="speedCounter2" timer="speedTimer2"></transition>
