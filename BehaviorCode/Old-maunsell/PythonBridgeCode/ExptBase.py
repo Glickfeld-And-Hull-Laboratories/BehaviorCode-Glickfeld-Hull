@@ -43,9 +43,9 @@ def chop(x, sig=2):
 
 thisHostname = socket.gethostname()
 thisHostname = string.replace(thisHostname, '.local', '')
-if thisHostname == "MaunsellMouse1":
+if thisHostname == "hullglicks-mini":
     PORT = 9990
-    doTransmitCodesToBlackrock = True
+    doTransmitCodesToBlackrock = False
 elif thisHostname == "MaunsellMouse2":
     PORT = 9991
     doTransmitCodesToBlackrock = False
@@ -62,7 +62,7 @@ elif thisHostname == "MaunsellMouseTest":
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
     
-HOST = "mark-laser-PC.local"
+HOST = "neuro-glickfeld-04"
 laserParamCode = 'sendLaserParams'
 lastSendTime = 0
 nCodesSent = 0
