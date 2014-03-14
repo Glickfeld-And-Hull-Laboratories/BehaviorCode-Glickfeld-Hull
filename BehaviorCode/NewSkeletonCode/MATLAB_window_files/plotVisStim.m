@@ -3,8 +3,8 @@ function input = plotVisStim(data_struct, input)
 % essential consts
 figNum = 4;
 name = 'VisStim';
-consts = reward_delay_constants;
-subplotSz = {3,3};
+consts = visstim_constants;
+spSz = {1,3};
 
 smoothType = 'lowess';
 %% draw figure
@@ -68,12 +68,20 @@ cons = con_mat;
 else
 cons = con_mat(1);
 end
+
+if input.doMatrix
+ncond = (length(azs)*length(els))*length(dirs)*length(diams)*length(SFs)*length(TFs)*length(cons);
+else  
+ncond = max([(length(azs)*length(els)) (length(dirs)) length(diams) length(SFs) length(TFs) length(cons)]);
+end
+
+wheelIX = cell2mat(input.tStimWheelCounter);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Performance Values
 
 if tTrialN > 1
 
-        axH = subplot(subplotSz{:}, 1);						% default axes are 0 to 1
+        axH = subplot(spSz{:}, 1);						% default axes are 0 to 1
         
 	set(axH, 'Visible', 'off');
         set(axH, 'OuterPosition', [0.02 0.75, 0.25, 0.2])
@@ -118,282 +126,22 @@ end
 % Specific plots for specific tasks in this section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%
-% Hold time histogram
-
-axH = subplot(subplotSz{:}, 5);
-if input.delayTimeMs  < 500
-  maxX = 2000;
-  disp('true');
-else
-  maxFail = double(input.delayTimeMs+input.waitForLateTimeMs+(input.postRewardWindowMs));
-  maxX = ceil((maxFail)./500)*500;  % round up to nearest 500 ms.
-end
-
-visIx = holdV <= maxX;
-nVisPts = sum(visIx);
-if nVisPts > 50
-  binWidth = 49;	% robust version of std
-  nBins = ceil(maxX ./ binWidth);
-else
-  nBins = 10;
-end
-edges = linspace(0, maxX, nBins);
-Ns = histc(holdV(find(successIx)), edges);
-Nf = histc(holdV(find(earlyIx)), edges);
-Nl = histc(holdV(find(lateIx)), edges);
-Nnr = histc(holdV(find(noreleaseIx)), edges);
-if sum(Ns) + sum(Nf) + sum(Nl) + sum(Nnr) > 0
-  bH = bar(edges, [Ns(:) Nf(:) Nl(:) Nnr(:)], 'stacked');%, edges, Nf, 'c', edges, Nl, 'm');
-  set(bH, 'BarWidth', 1, 'LineStyle', 'none');
-  set(bH(1),'facecolor','g')
-  set(bH(2),'facecolor', 0.8*[0 1 1])
-  set(bH(3),'facecolor','m')
-  set(bH(4), 'facecolor', orange)
-end
+%% 2 - smoothed perf curve
+axH = subplot(spSz{:},2);
 hold on;
-xLim = [0 maxX];
-set(gca, 'XLim', xLim);
-yLim = get(gca, 'YLim');
-if (length(get(gca, 'XTick')) > 4)
-  xT = (0:500:maxX);
-  set(gca, 'XTick', xT);
-end
-
-vH = vert_lines([input.delayTimeMs-(input.preRewardWindowMs) input.delayTimeMs input.delayTimeMs+(input.postRewardWindowMs)]);
-set(vH, 'Color','k');
-grid on
-axis tight
-ylabel('Number of Trials')
-xlabel('Lever Hold Time (ms)')
-title('Trial Hold Times Histogram');
-
-%%%%%%%%%%%%%%%%
-
-%% 2 - react time CDF
-axH = subplot(subplotSz{:}, 8);
-cdfplot([input.reactTimesMs{:}]);
-set(gca, 'XLim', [-(input.delayTimeMs) 1000], ...
-         'YLim', [0 1]);
-hold on;
-%This change adds green vertical lines to mark off the reward window, now
-%centered around the target time.
-vH = vert_lines([-1*input.preRewardWindowMs input.postRewardWindowMs]);
-set(vH, 'Color','g');
-title('Reaction Time CDF');
-grid on
-xlabel('Time from Reward Window (ms)');
-
-%%%%%%%%%%%%%%%%
-
-%% Percent Estimation Error Plot
-axH = subplot(subplotSz{:}, 6);
-nPts = length(input.reactTimesMs);
-preRW = ((input.delayTimeMs - input.preRewardWindowMs)/input.delayTimeMs)-1;
-postRW = ((input.delayTimeMs + input.postRewardWindowMs)/input.delayTimeMs)-1;
-hold on
-if nTrial<=200,
-    plot(errorRatioMat, 'k');
-end
-plot([1 nTrial], [0 0], 'g--')
-plot([1 nTrial], [preRW preRW], 'g')
-plot([1 nTrial], [postRW postRW], 'g')
-
-if nTrial>=10,
-    plot(smooth(errorRatioMat, 'moving', ceil(nTrial/10)), 'k', 'LineWidth', 2)
-end
-axis tight
-grid on
-xlabel('Trial Number')
-ylabel('Percent Error')
-title('Percent Estimation Error')
-
-%%%%%%%%%%%%%%%%
-
-%% 4 - smoothed perf curve
-axH = subplot(subplotSz{:},2:3);
-hold on;
-if nTrial > 100,
-    amtSmooth = round(nTrial*0.10);
-else
-    amtSmooth = 10;
-end
-
-%plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
-lH = plot(smooth(double(successIx), nTrial, smoothType));
+plot(smooth(double(wheelIx), ceil(nTrial/10), smoothType));
+lH = plot(smooth(double(wheelIx), nTrial, smoothType));
 set(lH, 'Color', 'r', ...
         'LineWidth', 3);
-lH2 = plot(smooth(double(successIx), amtSmooth, smoothType));
+lH2 = plot(smooth(double(wheelIx), 100, smoothType));
 set(lH2, 'Color', 'k', ...
         'LineWidth', 2);
-
-lH3 = plot(smooth(double(lateIx), amtSmooth, smoothType));
-set(lH3, 'Color', 'm', ...
-         'LineWidth', 2, ...
-         'LineStyle', '-.');
-
-lH4 = plot(smooth(double(earlyIx), amtSmooth, smoothType));
-  set(lH4, 'Color', 0.8*[0 1 1], ...
-           'LineWidth', 2, ...
-           'LineStyle', '-.');
-  anystack(lH4, 'bottom');
-
-lH5 = plot(smooth(double(noreleaseIx), amtSmooth, smoothType));
-  set(lH5, 'Color', orange, ...
-           'LineWidth', 2, ...
-           'LineStyle', '-.');
-  anystack(lH5, 'bottom');
-
-anystack(lH3, 'bottom');
+        
+title('Running rate by trial')
+ylabel('Rate');
+xlabel('Trials')        
 
 
-title('Outcomes Plotted by Trials')
-ylabel('Percent of Trials (smoothed)');
-xlabel('Trials')
-set(gca, 'YLim', [0 1]);
-
-trXLim = [0 nTrials]; %get(gca, 'XLim');
-set(gca, 'XLim', trXLim);
-    
-      
-
-%%%%%%%%%%%%%%%%
-
-%% 6 - trial length plot
-axH = subplot(subplotSz{:}, 7);
-hold on;
-holdStarts = double(cellvect2mat_padded(input.holdStartsMs));
-hSDiffsSec = diff(holdStarts)/1000;
-
-% make outliers a fixed value
-largeIx = hSDiffsSec >= 120;
-hSCapped = hSDiffsSec;  
-hSCapped(largeIx) = 120;  
-
-xs = 1:length(hSDiffsSec);
-
-if ~isempty(hSDiffsSec) && sum(~isnan(hSDiffsSec)) > 1
-  % computations here
-  trPerMin = 1./hSDiffsSec.*60;
-
-  nTrs = length(input.juiceTimesMsCell);
-  firstSize = repmat(NaN, [1 nTrs]);
-  totalSize = repmat(NaN, [1 nTrs]);
-  for iT=1:nTrs
-    tJ = input.juiceTimesMsCell{iT};
-    if isempty(tJ), tJ = 0; end
-    firstRewMs(iT) = tJ(1);
-    totalRewMs(iT) = sum(tJ);
-  end
-
-  rateNSmooth = 45;
-  avgRatePerMin = smooth(trPerMin, rateNSmooth, smoothType);
-  avgCorrPerMin = smooth(trPerMin.*successIx(2:end), rateNSmooth*1.5, smoothType);
-  avgRewPerMin = smooth(trPerMin.*totalRewMs(2:end), rateNSmooth*1.5, smoothType);
-  
-
-  [axesH pH1 pH1a]=plotyy(xs,hSCapped, xs, avgRatePerMin);
-  set(pH1, 'LineStyle', 'none', ...
-           'Marker', '.');
-  set(axesH, 'NextPlot', 'add');
-
-  if sum(largeIx) > 0
-    pH2 = plot(axesH(1),xs(largeIx),hSCapped(largeIx),'r.');  % outliers
-  end
-
-  % corrects
-  pH1b = plot(axesH(2), xs, avgCorrPerMin, 'k');
-  
-  % avg rew
-  pH1b = plot(axesH(2), xs, avgRewPerMin./10/6, 'k--');
-  
-else
-  axesH(1) = gca;
-  axesH(2) = NaN;
-end
-
-ylabel('Trial Start Time (s)');
-xLim = trXLim;
-set(axesH(~isnan(axesH)), 'XLim', xLim);
-lH = plot(xLim, 20*[1 1], '--k');
-
-set(axesH(1),'YLim', [0 121], ...
-             'YTick', [0 40 80 120], ...
-             'YTickLabelMode', 'auto', ...
-             'YColor', 'k');
-
-if ~isnan(axesH(2)) 
-  ylabel(axesH(2), 'Trials/min; Avg Reward (ms/sec)');
-  yLim2 = get(axesH(2), 'YLim');
-  yLim2 = [0 max(yLim2(2), 6)];
-  set(axesH(2), 'YLim', yLim2, ...
-                'YTickMode', 'auto', ...
-                'YTickLabelMode', 'auto');
-end
-  
-nDiffs = length(hSDiffsSec);
-fN = max(1, nDiffs-5);  % if first 6 trials, start at 1
-xlabel('Trials')
-title(sprintf('Last 6 Start Times (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 6 - Hold and React Times Over Trials
-axH = subplot(subplotSz{:}, 9);
-hold on;
-
-% do smooth on only corrects and earlies, then plot by true trial number
-desIx = successIx|earlyIx|lateIx;
-xVals = find(desIx);
-v1 = smooth(holdV(desIx), 25, 'rloess');
-v2 = smooth(holdV(desIx), 250, 'rlowess');
-desYIx = successIx;
-xYVals = find(desYIx);
-vy1 = smooth(reactV(successIx), 25, 'rloess');
-vy2 = smooth(reactV(successIx), 250, 'rlowess');
-
-[axH pH1 pH2] = plotyy(1,1,1,1);
-set(axH, 'NextPlot', 'add');
-
-% first axes
-if ~isempty(v1) && ~isempty(v2)
-  hH(1) = plot(axH(1), xVals, v1);
-  hH(2) = plot(axH(1), xVals, v2);
-  
-  c1 = 'k';
-  set(hH, 'Color', c1);
-  set(hH(2), ...
-           'LineWidth', 3);
-
-  set(axH, 'XLim', trXLim, ...
-           'YLimMode', 'auto', ...
-           'YTickMode', 'auto', ...
-           'YTickLabelMode', 'auto', ...
-           'YColor', c1);
-  yLim = get(axH(1), 'YLim');
-  if yLim(2) > 0
-    yLim(1) = 0;
-    set(axH(1), 'YLim', yLim);
-  end
-  ylabel('Hold time (ms) - Excluding NoReleases');
-end
-
-% 2nd axes
-if ~isempty(vy1) && ~isempty(vy2)
-    hyH(1) = plot(axH(2), xYVals, vy1);
-    hyH(2) = plot(axH(2), xYVals, vy2);
-    
-    c2 = 'b';
-    set(hyH, 'Color', c2);
-    set(hyH(2), 'LineWidth', 2);
-    
-    set(axH(2),... 'YLim', [0 max(reactV)], ...
-                'YTickMode', 'auto', ...
-                'YTickLabelMode', 'auto', ...
-                'YColor', c2)
-    ylabel(axH(2), 'React time (ms) - Corrects');
-end
-xlabel('Trials')
-title('Mean Reaction (blue) & Hold (black) Times');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generic code below
