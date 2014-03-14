@@ -174,6 +174,7 @@ disp(sprintf('Trial %d: Az %d, El %d, Con %1.2f, Direction %d deg, SF %1.2f CPD,
     trN, input.tGratingAzimuthDeg{trN}, input.tGratingElevationDeg{trN}, input.tGratingContrast{trN}, input.tGratingDirectionDeg{trN}, input.tGratingSpatialFreqCPD{trN}, input.tGratingTemporalFreqCPS{trN}));
 
 %% Run Plotting Function
+input.holdStartsMs = input.tThisTrialStartTimeMs;
 input = exptRunSubfunctions(ds, input, { @plotVisStim });
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
