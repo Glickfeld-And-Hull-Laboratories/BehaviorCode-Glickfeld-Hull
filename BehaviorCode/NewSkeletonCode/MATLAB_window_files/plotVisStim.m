@@ -4,7 +4,7 @@ function input = plotVisStim(data_struct, input)
 figNum = 4;
 name = 'VisStim';
 consts = visstim_constants;
-spSz = {1,3};
+spSz = {4,3};
 
 smoothType = 'lowess';
 %% draw figure
@@ -75,7 +75,7 @@ else
 ncond = max([(length(azs)*length(els)) (length(dirs)) length(diams) length(SFs) length(TFs) length(cons)]);
 end
 
-wheelIX = cell2mat(input.tStimWheelCounter);
+wheelIx = celleqel2mat_padded(input.tStimWheelCounter);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Performance Values
 
@@ -93,13 +93,9 @@ if tTrialN > 1
         text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 18);
         text(0.70, 1.25, date, 'FontWeight', 'light', 'FontSize', 18);
 
-        elMin = round((now - datenum(input.startDateVec)) * 24*60);
-        startStr = datestr(input.startDateVec, 'HH:MM');
-        text(0.00, 1.0, {'Subject Number:', 'Start time + elapsed:', 'FontSize', 12);
+        text(0.00, 1.0, {'Subject Number'}, 'FontSize', 12);
 	text(0.70, 1.0, ...
-             { sprintf('%2d', input.subjectNum), ...
-               sprintf('%s + %2d min.', ...
-                       startStr, elMin), ...
+             { sprintf('%2d', input.subjectNum)}, 'FontSize', 12);
 
         
         tStr = sprintf( ['Frames On/Off: %3.0f, %3.0f \n' ,...
@@ -118,6 +114,10 @@ if tTrialN > 1
                         mat2str(TFs), ...
                         mat2str(cons));
 
+        text(0, 0.8, tStr, ...
+             'VerticalAlignment', 'top', ...
+             'HorizontalAlignment', 'left', 'FontSize', 12);
+         
         set(gcf, 'Visible', 'on');
 
 end			
@@ -148,7 +148,7 @@ xlabel('Trials')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% List changed text
-axH = subplot(subplotSz{:}, 4);
+axH = subplot(spSz{:}, 4);
 hold on;
 set(axH, 'Visible', 'off');
 if nTrial > 1 
