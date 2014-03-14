@@ -173,6 +173,9 @@ save(input.savedDataName, 'input');
 disp(sprintf('Trial %d: Az %d, El %d, Con %1.2f, Direction %d deg, SF %1.2f CPD, TF %d Hz', ...
     trN, input.tGratingAzimuthDeg{trN}, input.tGratingElevationDeg{trN}, input.tGratingContrast{trN}, input.tGratingDirectionDeg{trN}, input.tGratingSpatialFreqCPD{trN}, input.tGratingTemporalFreqCPS{trN}));
 
+%% Run Plotting Function
+input = exptRunSubfunctions(ds, input, { @plotVisStim });
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %trN = input.trialSinceReset;
