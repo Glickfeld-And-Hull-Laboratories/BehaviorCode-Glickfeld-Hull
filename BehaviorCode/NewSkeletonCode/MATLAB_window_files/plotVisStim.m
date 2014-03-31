@@ -28,7 +28,7 @@ el_mat = [input.gratingElevationDeg:input.gratingElevationStepDeg:input.gratingE
 dir_mat = [input.gratingDirectionDeg:input.gratingDirectionStepDeg:input.gratingDirectionDeg+(input.gratingDirectionStepDeg*(input.gratingDirectionStepN-1))];
 diam_mat = [input.gratingDiameterDeg:input.gratingDiameterStepDeg:input.gratingDiameterDeg+(input.gratingDiameterStepDeg*(input.gratingDiameterStepN-1))];
 sf_mat = [input.gratingSpatialFreqCPD.*(input.gratingSpatialFreqStepLog.^(double(input.gratingSpatialFreqStepDir).*((1:input.gratingSpatialFreqStepN)-1)))];
-tf_mat = [input.gratingTemporalFreqCPS.*(input.gratingTemporalFreqStepLog.^(double(input.gratingTemporalFreqStepDir).*((1:input.gratingTemporalFreqStepN)-1)))];
+tf_mat = [double(input.gratingTemporalFreqCPS).*double(input.gratingTemporalFreqStepLog).^(double(input.gratingTemporalFreqStepDir).*((1:double(input.gratingTemporalFreqStepN))-1))];
 con_mat = [input.gratingContrast.*(input.gratingContrastStepLog.^(double(input.gratingContrastStepDir).*((1:input.gratingContrastStepN)-1)))];
 
 if input.doRetStim
