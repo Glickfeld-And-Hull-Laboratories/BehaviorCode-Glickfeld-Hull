@@ -296,12 +296,12 @@
           		<!-- Make SFxTF Matrix-->	
 				<action type="if" condition="(doTFStim == 1) &amp;&amp; (doSFStim == 1)">
           			<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingSpatialFreqStepN * gratingTemporalFreqStepN)"/>
-          			<action type="if" condition="tTempStim &lt;= gratingSpatialFreqStepN">
+          			<action type="if" condition="tTempStim &lt; gratingSpatialFreqStepN">
               			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD *(pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*tTempStim)))"/>
               			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS"/>
           			</action>
-          			<action type="if" condition="tTempStim > gratingSpatialFreqStepN">
+          			<action type="if" condition="tTempStim &gt;= gratingSpatialFreqStepN">
               			<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*(tTempStim % gratingSpatialFreqStepN))))"/>
               			<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog, (gratingTemporalFreqStepDir*(floor(tTempStim / gratingSpatialFreqStepN)))))"/>
               			<action type="report" message="SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS"/>
