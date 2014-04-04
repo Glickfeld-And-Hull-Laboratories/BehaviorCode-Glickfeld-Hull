@@ -4,6 +4,7 @@ function [ output_args ] = dailyScript(subjMat)
 startup
 
 global dataStru
+plotWeightWaterHADC8([ 502 503 506 507]);
 dataStru = struct;
 dataStru = dataLoad(subjMat);
 dataStru = wwLoad(subjMat);

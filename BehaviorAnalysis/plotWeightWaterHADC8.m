@@ -1,7 +1,7 @@
+function [output] = plotWeightWaterHADC8(subjs)
 %This function graphs weight and water for the HADC8 Mice
 %Written by Andrew McKinney 140131
 [numSheet, strSheet, allSheet] = xlsread('~/Downloads/GlickfeldLabTrainingSpreadsheet.xlsx');
-subjs = ([502 503 506 507])
 global dataStru
 %%Quick XLSX sheet casting
 xlsSubj = allSheet(:,1);
