@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" lever2="" 
+              lever1_solenoid="FIO2"
+              lever2_solenoid=""
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Behavioral Control">
+      <!-- New Variables at the Top -->
+      <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="trials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="tITIClock" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="tTimeRemainingOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="tTimeRemainingOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+    </folder>
+  </variables>
+  <sounds tag="Sounds">
+    <sound tag="louderPressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
+  </sounds>
+  <stimuli tag="Stimuli">
+    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="drifting_grating" tag="base_grating"  direction="0"
+              starting_phase="0" 
+              spatial_frequency="0.25" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="30" y_size="30" 
+              x_position="0" y_position="0" 
+              rotation="0" 
+              alpha_multiplier="1.0"></stimulus>
+    <stimulus type="drifting_grating" tag="target_grating"  direction="0" 
+              starting_phase="0" 
+              spatial_frequency="0.25" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="30" y_size="30" 
+              x_position="0" y_position="0" 
+              rotation="90" 
+              alpha_multiplier="1.0"></stimulus>
+  </stimuli>    
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
+       <task_system tag="TS" full_name="TS" description="" interruptible="YES" 
+                     _error="Task Systems must contain >=1 transition that yields to parent">
+
+          <task_system_state tag="InterTrialIntervalStimulusOn" interruptible="YES">
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="report" message="Stimulus On - ITI"/>
+
+            <!-- Case if time remaining in ITI is less than stimOnTimeMs -->
+            <action type="if" tag="" condition="tITIClock &lt; stimOnTimeMs">
+              <action type="assignment" tag="" variable="tTimeRemainingOn" value="stimOnTimeMs - tITIClock"/>
+              <action type="start_timer" timer="stimOnTimer" duration="9999999" timebase="" duration_units="ms" />
+              <action type="start_timer" timer="transitionOnTimer" duration="tITIClock" timebase="" duration_units="ms" />
+            </action>
+
+             <!-- Do tITIClock subtraction at the end of the task state -->
+            <action type="if" tag="" condition="tITIClock &gt;== stimOnTimeMs">
+              <action type="assignment" variable="tITIClock" value="tITIClock - stimOnTimeMs"/>
+              <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms" />
+              <action type="start_timer" timer="transitionOnTimer" duration="9999999" timebase="" duration_units="ms" />
+            </action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="InterTrialIntervalStimulusOff" timer="stimOnTimer"></transition>
+            <transition type="timer_expired" tag="WaitForLeverStimulusOff" target="StartTrial" timer="transitionOnTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="InterTrialIntervalStimulusOff" interruptible="YES">
+            <action tag="Dequeue ITI Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="report" message="Stimulus Off - ITI"/>
+
+            <!-- Case if time remaining in ITI is less than stimOnTimeMs -->
+            <action type="if" tag="" condition="tITIClock &lt; stimOffTimeMs">
+              <action type="assignment" tag="" variable="tTimeRemainingOff" value="stimOffTimeMs - tITIClock"/>
+              <action type="start_timer" timer="stimOffTimer" duration="9999999" timebase="" duration_units="ms" />
+              <action type="start_timer" timer="" duration="tITIClick" timebase="" duration_units="ms" />
+            </action>
+
+             <!-- Do tITIClock subtraction at the end of the task state -->
+            <action type="if" tag="" condition="tITIClock &gt;== stimOffTimeMs">
+              <action type="assignment" variable="tITIClock" value="tITIClock - stimOffTimeMs"/>
+              <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms" />
+              <action type="start_timer" timer="transitionOnTimer" duration="9999999" timebase="" duration_units="ms" />
+            </action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Queue Visual Stimulus" target="InterTrialIntervalStimulusOn" timer="stimOffTimer"></transition>
+            <transition type="timer_expired" tag="WaitForLeverStimulusOn" target="StartTrial" timer="transitionOffTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="StartTrial" interruptible="YES">
+            <action type="start_timer" timer="trialTimer" duration="5000" timebase="" duration_units="ms"/>
+            <action type="assignment" variable="trials" value="trials+1" />
+            <action type="report" message="Trial Started --  waiting 5000ms"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Queue Visual Stimulus" target="EndTrial" timer="trialTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="EndTrial" interruptible="YES">
+            <action type="report" message="Trial Ended --  waiting 5000ms"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="yield" tag="return to parent task system"></transition>
+          </task_system_state>
+
+        </task_system>
+      </trial>
+      <action type="dequeue_stimulus" stimulus="base_grating"></action>
+      <action tag="Update Stimulus" type="update_stimulus_display"></action>
+    </protocol>
+  </experiment>
+</monkeyml>
