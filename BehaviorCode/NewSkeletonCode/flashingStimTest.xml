@@ -23,6 +23,8 @@
       <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Variables"/>
       <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="doConstantStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Variables"/>
+      <!-- End New Variables -->
 
       <variable tag="tITIClock" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       <variable tag="tITIRemainingOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
@@ -341,8 +343,10 @@
           </task_system_state>
 
           <task_system_state tag="InterTrialIntervalStimulusOff" interruptible="YES">
-            <action tag="Dequeue ITI Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="!doConstantStimulus">
+              <action tag="Dequeue ITI Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             <action type="report" message="Stimulus Off - ITI"/>
 
             <!-- Case if time remaining in ITI is less than stimOnTimeMs -->
@@ -399,9 +403,11 @@
           <task_system_state tag="WaitForLeverStimulusOff" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tEnteredOffStateTimeMs" value="now()/1000"/>
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="!doConstantStimulus">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             <action type="report" message="Stimulus Off - WaitingForPress $tITIRemainingOffMs"/>
 
             <!-- Turn on stimulus for timeOn - tITITime -->
@@ -447,8 +453,10 @@
           <task_system_state tag="TrialStimOff" interruptble="YES">
             <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             <action type="assignment" variable="tTrialRemainingOffMs" value="stimOffTimeMs - (tLeverPressTimeMs - tEnteredOffStateTimeMs)"/>
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="!doConstantStimulus">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             <action type="report" message="Lever Down - Trial Started - Stim Off"/>
 
             <!-- Turn on stimulus for tTrialRemainingOff -->
@@ -473,6 +481,12 @@
           </task_system_state>
 
           <task_system_state tag="TargetStimOn" interruptble="YES">
+            <!-- Must dequeue stimulus in the doConstantStimulus case -->
+            <action type="if" condition="doConstantStimulus==1">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action> 
             <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
@@ -484,8 +498,10 @@
           </task_system_state>
 
            <task_system_state tag="TargetStimOff" interruptble="YES">
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="!doConstantStimulus">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             <action type="report" message="Target Stim Off for $stimOffTimeMs"/>
             <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
 
