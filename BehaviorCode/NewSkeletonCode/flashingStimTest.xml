@@ -18,7 +18,7 @@
       <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Variables"/>
       <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Variables"/>
       <variable tag="tLeverPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>     
-      <variable tag="trials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="trials" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Variables"/>
       <variable tag="nCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Variables"/>
@@ -399,7 +399,7 @@
           <task_system_state tag="WaitForLeverStimulusOff" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tEnteredOffStateTimeMs" value="now()/1000"/>
-            <action tag="Dequeue ITI Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
             <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="Stimulus Off - WaitingForPress $tITIRemainingOffMs"/>
@@ -427,10 +427,10 @@
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
-            <action type="report" message="Lever Down - Trial Started - Stim On $tTrialRemainingOnMs"/>
+            <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
 
 
-            <!-- Turn on stimulus for timeOn - tITITime -->
+            <!-- Turn on stimulus for tTrialRemainingOn -->
             <action type="if" condition="tTrialRemainingOnMs &gt;= 1">
               <action type="start_timer" timer="stimOnTimer" duration="tTrialRemainingOnMs" timebase="" duration_units="ms"/>
             </action>
@@ -447,28 +447,55 @@
           <task_system_state tag="TrialStimOff" interruptble="YES">
             <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             <action type="assignment" variable="tTrialRemainingOffMs" value="stimOffTimeMs - (tLeverPressTimeMs - tEnteredOffStateTimeMs)"/>
-            <action tag="Dequeue ITI Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
-            <action type="report" message="Lever Down - Trial Started - Stim Off $tTrialRemainingOffMs"/>
+            <action type="report" message="Lever Down - Trial Started - Stim Off"/>
 
-            <!-- Turn on stimulus for timeOn - tITITime -->
+            <!-- Turn on stimulus for tTrialRemainingOff -->
             <action type="if" condition="tTrialRemainingOffMs &gt;= 1">
               <action type="start_timer" timer="stimOffTimer" duration="tTrialRemainingOffMs" timebase="" duration_units="ms"/>
+              <action type="start_timer" timer="targetTimer" duration="9999999" timebase="" duration_units="ms"/>
             </action>
-            <action type="if" condition="tTrialRemainingOffMs &lt; 1">
+            <action type="if" condition="(tTrialRemainingOffMs &lt; 1) &amp;&amp; !(nCyclesOn &lt;= tCyclesOn)">
               <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+              <action type="start_timer" timer="targetTimer" duration="9999999" timebase="" duration_units="ms"/>
+            </action>
+            <action type="if" condition="(tTrialRemainingOffMs &lt; 1) &amp;&amp; (nCyclesOn &lt;= tCyclesOn)">
+              <action type="start_timer" timer="targetTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+              <action type="start_timer" timer="stimOffTimer" duration="9999999" timebase="" duration_units="ms"/>
             </action>
 
             <action type="assignment" variable="tTrialRemainingOffMs" value="0"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="Queue Visual Stimulus" target="TrialStimOn" timer="stimOffTimer"></transition>
-            <transition type="conditional" condition="nCyclesOn &lt;= tCyclesOn" target="EndTrial"/>
+            <transition type="timer_expired" tag="Move on to Target Stimulus Presentation" target="TargetStimOn" timer="targetTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="TargetStimOn" interruptble="YES">
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action> 
+            <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
+            <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/> 
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="TargetStimOff" timer="stimOnTimer"></transition>
+          </task_system_state>
+
+           <task_system_state tag="TargetStimOff" interruptble="YES">
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="report" message="Target Stim Off for $stimOffTimeMs"/>
+            <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Move on to Target Stimulus Presentation" target="EndTrial" timer="endTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrial" interruptble="YES">
             <action type="report" message="Trial Ended"/>
-
+            <action type="assignment" variable="trials" value="trials+1"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="yield" tag="return to parent task system"></transition>
           </task_system_state>
