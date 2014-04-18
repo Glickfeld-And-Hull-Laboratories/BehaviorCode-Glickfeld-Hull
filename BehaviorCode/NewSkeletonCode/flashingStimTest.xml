@@ -24,6 +24,7 @@
       <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Variables"/>
       <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Variables"/>
       <variable tag="doConstantStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Variables"/>
+      <variable tag="stopITIFlashing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Variables"/>
       <!-- End New Variables -->
 
       <variable tag="tITIClock" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
@@ -308,9 +309,11 @@
           </task_system_state>
 
           <task_system_state tag="InterTrialIntervalStimulusOn" interruptible="YES">
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="!stopITIFlashing">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             <action type="report" message="Stimulus On - ITI"/>
 
             <!-- Case if time remaining in ITI is less than stimOnTimeMs -->
@@ -380,9 +383,11 @@
 
           <task_system_state tag="WaitForLeverStimulusOn" interruptible="YES">
             <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000"/>
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="!stopITIFlashing">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             <action type="report" message="Stimulus On - WaitingForPress $tITIRemainingOnMs"/>
 
             <!-- Turn on stimulus for timeOn - tITITime -->
@@ -398,6 +403,7 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="WaitForLeverStimulusOff" timer="stimOnTimer"></transition>
             <transition type="conditional" tag="Move to Trial with Lever Down" condition=" FIO1 == 1" target="TrialStimOn"></transition>
+            <transition type="conditional" tag="Turn stim on right away if stopITIFlashing" condition=" FIO1 == 1 &amp;&amp; stopITIFlashing==1" target="TrialStimOn"></transition>
           </task_system_state>
 
           <task_system_state tag="WaitForLeverStimulusOff" interruptible="YES">
@@ -424,12 +430,18 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="Queue Visual Stimulus" target="WaitForLeverStimulusOn" timer="stimOffTimer"></transition>
             <transition type="conditional" tag="Move to Trial with Lever Down" condition=" FIO1 == 1" target="TrialStimOff"></transition>
+            <transition type="conditional" tag="Turn stim on right away if stopITIFlashing" condition=" FIO1 == 1 &amp;&amp; stopITIFlashing==1" target="TrialStimOn"></transition>
           </task_system_state>
 
           <task_system_state tag="TrialStimOn" interruptble="YES">
             <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
-            <action type="assignment" variable="tTrialRemainingOnMs" value="stimOnTimeMs - (tLeverPressTimeMs - tEnteredOnStateTimeMs)" />
+            <action type="if" condition="!(stopITIFlashing)">
+              <action type="assignment" variable="tTrialRemainingOnMs" value="stimOnTimeMs - (tLeverPressTimeMs - tEnteredOnStateTimeMs)" />
+            </action>
+            <action type="if" "stopITIFlashing == 1">
+              <action type="assignment" variable="tTrialRemainingOnMs" value="0" />
+            </action>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
