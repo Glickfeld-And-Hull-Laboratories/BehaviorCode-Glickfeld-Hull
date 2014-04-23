@@ -25,6 +25,10 @@
       <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Variables"/>
       <variable tag="doConstantStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Variables"/>
       <variable tag="stopITIFlashing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Variables"/>
+      <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Variables"/>
+      <variable tag="soundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Variables"/>
+      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Variables"/>
+
       <!-- End New Variables -->
 
       <variable tag="tITIClock" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
@@ -78,7 +82,7 @@
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1"/>
 
-      <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/>
+      <!-- <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/> -->
       <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/>
 
       <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1"/>
@@ -261,7 +265,9 @@
     </folder>
   </variables>
   <sounds tag="Sounds">
-    <sound tag="louderPressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
+    <sound tag="pressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
+    <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="soundBaseAmplitude"></sound>
+    <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/8000Hz_.2s.wav" amplitude="soundTargetAmplitude"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -315,6 +321,7 @@
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             <action type="report" message="Stimulus On - ITI"/>
+            <action type="play_sound" sound="baseSound"/>
 
             <!-- Case if time remaining in ITI is less than stimOnTimeMs -->
             <action type="if" tag="" condition="tITIClock &lt; stimOnTimeMs">
@@ -385,7 +392,7 @@
             <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000"/>
             <action type="if" condition="!stopITIFlashing" >
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOnOn"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             <action type="report" message="Stimulus On - WaitingForPress $tITIRemainingOnMs"/>
@@ -393,9 +400,12 @@
             <!-- Turn on stimulus for timeOn - tITITime -->
             <action type="if" condition="tITIRemainingOnMs &gt; 0">
               <action type="start_timer" timer="stimOnTimer" duration="tITIRemainingOnMs" timebase="" duration_units="ms"/>
+              <!-- Insures that moving directly to Trial doesn't lengthen stimOn time by adding stitching ITION/WaitOn/TrialOn together -->
+              <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000 - tITIRemainingOnMs"/>
             </action>
             <action type="if" condition="tITIRemainingOnMs &lt;= 0">
               <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+              <action type="play_sound" sound="baseSound"/>
             </action>
 
             <!-- Make sure this assignment is done last -->
@@ -436,10 +446,11 @@
 
           <task_system_state tag="TrialStimOn" interruptble="YES">
             <action type="if" condition="tLeverPressTimeMs &lt; 1">
+              <action type="play_sound" sound="pressSound"/>
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             </action>
             <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
-            <action type="if" condition="!(stopITIFlashing)">
+            <action type="if" condition="stopITIFlashing==0 &amp;&amp; tCyclesOn &lt;= 1">
               <action type="assignment" variable="tTrialRemainingOnMs" value="stimOnTimeMs - (tLeverPressTimeMs - tEnteredOnStateTimeMs)" />
             </action>
             <action type="if" condition="stopITIFlashing == 1">
@@ -457,6 +468,7 @@
             </action>
             <action type="if" condition="tTrialRemainingOnMs &lt; 1">
               <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+              <action type="play_sound" sound="baseSound"/>
             </action>
 
             <action type="assignment" variable="tTrialRemainingOnMs" value="0"/>
@@ -467,9 +479,11 @@
 
           <task_system_state tag="TrialStimOff" interruptble="YES">
             <action type="if" condition="tLeverPressTimeMs &lt; 1">
+              <action type="play_sound" sound="pressSound"/>
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
+              <action type="assignment" variable="tTrialRemainingOffMs" value="stimOffTimeMs - (tLeverPressTimeMs - tEnteredOffStateTimeMs)"/>
             </action>
-            <action type="assignment" variable="tTrialRemainingOffMs" value="stimOffTimeMs - (tLeverPressTimeMs - tEnteredOffStateTimeMs)"/>
+            
             <action type="if" condition="!doConstantStimulus">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
@@ -506,6 +520,7 @@
             </action>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action> 
             <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+            <action type="play_sound" sound="targetSound"/>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
             <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/> 
