@@ -125,7 +125,7 @@ fprintf(1,'Hold %d, req %d, react %d, %s%s %s- %d rew %dms\n', ...
         nJ, round(juiceD));
 
 %% run subfunctions
-input = exptRunSubfunctions(ds, input, { @plotOnlineHist });
+input = exptRunSubfunctions(ds, input, { @plotFlashingStim });
 
 
 
