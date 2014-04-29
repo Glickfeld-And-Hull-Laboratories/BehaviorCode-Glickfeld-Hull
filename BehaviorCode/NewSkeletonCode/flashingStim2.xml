@@ -44,6 +44,7 @@
       <variable tag="timeEndRemainingOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="extraCycleTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
@@ -811,15 +812,15 @@
                     value="itiTimeMs"></action>
             
             <!-- extend based on previous hold and max stim time, if asked for -->
-            <!-- <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
+            <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
               <action type="assignment" variable="tempMs"  
-                      value="(fixedReqHoldTimeMs+randReqHoldMaxMs)-lastActualHoldTimeMs"></action> 
-              <action type="if" condition="tempMs > 0"> -->
+                      value="(maxCyclesOn*(stimOnTimeMs+stimOffTimeMs))-lastActualHoldTimeMs - extraCycleTimeMs"></action> 
+              <action type="if" condition="tempMs > 0"> 
                 <!--add to ITI-->
-            <!--    <action type="assignment" tag="-"
-                        variable="tItiWaitTimeMs" value="tItiWaitTimeMs+tempMs"></action>
+              <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
+              <action type="assignment" tag="-" variable="extraCycleTimeMs" value="0"></action>
               </action>
-            </action> -->
+            </action> 
 
             <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
                     timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
@@ -1269,6 +1270,7 @@
 
           <task_system_state tag="EndTrialFinishStimOn" interruptble="YES">
              <action type="assignment" variable="timeEndRemainingOnMs" value="stimOnTimeMs - ((now()/1000)-tStimOnMs)" />
+             <action type="assignment" variable="extraCycleTimeMs" value="timeEndRemainingOnMs" />
              <action type="start_timer" tag="" timer="stimOnTimer" duration="timeEndRemainingOnMs" timebase="" duration_units="ms"/>
              <action type="report" message="End of Trial - Final Stim On"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -1280,15 +1282,18 @@
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
               <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+              <action type="assignment" variable="extraCycleTimeMs" value="stimOffTimeMs+extraCycleTimeMs" />
             </action>
             <action type="if" condition="stimTag==1">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
               <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+              <action type="assignment" variable="extraCycleTimeMs" value="stimOffTimeMs+extraCycleTimeMs" />
             </action>
             <action type="if" condition="stimTag==0">
               <action type="assignment" variable="timeEndRemainingOffMs" value="stimOffTimeMs - ((now()/1000)-tStimOffMs)" />
              <action type="start_timer" tag="" timer="endTimer" duration="timeEndRemainingOffMs" timebase="" duration_units="ms"/>
+             <action type="assignment" variable="extraCycleTimeMs" value="timeEndRemainingOffMs+extraCycleTimeMs" />
            </action>
            <action type="report" message="End of Trial - Final Stim Off"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
