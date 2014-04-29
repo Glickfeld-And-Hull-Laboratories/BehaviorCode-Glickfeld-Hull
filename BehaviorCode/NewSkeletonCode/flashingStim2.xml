@@ -39,32 +39,37 @@
       <variable tag="tTrialRemainingOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       <variable tag="tEnteredOnStateTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
       <variable tag="tEnteredOffStateTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
-
+      <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="timeEndRemainingOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="timeEndRemainingOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1"/>
-      <variable tag="randReqHoldMaxMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1"/>
-      <variable tag="fixedReqHoldTimeMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1"/>
       <variable tag="doGeomHoldDist" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>        
-      <variable tag="geomHoldMeanMs" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1"/>        
+      <variable tag="geomHoldMeanMs" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1"/>
+      <variable tag="consecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
+      <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>        
       <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1"/>
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
       <variable tag="missedTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1"/>
       <variable tag="itiExtraRandTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
-      <variable tag="minRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
-      <variable tag="maxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
-      <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1"/>
+      <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Reward"/>
+      <variable tag="rewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
+      <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Reward"/>
+      <variable tag="rewardEveryNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
       <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1"/>
       <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1"/>
       <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="120" type="integer" persistant="1"/>
       <variable tag="doLongBonus" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="longBonusExtraHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="longBonusExtraRewardUs" scope="global" logging="when_changed" default_value="120000" type="integer" persistant="1"/>
     </folder>
     <folder tag="Stimuli">
       <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Features"/>
@@ -109,8 +114,7 @@
       <variable tag="block2TrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       
       <variable tag="doBlock2SeparateReward" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="block2MinRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
-      <variable tag="block2MaxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
+      <variable tag="block2RewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1"/>
 
       <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/> 
 
@@ -269,6 +273,8 @@
     <sound tag="pressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
     <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="soundBaseAmplitude"></sound>
     <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/8000Hz_.2s.wav" amplitude="soundTargetAmplitude"></sound>
+    <sound tag="incorrectSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav"></sound>
+    <sound tag="rewardSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/shortCorrect.wav"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -979,6 +985,9 @@
           </task_system_state>
 
           <task_system_state tag="TrialStimOn" interruptble="YES">
+            <action type="assignment" variable="stimTag" value= "1"/>
+            <action type="assignment" variable="tStimOnMs" value="(now()/1000)" />
+
             <action type="if" condition="tLeverPressTimeMs &lt; 1">
               <action type="play_sound" sound="pressSound"/>
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
@@ -1008,10 +1017,13 @@
             <action type="assignment" variable="tTrialRemainingOnMs" value="0"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="TrialStimOff" timer="stimOnTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="TrialStimOff" interruptble="YES">
+            <action type="assignment" variable="stimTag" value= "0"/>
+            <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
             <action type="if" condition="tLeverPressTimeMs &lt; 1">
               <action type="play_sound" sound="pressSound"/>
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
@@ -1041,11 +1053,16 @@
             <action type="assignment" variable="tTrialRemainingOffMs" value="0"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="Queue Visual Stimulus" target="TrialStimOn" timer="stimOffTimer"></transition>
             <transition type="timer_expired" tag="Move on to Target Stimulus Presentation" target="TargetStimOn" timer="targetTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="TargetStimOn" interruptble="YES">
+            <action type="assignment" variable="stimTag" value= "2"/>
+             <action type="assignment" variable="tStimOnMs" value="(now()/1000)" />
+             <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
+             <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/> 
             <!-- Must dequeue stimulus in the doConstantStimulus case -->
             <action type="if" condition="doConstantStimulus==1">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
@@ -1060,22 +1077,226 @@
             <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/> 
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="TargetStimOff" timer="stimOnTimer"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="stimOnTimer"></transition>
           </task_system_state>
 
-           <task_system_state tag="TargetStimOff" interruptble="YES">
-            <action type="if" condition="!doConstantStimulus">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
+          <task_system_state tag="React" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="start_timer" tag="" timer="reactTimer" duration="reactTimeMs" timebase="" duration_units="ms"/> 
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
+            <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimer"></transition>
+          </task_system_state>
+
+           <task_system_state tag="EarlyRelease" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
+            <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
+            <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
+            <!-- update running variables -->
+            <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
+            <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
+            <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
+            <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
+            <!-- reject stim selection -->
+            <action type="reject_selections" selection="svStimNumber"></action>
+            <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
-            <action type="report" message="Target Stim Off for $stimOffTimeMs"/>
-            <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag= "Stay in StimOn" condition= "stimTag &gt; 0" target="EndTrialFinishStimOn"></transition>
+            <transition type="conditional" tag= "Stay in StimOff" condition= "stimTag &lt; 1" target="EndTrialFinishStimOff"></transition>
+          </task_system_state>
+
+          <task_system_state tag="Missed" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
+            <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
+            <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
+            <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
+            <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
+            <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
+            <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
+            <!-- accept stim selection -->
+            <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+            <!-- update selection variable -->
+            <action type="if" condition="tNStimAccepted >= 80">
+              <action type="reset_selection" selection="svStimNumber"/>
+              <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            </action>
+            <action type="if" condition="tNStimAccepted &lt; 80">
+              <action type="next_selection" selection="svStimNumber"/>
+            </action>
+            <action type="start_timer" tag="start timer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
+            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+            </action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag= "Stay in StimOn" condition= "stimTag &gt; 0" target="EndTrialFinishStimOn"></transition>
+            <transition type="conditional" tag= "Stay in StimOff" condition= "stimTag &lt; 1" target="EndTrialFinishStimOff"></transition>   
+          </task_system_state>
+
+          <task_system_state tag="Reward" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
+            <!-- accept stim selection -->
+            <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+            <!-- update selection variable -->
+            <action type="if" condition="tNStimAccepted >= 80">
+              <action type="reset_selection" selection="svStimNumber"/>
+              <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            </action>
+            <action type="if" condition="tNStimAccepted &lt; 80">
+              <action type="next_selection" selection="svStimNumber"/>
+            </action>
+            <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
+            <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success"></action>
+            <!-- update running variables -->
+            <action type="assignment" tag="success++" variable="success" value="success+1"></action>
+            <action type="assignment" variable="tConsecErrors" value="0"></action>
+            <action type="assignment" tag="Assign reward" variable="tTotalRewardTimeUs" value="rewardUs"></action>
+            <action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
+            <!-- assign reward size based on elapsed rand if rampdown == 0 -->
+            <action type="if" condition="doBlock2 == 1">
+            <action type="if" condition="doBlock2SeparateReward == 0">
+                <action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="rewardUs"></action>
+            </action>
+            <action type="if" condition="doBlock2SeparateReward == 1">
+                <action type="if" condition="tBlock2TrialNumber == 0">
+                     <action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="rewardUs"></action>
+                </action>
+                <action type="if" condition="tBlock2TrialNumber == 1">
+                    <action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="block2RewardUs"></action>
+                </action>
+            </action>
+            </action>
+
+      
+          <!-- give reward on every N corrects -->
+          <action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+          <action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="0"></action>
+          </action>
+          <action type="if" condition="tempNCorrect == rewardEveryNCorrect">
+          <action type="assignment" tag="rezero tempNCorrect" variable="tempNCorrect" value="0"></action>
+          </action>
+
+            <!-- scale based on consec corrects -->
+            <action type="if" tag="if consecCorrects &lt; max" condition="consecCorrects &lt; maxConsecCorrects">
+              <action type="assignment" tag="consecCorrects++" variable="consecCorrects" value="consecCorrects+1"></action>
+            </action>
+            <action type="assignment" tag="set tNRewards" variable="tNRewards" value="consecCorrects"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" tag="Move on to Target Stimulus Presentation" target="EndTrial" timer="endTimer"></transition>
+            <transition type="direct" tag="Always Go to GiveReward" target="GiveReward"></transition>
+          </task_system_state>
+
+          <task_system_state tag="GiveReward" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="if rewards remain, go to SingleReward (note must be -1)" condition="tNRewards > -1" target="SingleReward"></transition>
+            <transition type="direct" tag="Always Go to PRP" target="PostRewardPause"></transition>
+          </task_system_state>
+
+          <task_system_state tag="PostRewardPause" interruptible="YES">
+            <action type="start_timer" tag="StartTimer" timer="postRewardTimer" timebase="" duration="postRewardMs" duration_units="ms"></action> 
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag= "Stay in StimOn" condition= "stimTag &gt; 0" target="EndTrialFinishStimOn"></transition>
+            <transition type="conditional" tag= "Stay in StimOff" condition= "stimTag &lt; 1" target="EndTrialFinishStimOff"></transition>
+          </task_system_state>
+
+          <task_system_state tag="SingleReward" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="interRewardInterval minimum to juiceTime" variable="tInterRewardIntervalMs" value="interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )"></action>
+            <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
+            <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
+            <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
+            <action type="if" condition= "tempNCorrect == 0">
+              <action type="report" tag="Report" message="juice = $juice"></action> 
+            </action>
+            <action type="if" condition= "tempNCorrect &gt; 0">
+              <action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+                <action type="report" tag="Report" message="juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect"></action> 
+              </action>
+            </action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="EndTrialStimOn" interruptble="YES">
+            <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="report" message="End of Trial - Stim On"/>
+            <action type="assignment" variable="stimTag" value="1"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="stimOnTimer"></transition>
+            <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="EndTrialStimOff" interruptble="YES">
+            <action type="if" condition="stimTag==2">
+             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            <action type="if" condition="stimTag==1">
+             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            <action type="report" message="End of Trial - Stim Off"/>
+            <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endTimer"></transition>
+            <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          </task_system_state>
+
+          <task_system_state tag="EndTrialFinishStimOn" interruptble="YES">
+             <action type="assignment" variable="timeEndRemainingOnMs" value="stimOnTimeMs - ((now()/1000)-tStimOnMs)" />
+             <action type="start_timer" tag="" timer="stimOnTimer" duration="timeEndRemainingOnMs" timebase="" duration_units="ms"/>
+             <action type="report" message="End of Trial - Final Stim On"/>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialFinishStimOff" timer="stimOnTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="EndTrialFinishStimOff" interruptble="YES">
+            <action type="if" condition="stimTag==2">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+              <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+            </action>
+            <action type="if" condition="stimTag==1">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+              <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+            </action>
+            <action type="if" condition="stimTag==0">
+              <action type="assignment" variable="timeEndRemainingOffMs" value="stimOffTimeMs - ((now()/1000)-tStimOffMs)" />
+             <action type="start_timer" tag="" timer="endTimer" duration="timeEndRemainingOffMs" timebase="" duration_units="ms"/>
+           </action>
+           <action type="report" message="End of Trial - Final Stim Off"/>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="EndTrial" target="EndTrial" timer="endTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrial" interruptble="YES">
+            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
