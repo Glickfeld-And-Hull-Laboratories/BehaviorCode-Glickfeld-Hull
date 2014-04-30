@@ -29,6 +29,7 @@
       <variable tag="soundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Variables"/>
       <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Variables"/>
       <variable tag="doChangeStimProp" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Variables"/>
+      <variable tag="tTimeoutMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
 
       <!-- End New Variables -->
 
@@ -811,10 +812,21 @@
                     variable="tItiWaitTimeMs" 
                     value="itiTimeMs"></action>
             
-            <!-- extend based on previous hold and max stim time, if asked for -->
+            <!-- if asked for, extend ITI based on previous hold and max stim time, also takes TOs and extra cycles into account -->
             <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
               <action type="assignment" variable="tempMs"  
-                      value="(maxCyclesOn*(stimOnTimeMs+stimOffTimeMs))-lastActualHoldTimeMs - extraCycleTimeMs"></action> 
+                      value="(maxCyclesOn*(stimOnTimeMs+stimOffTimeMs))-lastActualHoldTimeMs - extraCycleTimeMs + tTimeoutMs"></action> 
+              <action type="if" condition="tempMs > 0"> 
+                <!--add to ITI-->
+              <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
+              <action type="assignment" tag="-" variable="extraCycleTimeMs" value="0"></action>
+              </action>
+            </action> 
+
+            <!-- extend based on extra cycles and TOs only -->
+            <action type="if" condition="doExtendItiOnShortPrevTrial == 0"> 
+              <action type="assignment" variable="tempMs"  
+                      value="-extraCycleTimeMs + tTimeoutMs"></action> 
               <action type="if" condition="tempMs > 0"> 
                 <!--add to ITI-->
               <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
@@ -1113,6 +1125,8 @@
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
+            <!-- assign early TO for next trial -->
+            <action type="assignment" variable="tTimeoutMs" value="earlyTimeoutMs"></action>  
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag= "Stay in StimOn" condition= "stimTag &gt; 0" target="EndTrialFinishStimOn"></transition>
             <transition type="conditional" tag= "Stay in StimOff" condition= "stimTag &lt; 1" target="EndTrialFinishStimOff"></transition>
@@ -1140,7 +1154,8 @@
             <action type="if" condition="tNStimAccepted &lt; 80">
               <action type="next_selection" selection="svStimNumber"/>
             </action>
-            <action type="start_timer" tag="start timer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
+            <!-- assign missed TO for next trial -->
+            <action type="assignment" variable="tTimeoutMs" value="missedTimeoutMs"></action>
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
@@ -1209,6 +1224,8 @@
 
           <task_system_state tag="GiveReward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <!-- no TO for next trial -->
+            <action type="assignment" variable="tTimeoutMs" value="0"></action>
             <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="if rewards remain, go to SingleReward (note must be -1)" condition="tNRewards > -1" target="SingleReward"></transition>
