@@ -861,7 +861,9 @@
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             <action type="report" message="Stimulus On - ITI"/>
-            <action type="play_sound" sound="baseSound"/>
+            <action type="if" condition="stopITIFlashing == 0">
+              <action type="play_sound" sound="baseSound"/>
+            </action>
 
             <!-- Case if time remaining in ITI is less than stimOnTimeMs -->
             <action type="if" tag="" condition="tITIClock &lt; stimOnTimeMs">
@@ -946,7 +948,9 @@
             </action>
             <action type="if" condition="tITIRemainingOnMs &lt;= 0">
               <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
-              <action type="play_sound" sound="baseSound"/>
+              <action type="if" condition="stopITIFlashing == 0">
+                <action type="play_sound" sound="baseSound"/>
+              </action>
             </action>
 
             <!-- Make sure this assignment is done last -->
