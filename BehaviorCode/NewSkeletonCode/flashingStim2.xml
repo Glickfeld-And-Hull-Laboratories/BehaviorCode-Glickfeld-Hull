@@ -237,7 +237,8 @@
       <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
-      <variable tag="tLeverPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>     
+      <variable tag="tLeverPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLeverReleaseTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>     
       <variable tag="trials" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
       <variable tag="nCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -252,6 +253,7 @@
       <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="timeEndRemainingOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="timeEndRemainingOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="targetStimOnMs" scope="global" loggin="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimOnMs" scope="global" loggin="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="extraCycleTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -315,6 +317,7 @@
             <action type="assignment" tag="Reset tTrialStartOff" variable="tTrialStartOff" value="0"/> 
             <action type="assignment" tag="Reset tTrialStartOn" variable="tTrialStartOn" value="0"/>         
             <action type="assignment" tag="Reset tLeverPressTimeMs" variable="tLeverPressTimeMs" value="0"/>
+            <action type="assignment" tag="Reset tLeverReleaseTimeMs" variable="tLeverReleaseTimeMs" value="0"/>
             <action type="assignment" tag="Reset tCyclesOn" variable="tCyclesOn" value="0"/>
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, maxCyclesOn)"/>
 
@@ -862,6 +865,7 @@
           </task_system_state>
 
           <task_system_state tag="InterTrialIntervalStimulusOn" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
              <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000"/>
 
             <action type="if" condition="!stopITIFlashing">
@@ -904,6 +908,7 @@
           </task_system_state>
 
           <task_system_state tag="InterTrialIntervalStimulusOff" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tEnteredOffStateTimeMs" value="now()/1000"/>
             <action type="if" condition="!doConstantStimulus">
               <action tag="Dequeue ITI Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
@@ -941,6 +946,7 @@
           </task_system_state>
 
           <task_system_state tag="WaitForLeverStimulusOn" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000"/>
             <action type="assignment" variable="FIO2" value="0"/>
             <action type="if" condition="!stopITIFlashing" >
@@ -1001,6 +1007,7 @@
           </task_system_state>
 
           <task_system_state tag="TrialStimOn" interruptble="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="stimTag" value= "1"/>
             <action type="assignment" variable="tStimOnMs" value="now()/1000" />
 
@@ -1044,6 +1051,7 @@
           </task_system_state>
 
           <task_system_state tag="TrialStimOff" interruptble="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="stimTag" value= "0"/>
             <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
             <action type="if" condition="tLeverPressTimeMs &lt; 1">
@@ -1085,10 +1093,14 @@
           </task_system_state>
 
           <task_system_state tag="TargetStimOn" interruptble="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="stimTag" value= "2"/>
-             <action type="assignment" variable="tStimOnMs" value="(now()/1000)" />
-             <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
-             <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/> 
+            <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
+            <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
+            <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+            <action type="assignment" tag="set Stim on time" variable="tStimOnMs" value="now()/1000"/>
+            <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
+
             <!-- Must dequeue stimulus in the doConstantStimulus case -->
             <action type="if" condition="doConstantStimulus==1">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
@@ -1100,7 +1112,6 @@
             <action type="play_sound" sound="targetSound"/>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
-            <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/> 
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
@@ -1110,15 +1121,15 @@
 
           <task_system_state tag="React" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="start_timer" tag="" timer="reactTimer" duration="reactTimeMs" timebase="" duration_units="ms"/> 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
-            <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimer"></transition>
+            <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
           </task_system_state>
 
            <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
@@ -1144,6 +1155,7 @@
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
@@ -1177,6 +1189,7 @@
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1269,6 +1282,7 @@
           </task_system_state>
 
           <task_system_state tag="EndTrialStimOn" interruptble="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             <action type="play_sound" sound="baseSound"/>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
@@ -1283,6 +1297,7 @@
           </task_system_state>
 
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="if" condition="stimTag==2">
              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
@@ -1301,6 +1316,7 @@
           </task_system_state>
 
           <task_system_state tag="EndTrialFinishStimOn" interruptble="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
              <action type="assignment" variable="timeEndRemainingOnMs" value="stimOnTimeMs - ((now()/1000)-tStimOnMs)" />
              <action type="assignment" variable="extraCycleTimeMs" value="timeEndRemainingOnMs" />
              <action type="start_timer" tag="" timer="stimOnTimer" duration="timeEndRemainingOnMs" timebase="" duration_units="ms"/>
@@ -1310,6 +1326,7 @@
           </task_system_state>
 
           <task_system_state tag="EndTrialFinishStimOff" interruptble="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="if" condition="stimTag==2">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
