@@ -253,8 +253,8 @@
       <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="timeEndRemainingOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="timeEndRemainingOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="targetStimOnMs" scope="global" loggin="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tStimOnMs" scope="global" loggin="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="extraCycleTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
@@ -262,6 +262,8 @@
       <variable tag="tTrialCycleOn" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
       <variable tag="tTrialStartOff" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
       <variable tag="tTrialStartOn" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
+      <variable tag="startReactState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
+
 
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
@@ -318,6 +320,8 @@
             <action type="assignment" tag="Reset tTrialStartOn" variable="tTrialStartOn" value="0"/>         
             <action type="assignment" tag="Reset tLeverPressTimeMs" variable="tLeverPressTimeMs" value="0"/>
             <action type="assignment" tag="Reset tLeverReleaseTimeMs" variable="tLeverReleaseTimeMs" value="0"/>
+            <action type="assignment" tag="Reset targetStimOn" variable="targetStimOnMs" value="0"/>
+            <action type="assignment" tag="Reset tStimOn" variable="tStimOnMs" value="0"/>
             <action type="assignment" tag="Reset tCyclesOn" variable="tCyclesOn" value="0"/>
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, maxCyclesOn)"/>
 
@@ -1095,11 +1099,12 @@
           <task_system_state tag="TargetStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="stimTag" value= "2"/>
-            <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
-            <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
-            <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             <action type="assignment" tag="set Stim on time" variable="tStimOnMs" value="now()/1000"/>
             <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
+
+            <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
+            <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
+            <action type="start_timer" tag="" timer="targetOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
 
             <!-- Must dequeue stimulus in the doConstantStimulus case -->
             <action type="if" condition="doConstantStimulus==1">
@@ -1116,11 +1121,12 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="stimOnTimer"></transition>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="targetOnTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="React" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="set react time" variable="startReactState" value="now()/1000"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
