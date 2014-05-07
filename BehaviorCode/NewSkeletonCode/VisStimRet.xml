@@ -37,6 +37,9 @@
       <variable tag="nScansOn" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="nScansOff" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="StimulusSpecs"/>
 
+	  <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="StimulusSpecs"/>
+	  <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="StimulusSpecs"/>
+	
       <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="20" type="float" persistant="1" groups="StimulusSpecs"/>
       <variable tag="gratingElevationStepDeg" scope="global" logging="when_changed" default_value="-20" type="float" persistant="1" groups="StimulusSpecs"/>
       <variable tag="gratingElevationStepN" scope="global" logging="when_changed" default_value="3" type="float" persistant="1" groups="StimulusSpecs"/>
@@ -115,6 +118,8 @@
       <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
+      <variable tag="tBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -136,6 +141,14 @@
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="drifting_grating" tag="base_grating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+              spatial_frequency="tGratingSpatialFreqCPD" 
+              speed="tGratingSpeedDPS" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg" 
+              x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
+              rotation="tBaseGratingDirectionDeg" 
+              alpha_multiplier="tBaseGratingContrast"></stimulus>
     <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="gratingStartingPhaseDeg"
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
@@ -147,9 +160,11 @@
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <action type="queue_stimulus" stimulus="background"></action>
+      
     <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
       <!-- init actions before running trials after any press of start-->
-      <action type="queue_stimulus" stimulus="background"></action>
+            
       <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
       <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
@@ -163,7 +178,10 @@
     <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
       <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                                  
+          
+          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+      	  <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+          <action type="update_stimulus_display" tag="-"></action>        
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
               <action type="report" message="** Stopping after completing $stopAfterNTrials trials"></action>
@@ -226,7 +244,8 @@
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
           </action>
           
-
+		  <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
+          <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
 <!--Select features if not in matrix mode -->
           <action type="if" condition="doMatrix = 0">	
                     <!--Select size -->
@@ -381,7 +400,9 @@
             <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
             <action type="assignment" tag="reset ttCounter2 to counter2" variable="ttCounter2" value="counter2"></action>
-
+			
+			<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action tag="Update Stimulus" type="update_stimulus_display"></action>
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
             <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
             <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
@@ -573,6 +594,10 @@
             
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
+			<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+        	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+            <action tag="Update Stimulus" type="update_stimulus_display"></action>
+            
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             
 
