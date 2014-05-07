@@ -874,17 +874,6 @@
 
           <task_system_state tag="InterTrialIntervalStimulusOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-             <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000"/>
-
-            <action type="if" condition="!stopITIFlashing">
-              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>
-            <action type="report" message="Stimulus On - ITI"/>
-            <action type="if" condition="stopITIFlashing == 0">
-              <action type="play_sound" sound="baseSound"/>
-            </action>
 
             <!-- Case if time remaining in ITI is less than stimOnTimeMs -->
             <action type="if" tag="" condition="tITIClock &lt; stimOnTimeMs">
@@ -908,6 +897,18 @@
               <action type="start_timer" timer="transitionOnTimer" duration="9999999" timebase="" duration_units="ms" />
               <action type="start_timer" timer="transitionOffTimer" duration="9999999" timebase="" duration_units="ms" />
             </action>
+
+            <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000"/>
+
+            <action type="if" condition="!stopITIFlashing">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            <action type="report" message="Stimulus On - ITI"/>
+            <action type="if" condition="stopITIFlashing == 0">
+              <action type="play_sound" sound="baseSound"/>
+            </action>
             <action type="assignment" tag="nTaskStates+1" variable="nTaskStates" value="nTaskStates + 1"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -918,13 +919,7 @@
 
           <task_system_state tag="InterTrialIntervalStimulusOff" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="tEnteredOffStateTimeMs" value="now()/1000"/>
-            <action type="if" condition="!doConstantStimulus">
-              <action tag="Dequeue ITI Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>
-            <action type="report" message="Stimulus Off - ITI"/>
-
+            
             <!-- Case if time remaining in ITI is less than stimOnTimeMs -->
             <action type="if" tag="" condition="tITIClock &lt; stimOffTimeMs">
               <action type="assignment" tag="" variable="tITIRemainingOffMs" value="stimOffTimeMs - tITIClock"/>
@@ -949,6 +944,13 @@
             </action>
             <action type="assignment" tag="nTaskStates+1" variable="nTaskStates" value="nTaskStates + 1"/>
 
+            <action type="assignment" variable="tEnteredOffStateTimeMs" value="now()/1000"/>
+            <action type="if" condition="!doConstantStimulus">
+              <action tag="Dequeue ITI Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            <action type="report" message="Stimulus Off - ITI"/>
+
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="Queue Visual Stimulus" target="InterTrialIntervalStimulusOn" timer="stimOffTimer"></transition>
             <transition type="timer_expired" tag="WaitForLeverStimulusOff" target="WaitForLeverStimulusOff" timer="transitionOffTimer"></transition>
@@ -958,12 +960,11 @@
           <task_system_state tag="WaitForLeverStimulusOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000"/>
-            <action type="assignment" variable="FIO2" value="0"/>
 
             <!-- Turn on stimulus for timeOn - tITITime -->
             <action type="if" condition="tITIRemainingOnMs &gt; 0">
               <action type="start_timer" timer="stimOnTimer" duration="tITIRemainingOnMs" timebase="" duration_units="ms"/>
-              <!-- Insures that moving directly to Trial doesn't lengthen stimOn time by adding stitching ITION/WaitOn/TrialOn together -->
+              <!-- Ensures that moving directly to Trial doesn't lengthen stimOn time by adding stitching ITION/WaitOn/TrialOn together -->
               <action type="assignment" variable="tEnteredOnStateTimeMs" value="now()/1000 - tITIRemainingOnMs"/>
             </action>
             <action type="if" condition="tITIRemainingOnMs &lt;= 0">
@@ -981,6 +982,7 @@
 
             <!-- Make sure this assignment is done last -->
             <action type="assignment" variable="tITIRemainingOnMs" value="0"/>
+            <action type="assignment" variable="FIO2" value="0"/>
             <action type="assignment" tag="nTaskStates+1" variable="nTaskStates" value="nTaskStates + 1"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -992,8 +994,6 @@
           <task_system_state tag="WaitForLeverStimulusOff" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tEnteredOffStateTimeMs" value="now()/1000"/>
-            <action type="assignment" variable="FIO2" value="0"/>
-            <action type="report" message="Stimulus Off - WaitingForPress $tITIRemainingOffMs"/>
 
             <!-- Turn on stimulus for timeOn - tITITime -->
             <action type="if" condition="tITIRemainingOffMs &gt; 0">
@@ -1003,6 +1003,8 @@
               <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
             </action>
 
+            <action type="assignment" variable="FIO2" value="0"/>
+            <action type="report" message="Stimulus Off - WaitingForPress $tITIRemainingOffMs"/>
             <action type="if" condition="!doConstantStimulus">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
@@ -1040,11 +1042,6 @@
             <action type="if" condition="stopITIFlashing == 1">
               <action type="assignment" variable="tTrialRemainingOnMs" value="0" />
             </action>
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
-            <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
-
 
             <!-- Turn on stimulus for tTrialRemainingOn -->
             <action type="if" condition="tTrialCycleOn == 1">
@@ -1054,6 +1051,11 @@
               <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
               <action type="play_sound" sound="baseSound"/>
             </action>
+
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
 
             <action type="assignment" variable="tTrialCycleOn" value="0"/>
             <action type="assignment" tag="nTaskStates+1" variable="nTaskStates" value="nTaskStates + 1"/>
@@ -1075,14 +1077,7 @@
               <action type="assignment" variable="tTrialCycleOff" value="1" />
               <action type="assignment" variable="tTrialStartOff" value="1" />
             </action>
-
-            
-            <action type="if" condition="!doConstantStimulus">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>
-
-            <!-- Turn on stimulus for tTrialRemainingOff -->
+            <!-- Turn off stimulus for tTrialRemainingOff -->
             <action type="if" condition="tTrialCycleOff == 1">
               <action type="start_timer" timer="stimOffTimer" duration="tTrialRemainingOffMs" timebase="" duration_units="ms"/>
               <action type="start_timer" timer="targetTimer" duration="9999999" timebase="" duration_units="ms"/>
@@ -1095,7 +1090,7 @@
               <action type="start_timer" timer="targetTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
               <action type="start_timer" timer="stimOffTimer" duration="9999999" timebase="" duration_units="ms"/>
             </action>
-
+            
             <action type="if" condition="!doConstantStimulus">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
@@ -1334,6 +1329,7 @@
 
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+             <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
             <action type="if" condition="stimTag==2">
              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
@@ -1343,7 +1339,7 @@
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             <action type="report" message="End of Trial - Stim Off"/>
-            <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+           
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endTimer"></transition>
@@ -1364,15 +1360,15 @@
           <task_system_state tag="EndTrialFinishStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="if" condition="stimTag==2">
+              <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
-              <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
               <action type="assignment" variable="extraCycleTimeMs" value="stimOffTimeMs+extraCycleTimeMs" />
             </action>
             <action type="if" condition="stimTag==1">
+              <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
-              <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
               <action type="assignment" variable="extraCycleTimeMs" value="stimOffTimeMs+extraCycleTimeMs" />
             </action>
             <action type="if" condition="stimTag==0">
