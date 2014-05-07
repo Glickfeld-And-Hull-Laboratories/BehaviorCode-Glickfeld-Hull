@@ -239,7 +239,6 @@
       <variable tag="trials" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
       <variable tag="nCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tTimeoutMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>    
       <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -809,16 +808,7 @@
             <!-- if asked for, extend ITI based on previous hold and max stim time, also takes TOs and extra cycles into account -->
             <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
               <action type="assignment" variable="tempMs"  
-                      value="(maxCyclesOn*(stimOnTimeMs+stimOffTimeMs))-lastActualHoldTimeMs + tTimeoutMs"></action> 
-              <action type="if" condition="tempMs > 0"> 
-                <!--add to ITI-->
-              <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
-              </action>
-            </action> 
-
-            <!-- extend based on extra cycles and TOs only -->
-            <action type="if" condition="doExtendItiOnShortPrevTrial == 0"> 
-              <action type="assignment" variable="tempMs"  value="tTimeoutMs"></action> 
+                      value="(maxCyclesOn*(stimOnTimeMs+stimOffTimeMs))-lastActualHoldTimeMs"></action> 
               <action type="if" condition="tempMs > 0"> 
                 <!--add to ITI-->
               <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
@@ -999,11 +989,11 @@
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
-            <!-- assign early TO for next trial -->
-            <action type="assignment" variable="tTimeoutMs" value="earlyTimeoutMs"></action>
+
+            <action type="start_timer" tag="Start earlyTimeoutTimer" timer="earlyTimeoutTimer" timebase="" duration="earlyTimeoutMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="direct" tag="Always Go to EndTrial" target="EndTrial"></transition>
+            <transition type="timer_expired" tag="Early Timeout over" target="EndTrial" timer="earlyTimeoutTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="Missed" interruptible="YES">
@@ -1039,12 +1029,15 @@
             <action type="if" condition="tNStimAccepted &lt; 80">
               <action type="next_selection" selection="svStimNumber"/>
             </action>
-            <!-- assign missed TO for next trial -->
-            <action type="assignment" variable="tTimeoutMs" value="missedTimeoutMs"></action>
+
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
+            <action type="start_timer" tag="Start missedTimeoutTimer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Missed Timeout over" target="EndTrial" timer="missedTimeoutTimer"></transition>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="direct" tag="Always Go to EndTrial" target="EndTrial"></transition> 
@@ -1120,8 +1113,6 @@
 
           <task_system_state tag="GiveReward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <!-- no TO for next trial -->
-            <action type="assignment" variable="tTimeoutMs" value="0"></action>
             <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
