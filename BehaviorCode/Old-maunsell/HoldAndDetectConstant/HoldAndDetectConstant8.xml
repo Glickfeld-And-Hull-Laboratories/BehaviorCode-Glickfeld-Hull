@@ -20,6 +20,7 @@
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
+      <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
@@ -270,8 +271,10 @@
       <!-- init actions before running trials after any press of start-->
       <action type="queue_stimulus" stimulus="background"></action>
       <action type="if" condition="doVisualStim">
-        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-        <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+        <action type="if" condition="doITIStim">
+          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+          <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+      </action>
       </action>
       <action type="update_stimulus_display" tag="-"></action>
       <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
@@ -876,6 +879,14 @@
 
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
 
+            <action type="if" condition="doVisualStim">
+              <action type="if" condition="!doITIStim">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+              </action>
+            </action>
+            <action type="update_stimulus_display" tag="-"></action>
+
             <!-- turn on trial laser if requested -->
             <action type="if" condition="tTrialLaserPowerMw > 0">
               <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
@@ -912,8 +923,10 @@
               <!-- vis stim on -->
               <action type="if" condition="doVisualStim">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                <action tag="Update Display" type="update_stimulus_display"></action>
                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
                 <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
+                <action tag="Update Display" type="update_stimulus_display"></action>
 
                 <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
               </action>
@@ -939,8 +952,11 @@
             <action type="if" condition="tStimTurnedOn == 1">  <!-- so we only turn it off once here -->
               <action type="if" condition="(((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs">
                 <action type="dequeue_stimulus" stimulus="target_grating"></action>
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+                <action type="update_stimulus_display"></action>
+                <action type="if" condition="doITIStim==1">
+                  <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
+                  <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+                </action>  
                 <action type="update_stimulus_display"></action>
                 <action type="assignment" variable="tStimTurnedOn" value="0"></action>
               </action>
@@ -959,8 +975,10 @@
             <action type="if" condition="tStimTurnedOn == 1">  <!-- so we only turn it off once here -->
               <action type="if" condition="(((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs">
                 <action type="dequeue_stimulus" stimulus="target_grating"></action>
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>                            
+                <action type="if" condition="doITIStim">
+                  <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+                  <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>                            
+                </action>
                 <action type="update_stimulus_display"></action>
                 <action type="assignment" variable="tStimTurnedOn" value="0"></action>
               </action>
@@ -998,8 +1016,16 @@
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+            <action tag="Update Display" type="update_stimulus_display"></action>
+            <action type="if" condition="doITIStim==1">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action> 
+            <action type="if" condition="doITIStim==0">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>    
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>  
             <action tag="Update Display" type="update_stimulus_display"></action>
             <action type="start_timer" tag="Start earlyTimeoutTimer" timer="earlyTimeoutTimer" timebase="" duration="earlyTimeoutMs" duration_units="ms"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -1076,8 +1102,10 @@
             <action type="assignment" tag="set tNRewards" variable="tNRewards" value="consecCorrects"></action>
 
             <action tag="Dequeue Stimulus 2" type="dequeue_stimulus" stimulus="target_grating"></action>
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+            <action type="if" condition="doITIStim==1">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+            </action>  
             <action tag="Update Display" type="update_stimulus_display"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="direct" tag="Always Go to GiveReward" target="GiveReward"></transition>
@@ -1148,8 +1176,10 @@
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action tag="Dequeue Stimulus 1" type="dequeue_stimulus" stimulus="target_grating"></action>
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+            <action type="if" condition="doITIStim==1">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+            </action>
             <action tag="Update Display" type="update_stimulus_display"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" target="PossibleEndTimeout" timer="missedTimeoutTimer"></transition>
@@ -1181,6 +1211,11 @@
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
+            <action type="if" condition="doITIStim == 0">
+              <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action tag="Update Stimulus" type="update_stimulus_display"></action>
+            </action>
+
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             
             <!-- allow two trials after each timeout is over -->
