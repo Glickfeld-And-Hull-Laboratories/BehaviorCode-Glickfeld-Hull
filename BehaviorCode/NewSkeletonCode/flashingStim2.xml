@@ -265,6 +265,7 @@
       <variable tag="tTrialStartOff" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
       <variable tag="tTrialStartOn" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
       <variable tag="startReactState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
+      <variable tag="isTooFast" scope="global" logging="when_changed" default_value="1" persistent="0" type="integer" persistant="0"/>
 
 
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -325,6 +326,7 @@
             <action type="assignment" tag="Reset targetStimOn" variable="targetStimOnMs" value="0"/>
             <action type="assignment" tag="Reset tStimOn" variable="tStimOnMs" value="0"/>
             <action type="assignment" tag="Reset tCyclesOn" variable="tCyclesOn" value="0"/>
+            <action type="assignment" tag="Reset isTooFast" variable="isTooFast" value="1"/>
             <action type="assignment" tag="Reset nTaskStates" variable="nTaskStates" value="0"/>
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, maxCyclesOn)"/>
 
@@ -1139,10 +1141,14 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="set react time" variable="startReactState" value="now()/1000"/>
             <action type="assignment" tag="nTaskStates+1" variable="nTaskStates" value="nTaskStates + 1"/>
+            <action type="assignment" tag="turn off too fast" variable="isTooFast" value="0"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
+            <transition type="timer_expired" tag="Dequeue Target Stimulus" target="EndTrialStimOff" timer="targetOnTimer"></transition>
+            <transition type="timer_expired" tag="Dequeue Base Stimulus" target="EndTrialStimOff" timer="endOnTimer"></transition>
+            <transition type="timer_expired" tag="Queue Base Stimulus" target="EndTrialStimOn" timer="endOffTimer"></transition>
           </task_system_state>
 
            <task_system_state tag="EarlyRelease" interruptible="YES">
@@ -1312,7 +1318,7 @@
 
           <task_system_state tag="EndTrialStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="start_timer" tag="" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+            <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             <action type="play_sound" sound="baseSound"/>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
@@ -1322,14 +1328,16 @@
             <action type="assignment" tag="nTaskStates+1" variable="nTaskStates" value="nTaskStates + 1"/>
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="stimOnTimer"></transition>
+            <transition type="conditional" tag="If Lever Up and too fast, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up and not too fast, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="endOnTimer"></transition>
             <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
+            <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-             <action type="start_timer" tag="" timer="endTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+             <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
             <action type="if" condition="stimTag==2">
              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
@@ -1341,10 +1349,11 @@
             <action type="report" message="End of Trial - Stim Off"/>
            
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-            <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endTimer"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, and not too fast, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>            
+            <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endOffTimer"></transition>
             <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrialFinishStimOn" interruptble="YES">
