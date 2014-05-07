@@ -115,6 +115,13 @@ input.gratingContrast = input.tGratingContrast;
 input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
 
+%Andrew's Post-Hoc Reaction Time Method
+if input.targetStimOnMs{trN} <= 1;
+    tCyclesShort = input.nCyclesOn{trN} - input.tCyclesOn{trN};
+    input.targetStimOnMs{trN} = input.tStimOnMs{trN} + (totalCycleTimeMs*tCyclesShort);
+end
+input.postHocReactMs{trN} = input.tLeverReleaseTimeMs{trN} - input.targetStimOnMs{trN};
+
 
 %% disp status
 juiceAmtsMs = input.juiceTimesMsCell{trN};
