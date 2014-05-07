@@ -60,14 +60,12 @@ varsOneValEachTrial = {...
     'nCyclesOn', ...
     'tTimeoutMs', ...
     'tStimOnMs', ...
+    'tStimTurnedOn',...
     'targetStimOnMs', ...
     'tStimOffMs', ...
-    'tTrialRemainingOffMs', ...
-    'tTrialRemainingOnMs', ...
-    'tTrialStartOn', ...
-    'tTrialStartOff', ...
     'startReactState',...
     'stimTag',...
+    'isTooFast',...
 };
 
 exptSetupBridge;
@@ -90,15 +88,7 @@ leverUpUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 2, 0);
 totalCycleTimeMs = input.stimOnTimeMs + input.stimOffTimeMs;
 numberCyclesOn = input.nCyclesOn{trN};
 
-%define leverpressoffset from wait
-if input.tTrialStartOn{trN} == 1
-    leverpressoffset = -(input.stimOnTimeMs-input.tTrialRemainingOnMs{trN}); 
-elseif input.tTrialStartOff{trN} == 1
-    leverpressoffset = input.tTrialRemainingOffMs{trN};
-end
-reqHoldTimeMs = double((totalCycleTimeMs*numberCyclesOn)+leverpressoffset);
-
-input.leverpressoffset{trN} = leverpressoffset;
+reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
 
 holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
 reactTimeMs = (holdTimeMs - reqHoldTimeMs);
@@ -116,11 +106,11 @@ input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
 
 %Andrew's Post-Hoc Reaction Time Method
-if input.targetStimOnMs{trN} <= 1;
-    tCyclesShort = input.nCyclesOn{trN} - input.tCyclesOn{trN};
-    input.targetStimOnMs{trN} = input.tStimOnMs{trN} + (totalCycleTimeMs*tCyclesShort);
-end
-input.postHocReactMs{trN} = input.tLeverReleaseTimeMs{trN} - input.targetStimOnMs{trN};
+% if input.targetStimOnMs{trN} <= 1;
+%     tCyclesShort = input.nCyclesOn{trN} - input.tCyclesOn{trN};
+%     input.targetStimOnMs{trN} = input.tStimOnMs{trN} + (totalCycleTimeMs*tCyclesShort);
+% end
+% input.postHocReactMs{trN} = input.tLeverReleaseTimeMs{trN} - input.targetStimOnMs{trN};
 
 
 %% disp status
