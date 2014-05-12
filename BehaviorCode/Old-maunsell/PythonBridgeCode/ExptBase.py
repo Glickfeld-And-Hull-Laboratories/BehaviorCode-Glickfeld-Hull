@@ -42,9 +42,9 @@ def chop(x, sig=2):
 ## set machine-specific constants
 
 thisHostname = socket.gethostname()
-thisHostname = string.replace(thisHostname, '.local', '')
+thisHostname = string.replace(thisHostname, '.dhe.duke.edu', '')
 if thisHostname == "hullglicks-mini":
-    PORT = 9990
+    PORT = 9991
     doTransmitCodesToBlackrock = False
 elif thisHostname == "MaunsellMouse2":
     PORT = 9991
@@ -62,7 +62,7 @@ elif thisHostname == "MaunsellMouseTest":
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
     
-HOST = "neuro-glickfeld-04"
+HOST = "152.16.224.214"
 laserParamCode = 'sendLaserParams'
 lastSendTime = 0
 nCodesSent = 0
