@@ -978,6 +978,16 @@
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
+            
+            <action type="if" condition="stimTag == 1">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            <action type="if" condition="stimTag == 2">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action> 
+            
             <!-- update running variables -->
             <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
