@@ -979,14 +979,10 @@
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
             
-            <action type="if" condition="stimTag == 1">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>
-            <action type="if" condition="stimTag == 2">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action> 
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
             
             <!-- update running variables -->
             <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
@@ -1019,14 +1015,10 @@
             <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
             <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
             
-            <action type="if" condition="stimTag == 1">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>
-            <action type="if" condition="stimTag == 2">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>    
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>  
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1059,14 +1051,10 @@
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
             
-            <action type="if" condition="stimTag == 1">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>
-            <action type="if" condition="stimTag == 2">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action> 
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1178,14 +1166,10 @@
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
-            <action type="if" condition="stimTag==2">
-             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>
-            <action type="if" condition="stimTag==1">
-             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="End of Trial - Stim Off"/>
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
