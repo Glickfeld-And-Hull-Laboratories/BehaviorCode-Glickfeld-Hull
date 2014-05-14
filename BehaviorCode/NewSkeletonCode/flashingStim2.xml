@@ -1186,6 +1186,12 @@
           <task_system_state tag="EndTrial" interruptble="YES">
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action type="report" message="Trial Ended"/>
+            <action type="start_timer" tag="" timer="endOffTimer" duration="1" timebase="" duration_units="ms"/>
+            <action type="start_timer" tag="" timer="endOnTimer" duration="1" timebase="" duration_units="ms"/>
+            <action type="start_timer" tag="" timer="reactTimeTimer" duration="1" timebase="" duration_units="ms"/>
+            <action type="start_timer" tag="" timer="targetOnTimer" duration="1" timebase="" duration_units="ms"/>
+            <action type="start_timer" timer="stimOffTimer" duration="1" timebase="" duration_units="ms"/>
+            <action type="start_timer" timer="stimOnTimer" duration="1" timebase="" duration_units="ms"/>
             <action type="assignment" variable="trials" value="trials+1"/>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
