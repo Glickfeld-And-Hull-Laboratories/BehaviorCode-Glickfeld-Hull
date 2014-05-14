@@ -33,7 +33,18 @@
       <variable tag="doSFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doTFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>      
       <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>     
-        
+      
+      <variable tag="doMovingDots" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="MovingDots"/>
+      <variable tag="dotElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotContrast" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotFieldSizeDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotSizeDeg" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotDensity" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotSpeedDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotCoherence" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="MovingDots"/>
+
       <variable tag="nScansOn" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="nScansOff" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="StimulusSpecs"/>
 
@@ -157,6 +168,12 @@
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tGratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
+    <stimulus type="moving_dots" tag="moving_dots"  direction="dotDirectionDeg"
+              dot_density="dotDensity" dot_size="dotSizeDeg" 
+              speed="dotSpeedDPS" 
+              field_radius="dotFieldSizeDeg/2" 
+              field_center_x="dotAzimuthDeg" field_center_y="dotElevationDeg" 
+              alpha_multiplier="dotContrast"></stimulus>          
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -403,8 +420,15 @@
 			
 			<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
-            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
-            <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
+
+            <action type="if" condition="doMovingDots != 1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
+            </action>
+            <action type="if" condition="doMovingDots == 1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="moving_dots"></action>
+              <action type="play_dynamic_stimulus" stimulus="moving_dots" tag="start"></action>
+            </action>
             <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
             
             <!-- update display, finalize variables -->
