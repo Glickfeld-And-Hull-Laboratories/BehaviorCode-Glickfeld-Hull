@@ -76,6 +76,7 @@
       <variable tag="doMovingDots" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="MovingDots"/>
       <variable tag="baseDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="baseDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="baseDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       
       <variable tag="dotElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
@@ -154,6 +155,7 @@
       
       <variable tag="tBaseDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tBaseDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -194,7 +196,7 @@
               alpha_multiplier="tGratingContrast"></stimulus>
     <stimulus type="moving_dots" tag="base_moving_dots"  direction="tDotDirectionDeg"
               dot_density="tDotDensity" dot_size="tDotSizeDeg" coherence="tBaseDotCoherence"
-              speed="tDotSpeedDPS" 
+              speed="tBaseDotSpeedDPS" 
               field_radius="tDotFieldSizeDeg/2" 
               field_center_x="tDotAzimuthDeg" field_center_y="tDotElevationDeg" 
               alpha_multiplier="tBaseDotContrast"></stimulus>
@@ -230,6 +232,7 @@
           <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
           <action type="assignment" variable="tBaseDotCoherence" value="baseDotCoherence"></action>
           <action type="assignment" variable="tBaseDotContrast" value="baseDotContrast"></action>
+          <action type="assignment" variable="tBaseDotSpeedDPS" value="baseDotSpeedDPS"></action>
           
           <action type="if" condition="doMovingDots != 1">
           	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
