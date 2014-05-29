@@ -22,7 +22,7 @@
       <variable tag="doMatrix" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
       <variable tag="doRand" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
 
-      <variable tag="stimDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="stimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="StimulusSpecs"/>
 
  	    <variable tag="nTotalImagingFrames" scope="global" logging="when_changed" default_value="3600" type="integer" persistant="1" groups="ImagingVars"/>
@@ -56,7 +56,7 @@
       <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
-      <variable tag="tStimDurationUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tStimulusDurationUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
 	    <variable tag="spCounter1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
 	    <variable tag="spCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
@@ -136,7 +136,7 @@
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
           <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
-          <action type="assignment" tag="tStimTimeUs Set" variable="tStimDurationUs" value="stimDurationUs"/>
+          <action type="assignment" tag="tStimTimeUs Set" variable="tStimulusDurationUs" value="stimulusDurationUs"/>
           <action type="assignment" tag="-" variable="laserTriggerFIO" value="0"></action>
 
       	
@@ -167,7 +167,7 @@
       
             <!-- update display, finalize variables -->
             <action tag="Update Display" type="update_stimulus_display"></action>
-            <action type="start_timer" tag="Start timer with same duration as sound" timer="soundDurationTimer" timebase="" duration="stimulusDurationMs" duration_units="ms"></action> 
+            <action type="start_timer" tag="Start timer with same duration as sound" timer="soundDurationTimer" timebase="" duration="soundDurationMs" duration_units="ms"></action> 
 
 
 
@@ -180,7 +180,7 @@
       <task_system_state tag="SendStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="report" message="*** Tactile Stimulus Sent -- Staying in Post-Stim State for $nScansOn scans."></action>
-            <action type="assignment" variable="juice" value="tStimDurationUs"/>
+            <action type="assignment" variable="juice" value="tStimulusDurationUs"/>
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
             <action type="assignment" tag="reset ttCounter2 to counter2" variable="ttCounter2" value="counter2"></action>
 
