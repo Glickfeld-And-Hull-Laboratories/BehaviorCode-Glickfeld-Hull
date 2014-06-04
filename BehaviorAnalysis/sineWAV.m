@@ -1,20 +1,17 @@
-function [file]=sineWAV(freq,durationS, fileName, Fs)
+function [file]=sineWAV(freq,durationS, fileName)
 %Generates a sine wave .wav file for a given duration and frequency.
-%AM 140522
-audioFolder = '~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode';
+%AM 14064
+audioFolder = '~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs';
 if nargin<3
-    fileName = strcat('sound-',mat2str(freq), 'Hz-', mat2str(durationS), 's');
-if nargin<4,
-    Fs = 44800;
+    fileName = strcat('sound-',round(mat2str(freq)), 'Hz-', mat2str(durationS), 's.wav');
 end
+
+Fs = 44800;
 fullName = fullfile(audioFolder, fileName);
-t = [0:durationS/Fs:1-1/Fs]; %1 second, length 44800
+t = [0: 1/Fs : durationS-1/Fs]; %1 second, length 44800
 f1 = sin(2*pi*freq*t);
 sound(f1,Fs)
-f2 = sin(2*pi*(2*freq)*t);
-sound(f2,Fs)
+
 %write to disk
-wavwrite(f2,Fs, fullName)
-
+wavwrite(f1,Fs, fullName)
 end
-
