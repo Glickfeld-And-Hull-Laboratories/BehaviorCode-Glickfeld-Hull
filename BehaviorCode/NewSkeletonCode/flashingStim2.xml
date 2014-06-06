@@ -942,17 +942,19 @@
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
-            <action type="if_else">
-              <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+            <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==maxCyclesOn)">
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
                 <action type="assignment" variable="isCatchTrial" value= "1"/>
-              </action>
-              <action type="if" condition="1">
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
-            		<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-              </action>
             </action>
+            <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+            	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+            </action>
+              <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn &lt; maxCyclesOn)">
+                  <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+                  <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+              </action>
 
             <action type="play_sound" sound="targetSound"/>
             <action type="update_stimulus_display" tag="justincase"></action>
