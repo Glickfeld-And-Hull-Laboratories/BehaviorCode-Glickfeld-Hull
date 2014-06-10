@@ -26,21 +26,23 @@
     </folder>
     <folder tag="Stimuli">
       <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
 
-      <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="20" type="float" persistant="1"/>
-      <variable tag="gratingElevationStepDeg" scope="global" logging="when_changed" default_value="-20" type="float" persistant="1"/>
-      <variable tag="gratingElevationStepN" scope="global" logging="when_changed" default_value="3" type="float" persistant="1"/>
-      <variable tag="gratingAzimuthDeg" scope="global" logging="when_changed" default_value="-30" type="float" persistant="1"/>
-      <variable tag="gratingAzimuthStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1"/>
-      <variable tag="gratingAzimuthStepN" scope="global" logging="when_changed" default_value="3" type="float" persistant="1"/>
+      <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="20" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingElevationStepDeg" scope="global" logging="when_changed" default_value="-20" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingElevationStepN" scope="global" logging="when_changed" default_value="3" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingAzimuthDeg" scope="global" logging="when_changed" default_value="-30" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingAzimuthStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingAzimuthStepN" scope="global" logging="when_changed" default_value="3" type="float" persistant="1" groups="Visual Stimuli"/>
       
-      <variable tag="gratingContrast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1"/>  
-      <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1"/>
-      <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1"/>
-      <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1"/>
-      <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1"/>
-      <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="gratingContrast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Visual Stimuli"/>  
+      <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
     </folder>
     <folder tag="Task Status">
       <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
@@ -93,6 +95,8 @@
   </variables>
   <sounds tag="Sounds">
     <sound tag="startSound" type="wav_file" path="wavs/10000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
+    <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="correctSoundVolume"></sound>
+    <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -100,8 +104,8 @@
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
-              x_size="gratingWidthDeg" y_size="tGratingHeightDeg" 
-              x_position="30" y_position="gratingElevationDeg" 
+              x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
+              x_position="-15" y_position="gratingElevationDeg" 
               rotation="gratingDirectionDeg" 
               alpha_multiplier="1.0"></stimulus>
     <stimulus type="drifting_grating" tag="distractorGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
@@ -109,7 +113,7 @@
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
               x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
-              x_position="-30" y_position="gratingElevationDeg" 
+              x_position="15" y_position="gratingElevationDeg" 
               rotation="gratingDirectionDeg" 
               alpha_multiplier="0.4"></stimulus>
   </stimuli>    
@@ -132,7 +136,7 @@
       <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
         <task_system_state tag="InterTrialInterval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="report" message="In Inter-Trial Interval for $itiTimeMs ms"></action>
+          <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms"></action>
           <action type="start_timer" timer="itiTimerMs" timebase="" duration="itiTimeMs" duration_units="ms"/>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
           <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
@@ -148,7 +152,7 @@
 
         <task_system_state tag="TrialStart" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="report" message="** Trial Starting"></action>
+          <action type="report" message="**** Trial Starting"></action>
           <action type="play_sound" sound="startSound"/>
           <action type="start_timer" timer="delayTimerMs" timebase="" duration="delayTimeMs" duration_units="ms"/>
 
@@ -158,7 +162,7 @@
 
         <task_system_state tag="StimOn" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="report" message="*-=STIMULI ON=-*"></action>
+          <action type="report" message="*****-=STIMULI ON=-*****"></action>
           <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
           <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
           <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
@@ -192,13 +196,17 @@
 
         <task_system_state tag="Reward" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+          <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+          <action type="update_stimulus_display"></action>
+          <action type="play_sound" sound="correctSound"/>
           <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
-            <action type="report" tag="Report" message="Decision Time = $tDecisionTimeMs"></action>
-            <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success! **"></action>
-            <!-- update running variables -->
-            <action type="assignment" tag="success++" variable="success" value="success+1"></action>
-            <action type="assignment" variable="juice" value="rewardTimeUs"></action>
-            <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
+          <action type="report" tag="Report" message="Decision Time = $tDecisionTimeMs"></action>
+          <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success! **"></action>
+          <!-- update running variables -->
+          <action type="assignment" tag="success++" variable="success" value="success+1"></action>
+          <action type="assignment" variable="juice" value="rewardTimeUs"></action>
+          <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="rewardTimerUs" target="EndTrial"></transition>
@@ -206,6 +214,10 @@
 
         <task_system_state tag="Incorrect" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+          <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+          <action type="update_stimulus_display"></action>
+          <action type="play_sound" sound="incorrectSound"/>
           <action type="assignment" tag="Incorrects++" variable="incorrect" value="incorrect+1"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -214,6 +226,10 @@
 
         <task_system_state tag="Ignore" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+          <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+          <action type="update_stimulus_display"></action>
+          <action type="play_sound" sound="incorrectSound"/>
           <action type="assignment" tag="Ignore++" variable="ignore" value="ignore+1"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
