@@ -23,26 +23,30 @@
       <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="decisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
+
+      <variable tag="tLastTrialWasLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="tLeftTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Markov"/>
+      <variable tag="tMarkovOdds" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="a" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1"/>
+      <variable tag="b" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1"/>
+      <variable tag="stimProbAvgLeft" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov"/>
+      <variable tag="stimProbAvgSwitch" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov"/>
     </folder>
     <folder tag="Stimuli">
       <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
       <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
       <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
 
-      <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="20" type="float" persistant="1" groups="Visual Stimuli"/>
-      <variable tag="gratingElevationStepDeg" scope="global" logging="when_changed" default_value="-20" type="float" persistant="1" groups="Visual Stimuli"/>
-      <variable tag="gratingElevationStepN" scope="global" logging="when_changed" default_value="3" type="float" persistant="1" groups="Visual Stimuli"/>
-      <variable tag="gratingAzimuthDeg" scope="global" logging="when_changed" default_value="-30" type="float" persistant="1" groups="Visual Stimuli"/>
-      <variable tag="gratingAzimuthStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Visual Stimuli"/>
-      <variable tag="gratingAzimuthStepN" scope="global" logging="when_changed" default_value="3" type="float" persistant="1" groups="Visual Stimuli"/>
-      
-      <variable tag="gratingContrast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Visual Stimuli"/>  
+      <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="20" type="float" persistant="1" groups="Visual Stimuli"/>    
       <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="tGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
     </folder>
     <folder tag="Task Status">
       <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
@@ -79,18 +83,13 @@
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
       <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
       <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
+      <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
         
       <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      
-      <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -105,7 +104,7 @@
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
               x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
-              x_position="-15" y_position="gratingElevationDeg" 
+              x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
               rotation="gratingDirectionDeg" 
               alpha_multiplier="1.0"></stimulus>
     <stimulus type="drifting_grating" tag="distractorGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
@@ -113,7 +112,7 @@
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
               x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
-              x_position="15" y_position="gratingElevationDeg" 
+              x_position="dGratingEccentricityDeg" y_position="gratingElevationDeg" 
               rotation="gratingDirectionDeg" 
               alpha_multiplier="0.4"></stimulus>
   </stimuli>    
@@ -128,6 +127,9 @@
       <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
       <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
       <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+      <action type="assignment" variable="tConsecCorrects" value="0"/>
+      <action type="assignment" variable="tConsecErrors" value="0"/>
+      <action type="assignment" variable="tNTrialsCompleted" value="0"/>
 
         
       <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
@@ -144,7 +146,34 @@
           <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
           <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
           <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+          <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
           <action type="assignment" variable="stimulusOn" value="0"/>
+
+          <!-- choose left/right state based on left, switch, and last trial state. -->
+          <action type="assignment" variable="tMarkovOdds" value="(1-stimProbAvgLeft)/stimProbAvgLeft" />
+          <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
+          <action type="assignment" variable="a" value="tMarkovOdds * b"/>
+
+          <action type="if" condition="tLastTrialWasLeft == -1">  <!-- special case: no last trial / first trial -->
+            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; stimProbAvgLeft"/> 
+          </action>
+          <action type="if" condition="tLastTrialWasLeft == 1">
+            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; (1-a)"/>
+          </action>
+
+          <action type="if" condition="tLastTrialWasLeft == 0">
+            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; b"/>
+          </action>
+
+          <action type="if" condition="tLeftTrial == 0">
+            <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
+            <action type="assignment" variable="dGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
+          </action>
+
+          <action type="if" condition="tLeftTrial == 1">
+            <action type="assignment" variable="tGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
+            <action type="assignment" variable="dGratingEccentricityDeg" value="gratingEccentricityDeg"/>
+          </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="itiTimerMs" target="TrialStart"></transition>
@@ -152,7 +181,7 @@
 
         <task_system_state tag="TrialStart" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="report" message="**** Trial Starting"></action>
+          <action type="report" message="**** Trial Starting: playing tone and beginning delay"></action>
           <action type="play_sound" sound="startSound"/>
           <action type="start_timer" timer="delayTimerMs" timebase="" duration="delayTimeMs" duration_units="ms"/>
 
@@ -163,6 +192,7 @@
         <task_system_state tag="StimOn" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="report" message="*****-=STIMULI ON=-*****"></action>
+          <action type="assignment" variable="stimulusOn" value="1"/>
           <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
           <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
           <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
@@ -190,8 +220,10 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
-          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; (0-decisionThreshold)" target="Reward"></transition>
-          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; decisionThreshold" target="Incorrect"></transition>
+          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Reward"></transition>
+          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Incorrect"></transition>
+          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Incorrect"></transition>
+          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Reward"></transition>
         </task_system_state>
 
         <task_system_state tag="Reward" interruptible="YES">
@@ -202,11 +234,13 @@
           <action type="play_sound" sound="correctSound"/>
           <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
           <action type="report" tag="Report" message="Decision Time = $tDecisionTimeMs"></action>
-          <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success! **"></action>
+          <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success!!! **"></action>
           <!-- update running variables -->
           <action type="assignment" tag="success++" variable="success" value="success+1"></action>
           <action type="assignment" variable="juice" value="rewardTimeUs"></action>
           <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
+          <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
+          <action type="assignment" tag="" variable="tConsecErrors" value="0"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="rewardTimerUs" target="EndTrial"></transition>
@@ -216,9 +250,12 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+          <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect **"></action>
           <action type="update_stimulus_display"></action>
           <action type="play_sound" sound="incorrectSound"/>
           <action type="assignment" tag="Incorrects++" variable="incorrect" value="incorrect+1"/>
+          <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
+          <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="EndTrial"></transition>
@@ -228,9 +265,12 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+          <action tag="Report Ignore" full_name="ReportDigital" type="report" message="** Ignore **"></action>
           <action type="update_stimulus_display"></action>
           <action type="play_sound" sound="incorrectSound"/>
           <action type="assignment" tag="Ignore++" variable="ignore" value="ignore+1"/>
+          <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
+          <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="EndTrial"></transition>
@@ -239,6 +279,9 @@
         <task_system_state tag="EndTrial" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>           
           <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+          <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
+          <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
+          <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="yield" tag="return to parent task system"></transition>
