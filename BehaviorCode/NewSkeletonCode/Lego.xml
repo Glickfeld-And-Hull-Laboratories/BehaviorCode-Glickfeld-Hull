@@ -24,6 +24,9 @@
       <variable tag="decisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
 
+      <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
+      <variable tag="incorrectTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
+
       <variable tag="tLastTrialWasLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tLeftTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Markov"/>
       <variable tag="tMarkovOdds" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -36,6 +39,9 @@
       <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
       <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
       <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+
+      <variable tag="targetGratingMaxContrast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="distractorGratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
 
       <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>    
       <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
@@ -250,30 +256,32 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
-          <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect **"></action>
+          <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect: Time-Out for $incorrectTimeoutMs **"></action>
           <action type="update_stimulus_display"></action>
           <action type="play_sound" sound="incorrectSound"/>
+          <action type="start_timer" timer="incorrectTimeoutTimer" timebase="" duration="incorrectTimeoutMs" duration_units="ms"/>
           <action type="assignment" tag="Incorrects++" variable="incorrect" value="incorrect+1"/>
           <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
           <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="direct" target="EndTrial"></transition>
+          <transition type="timer_expired" timer="incorrectTimeoutTimer" target="EndTrial"></transition>
         </task_system_state>
 
         <task_system_state tag="Ignore" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
-          <action tag="Report Ignore" full_name="ReportDigital" type="report" message="** Ignore **"></action>
+          <action tag="Report Ignore" full_name="ReportDigital" type="report" message="** Ignore: Time-Out for $ignoreTimeoutMs **"></action>
           <action type="update_stimulus_display"></action>
           <action type="play_sound" sound="incorrectSound"/>
+          <action type="start_timer" timer="ignoreTimeoutTimer" timebase="" duration="ignoreTimeoutMs" duration_units="ms"/>
           <action type="assignment" tag="Ignore++" variable="ignore" value="ignore+1"/>
           <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
           <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="direct" target="EndTrial"></transition>
+          <transition type="timer_expired" timer="ignoreTimeoutTimer" target="EndTrial"></transition>
         </task_system_state>
 
         <task_system_state tag="EndTrial" interruptible="YES">
