@@ -254,7 +254,6 @@
     <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
     <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
     <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
-    <sound tag="targetSound" type="wav_file" path="../wavs/2000Hztone100ms.wav" amplitude="targetSoundVolume"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -832,14 +831,6 @@
 
             <!-- Normal Vis Stim On -->
             <action type="live_queue_stimulus" stimulus="targetStimulus"/>
-            
-            <action type="if" condition="doTargetSound">
-              <action type="schedule" delay="targetSoundStimOffsetMs*1000" duration="500" repeats="1">
-                <action type="if" condition="tStimTurnedOn == 1 || targetSoundStimOffsetMs == 0"> 
-                  <action type="play_sound" sound="targetSound"/>
-                </action>
-              </action>
-            </action>
             <action type="play_dynamic_stimulus" stimulus="targetStimulus" tag="start"/>
             
             <!-- If MTS On, Play Distractor and target-->
