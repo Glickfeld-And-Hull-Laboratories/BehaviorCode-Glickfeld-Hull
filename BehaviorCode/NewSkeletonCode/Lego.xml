@@ -44,7 +44,6 @@
       <variable tag="gratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
 
-
       <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>    
       <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
@@ -52,6 +51,7 @@
       <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="tGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -101,6 +101,7 @@
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
       <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
       <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+      <variable tag="tLastTrialCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -175,7 +176,12 @@
           <action type="assignment" variable="stimulusOn" value="0"/>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
 
-
+          <action type="if" condition="tLastTrialCorrect == 1">
+            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+            <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
+            <action tag="Update Display" type="update_stimulus_display"></action>
+            <action type="start_timer" timer="itiTimerMs" timebase="" duration="150" duration_units="ms"/>
+          </action>
           <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
           <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
 
@@ -233,7 +239,7 @@
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level8"/>
 
 
-          <action type="assignment" variable="dGratingContrast" value="(gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO)))"></action>
+          <action type="assignment" variable="dGratingContrast" value="(gratingMaxContrast - (gratingMaxDiff/ (pow(2, 1.0*tStimulusNumber/gratingContrastSPO)))"></action>
           <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
 
           <!-- choose left/right state based on left, switch, and last trial state. -->
@@ -324,6 +330,7 @@
           <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success!!! **"></action>
           <!-- update running variables -->
           <action type="assignment" tag="success++" variable="success" value="success+1"></action>
+          <action type="assignment" variable="tLastTrialCorrect" value="1"></action>
           <action type="assignment" variable="juice" value="rewardTimeUs"></action>
           <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
           <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
