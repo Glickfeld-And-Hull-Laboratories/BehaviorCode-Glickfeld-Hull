@@ -51,9 +51,7 @@ stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
 %        nJ, round(juiceD));
 
 %% run subfunctions
-%input = exptRunSubfunctions(ds, input, { @plotOnlineHist });
-
-
+input = exptRunSubfunctions(ds, input, { @plotLego });
 
 %% save variables for next trial
 retval = input;

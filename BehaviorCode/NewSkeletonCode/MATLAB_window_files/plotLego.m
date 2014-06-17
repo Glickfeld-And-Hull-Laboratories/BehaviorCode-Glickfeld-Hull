@@ -6,6 +6,7 @@ cs = lego_constants;
 spSz = {3,3};
 
 smoothType = 'lowess';
+figNum = 1;
 
 %% other consts
 yColor = [1 1 0]*0.5;
@@ -34,7 +35,7 @@ end
 nTrial = length(input.trialOutcomeCell);
 
 correctIx = strcmp(input.trialOutcomeCell, 'success');
-incorrectIx = strcmp(input.trialOutcomeCell, 'failure');
+incorrectIx = strcmp(input.trialOutcomeCell, 'incorrect');
 ignoreIx = strcmp(input.trialOutcomeCell, 'ignore');
 missIx = ignoreIx;
 nCorr = sum(correctIx);
@@ -137,11 +138,11 @@ set(lH2, 'Color', 'k', ...
         'LineWidth', 2);
 
 lH3 = plot(smooth(double(ignoreIx), 100, smoothType));
-set(lH3, 'Color', 'g', ...
+set(lH3, 'Color', 'm', ...
          'LineWidth', 2);
 
 lH4 = plot(smooth(double(incorrectIx), 100, smoothType));
-  set(lH4, 'Color', 'm', ...
+  set(lH4, 'Color', 'g', ...
            'LineWidth', 2);
   anystack(lH4, 'bottom');
 
