@@ -52,7 +52,6 @@
       <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
-      <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="tGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -101,7 +100,7 @@
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
       <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
       <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
-      <variable tag="tLastTrialCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLastTrialCorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -140,6 +139,14 @@
               x_position="dGratingEccentricityDeg" y_position="gratingElevationDeg" 
               rotation="gratingDirectionDeg" 
               alpha_multiplier="dGratingContrast"></stimulus>
+    <stimulus type="drifting_grating" tag="rewardGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+              spatial_frequency="gratingSpatialFreqCPD" 
+              speed="gratingSpeedDPS" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="180" y_size="180" 
+              x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
+              rotation="gratingDirectionDeg" 
+              alpha_multiplier="tGratingContrast"></stimulus>
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -159,7 +166,7 @@
       <action type="assignment" variable="tNStimAccepted" value="0" />
 
         
-      <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
+      <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="10000" sampling_method="cycles">
       <trial tag="New List" nsamples="99999999" sampling_method="samples" selection="random_without_replacement">
       <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
       <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
@@ -178,10 +185,25 @@
 
           <action type="if" condition="tLastTrialCorrect == 1">
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
-            <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
+            <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
             <action tag="Update Display" type="update_stimulus_display"></action>
-            <action type="start_timer" timer="itiTimerMs" timebase="" duration="150" duration_units="ms"/>
+
+            <action type="schedule" delay="250 ms" duration="1" repeats="1">
+              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>
+            <action type="schedule" delay="500 ms" duration="1" repeats="1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>
+            <action type="schedule" delay="750 ms" duration="1" repeats="1">
+              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+              <action type="report" message="RewardGrating Dequeued"/>
+            </action>
           </action>
+
           <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
           <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
 
@@ -239,7 +261,7 @@
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level8"/>
 
 
-          <action type="assignment" variable="dGratingContrast" value="(gratingMaxContrast - (gratingMaxDiff/ (pow(2, 1.0*tStimulusNumber/gratingContrastSPO)))"></action>
+          <action type="assignment" variable="dGratingContrast" value="(gratingMaxContrast - (gratingMaxDiff/ (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))))"></action>
           <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
 
           <!-- choose left/right state based on left, switch, and last trial state. -->
@@ -345,6 +367,7 @@
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
           <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
+          <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
           <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect: Time-Out for $incorrectTimeoutMs **"></action>
           <action type="update_stimulus_display"></action>
           <action type="play_sound" sound="incorrectSound"/>
@@ -364,6 +387,7 @@
           <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
           <action tag="Report Ignore" full_name="ReportDigital" type="report" message="** Ignore: Time-Out for $ignoreTimeoutMs **"></action>
           <action type="update_stimulus_display"></action>
+          <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
           <action type="play_sound" sound="incorrectSound"/>
           <action type="start_timer" timer="ignoreTimeoutTimer" timebase="" duration="ignoreTimeoutMs" duration_units="ms"/>
           <action type="assignment" tag="Ignore++" variable="ignore" value="ignore+1"/>
@@ -386,7 +410,7 @@
           <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
 
           <!-- update selection variable -->
-          <action type="if" condition="tNStimAccepted >= 80">
+          <action type="if" condition="tNStimAccepted &gt;= 80">
             <action type="reset_selection" selection="svStimNumber"/>
             <action type="assignment" variable="tNStimAccepted" value="0"></action>
           </action>
