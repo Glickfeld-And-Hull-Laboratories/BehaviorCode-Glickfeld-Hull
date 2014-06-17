@@ -12,7 +12,7 @@ figNum = 1;
 yColor = [1 1 0]*0.5;
 
 %% draw figure
-figH = figure('Name', 'Lego Task', 'NumberTitle', 'Off');
+figH = figure(figNum);
 set(figH, 'ToolBar', 'none');
 clf;
 %set(figH, 'Visible', 'off');
@@ -50,12 +50,13 @@ juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
 
 % stimulus str            
-            stimStr = strcat(mat2str(input.gratingHeightDeg), ' x ', mat2str(input.gratingWidthDeg), ' deg, ', ...
-                num2str(input.gratingSpatialFreqCPD), ' cpd, ', mat2str(input.gratingEccentricityDeg), ' deg')
-           if input.gratingSpeedDPS > 0,
-               stimStr = strcat(stimStr, ', ', mat2str(input.gratingSpeedDPS), ' dps, ', ...
-                   mat2str(input.gratingStartingPhaseDeg), ' deg')
-           end
+stimStr = strcat(mat2str(input.gratingHeightDeg), ' x ', mat2str(input.gratingWidthDeg), ' deg, ', ...
+    num2str(input.gratingSpatialFreqCPD), ' cpd, ', mat2str(input.gratingEccentricityDeg), ' deg');
+
+if input.gratingSpeedDPS > 0,
+    stimStr = strcat(stimStr, ', ', mat2str(input.gratingSpeedDPS), ' dps, ', ...
+        mat2str(input.gratingStartingPhaseDeg), ' deg')
+end
          
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
