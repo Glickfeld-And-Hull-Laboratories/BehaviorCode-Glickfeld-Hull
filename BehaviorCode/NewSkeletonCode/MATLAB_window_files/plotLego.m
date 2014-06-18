@@ -44,6 +44,15 @@ nIg = sum(ignoreIx);
 nTrials = length(input.trialOutcomeCell);
 decisionV = celleqel2mat_padded(input.tDecisionTimeMs);
 trPer80Str = regexprep(['[' num2str(input.trPer80V, '%3d') ']'], '[ *', '[');
+leftTrialIx = cell2mat(input.tLeftTrial);
+
+% Left bias indexing
+left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
+left_incorrect_ind = intersect(find(leftTrialIx==0), find(incorrectIx==1));
+tLeftResponse = zeros(size(correctIx));
+tLeftResponse([left_correct_ind left_incorrect_ind]) = 1;
+tLeftResponse(find(ignoreIx)) = NaN;
+input.tLeftResponse = tLeftResponse;
 
 %  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
 juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
@@ -55,7 +64,7 @@ stimStr = strcat(mat2str(input.gratingHeightDeg), ' x ', mat2str(input.gratingWi
 
 if input.gratingSpeedDPS > 0,
     stimStr = strcat(stimStr, ', ', mat2str(input.gratingSpeedDPS), ' dps, ', ...
-        mat2str(input.gratingStartingPhaseDeg), ' deg')
+        mat2str(input.gratingStartingPhaseDeg), ' deg');
 end
          
 
@@ -79,15 +88,14 @@ end
 
         elMin = round((now - datenum(input.startDateVec)) * 24*60);
         startStr = datestr(input.startDateVec, 'HH:MM');
-        text(0.00, 1.05, {'Subject:', 'Start time + elapsed:', 'Reward vol (m\pm std):'});
+        text(0.00, 1.05, {'Subject:', 'Start time + elapsed:', 'Reward vol:'});
 	text(0.60, 1.05, ...
              { sprintf('%2d', input.subjectNum), ...
                sprintf('%s + %2dm', ...
                        startStr, elMin), ...
-               sprintf('%.1f s     \t(%g ms\\pm %g ms)', ...
+               sprintf('%.1f s     \t(%g ms)', ...
                        nansum(juiceTimesMsV./1000), ...
-                       chop(nanmean(juiceTimesMsV),2), ...
-                       chop(nanstd(juiceTimesMsV),2)), ...
+                       chop(nanmean(juiceTimesMsV),2)), ...
              });
          
 	t2H(1) = text(0.00, 0.8, {'Trials:', 'Correct:', 'Incorrect:', 'Missed:'});
@@ -101,8 +109,8 @@ end
                  'HorizontalAlignment', 'left');
 
 
-        tStr = sprintf('Decision median:\n', ...
-                        '   %5.1f ms\n', ...
+        tStr = sprintf(['Decision median:\n', ...
+                        '   %5.1f ms\n'], ...
                        median(decisionV(correctIx)));
                
         text(0.8, 0.8, tStr, ...
@@ -131,7 +139,7 @@ end
         
 %%%%%%%%%%%%%%%
 
-%% 4 - smoothed perf curve
+%% 2 - smoothed perf curve
 axH = subplot(spSz{:},2:3);
 hold on;
 lH2 = plot(smooth(double(correctIx), 100, smoothType));
@@ -207,6 +215,30 @@ if nTrial > 1
        'HorizontalAlignment', 'left', ...
        'VerticalAlignment', 'top');
 
+%%%%%%%%%%
+
+%% 5 - bias plot
+axH = subplot(spSz{:},5);
+hold on;
+if nTrial > 100,
+    amtSmooth = round(nTrial*0.10);
+else
+    amtSmooth = 10;
+end
+
+lh1 = plot(smooth(double(leftTrialIx), amtSmooth, smoothType));
+set(lh1, 'Color', 'k', 'LineWidth', 2);
+
+lh2 = plot(smooth(double(tLeftResponse), amtSmooth, smoothType));
+set(lh2,'Color', 'r', 'LineWidth', 2);
+    
+title('Bias Plot');
+ylabel('Pct Left');
+set(gca, 'YLim', [0 1]);
+
+xlabel('Trials');
+trXLim = [0 nTrials]; %get(gca, 'XLim');
+set(gca, 'XLim', trXLim);
 %%%%%%%%%%%%%%%%
 
 %% Add a save button
