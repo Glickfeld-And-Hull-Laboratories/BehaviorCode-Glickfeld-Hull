@@ -254,7 +254,7 @@ hold on;
 
 contDiffV = cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast);
 corrDiffV = contDiffV(correctIx);
-uqDiff = unique(corrDiffV)
+uqDiff = unique(corrDiffV);
 nLevels = length(uqDiff);
 corrDiffCell = cell(1,nLevels);
 decTimes = cell2mat_padded(input.tDecisionTimeMs);
@@ -294,11 +294,21 @@ axH = subplot(spSz{:},6);
 hold on;
 
 decisionMax = ceil(input.reactionTimeMs/1000)*1000;
+if decisionMax <= 6000,
+    decisionInterval = 1000;
+else
+    decisionInterval = 2000;
+end
+if decisionMax <= 10000,
+    decMax = decisionMax;
+else
+    decMax = 10000;
+end
 
 cdfplot([input.tDecisionTimeMs{:}]);
-set(gca, 'XLim', [0 decisionMax], ...
+set(gca, 'XLim', [0 decMax], ...
          'YLim', [0 1], ...
-         'XTick', [0:1000:decisionMax]);
+         'XTick', [0:decisionInterval:decMax]);
 grid on;
 hold on;
 title('Decision Time CDF');
