@@ -167,7 +167,7 @@ trXLim = [0 nTrials]; %get(gca, 'XLim');
 set(gca, 'XLim', trXLim);
 
 %%%%%%%%%%%%%%%%
-
+  
 %% List changed text
 axH = subplot(spSz{:}, 4);
 hold on;
@@ -240,6 +240,47 @@ xlabel('Trials');
 trXLim = [0 nTrials]; %get(gca, 'XLim');
 set(gca, 'XLim', trXLim);
 %%%%%%%%%%%%%%%%
+
+%% 7 - Constrast Difference x Correct reaction times plot
+axH = subplot(spSz{:},7);
+hold on;
+
+contDiffV = cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast);
+corrDiffV = contDiffV(correctIx);
+uqDiff = unique(corrDiffV)
+nLevels = length(uqDiff);
+corrDiffCell = cell(1,nLevels);
+decTimes = cell2mat_padded(input.tDecisionTimeMs);
+corrDecTimes = decTimes(correctIx);
+
+for ii = 1:length(uqDiff),
+    val = uqDiff(ii);
+    tix = corrDiffV==val;
+    corrDiffCell{ii} = nanmean(corrDecTimes(tix));
+end
+minD = min(cell2mat_padded(corrDiffCell));
+maxD = max(cell2mat_padded(corrDiffCell));
+minX = min(uqDiff);
+maxX = max(uqDiff);
+xLimm = [minX maxX];
+
+pH = plot(uqDiff, cell2mat(corrDiffCell));
+xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
+xTickL = 10.^(xL1(1):1:xL1(2));
+xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
+xTLabelL = cellstr(num2str(xTickL(:)));
+set(pH, ...
+        'LineWidth', 1.5, ...
+        'Marker', '.', ...
+        'MarkerSize', 9);
+set(gca, 'YLim', [minD-100 maxD+100], ...
+           'XLim', [0 1], ...
+           'XScale', 'log', ...
+           'XGrid', 'on');
+set(gca, 'XTick', xTickL);
+set(gca, 'XTickLabel', xTLabelL);
+ylabel('Decision Time (ms)')
+xlabel('Contrast Difference')
 
 %% Add a save button
 if ~exist(cs.behavPdfPath, 'file')
