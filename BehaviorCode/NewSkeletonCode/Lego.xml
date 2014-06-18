@@ -22,6 +22,7 @@
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="115" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="decisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="reversalThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
 
       <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
@@ -95,6 +96,8 @@
       <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tQuadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDecisionTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLeftReversal" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tRightReversal" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
@@ -180,6 +183,8 @@
           <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
           <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+          <action type="assignment" tag="set LReversal back to 0" variable="tLeftReversal" value="0"/>
+          <action type="assignment" tag="set RReversal back to 0" variable="tRightReversal" value="0"/>
           <action type="assignment" variable="stimulusOn" value="0"/>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
 
@@ -308,6 +313,7 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="report" message="*****-=STIMULI ON=-*****"></action>
           <action type="assignment" variable="stimulusOn" value="1"/>
+          <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
           <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
           <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
           <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
@@ -322,7 +328,8 @@
 
         <task_system_state tag="SetReact" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs" duration_units="ms"/>
+          <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs-tooFastTimeMs" duration_units="ms"/>
+          <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="Reaction"></transition>
@@ -330,15 +337,34 @@
 
         <task_system_state tag="Reaction" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
-          <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; (0-reversalThreshold)" target="PastLeftThreshold"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; reversalThreshold" target="PastRightThreshold"></transition>
+        </task_system_state>
+
+        <task_system_state tag="PastLeftThreshold" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" tag="" variable="tLeftReversal" value="tLeftReversal+1"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
           <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Reward"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Incorrect"></transition>
           <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Incorrect"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; (0-reversalThreshold)" target="Reaction"></transition>
+        </task_system_state>
+
+        <task_system_state tag="PastRightThreshold" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" tag="" variable="tRightReversal" value="tRightReversal+1"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
+          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Incorrect"></transition>
           <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Reward"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; reversalThreshold" target="Reaction"></transition>
+
         </task_system_state>
 
         <task_system_state tag="Reward" interruptible="YES">
