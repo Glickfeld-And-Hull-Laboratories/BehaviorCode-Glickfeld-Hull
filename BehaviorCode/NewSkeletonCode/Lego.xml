@@ -383,6 +383,18 @@
           <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
           <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
           <action type="assignment" tag="" variable="tConsecErrors" value="0"/>
+                    <!-- accept stim selection -->
+          <action type="accept_selections" selection="svStimNumber"></action>
+          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+
+          <!-- update selection variable -->
+          <action type="if" condition="tNStimAccepted &gt;= 80">
+            <action type="reset_selection" selection="svStimNumber"/>
+            <action type="assignment" variable="tNStimAccepted" value="0"></action>
+          </action>
+          <action type="if" condition="tNStimAccepted &lt; 80">
+            <action type="next_selection" selection="svStimNumber"/>
+          </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="rewardTimerUs" target="EndTrial"></transition>
@@ -402,6 +414,19 @@
           <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
           <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
 
+                    <!-- accept stim selection -->
+          <action type="accept_selections" selection="svStimNumber"></action>
+          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+
+          <!-- update selection variable -->
+          <action type="if" condition="tNStimAccepted &gt;= 80">
+            <action type="reset_selection" selection="svStimNumber"/>
+            <action type="assignment" variable="tNStimAccepted" value="0"></action>
+          </action>
+          <action type="if" condition="tNStimAccepted &lt; 80">
+            <action type="next_selection" selection="svStimNumber"/>
+          </action>
+
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="incorrectTimeoutTimer" target="EndTrial"></transition>
         </task_system_state>
@@ -419,19 +444,7 @@
           <action type="assignment" tag="Ignore++" variable="ignore" value="ignore+1"/>
           <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
           <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
-
-          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" timer="ignoreTimeoutTimer" target="EndTrial"></transition>
-        </task_system_state>
-
-        <task_system_state tag="EndTrial" interruptible="YES">
-          <action_marker _unmoveable="1" tag="Actions"></action_marker>           
-          <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
-          <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
-          <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
-          <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
-
-          <!-- accept stim selection -->
+                    <!-- accept stim selection -->
           <action type="accept_selections" selection="svStimNumber"></action>
           <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
 
@@ -443,6 +456,17 @@
           <action type="if" condition="tNStimAccepted &lt; 80">
             <action type="next_selection" selection="svStimNumber"/>
           </action>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="ignoreTimeoutTimer" target="EndTrial"></transition>
+        </task_system_state>
+
+        <task_system_state tag="EndTrial" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>           
+          <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+          <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
+          <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
+          <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="yield" tag="return to parent task system"></transition>
