@@ -118,13 +118,16 @@ end
              'HorizontalAlignment', 'left');
          
             
-        tStr = sprintf( ['Reaction Time: \t%5.2f s;   ITI %d ms \n', ...
-                         'Reward : %d ms \n', ...
+        tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
+                         'Thresholds (decision, reversal):\t%4.1f, %4.1f ms\n', ...
+                         'Reward: %d ms \n', ...
                          'Timeouts (ign,inc):\t%4.1f, %4.1f s\n', ...
                          'trPer80: %s\n', ...
                          'Stim: %s \n'], ...
                         input.reactionTimeMs/1000, ...
                         input.itiTimeMs, ...
+                        input.decisionThreshold, ...
+                        input.reversalThreshold, ...
                         input.rewardTimeUs/1000, ...
                         input.ignoreTimeoutMs/1000, ...
                         input.incorrectTimeoutMs/1000, ...
@@ -231,10 +234,14 @@ set(lh1, 'Color', 'k', 'LineWidth', 2);
 
 lh2 = plot(smooth(double(tLeftResponse), amtSmooth, smoothType));
 set(lh2,'Color', 'r', 'LineWidth', 2);
+
+lh3 = refline(0,0.5);
+set(lh3, 'LineStyle', '--');
     
-title('Bias Plot');
+title('Bias Plot: Red = Mouse, Black = Correct');
 ylabel('Pct Left');
-set(gca, 'YLim', [0 1]);
+set(gca, 'YLim', [0 1], ...
+         'YTick', [0,0.25,0.5,0.75,1]);
 
 xlabel('Trials');
 trXLim = [0 nTrials]; %get(gca, 'XLim');
@@ -281,6 +288,24 @@ set(gca, 'XTick', xTickL);
 set(gca, 'XTickLabel', xTLabelL);
 ylabel('Decision Time (ms)')
 xlabel('Contrast Difference')
+%% 6 - cdf of decision times
+
+axH = subplot(spSz{:},6);
+hold on;
+
+decisionMax = ceil(input.reactionTimeMs/1000)*1000;
+
+cdfplot([input.tDecisionTimeMs{:}]);
+set(gca, 'XLim', [0 decisionMax], ...
+         'YLim', [0 1], ...
+         'XTick', [0:1000:decisionMax]);
+grid on;
+hold on;
+title('Decision Time CDF');
+xlabel('Time');
+
+
+%%%%%%%%%%%%%%%%
 
 %% Add a save button
 if ~exist(cs.behavPdfPath, 'file')
