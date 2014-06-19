@@ -964,22 +964,30 @@
             <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==maxCyclesOn)">
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                <action type="play_sound" sound="baseSound"/>
                 <action type="assignment" variable="isCatchTrial" value= "1"/>
             </action>
             <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
             	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+              <action type="if" condition="tDoAuditoryDetect">
+                <action type="play_sound" sound="targetSound"/>
+              </action> 
+              <action type="if" condition="!tDoAuditoryDetect">
+                <action type="play_sound" sound="baseSound"/>
+              </action> 
             </action>
-              <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn &lt; maxCyclesOn)">
-                  <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
-                  <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-              </action>
-            <action type="if" condition="tDoAuditoryDetect">
-              <action type="play_sound" sound="targetSound"/>
-            </action> 
-            <action type="if" condition="!tDoAuditoryDetect">
-              <action type="play_sound" sound="baseSound"/>
-            </action>  
+            <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn &lt; maxCyclesOn)">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+                <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                <action type="if" condition="tDoAuditoryDetect">
+                  <action type="play_sound" sound="targetSound"/>
+                </action> 
+                <action type="if" condition="!tDoAuditoryDetect">
+                  <action type="play_sound" sound="baseSound"/>
+                </action> 
+            </action>
+             
 
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
