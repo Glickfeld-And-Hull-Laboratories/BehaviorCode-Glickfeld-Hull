@@ -41,9 +41,18 @@ trN = input.trialSinceReset;
 
 %% process reaction times for this trial
 stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
-input.quadStampsUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1); 
+input.quadStampsUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
 
 %% disp status
+if input.tLeftTrial{trN}==1,
+    tLeftStr = 'Left Trial';
+else
+    tLeftStr = 'Right Trial';
+end
+outcomeStr = input.trialOutcomeCell{trN};
+outcomeStr = strcat(upper(outcomeStr(1)), outcomeStr(2:end));
+
+fprintf(1,'Target Contrast: %0.2f, Distractor Contrast: %0.2f, %s, %s\n ', input.tGratingContrast{trN}, input.dGratingContrast{trN}, tLeftStr, outcomeStr)
 
 
 %itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));

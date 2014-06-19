@@ -288,7 +288,42 @@ if nCorr>0,
        set(gca, 'XTickLabel', xTLabelL);
        ylabel('Decision Time (ms)')
        xlabel('Contrast Difference')
+       title('Decision Time by Contrast Difference')
 end
+%%%%%%%%%%%%%%%%%
+
+%% 8 - Contrast Difference x %Correct
+
+axH = subplot(spSz{:},8);
+hold on;
+
+plotTrs = contDiffV(correctIx|incorrectIx);
+uqDiff = unique(plotTrs);
+nLevels = length(uqDiff);
+percentCell = cell(1,nLevels);
+for jj=1:nLevels
+    val = uqDiff(jj);
+    valIx = contDiffV==val;
+    totalNTrialsVal = sum(contDiffV(valIx&(correctIx|incorrectIx)));
+    corrNTrialsVal = sum(contDiffV(valIx&correctIx));
+    percentCell{jj} = corrNTrialsVal/totalNTrialsVal;
+end
+
+pH = plot(uqDiff, cell2mat(percentCell));
+set(pH, ...
+        'LineWidth', 1.5, ...
+        'Marker', '.', ...
+        'MarkerSize', 9);
+    set(gca, 'YLim', [0 1], ...
+           'XLim', [0 1], ...
+           'XScale', 'log', ...
+           'XGrid', 'on');
+       set(gca, 'XTick', xTickL);
+       set(gca, 'XTickLabel', xTLabelL);
+       ylabel('Correct (%)')
+       xlabel('Contrast Difference')
+       title('Percent Correct by Contrast Difference')
+
 %% 6 - cdf of decision times
 
 axH = subplot(spSz{:},6);
