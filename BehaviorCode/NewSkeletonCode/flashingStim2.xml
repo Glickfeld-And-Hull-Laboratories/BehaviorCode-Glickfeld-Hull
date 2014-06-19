@@ -39,11 +39,7 @@
       <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="doLongCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
-<<<<<<< HEAD
-
-=======
-      
->>>>>>> refs/heads/WIP/FlashingStim_Multimodal
+        
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
@@ -969,34 +965,22 @@
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
                 <action type="assignment" variable="isCatchTrial" value= "1"/>
-<<<<<<< HEAD
             </action>
             <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
             	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
             </action>
-=======
-              </action>
-              <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
-                <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-              </action>
->>>>>>> refs/heads/WIP/FlashingStim_Multimodal
               <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn &lt; maxCyclesOn)">
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                   <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
               </action>
-<<<<<<< HEAD
-
-            <action type="play_sound" sound="targetSound"/>
-=======
             <action type="if" condition="tDoAuditoryDetect">
               <action type="play_sound" sound="targetSound"/>
             </action> 
             <action type="if" condition="!tDoAuditoryDetect">
               <action type="play_sound" sound="baseSound"/>
             </action>  
->>>>>>> refs/heads/WIP/FlashingStim_Multimodal
+
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
             <action type="report" message="Catch is $isCatchTrial"></action>
