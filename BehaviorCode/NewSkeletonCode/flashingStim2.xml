@@ -38,7 +38,8 @@
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
-
+      <variable tag="doLongCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+      
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
@@ -261,6 +262,7 @@
       <variable tag="startReactState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
       <variable tag="isTooFast" scope="global" logging="when_changed" default_value="1" persistent="0" type="integer" persistant="0"/>
       <variable tag="isEndState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
+      <variable tag="isCatchTrial" scope="global" logging="when_changed" default_value="0" persistent="0" type="boolean" persistant="0"/>
 
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
@@ -326,7 +328,8 @@
             <action type="assignment" tag="Reset tCyclesOn" variable="tCyclesOn" value="0"/>
             <action type="assignment" tag="Reset too fast time over" variable="isTooFast" value="1"/>
             <action type="assignment" tag="Reset End state" variable="isEndState" value="0"/>  
-            <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, maxCyclesOn)"/>
+            <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/>  
+            <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
 
             <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="(stimOnTimeMs+stimOffTimeMs)*nCyclesOn"/>
 
@@ -958,8 +961,19 @@
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+            <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                <action type="assignment" variable="isCatchTrial" value= "1"/>
+              </action>
+              <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+                <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+              </action>
+              <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn &lt; maxCyclesOn)">
+                  <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+                  <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+              </action>
             <action type="if" condition="tDoAuditoryDetect">
               <action type="play_sound" sound="targetSound"/>
             </action> 
@@ -968,6 +982,7 @@
             </action>  
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
+            <action type="report" message="Catch is $isCatchTrial"></action>
 
             <action type="assignment" variable="tStimTurnedOn" value="1"></action>
 
@@ -981,8 +996,10 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="set too fast time over" variable="isTooFast" value="0"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
-            <transition type="timer_expired" tag="Go to Missed" target="Missed" timer="reactTimeTimer"></transition>
+            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer)" target="Missed"></transition>
             <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="targetOnTimer"></transition>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer)" target="EndTrialStimOn"></transition>
             <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer)" target="EndTrialStimOff"></transition>
@@ -1194,10 +1211,12 @@
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up and too fast, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Lever Up and too fast expired, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endOffTimer"></transition>
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
-            <transition type="timer_expired" tag="if reactTimer expired, go to Missed" target="Missed" timer="reactTimeTimer"></transition>
+            <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer)" target="Missed"></transition>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           </task_system_state>
 
