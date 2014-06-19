@@ -119,7 +119,7 @@ end
          
             
         tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
-                         'Thresholds (decision, reversal):\t%4.1f, %4.1f ms\n', ...
+                         'Thresholds (decision, reversal):\t%4.0f, %4.0f pulses\n', ...
                          'Reward: %d ms \n', ...
                          'Timeouts (ign,inc):\t%4.1f, %4.1f s\n', ...
                          'trPer80: %s\n', ...
@@ -162,7 +162,7 @@ lH4 = plot(smooth(double(incorrectIx), 100, smoothType));
 
 
 title('Outcome Plot');
-ylabel('Pct Occurrence');
+ylabel('Occurrence (%)');
 set(gca, 'YLim', [0 1]);
 
 xlabel('Trials');
@@ -238,8 +238,8 @@ set(lh2,'Color', 'r', 'LineWidth', 2);
 lh3 = refline(0,0.5);
 set(lh3, 'LineStyle', '--');
     
-title('Bias Plot: Red = Mouse, Black = Correct');
-ylabel('Pct Left');
+title('Bias Plot: Red = Responses, Black = Presentations');
+ylabel('Left (%)');
 set(gca, 'YLim', [0 1], ...
          'YTick', [0,0.25,0.5,0.75,1]);
 
