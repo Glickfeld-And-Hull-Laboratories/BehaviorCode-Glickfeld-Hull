@@ -41,6 +41,7 @@ trN = input.trialSinceReset;
 
 %% process reaction times for this trial
 stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
+input.quadStampsUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1); 
 
 %% disp status
 
