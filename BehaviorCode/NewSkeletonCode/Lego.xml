@@ -215,6 +215,7 @@
 
           <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
           <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
+          <action type="report" message="tNStimAccepted=$tNStimAccepted"/>
 
             <!-- level 1 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))"> 
@@ -391,9 +392,11 @@
           <action type="if" condition="tNStimAccepted &gt;= 80">
             <action type="reset_selection" selection="svStimNumber"/>
             <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
           </action>
           <action type="if" condition="tNStimAccepted &lt; 80">
             <action type="next_selection" selection="svStimNumber"/>
+            <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
           </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -422,9 +425,11 @@
           <action type="if" condition="tNStimAccepted &gt;= 80">
             <action type="reset_selection" selection="svStimNumber"/>
             <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
           </action>
           <action type="if" condition="tNStimAccepted &lt; 80">
             <action type="next_selection" selection="svStimNumber"/>
+            <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
           </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -453,9 +458,11 @@
           <action type="if" condition="tNStimAccepted &gt;= 80">
             <action type="reset_selection" selection="svStimNumber"/>
             <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
           </action>
           <action type="if" condition="tNStimAccepted &lt; 80">
             <action type="next_selection" selection="svStimNumber"/>
+            <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
           </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
