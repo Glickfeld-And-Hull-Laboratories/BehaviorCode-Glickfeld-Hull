@@ -45,6 +45,9 @@ nTrials = length(input.trialOutcomeCell);
 decisionV = celleqel2mat_padded(input.tDecisionTimeMs);
 trPer80Str = regexprep(['[' num2str(input.trPer80V, '%3d') ']'], '[ *', '[');
 leftTrialIx = cell2mat(input.tLeftTrial);
+leftTrNs = find(leftTrialIx);
+rightTrialIx = ~leftTrialIx;
+rightTrNs = find(rightTrialIx);
 
 % Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
@@ -142,7 +145,7 @@ end
         
 %%%%%%%%%%%%%%%
 
-%% 2 - smoothed perf curve
+%% 2/3 - smoothed perf curve
 axH = subplot(spSz{:},2:3);
 hold on;
 lH2 = plot(smooth(double(correctIx), 100, smoothType));
@@ -171,7 +174,9 @@ set(gca, 'XLim', trXLim);
 
 %%%%%%%%%%%%%%%%
   
-%% List changed text
+%% 4 - List changed text
+
+
 axH = subplot(spSz{:}, 4);
 hold on;
 set(axH, 'Visible', 'off');
@@ -247,6 +252,34 @@ xlabel('Trials');
 trXLim = [0 nTrials]; %get(gca, 'XLim');
 set(gca, 'XLim', trXLim);
 %%%%%%%%%%%%%%%%
+
+%% 6 - cdf of decision times
+
+axH = subplot(spSz{:},6);
+hold on;
+
+decisionMax = ceil(input.reactionTimeMs/1000)*1000;
+if decisionMax <= 6000,
+    decisionInterval = 1000;
+else
+    decisionInterval = 2000;
+end
+if decisionMax <= 10000,
+    decMax = decisionMax;
+else
+    decMax = 10000;
+end
+
+cdfplot([input.tDecisionTimeMs{:}]);
+set(gca, 'XLim', [0 decMax], ...
+         'YLim', [0 1], ...
+         'XTick', [0:decisionInterval:decMax]);
+grid on;
+hold on;
+title('Decision Time CDF');
+xlabel('Time');
+
+%%%%%%%%%%%%%%%
 
 %% 7 - Constrast Difference x Correct reaction times plot
 axH = subplot(spSz{:},7);
@@ -324,31 +357,52 @@ set(pH, ...
        xlabel('Contrast Difference')
        title('Percent Correct by Contrast Difference')
 
-%% 6 - cdf of decision times
 
-axH = subplot(spSz{:},6);
+%%%%%%%%%%%%%%%%
+
+%% 9 - Left and Right Outcomes
+
+axH = subplot(spSz{:},9);
 hold on;
+lH2 = plot(leftTrNs, smooth(double(correctIx&leftTrialIx), 100, smoothType));
+set(lH2, 'Color', 'k', ...
+        'LineWidth', 2);
 
-decisionMax = ceil(input.reactionTimeMs/1000)*1000;
-if decisionMax <= 6000,
-    decisionInterval = 1000;
-else
-    decisionInterval = 2000;
-end
-if decisionMax <= 10000,
-    decMax = decisionMax;
-else
-    decMax = 10000;
-end
+lH3 = plot(leftTrNs, smooth(double(ignoreIx&leftTrialIx), 100, smoothType));
+set(lH3, 'Color', 'm', ...
+         'LineWidth', 2);
 
-cdfplot([input.tDecisionTimeMs{:}]);
-set(gca, 'XLim', [0 decMax], ...
-         'YLim', [0 1], ...
-         'XTick', [0:decisionInterval:decMax]);
-grid on;
+lH4 = plot(leftTrNs, smooth(double(incorrectIx&leftTrialIx), 100, smoothType));
+  set(lH4, 'Color', 'g', ...
+           'LineWidth', 2);
+  anystack(lH4, 'bottom');
+
+  anystack(lH3, 'bottom');
+axH = subplot(spSz{:},9);
 hold on;
-title('Decision Time CDF');
-xlabel('Time');
+lH2 = plot(rightTrNs, smooth(double(correctIx&~leftTrialIx), 100, smoothType));
+set(lH2, 'Color', 'k', ...
+        'LineWidth', 2, 'LineStyle', '--');
+
+lH3 = plot(rightTrNs, smooth(double(ignoreIx&~leftTrialIx), 100, smoothType));
+set(lH3, 'Color', 'm', ...
+         'LineWidth', 2, 'LineStyle', '--');
+
+lH4 = plot(rightTrNs, smooth(double(incorrectIx&~leftTrialIx), 100, smoothType));
+  set(lH4, 'Color', 'g', ...
+           'LineWidth', 2, 'LineStyle', '--');
+  anystack(lH4, 'bottom');
+
+  anystack(lH3, 'bottom');
+
+title('Outcome Plot');
+ylabel('Occurrence (%)');
+set(gca, 'YLim', [0 1]);
+
+xlabel('Trials');
+trXLim = [0 nTrials]; %get(gca, 'XLim');
+set(gca, 'XLim', trXLim);
+
 
 
 %%%%%%%%%%%%%%%%
