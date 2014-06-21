@@ -71,7 +71,6 @@
       <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.05" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingDurationMs" scope="global" logging="when_changed" default_value="800" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
@@ -140,7 +139,6 @@
       <variable tag="block2GratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2BaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2BaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Block2 Stimulus"/>
@@ -228,7 +226,6 @@
       <variable tag="tGratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -599,7 +596,6 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                         
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                             
                   <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>                         
-                  <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
                   <action type="assignment" variable="tDoVisualStim" value="doVisualStim"/>
                   <action type="assignment" variable="tDoOriDetect" value="doOriDetect"/>
                   <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
@@ -643,7 +639,6 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                         
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                             
                   <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>                         
-                  <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
                   <action type="assignment" variable="tDoVisualStim" value="doVisualStim"/>
                   <action type="assignment" variable="tDoOriDetect" value="doOriDetect"/>
                   <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
@@ -664,7 +659,6 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="block2GratingWidthDeg"></action>                           
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="block2GratingSpatialFreqCPD"></action>                       
                   <action type="assignment" variable="tGratingSpeedDPS" value="block2GratingSpeedDPS"></action>                           
-                  <action type="assignment" variable="tGratingDurationMs" value="block2GratingDurationMs"/>
                   <action type="assignment" variable="tDoVisualStim" value="block2DoVisualStim"/>
                   <action type="assignment" variable="tDoOriDetect" value="block2DoOriDetect"/>
                   <action type="assignment" variable="tDoContrastDetect" value="block2DoContrastDetect"/>
@@ -685,7 +679,6 @@
                 <action type="assert" condition="!doLaserStim" stop_on_failure="1"
                         message="When using trialLaser, doLaserStim must be off"/>
 
-                <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
 
                 <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
                   <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
@@ -727,8 +720,7 @@
                 <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                         
                 <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                           
                 <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                       
-                <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>                           
-                <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>                       
+                <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>                                               
               </action>
               </action>
              <!-- !doBlock2 error checking -->
