@@ -47,7 +47,6 @@ varsOneValEachTrial = {...
     'tGratingWidthDeg', ...
     'tGratingSpatialFreqCPD', ...
     'tGratingSpeedDPS', ...
-    'tGratingDurationMs', ...
     'tTrialLaserPowerMw', ...
     'tTrialLaserOnTimeMs', ...
     'tTrialLaserOffTimeMs', ...
@@ -117,26 +116,52 @@ juiceAmtsMs = input.juiceTimesMsCell{trN};
 juiceD = sum(juiceAmtsMs);  % if isempty, this will be empty
 nJ = length(juiceAmtsMs);
 stimStr = '';
-if input.doVisualStim
-    if input.doContrastDetect
-        stimStr = [stimStr sprintf('ctst chg %g%% ', chop(abs(double(input.gratingContrast{trN})-double(input.tBaseGratingContrast{trN})),2)*100)];
-    elseif input.doOriDetect
-        stimStr = [stimStr sprintf('direction %g%deg ', chop(input.gratingDirectionDeg{trN},2))];
+if input.tBlock2TrialNumber{trN} == 0
+    if input.doVisualStim
+        if input.doContrastDetect
+            stimStr = [stimStr sprintf('ctst chg %g%% ', chop(abs(double(input.gratingContrast{trN})-double(input.tBaseGratingContrast{trN})),2)*100)];
+        elseif input.doOriDetect
+            stimStr = [stimStr sprintf('direction %g%deg ', chop(input.gratingDirectionDeg{trN},2))];
+        end
+    end
+    if input.doAuditoryStim
+        if input.doAuditoryDetect
+            % stimStr = [stimStr sprintf('pitch chg %g%MHz ', chop(double(input.tTonePitchMHz{trN})- double(input.baseTonePitchMHz{trN}),2))];
+        end
+    end
+    if input.doLaserStim
+      stimStr = [stimStr sprintf('power %gmW ', ...
+                        chop(input.laserPowerMw{trN}, 2))];
+    end
+else
+    if input.block2DoVisualStim
+        if input.block2DoContrastDetect
+            stimStr = [stimStr sprintf('ctst chg %g%% ', chop(abs(double(input.gratingContrast{trN})-double(input.tBaseGratingContrast{trN})),2)*100)];
+        elseif input.block2DoOriDetect
+            stimStr = [stimStr sprintf('direction %g%deg ', chop(input.gratingDirectionDeg{trN},2))];
+        elseif input.doContrastDetect
+            stimStr = [stimStr sprintf('ctst chg %g%% ', chop(abs(double(input.gratingContrast{trN})-double(input.tBaseGratingContrast{trN})),2)*100)];
+        elseif input.doOriDetect
+            stimStr = [stimStr sprintf('direction %g%deg ', chop(input.gratingDirectionDeg{trN},2))];
+        end
+    end
+    if input.block2DoAuditoryStim
+        if input.block2DoAuditoryDetect
+            stimStr = [stimStr sprintf(' tone chg')];
+            % future compat for tone steps
+            % stimStr = [stimStr sprintf('pitch chg %g%MHz ', chop(double(input.tTonePitchMHz{trN})- double(input.tBaseTonePitchMHz{trN}),2))];
+        end
     end
 end
-if input.doLaserStim
-  stimStr = [stimStr sprintf('power %gmW ', ...
-                    chop(input.laserPowerMw{trN}, 2))];
-end
+
 if ~input.doBlock2
   block2Str = '';
 else
-  block2Str = sprintf('b2tr %d ', input.tBlock2TrialNumber{trN});
+  block2Str = sprintf(' b2tr %d ', input.tBlock2TrialNumber{trN});
 end
 itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));
-fprintf(1,'Hold %d, req %d, react %d, %s%s %s- %d rew %dms\n', ...
+fprintf(1,'Hold %d, req %d, react %d, %s %s- %d rew %dms\n', ...
         round(holdTimeMs), round(input.tTotalReqHoldTimeMs{trN}), round(reactTimeMs), ...
-        itiStr, ...
         stimStr, block2Str, ...
         nJ, round(juiceD));
 
