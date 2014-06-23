@@ -141,10 +141,11 @@ assert(~input.doLaserStim || all(tLaserDoLinearRampV | tLaserDoPulseTrainV));
 
 % figure out block2 stim levels
 showBlock2 = input.doBlock2;
+
 if showBlock2
   %assert(all(tBlock2TrialNumberV == 0 | tBlock2TrialNumberV == 1), 'xml bug?');
 
-  if input.block2DoGratingAppearance
+  if or(input.block2DoGratingAppearance,input.block2DoAuditoryStim)
     block2Name = 'Grating appearance';
     block2LevelNames = sprintf_vector('grating %d', [1 2]);  % should improve this
 
@@ -282,6 +283,8 @@ if length(holdStarts) > 2
             block2Str = sprintf('ramp length: %d %d ms', input.laserRampLengthMs, input.block2RampLengthMs2);
           elseif input.block2DoGratingAppearance
             block2Str = sprintf('%s', subPpGrating(input,true));
+          elseif input.block2DoAuditoryStim
+              block2Str = sprintf('No visual stim');
           elseif input.block2DoRampVTrain
             block2Str = sprintf('ramp v train: ramp %d (%s)+%d ms, bl %g mW\n  train, pulse %d period %d dur %d, bl %g mW', ...
                                 input.laserRampLengthMs, ...
@@ -646,6 +649,7 @@ title(sprintf('Last 6 (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
 %% 5 cumulative time elapsed
 axH = subplot(spSz{:},5);
 hold on;
+if showBlock2
 if block2DoVisDetect
     hSDiffsRealSec = diff(holdStarts)/1000;
     xs = 1:length(hSDiffsRealSec);
@@ -682,7 +686,7 @@ else
       set(lH4, 'Color', 0.8*[0 1 1]);
       anystack([lH4], 'bottom');   
 end
-
+end
 %%%%%%%%%%%%%%%
 
 % %%%%%%%%%%%%%%%%
