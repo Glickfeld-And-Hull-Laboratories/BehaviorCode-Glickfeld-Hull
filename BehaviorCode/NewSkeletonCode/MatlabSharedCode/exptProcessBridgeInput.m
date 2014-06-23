@@ -273,8 +273,6 @@ outcomeStr = thisExptOutcomes{nFoundThisTrial == 1};
 
 input.trialOutcomeCell{trN} = outcomeStr;
 
-
-
 %% save first trial status
 if input.trialSinceReset == 1
   input.firstTrConsts = input;

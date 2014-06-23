@@ -1,0 +1,488 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" lever2=""
+              lever1_solenoid="FIO2"
+              counter2="counter2"
+              quadrature="quadrature"
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"
+              counter="counter"/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Behavioral Control">
+      <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
+      <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="512" type="integer" persistant="1"/>
+      <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="115" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="decisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="reversalThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
+
+      <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
+      <variable tag="incorrectTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
+
+      <variable tag="tLastTrialWasLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tLeftTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Markov"/>
+      <variable tag="tMarkovOdds" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="a" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+      <variable tag="b" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+      <variable tag="stimProbAvgLeft" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov"/>
+      <variable tag="stimProbAvgSwitch" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov"/>
+    </folder>
+    <folder tag="Stimuli">
+      <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+
+      <variable tag="gratingMaxContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+
+      <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>    
+      <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="tGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+      <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="80" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="trPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="trPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="trPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="trPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+    </folder>
+    <folder tag="Task Status">
+      <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="incorrect" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="trialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="float"/>
+      <variable tag="stimTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+    </folder>
+    <folder tag="Online Display">
+      <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+    </folder>
+    <folder tag="Hardware variables">
+      <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
+      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
+      <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
+      <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+    </folder>
+    <folder tag="Temporary Trial Variables">
+      <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tQuadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tDecisionTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLeftReversal" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tRightReversal" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+      <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+      <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+      <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+      <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+      <variable tag="tLastTrialCorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
+
+      <!-- Shadow Vars From Mark -->
+      <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tSvStimNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
+                selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
+
+    </folder>
+  </variables>
+  <sounds tag="Sounds">
+    <sound tag="startSound" type="wav_file" path="wavs/10000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
+    <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="correctSoundVolume"></sound>
+    <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>
+  </sounds>
+  <stimuli tag="Stimuli">
+    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="drifting_grating" tag="targetGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+              spatial_frequency="gratingSpatialFreqCPD" 
+              speed="gratingSpeedDPS" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
+              x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
+              rotation="gratingDirectionDeg" 
+              alpha_multiplier="tGratingContrast"></stimulus>
+    <stimulus type="drifting_grating" tag="distractorGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+              spatial_frequency="gratingSpatialFreqCPD" 
+              speed="gratingSpeedDPS" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
+              x_position="dGratingEccentricityDeg" y_position="gratingElevationDeg" 
+              rotation="gratingDirectionDeg" 
+              alpha_multiplier="dGratingContrast"></stimulus>
+    <stimulus type="drifting_grating" tag="rewardGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+              spatial_frequency="gratingSpatialFreqCPD" 
+              speed="gratingSpeedDPS" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="180" y_size="180" 
+              x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
+              rotation="gratingDirectionDeg" 
+              alpha_multiplier="tGratingContrast"></stimulus>
+  </stimuli>    
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <action type="queue_stimulus" stimulus="background"></action>
+      <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+      <!-- init actions before running trials after any press of start-->
+      <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
+      <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
+      <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"/>
+      <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
+      <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
+      <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+      <action type="assignment" variable="tConsecCorrects" value="0"/>
+      <action type="assignment" variable="tConsecErrors" value="0"/>
+      <action type="assignment" variable="tNTrialsCompleted" value="0"/>
+      <action type="assignment" variable="tLastTrialWasLeft" value="0"/>
+      <action type="assignment" variable="tNStimAccepted" value="0" />
+
+        
+      <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="10000" sampling_method="cycles">
+      <trial tag="New List" nsamples="99999999" sampling_method="samples" selection="random_without_replacement">
+      <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
+      <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+        <task_system_state tag="InterTrialInterval" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms"></action>
+          <action type="start_timer" timer="itiTimerMs" timebase="" duration="itiTimeMs" duration_units="ms"/>
+          <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
+          <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"/>
+          <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
+          <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
+          <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+          <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+          <action type="assignment" tag="set LReversal back to 0" variable="tLeftReversal" value="0"/>
+          <action type="assignment" tag="set RReversal back to 0" variable="tRightReversal" value="0"/>
+          <action type="assignment" variable="stimulusOn" value="0"/>
+          <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
+
+          <action type="if" condition="tLastTrialCorrect == 1">
+            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+            <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+            <action tag="Update Display" type="update_stimulus_display"></action>
+
+            <action type="schedule" delay="250 ms" duration="1" repeats="1">
+              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>
+            <action type="schedule" delay="500 ms" duration="1" repeats="1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>
+            <action type="schedule" delay="750 ms" duration="1" repeats="1">
+              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+              <action type="report" message="RewardGrating Dequeued"/>
+            </action>
+          </action>
+
+          <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
+          <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
+
+
+          <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
+          <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
+          <action type="report" message="tNStimAccepted=$tNStimAccepted"/>
+
+            <!-- level 1 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))"> 
+              <action type="assignment" variable="tStimulusNumber" value="0"/> 
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
+
+            <!-- level 2 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level2))"> 
+              <action type="assignment" variable="tStimulusNumber" value="1"/> 
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level2"/>
+
+            <!-- level3 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level3))"> 
+              <action type="assignment" variable="tStimulusNumber" value="2"/> 
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level3"/>
+
+            <!-- level4 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level4))"> 
+              <action type="assignment" variable="tStimulusNumber" value="3"/> 
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level4"/>
+
+            <!-- level5 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level5))"> 
+              <action type="assignment" variable="tStimulusNumber" value="4"/> 
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level5"/>
+
+            <!-- level6 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level6))"> 
+              <action type="assignment" variable="tStimulusNumber" value="5"/> 
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level6"/>
+
+            <!-- level7 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level7))"> 
+              <action type="assignment" variable="tStimulusNumber" value="6"/> 
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level7"/>
+
+
+            <!-- level8 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level8))"> 
+              <action type="assignment" variable="tStimulusNumber" value="7"/> 
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level8"/>
+
+
+          <action type="assignment" variable="dGratingContrast" value="(gratingMaxContrast - (gratingMaxDiff/ (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))))"></action>
+          <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
+
+          <!-- choose left/right state based on left, switch, and last trial state. -->
+          <action type="assignment" variable="tMarkovOdds" value="(1-stimProbAvgLeft)/stimProbAvgLeft" />
+          <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
+          <action type="assignment" variable="a" value="tMarkovOdds * b"/>
+
+          <action type="if" condition="tLastTrialWasLeft == -1">  <!-- special case: no last trial / first trial -->
+            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; stimProbAvgLeft"/> 
+          </action>
+          <action type="if" condition="tLastTrialWasLeft == 1">
+            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; (1-a)"/>
+          </action>
+
+          <action type="if" condition="tLastTrialWasLeft == 0">
+            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; b"/>
+          </action>
+
+          <action type="if" condition="tLeftTrial == 0">
+            <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
+            <action type="assignment" variable="dGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
+          </action>
+
+          <action type="if" condition="tLeftTrial == 1">
+            <action type="assignment" variable="tGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
+            <action type="assignment" variable="dGratingEccentricityDeg" value="gratingEccentricityDeg"/>
+          </action>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="itiTimerMs" target="TrialStart"></transition>
+        </task_system_state>
+
+        <task_system_state tag="TrialStart" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="report" message="**** Trial Starting: playing tone and beginning delay"></action>
+          <action type="play_sound" sound="startSound"/>
+          <action type="start_timer" timer="delayTimerMs" timebase="" duration="delayTimeMs" duration_units="ms"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="delayTimerMs" target="StimOn"></transition>
+        </task_system_state>
+
+        <task_system_state tag="StimOn" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="report" message="*****-=STIMULI ON=-*****"></action>
+          <action type="assignment" variable="stimulusOn" value="1"/>
+          <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
+          <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
+          <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
+          <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
+          <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
+          <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"></action>
+          <action tag="Update Display" type="update_stimulus_display"></action>
+          <action type="assignment" variable="stimTimestampMs" value="now()/1000"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="tooFastTimerMs" target="SetReact"></transition>
+        </task_system_state>
+
+        <task_system_state tag="SetReact" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs-tooFastTimeMs" duration_units="ms"/>
+          <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="direct" target="Reaction"></transition>
+        </task_system_state>
+
+        <task_system_state tag="Reaction" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; (0-reversalThreshold)" target="PastLeftThreshold"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; reversalThreshold" target="PastRightThreshold"></transition>
+        </task_system_state>
+
+        <task_system_state tag="PastLeftThreshold" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" tag="" variable="tLeftReversal" value="tLeftReversal+1"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
+          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Reward"></transition>
+          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Incorrect"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; (0-reversalThreshold)" target="Reaction"></transition>
+        </task_system_state>
+
+        <task_system_state tag="PastRightThreshold" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" tag="" variable="tRightReversal" value="tRightReversal+1"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
+          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Incorrect"></transition>
+          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Reward"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; reversalThreshold" target="Reaction"></transition>
+
+        </task_system_state>
+
+        <task_system_state tag="Reward" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+          <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+          <action type="update_stimulus_display"></action>
+          <action type="play_sound" sound="correctSound"/>
+          <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
+          <action type="report" tag="Report" message="Decision Time = $tDecisionTimeMs"></action>
+          <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success!!! **"></action>
+          <!-- update running variables -->
+          <action type="assignment" tag="success++" variable="success" value="success+1"></action>
+          <action type="assignment" variable="tLastTrialCorrect" value="1"></action>
+          <action type="assignment" variable="juice" value="rewardTimeUs"></action>
+          <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
+          <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
+          <action type="assignment" tag="" variable="tConsecErrors" value="0"/>
+                    <!-- accept stim selection -->
+          <action type="accept_selections" selection="svStimNumber"></action>
+          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+
+          <!-- update selection variable -->
+          <action type="if" condition="tNStimAccepted &gt;= 80">
+            <action type="reset_selection" selection="svStimNumber"/>
+            <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
+          </action>
+          <action type="if" condition="tNStimAccepted &lt; 80">
+            <action type="next_selection" selection="svStimNumber"/>
+            <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+          </action>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="rewardTimerUs" target="EndTrial"></transition>
+        </task_system_state>
+
+        <task_system_state tag="Incorrect" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+          <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+          <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
+          <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
+          <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect: Time-Out for $incorrectTimeoutMs **"></action>
+          <action type="update_stimulus_display"></action>
+          <action type="play_sound" sound="incorrectSound"/>
+          <action type="start_timer" timer="incorrectTimeoutTimer" timebase="" duration="incorrectTimeoutMs" duration_units="ms"/>
+          <action type="assignment" tag="Incorrects++" variable="incorrect" value="incorrect+1"/>
+          <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
+          <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
+
+                    <!-- accept stim selection -->
+          <action type="accept_selections" selection="svStimNumber"></action>
+          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+
+          <!-- update selection variable -->
+          <action type="if" condition="tNStimAccepted &gt;= 80">
+            <action type="reset_selection" selection="svStimNumber"/>
+            <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
+          </action>
+          <action type="if" condition="tNStimAccepted &lt; 80">
+            <action type="next_selection" selection="svStimNumber"/>
+            <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+          </action>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="incorrectTimeoutTimer" target="EndTrial"></transition>
+        </task_system_state>
+
+        <task_system_state tag="Ignore" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+          <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+          <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
+          <action tag="Report Ignore" full_name="ReportDigital" type="report" message="** Ignore: Time-Out for $ignoreTimeoutMs **"></action>
+          <action type="update_stimulus_display"></action>
+          <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
+          <action type="play_sound" sound="incorrectSound"/>
+          <action type="start_timer" timer="ignoreTimeoutTimer" timebase="" duration="ignoreTimeoutMs" duration_units="ms"/>
+          <action type="assignment" tag="Ignore++" variable="ignore" value="ignore+1"/>
+          <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
+          <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
+          
+                    <!-- accept stim selection -->
+          <action type="accept_selections" selection="svStimNumber"></action>
+          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+
+          <!-- update selection variable -->
+          <action type="if" condition="tNStimAccepted &gt;= 80">
+            <action type="reset_selection" selection="svStimNumber"/>
+            <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
+          </action>
+          <action type="if" condition="tNStimAccepted &lt; 80">
+            <action type="next_selection" selection="svStimNumber"/>
+            <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+          </action>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="ignoreTimeoutTimer" target="EndTrial"></transition>
+        </task_system_state>
+
+        <task_system_state tag="EndTrial" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>           
+          <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+          <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
+          <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
+          <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="yield" tag="return to parent task system"></transition>
+        </task_system_state>
+      </task_system>
+    </trial>
+    </trial>
+    <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+  </protocol>
+  </experiment>
+</monkeyml>

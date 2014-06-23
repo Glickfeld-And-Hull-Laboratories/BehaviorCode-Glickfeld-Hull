@@ -8,7 +8,7 @@ maxSToSkip = 120;
 
 %% initialize variables
 nTrial = input.trialSinceReset;
-thisTimeMs = input.holdStartsMs{nTrial};
+thisTimeMs = now/1000;
 if nTrial == 1 || ~isfield(input, 'lastTimeSavedMs')
   input.lastTimeSavedMs = 0;
 end
