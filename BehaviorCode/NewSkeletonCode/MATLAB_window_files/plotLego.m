@@ -17,7 +17,6 @@ set(figH, 'ToolBar', 'none');
 clf;
 %set(figH, 'Visible', 'off');
 
-hostname
 switch hostname
  case 'MaunsellMouse1'
   figPos = [1111 208 806 923];
