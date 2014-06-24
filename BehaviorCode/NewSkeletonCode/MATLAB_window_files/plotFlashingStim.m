@@ -684,7 +684,8 @@ else
       lH4 = plot(b2T2Ns, smooth(double(failureIx(block2Tr2Ix)), 75, smoothType));
       set([lH4], 'LineWidth', 2, 'LineStyle', '-.');
       set(lH4, 'Color', 0.8*[0 1 1]);
-      anystack([lH4], 'bottom');   
+      anystack([lH4], 'bottom');
+      ylim([0 1]);   
 end
 end
 %%%%%%%%%%%%%%%
