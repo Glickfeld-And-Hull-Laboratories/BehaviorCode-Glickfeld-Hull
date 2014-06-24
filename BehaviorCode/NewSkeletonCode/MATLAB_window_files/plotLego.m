@@ -434,8 +434,24 @@ bH = uicontrol(figNum, 'Style', 'pushbutton', ...
                'Units', 'pixels', ...
                'Position', [5 5 650 20], ...
                'Callback', { @saveButtonCb, epParams });
+end
+end
 
 %%%%%%%%%%%%%%%%
 %set(gcf, 'Visible', 'on');
 
-end			
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% subfunctions
+
+function saveButtonCb(hObject, eventdata, epParamsIn) 
+exportfig_print(epParamsIn{:});
+end
+
+function outM = subCell2PadVect(cellV, padChar, nMaxTrials)
+if nargin < 2, padChar = NaN; end
+if nargin < 3, nMaxTrials = length(cellV); end
+isEIx = cellfun(@isempty, cellV);
+outM = repmat(padChar, [1 nMaxTrials]);
+outM(~isEIx) = cell2mat(cellV(~isEIx));
+end
