@@ -24,6 +24,8 @@
       <variable tag="decisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="reversalThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
+      <variable tag="ifLeftInfiniteRight" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Threshold Booleans"/>
+      <variable tag="ifRightInfiniteLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Threshold Booleans"/>
 
       <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
       <variable tag="incorrectTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
@@ -364,7 +366,7 @@
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
           <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Reward"></transition>
-          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Incorrect"></transition>
+          <transition type="conditional" condition="ifRightInfiniteLeft==0 &amp;&amp; tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Incorrect"></transition>
           <transition type="conditional" condition="(quadrature - tQuadrature) &gt; (0-reversalThreshold)" target="Reaction"></transition>
         </task_system_state>
 
@@ -374,7 +376,7 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Incorrect"></transition>
+          <transition type="conditional" condition="ifLeftInfiniteRight==0 &amp;&amp; tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Incorrect"></transition>
           <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Reward"></transition>
           <transition type="conditional" condition="(quadrature - tQuadrature) &lt; reversalThreshold" target="Reaction"></transition>
 

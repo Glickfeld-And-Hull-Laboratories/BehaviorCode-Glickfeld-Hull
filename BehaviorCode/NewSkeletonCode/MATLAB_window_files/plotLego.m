@@ -50,7 +50,7 @@ rightTrNs = find(rightTrialIx);
 leftTrialIx = logical(leftTrialIx);
 
 leftOutcomes = input.trialOutcomeCell(leftTrialIx);
-leftCorr = strcmp(leftOutcomes, 'sucess');
+leftCorr = strcmp(leftOutcomes, 'success');
 leftIgn = strcmp(leftOutcomes, 'ignore');
 leftInc = strcmp(leftOutcomes, 'incorrect');
 
@@ -328,8 +328,9 @@ if nCorr>0,
         tix = corrDiffV==val;
         corrDiffCell{ii} = nanmean(corrDecTimes(tix));
     end
-    minD = min(cell2mat_padded(corrDiffCell));
-    maxD = max(cell2mat_padded(corrDiffCell));
+
+    minD = min(cell2mat(corrDiffCell));
+    maxD = max(cell2mat(corrDiffCell));
     minX = min(uqDiff);
     maxX = max(uqDiff);
     xLimm = [minX maxX];
