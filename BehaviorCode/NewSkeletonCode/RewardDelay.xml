@@ -52,9 +52,6 @@
       <variable tag="dsLevel2" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
       <variable tag="dsNCorrLvl2" scope="global" logging="when_changed" default_value="0" type="integer" groups="Volume Control" persistant="1"/>
       <variable tag="dsLevel3" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
-      
-      
-      
     </folder>
     <folder tag="Stimuli">
     </folder>
@@ -123,6 +120,14 @@
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="drifting_grating" tag="visualGrating"  direction="0" starting_phase="0"
+              spatial_frequency="0.1" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="180" y_size="180" 
+              x_position="0" y_position="0" 
+              rotation="0" 
+              alpha_multiplier="1"></stimulus>
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -326,6 +331,17 @@
           <task_system_state tag="PlayDelaySound" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
          	  <action type="play_sound" sound="delaySound"></action>
+
+            <action type="if" condition="delaySoundVolume &gt; 0.0">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="visualGrating"></action>
+              <action type="play_dynamic_stimulus" stimulus="visualGrating" tag="start"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+              <action type="schedule" delay="300 ms" duration="1" repeats="1" duration_units="ms">
+                <action type="dequeue_stimulus" stimulus="visualGrating"></action>
+                <action tag="Update Display" type="update_stimulus_display"></action>
+              </action>
+              <action type="report" message="**** Delay Visual Stimulus Flashed for 300ms ****"/>
+            </action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="direct" target="WaitForAction"></transition> <!-- Spin on this state -->  
