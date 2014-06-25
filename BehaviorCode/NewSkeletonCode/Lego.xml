@@ -352,8 +352,8 @@
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
           <transition type="conditional" condition="(quadrature - tQuadrature) &lt; (0-reversalThreshold)" target="PastLeftThreshold"></transition>
           <transition type="conditional" condition="(quadrature - tQuadrature) &gt; reversalThreshold" target="PastRightThreshold"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ifLeftInfiniteRight==1 &amp;&amp; abs(quadrature - tQuadrature) &gt; reversalThreshold-1" target="ZeroQuad"></transition>
-          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ifRightInfiniteLeft==1 &amp;&amp; abs(quadrature - tQuadrature) &gt; reversalThreshold-1" target="ZeroQuad"></transition>
+          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ifLeftInfiniteRight==1 &amp;&amp; (quadrature - tQuadrature) &gt; 0" target="ZeroQuad"></transition>
+          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ifRightInfiniteLeft==1 &amp;&amp; (quadrature - tQuadrature) &lt; 0" target="ZeroQuad"></transition>
           <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &lt; 0.5) &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
           <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &gt; 0.5) &amp;&amp; tLeftTrial==1" target="Reward"></transition>
           <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &lt; 0.5) &amp;&amp; tLeftTrial==0" target="Reward"></transition>
@@ -363,6 +363,7 @@
         <task_system_state tag="PastLeftThreshold" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="" variable="tLeftReversal" value="tLeftReversal+1"/>
+          <action type="report" message="Past Left Reversal Threshold"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
@@ -375,6 +376,7 @@
         <task_system_state tag="PastRightThreshold" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="" variable="tRightReversal" value="tRightReversal+1"/>
+          <action type="report" message="Past Right Reversal Threshold"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
