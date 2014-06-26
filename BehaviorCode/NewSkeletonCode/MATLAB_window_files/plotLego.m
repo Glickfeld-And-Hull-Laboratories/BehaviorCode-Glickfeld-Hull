@@ -269,7 +269,8 @@ set(gca, 'XLim', trXLim);
 
 axH = subplot(spSz{:},6);
 hold on;
-lH2 = plot(leftTrNs, smooth(double(leftCorr), 100, smoothType));
+if sum(leftTrialIx)>0,
+  lH2 = plot(leftTrNs, smooth(double(leftCorr), 100, smoothType));
 set(lH2, 'Color', 'k', ...
         'LineWidth', 2);
 
@@ -283,6 +284,8 @@ lH4 = plot(leftTrNs, smooth(double(leftInc), 100, smoothType));
   anystack(lH4, 'bottom');
 
   anystack(lH3, 'bottom');
+end
+if sum(~leftTrialIx)>0,
 axH = subplot(spSz{:},6);
 hold on;
 lH2 = plot(rightTrNs, smooth(double(rightCorr), 100, smoothType));
@@ -299,8 +302,9 @@ lH4 = plot(rightTrNs, smooth(double(rightInc), 100, smoothType));
   anystack(lH4, 'bottom');
 
   anystack(lH3, 'bottom');
+  end
 
-title('Outcome Plot');
+title('Outcome Plot ( Left=|, Right=:)');
 ylabel('Occurrence (%)');
 set(gca, 'YLim', [0 1]);
 
