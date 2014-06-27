@@ -19,10 +19,11 @@
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="512" type="integer" persistant="1"/>
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
-      <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="115" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
-      <variable tag="decisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
-      <variable tag="reversalThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="leftDecisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="leftReversalThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="rightDecisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="rightReversalThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
       <variable tag="ifLeftInfiniteRight" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Threshold Booleans"/>
       <variable tag="ifRightInfiniteLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Threshold Booleans"/>
@@ -153,7 +154,7 @@
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
               x_size="180" y_size="180" 
-              x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
+              x_position="0" y_position="0" 
               rotation="gratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
   </stimuli>    
@@ -350,8 +351,8 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
-          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; (0-reversalThreshold)" target="PastLeftThreshold"></transition>
-          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; reversalThreshold" target="PastRightThreshold"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; (0-leftReversalThreshold)" target="PastLeftThreshold"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; rightReversalThreshold" target="PastRightThreshold"></transition>
           <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ifLeftInfiniteRight==1 &amp;&amp; (quadrature - tQuadrature) &gt; 0" target="ZeroQuad"></transition>
           <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ifRightInfiniteLeft==1 &amp;&amp; (quadrature - tQuadrature) &lt; 0" target="ZeroQuad"></transition>
           <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &lt; 0.5) &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
@@ -367,10 +368,10 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Reward"></transition>
-          <transition type="conditional" condition="ifRightInfiniteLeft==0 &amp;&amp; tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-decisionThreshold))" target="Incorrect"></transition>
+          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-leftDecisionThreshold))" target="Reward"></transition>
+          <transition type="conditional" condition="ifRightInfiniteLeft==0 &amp;&amp; tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-leftDecisionThreshold))" target="Incorrect"></transition>
           <transition type="conditional" condition="ifRightInfiniteLeft==1 &amp;&amp; tLeftTrial==0" target="ZeroQuad"></transition>
-          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; (0-reversalThreshold)" target="Reaction"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &gt; (0-leftReversalThreshold)" target="Reaction"></transition>
         </task_system_state>
 
         <task_system_state tag="PastRightThreshold" interruptible="YES">
@@ -380,10 +381,10 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
-          <transition type="conditional" condition="ifLeftInfiniteRight==0 &amp;&amp; tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Incorrect"></transition>
+          <transition type="conditional" condition="ifLeftInfiniteRight==0 &amp;&amp; tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; rightDecisionThreshold)" target="Incorrect"></transition>
           <transition type="conditional" condition="ifLeftInfiniteRight==1 &amp;&amp; tLeftTrial==1" target="ZeroQuad"></transition>
-          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &gt; decisionThreshold)" target="Reward"></transition>
-          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; reversalThreshold" target="Reaction"></transition>
+          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &gt; rightDecisionThreshold)" target="Reward"></transition>
+          <transition type="conditional" condition="(quadrature - tQuadrature) &lt; rightReversalThreshold" target="Reaction"></transition>
 
         </task_system_state>
 

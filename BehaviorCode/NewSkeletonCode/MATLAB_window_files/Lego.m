@@ -51,8 +51,9 @@ else
 end
 outcomeStr = input.trialOutcomeCell{trN};
 outcomeStr = strcat(upper(outcomeStr(1)), outcomeStr(2:end));
+decisionTime = input.tDecisionTimeMs{trN};
 
-fprintf(1,'Target Contrast: %0.2f, Distractor Contrast: %0.2f, %s, %s\n ', input.tGratingContrast{trN}, input.dGratingContrast{trN}, tLeftStr, outcomeStr)
+fprintf(1,'Contrast: T=%0.2f, D=%0.2f, %s, %s, Reaction: %0.0f ms\n ', input.tGratingContrast{trN}, input.dGratingContrast{trN}, tLeftStr, outcomeStr, decisionTime)
 
 
 %itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));
