@@ -338,7 +338,7 @@ if ~isempty(vy)
     xlim([1 nTrial]);
 end
 
-title('median decision time over time');
+title('Decision Median over Time');
 xlabel('Trials');
 
 
@@ -438,13 +438,18 @@ else
     decMax = 10000;
 end
 
-cdfplot([input.tDecisionTimeMs{:}]);
+pH = cdfplot([input.tDecisionTimeMs{:}]);
+    set(pH, 'Color', 'g');
+pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
+    set(pH1, 'Color', 'b');
+pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
+    set(pH2, 'Color', 'y');
 set(gca, 'XLim', [0 decMax], ...
          'YLim', [0 1], ...
          'XTick', [0:decisionInterval:decMax]);
 grid on;
 hold on;
-title('Decision Time CDF');
+title('Decision Time CDF: y=right,b=left');
 xlabel('Time');
 
 
