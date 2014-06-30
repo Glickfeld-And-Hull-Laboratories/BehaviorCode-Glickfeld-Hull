@@ -443,7 +443,7 @@ pH = cdfplot([input.tDecisionTimeMs{:}]);
 pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
     set(pH1, 'Color', 'b');
 pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
-    set(pH2, 'Color', 'y');
+    set(pH2, 'Color', [0.8 0.8 0]);
 set(gca, 'XLim', [0 decMax], ...
          'YLim', [0 1], ...
          'XTick', [0:decisionInterval:decMax]);
