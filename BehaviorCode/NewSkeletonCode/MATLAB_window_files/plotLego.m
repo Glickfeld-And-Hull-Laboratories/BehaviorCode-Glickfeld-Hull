@@ -156,8 +156,8 @@ end
         
 %%%%%%%%%%%%%%%
 
-%% 2/3 - smoothed perf curve
-axH = subplot(spSz{:},2:3);
+%% 2 - smoothed perf curve
+axH = subplot(spSz{:},2);
 hold on;
 lH2 = plot(smooth(double(correctIx), 100, smoothType));
 set(lH2, 'Color', 'k', ...
@@ -265,9 +265,9 @@ set(gca, 'XLim', trXLim);
 %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%
 
-%% 6 - Left and Right Outcomes
+%% 3 - Left and Right Outcomes
 
-axH = subplot(spSz{:},6);
+axH = subplot(spSz{:},3);
 hold on;
 if sum(leftTrialIx)>0,
   lH2 = plot(leftTrNs, smooth(double(leftCorr), 100, smoothType));
@@ -286,7 +286,7 @@ lH4 = plot(leftTrNs, smooth(double(leftInc), 100, smoothType));
   anystack(lH3, 'bottom');
 end
 if sum(~leftTrialIx)>0,
-axH = subplot(spSz{:},6);
+axH = subplot(spSz{:},3);
 hold on;
 lH2 = plot(rightTrNs, smooth(double(rightCorr), 100, smoothType));
 set(lH2, 'Color', 'k', ...
@@ -313,6 +313,34 @@ trXLim = [0 nTrials]; %get(gca, 'XLim');
 set(gca, 'XLim', trXLim);
 
 %%%%%%%%%%%%%%%
+
+% 6 - decision time over time
+axH = subplot(spSz{:}, 6);
+hold on;
+
+noMissIx = correctIx|incorrectIx;
+xYVals = find(noMissIx);
+decTimes = cell2mat_padded(input.tDecisionTimeMs);
+noMissDecTimesMs = double(decTimes(noMissIx));
+vy = smooth(noMissDecTimesMs, 25, 'rloess');
+decMax = input.reactionTimeMs/1000;
+
+if ~isempty(vy)
+    hyH = plot(axH, xYVals, vy);
+    
+    c2 = 'b';
+    set(hyH, 'Color', c2);
+    set(hyH, 'LineWidth', 2);
+    
+    set(axH, 'YLim', [0 decMax]);
+    ylabel(axH, 'Decision time');
+    axis tight;
+    xlim([1 nTrial]);
+end
+
+title('median decision time over time');
+xlabel('Trials');
+
 
 %% 7 - Constrast Difference x Correct reaction times plot
 axH = subplot(spSz{:},7);
