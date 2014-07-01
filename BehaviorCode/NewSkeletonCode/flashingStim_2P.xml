@@ -852,10 +852,17 @@
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="if first trial and counter = 50" condition="isFirstTrial &amp;&amp; counter > 49" target="InterTrialInterval"></transition>
-            <transition type="conditional" tag="if not first trial, go direct" condition="!isFirstTrial" target="InterTrialInterval"></transition>
+            <transition type="conditional" tag="if first trial and counter = 20" condition="isFirstTrial &amp;&amp; counter > 19" target="InterTrialInterval"></transition>
+            <transition type="conditional" tag="if not first trial, counter still going" condition="!isFirstTrial &amp;&amp; counter > cLeverUp" target="InterTrialInterval"></transition>
+            <transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cLeverUp" target="ExitTask"></transition>
           </task_system_state>
-
+          
+		  <task_system_state tag="ExitTask" interruptible="YES">
+			<action type="assert" stop_on_failure="1"  
+                    condition="counter > cLeverUp"
+                    message="Not receiving triggers from microscope"/>
+          </task_system_state>
+                    
           <task_system_state tag="InterTrialInterval" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
