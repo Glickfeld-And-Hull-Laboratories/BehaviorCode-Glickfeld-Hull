@@ -1217,9 +1217,11 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             <action type="play_sound" sound="baseSound"/>
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="!doConstantStimulus">
+            	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+            	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            </action>	
             <action type="report" message="End of Trial - Stim On"/>
             <action type="assignment" variable="stimTag" value="1"></action>
             
@@ -1239,11 +1241,13 @@
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
-            <action type="report" message="End of Trial - Stim Off"/>
+            <action type="if" condition="!doConstantStimulus">
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            	<action type="report" message="End of Trial - Stim Off"/>
+            </action>	
 
             <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
             
