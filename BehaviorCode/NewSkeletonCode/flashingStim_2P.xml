@@ -850,7 +850,8 @@
                       condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
                       message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
             </action>
-
+			<action type="report" message="cLeverUp is $cLeverUp, counter is $counter, isFirstTrial is $isFirstTrial"></action>
+			
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="if first trial and counter = 20" condition="isFirstTrial &amp;&amp; counter > 19" target="InterTrialInterval"></transition>
             <transition type="conditional" tag="if not first trial, counter still going" condition="!isFirstTrial &amp;&amp; counter > cLeverUp" target="InterTrialInterval"></transition>
