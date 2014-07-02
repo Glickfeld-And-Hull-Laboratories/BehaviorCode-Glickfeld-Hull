@@ -1042,7 +1042,7 @@
             <action type="start_timer" tag="Start earlyTimeoutTimer" timer="earlyTimeoutTimer" timebase="" duration="earlyTimeoutMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" tag="Early Timeout over" target="EndTrial" timer="earlyTimeoutTimer"></transition>
+            <transition type="timer_expired" target="PossibleEndTimeout" timer="earlyTimeoutTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="Missed" interruptible="YES">
@@ -1082,7 +1082,7 @@
             <action type="start_timer" tag="Start missedTimeoutTimer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" tag="Missed Timeout over" target="EndTrial" timer="missedTimeoutTimer"></transition>
+            <transition type="timer_expired" target="PossibleEndTimeout" timer="missedTimeoutTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="Reward" interruptible="YES">
@@ -1232,7 +1232,23 @@
             <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer)" target="Missed"></transition>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           </task_system_state>
+		  
+		  <task_system_state tag="PossibleEndTimeout" interruptible="YES">    
+            <!-- do timeout if too many recent errors:
+                 use a state rather than a wait action because states are interruptible -->
+            <action type="if" condition="tConsecErrors >= nConsecErrorsCauseTimeout">
+              <action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
+              <action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
+              <action type="if" condition="doSolenoidOnTimeout==1">
+              	<action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              </action>
+            </action>
 
+            <transition type="conditional" tag="- bypass timer checking if no timeout requested" 
+                        condition="tConsecErrors &lt; nConsecErrorsCauseTimeout" target="EndTrial"></transition>
+            <transition type="timer_expired" target="EndTrial" timer="consecErrorTimer"></transition>
+          </task_system_state>
+          
           <task_system_state tag="EndTrial" interruptble="YES">
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action type="report" message="Trial Ended"/>
