@@ -105,6 +105,7 @@
       <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+	  <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
@@ -139,7 +140,7 @@
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
               x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
               x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
-              rotation="gratingDirectionDeg" 
+              rotation="tGratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
     <stimulus type="drifting_grating" tag="distractorGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
               spatial_frequency="gratingSpatialFreqCPD" 
@@ -296,11 +297,13 @@
           <action type="if" condition="tLeftTrial == 0">
             <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
             <action type="assignment" variable="dGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
+			<action type="assignment" variable="tGratingDirectionDeg" value="0"/>
           </action>
 
           <action type="if" condition="tLeftTrial == 1">
             <action type="assignment" variable="tGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
             <action type="assignment" variable="dGratingEccentricityDeg" value="gratingEccentricityDeg"/>
+            <action type="assignment" variable="tGratingDirectionDeg" value="180"/>
           </action>
 
           <action type="if" condition="doTestRobot==1">
