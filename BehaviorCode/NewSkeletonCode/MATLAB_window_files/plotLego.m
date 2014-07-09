@@ -48,17 +48,24 @@ leftTrNs = find(leftTrialIx);
 rightTrialIx = ~leftTrialIx;
 rightTrNs = find(rightTrialIx);
 leftTrialIx = logical(leftTrialIx);
+nLeft = sum(leftTrialIx);
+nRight = sum(rightTrialIx);
 
 leftOutcomes = input.trialOutcomeCell(leftTrialIx);
 leftCorr = strcmp(leftOutcomes, 'success');
+nLeftCorr = sum(leftCorr);
 leftIgn = strcmp(leftOutcomes, 'ignore');
+nLeftIgn = sum(leftIgn);
 leftInc = strcmp(leftOutcomes, 'incorrect');
+nLeftInc = sum(leftInc);
 
 rightOutcomes = input.trialOutcomeCell(~leftTrialIx);
 rightCorr = strcmp(rightOutcomes, 'success');
+nRightCorr = sum(rightCorr);
 rightIgn = strcmp(rightOutcomes, 'ignore');
+nRightIgn = sum(rightIgn);
 rightInc = strcmp(rightOutcomes, 'incorrect');
-
+nRightInc = sum(rightInc);
 
 % Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
@@ -67,6 +74,10 @@ tLeftResponse = zeros(size(correctIx));
 tLeftResponse([left_correct_ind left_incorrect_ind]) = 1;
 tLeftResponse(find(ignoreIx)) = NaN;
 input.tLeftResponse = tLeftResponse;
+
+%Right decision time indexing
+right_correct_ind = find((double(rightTrialIx)+double(correctIx))==2);
+
 
 %  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
 juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
@@ -112,24 +123,30 @@ end
                        chop(nanmean(juiceTimesMsV),2)), ...
              });
          
-	t2H(1) = text(0.00, 0.8, {'Trials:', 'Correct:', 'Incorrect:', 'Missed:'});
-	t2H(2) = text(0.35, 0.8, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
-				sprintf('%d', nInc), sprintf('%d', nIg)});
-	t2H(3) = text(0.54, 0.8, {' ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
+	t2H(1) = text(0.00, 0.8, {'    ', 'Trials:', 'Correct:', 'Incorrect:', 'Missed:', 'Decision (ms):'});
+	t2H(2) = text(0.4, 0.8, {'Left', sprintf('%d', nLeft), sprintf('%d', nLeftCorr), ...
+				sprintf('%d', nLeftInc), sprintf('%d', nLeftIgn), ...
+                sprintf('%5.0f', median(decisionV(left_correct_ind)))});
+	t2H(3) = text(0.65, 0.8, {'Right', sprintf('%d', nRight), sprintf('%d', nRightCorr), ...
+				sprintf('%d', nRightInc), sprintf('%d', nRightIgn), ...
+                sprintf('%5.0f', median(decisionV(right_correct_ind)))});
+    t2H(4) = text(0.9, 0.8, {'Total', sprintf('%d', nTrial), sprintf('%d', nCorr), ...
+                sprintf('%d', nInc), sprintf('%d', nIg), ...
+                sprintf('%5.0f', median(decisionV(correctIx)))});
+    t2H(5) = text(1.15, 0.8, {'  ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
 				sprintf('%.0f%%', nInc / numTrials * 100.0), ...
-				sprintf('%.0f%%', nIg / numTrials * ...
-                                        100.0)});
+				sprintf('%.0f%%', nIg / numTrials * 100.0)});
         set(t2H, 'VerticalAlignment', 'top', ...
                  'HorizontalAlignment', 'left');
 
 
-        tStr = sprintf(['Decision median:\n', ...
-                        '   %5.1f ms\n'], ...
-                       median(decisionV(correctIx)));
-               
-        text(0.8, 0.8, tStr, ...
-             'VerticalAlignment', 'top', ...
-             'HorizontalAlignment', 'left');
+%         tStr = sprintf(['Decision median:\n', ...
+%                         '   %5.1f ms\n'], ...
+%                        median(decisionV(correctIx)));
+%                
+%         text(0.8, 0.8, tStr, ...
+%              'VerticalAlignment', 'top', ...
+%              'HorizontalAlignment', 'left');
          
             
         tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
@@ -148,7 +165,7 @@ end
                         trPer80Str, ...
                         stimStr);
 
-        text(0.0, 0.35, tStr, ...
+        text(0.0, 0.2, tStr, ...
              'HorizontalAlignment', 'left', ...
              'VerticalAlignment', 'top');
 
