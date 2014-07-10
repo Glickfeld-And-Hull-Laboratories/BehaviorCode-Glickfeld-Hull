@@ -43,26 +43,26 @@ def chop(x, sig=2):
 
 thisHostname = socket.gethostname()
 thisHostname = string.replace(thisHostname, '.dhe.duke.edu', '')
-if thisHostname == "hullglicks-mini":
+if thisHostname == "hullglick1":
+    PORT = 9990
+    doTransmitCodesToBlackrock = False
+elif thisHostname == "hullglick2":
     PORT = 9991
     doTransmitCodesToBlackrock = False
-elif thisHostname == "MaunsellMouse2":
-    PORT = 9991
-    doTransmitCodesToBlackrock = False
-elif thisHostname == "MaunsellMouse3":
+elif thisHostname == "hullglick3":
     PORT = 9992
     PORT2 = 9993  # use same as rig 4
     doTransmitCodesToBlackrock = False
-elif thisHostname == "MaunsellMouse4":
+elif thisHostname == "hullglick4":
     PORT = 9993
     doTransmitCodesToBlackrock = False
-elif thisHostname == "MaunsellMouseTest":
-    PORT = None
+elif thisHostname == "test-rig":
+    PORT = 9991
     doTransmitCodesToBlackrock = False
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
     
-HOST = "152.16.224.214"
+HOST = "192.168.1.28"
 laserParamCode = 'sendLaserParams'
 lastSendTime = 0
 nCodesSent = 0
