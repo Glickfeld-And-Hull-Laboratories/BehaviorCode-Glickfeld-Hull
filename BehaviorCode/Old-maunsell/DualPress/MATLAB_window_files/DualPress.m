@@ -7,7 +7,7 @@ function [retval] = DualPress(data_struct, input)
 if nargin < 2, input = []; end
 
 ds = data_struct;
-addpath('~/ExperimentXML-git/MatlabSharedCode');
+addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/MatlabSharedCode');
 
 dualPressVarsOneValEachTrial = { ...
     'tGratingContrast', ... 
