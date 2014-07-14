@@ -43,22 +43,22 @@ def chop(x, sig=2):
 ## set machine-specific constants
 
 thisHostname = socket.gethostname()
-thisHostname = string.replace(thisHostname, '.local', '')
-if thisHostname == "hullglick1.dhe.duke.edu":
+thisHostname = string.replace(thisHostname, '.dhe.duke.edu', '')
+if thisHostname == "hullglick1":
     PORT = 9990
     doTransmitCodesToBlackrock = True
-elif thisHostname == "hullglick2.dhe.duke.edu":
+elif thisHostname == "hullglick2":
     PORT = 9991
     doTransmitCodesToBlackrock = False
-elif thisHostname == "hullglick3.dhe.duke.edu":
+elif thisHostname == "hullglick3":
     PORT = 9992
     PORT2 = 9993  # use same as rig 4
     doTransmitCodesToBlackrock = False
-elif thisHostname == "hullglick4.dhe.duke.edu":
+elif thisHostname == "hullglick4":
     PORT = 9993
     doTransmitCodesToBlackrock = False
-elif thisHostname == "MaunsellMouseTest":
-    PORT = None
+elif thisHostname == "test-rig":
+    PORT = 9991
     doTransmitCodesToBlackrock = False
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
