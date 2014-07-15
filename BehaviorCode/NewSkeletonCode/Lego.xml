@@ -24,6 +24,7 @@
       <variable tag="leftReversalThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="rightDecisionThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="rightReversalThreshold" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="150" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
       <variable tag="ifLeftInfiniteRight" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Threshold Booleans"/>
       <variable tag="ifRightInfiniteLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Threshold Booleans"/>
@@ -358,13 +359,21 @@
           <action type="report" message="*****-=STIMULI ON=-*****"></action>
           <action type="assignment" variable="stimulusOn" value="1"/>
           <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
-          <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs" duration_units="ms"/>
+          <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
           <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
           <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"></action>
           <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
           <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
           <action tag="Update Display" type="update_stimulus_display"></action>
           <action type="assignment" variable="stimTimestampMs" value="now()/1000"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="tooFastTimerMs" target="SetReact"></transition>
+        </task_system_state>
+
+        <task_system_state tag="SetReact" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs-tooFastTimeMs" duration_units="ms"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="ZeroQuad"></transition>
