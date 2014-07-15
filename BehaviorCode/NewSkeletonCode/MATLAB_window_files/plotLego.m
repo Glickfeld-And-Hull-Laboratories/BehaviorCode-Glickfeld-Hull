@@ -91,6 +91,15 @@ if input.gratingSpeedDPS > 0,
     stimStr = strcat(stimStr, ', ', mat2str(input.gratingSpeedDPS), ' dps, ', ...
         mat2str(input.gratingStartingPhaseDeg), ' deg');
 end
+
+% blockStr formatting
+if input.doBlocks==0,
+  blockStr = 'Blocks: off';
+
+elseif input.doBlocks==1,
+  blockStr = strcat('Blocks: on, Block Length:', mat2str(input.blockLengthTrs));
+
+end
          
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -154,7 +163,8 @@ end
                          'Reward: %d ms \n', ...
                          'Timeouts (ign,inc):\t%4.1f, %4.1f s\n', ...
                          'trPer80: %s\n', ...
-                         'Stim: %s \n'], ...
+                         'Stim: %s \n', ...
+                         blockStr], ...
                         input.reactionTimeMs/1000, ...
                         input.itiTimeMs, ...
                         input.leftDecisionThreshold, ...
@@ -363,7 +373,7 @@ xlabel('Trials');
 axH = subplot(spSz{:},7);
 hold on;
 
-if nCorr>0,
+if nCorr>0 && input.doTestRobot==0,
     contDiffV = cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast);
     corrDiffV = contDiffV(correctIx);
     uqDiff = unique(corrDiffV);
@@ -409,7 +419,7 @@ end
 axH = subplot(spSz{:},8);
 hold on;
 
-if nCorr>0,
+if nCorr>0 && input.doTestRobot==0,
     plotTrs = contDiffV(correctIx|incorrectIx);
     uqDiff = unique(plotTrs);
     nLevels = length(uqDiff);

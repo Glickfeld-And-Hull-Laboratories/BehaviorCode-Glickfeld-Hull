@@ -28,6 +28,9 @@
       <variable tag="ifLeftInfiniteRight" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Threshold Booleans"/>
       <variable tag="ifRightInfiniteLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Threshold Booleans"/>
 
+      <variable tag="doBlocks" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block Control"/>
+      <variable tag="blockLengthTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
+
       <variable tag="doRewardStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Reward Staircase"/>
       <variable tag="rewardStaircaseWindowWidth" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Reward Staircase"/>
       <variable tag="tLeftBias" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Reward Staircase"/>
@@ -111,7 +114,7 @@
       <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-	  <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
@@ -121,6 +124,7 @@
       <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tNBlockTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
 
       <!-- Shadow Vars From Mark -->
       <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -284,10 +288,11 @@
           <action type="assignment" variable="dGratingContrast" value="(gratingMaxContrast - (gratingMaxDiff/ (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))))"></action>
           <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
 
-          <!-- choose left/right state based on left, switch, and last trial state. -->
-          <action type="assignment" variable="tMarkovOdds" value="(1-stimProbAvgLeft)/stimProbAvgLeft" />
-          <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
-          <action type="assignment" variable="a" value="tMarkovOdds * b"/>
+          <!-- if not doing blocks, choose left/right state based on left, switch, and last trial state. -->
+          <action type="if" condition="doBlocks==0">
+            <action type="assignment" variable="tMarkovOdds" value="(1-stimProbAvgLeft)/stimProbAvgLeft" />
+            <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
+            <action type="assignment" variable="a" value="tMarkovOdds * b"/>
 
           <action type="if" condition="tLastTrialWasLeft == -1">  <!-- special case: no last trial / first trial -->
             <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; stimProbAvgLeft"/> 
@@ -299,11 +304,29 @@
           <action type="if" condition="tLastTrialWasLeft == 0">
             <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; b"/>
           </action>
+          </action>
+
+          <action type="if" condition="doBlocks==1">
+            <action type="if" condition="(tNBlockTrsCompleted &lt; blockLengthTrs) &amp;&amp; tLastTrialWasLeft==1">
+              <action type="assignment" variable="tLeftTrial" value="1"/>
+            </action>
+            <action type="if" condition="(tNBlockTrsCompleted &lt; blockLengthTrs) &amp;&amp; tLastTrialWasLeft==0">
+              <action type="assignment" variable="tLeftTrial" value="0"/>
+            </action>
+            <action type="if" condition="(tNBlockTrsCompleted &gt;= blockLengthTrs) &amp;&amp; tLastTrialWasLeft==1">
+              <action type="assignment" variable="tLeftTrial" value="0"/>
+              <action type="assignment" variable="tNBlockTrsCompleted" value="0"/>
+            </action>
+            <action type="if" condition="(tNBlockTrsCompleted &gt;= blockLengthTrs) &amp;&amp; tLastTrialWasLeft==0">
+              <action type="assignment" variable="tLeftTrial" value="1"/>
+              <action type="assignment" variable="tNBlockTrsCompleted" value="0"/>
+            </action>
+          </action>
 
           <action type="if" condition="tLeftTrial == 0">
             <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
             <action type="assignment" variable="dGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
-			<action type="assignment" variable="tGratingDirectionDeg" value="0"/>
+            <action type="assignment" variable="tGratingDirectionDeg" value="0"/>
           </action>
 
           <action type="if" condition="tLeftTrial == 1">
@@ -503,6 +526,9 @@
           <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
           <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
           <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
+          <action type="if" condition="doBlocks==1">
+            <action type="assignment" variable="tNBlockTrsCompleted" value="tNBlockTrsCompleted+1"/>
+          </action>
           <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
