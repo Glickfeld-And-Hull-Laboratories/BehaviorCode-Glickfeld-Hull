@@ -107,32 +107,18 @@ def cbEndOfTrial():
         print '%d %d %d %d' % (nTrToUse, len(accumNFromEnd), firstToConsiderN, len(trToConsiderIx))
 
     
-    if constD['rewardStaircaseDoEqualizeCorrects']:
-        leftCorrN = np.sum(stairCorrV[ (varArr['tLeftTrial']==1) & (trToConsiderIx == 1) ] == 1)
-        leftNotCorrN = np.sum(stairNotCorrV[ (varArr['tLeftTrial']==1) & (trToConsiderIx == 1) ] == 1)
-        rightCorrN = np.sum(stairCorrV[ (varArr['tLeftTrial']==0) & (trToConsiderIx == 1) ] == 1)
-        rightNotCorrN = np.sum(stairNotCorrV[ (varArr['tLeftTrial']==0) & (trToConsiderIx == 1) ] == 1)
-        leftCorrFract = leftCorrN / float(leftCorrN + leftNotCorrN)
-        rightCorrFract = rightCorrN / float(rightCorrN + rightNotCorrN)
-        computedBias = (leftCorrFract - rightCorrFract) / 2 + 0.5 # map range from -1..+1 to 0..1
-        if debug:
-            print ('left %d %d %3.2f; right %d %d %3.2f; bias %3.2f' 
-                   % (leftCorrN, leftNotCorrN, leftCorrFract, 
-                      rightCorrN, rightNotCorrN, rightCorrFract, 
-                      computedBias))
-        
-    else:  
-        # equalize responses each side
-        respDirLeft = np.array([None]*nTrs, dtype='float64')
-        respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'success')] = 1
-        respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'incorrect')] = 1
-        respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'success')] = 0
-        respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'incorrect')] = 0
 
-        # compute bias
-        respDirOnlyResp = respDirLeft[~np.isnan(respDirLeft)]
-        nTrToUse = np.min((len(varVects['outcomeList']),biasNPts))
-        computedBias = np.sum(respDirOnlyResp[-nTrToUse:])/nTrToUse
+    # equalize responses each side
+    respDirLeft = np.array([None]*nTrs, dtype='float64')
+    respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'success')] = 1
+    respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'incorrect')] = 1
+    respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'success')] = 0
+    respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'incorrect')] = 0
+
+    # compute bias
+    respDirOnlyResp = respDirLeft[~np.isnan(respDirLeft)]
+    nTrToUse = np.min((len(varVects['outcomeList']),biasNPts))
+    computedBias = np.sum(respDirOnlyResp[-nTrToUse:])/nTrToUse
 
     # correct bias
     if nTrs > biasMinTrs or np.isnan(computedBias):
@@ -150,11 +136,10 @@ def cbEndOfTrial():
         #tWinLeftBias = 0.5  
         
     # write bias to MWorks, on every trial, if DoSlidingWin is true
-    if constD['rewardStaircaseDoSlidingWin'] == 1:
-        client.send_data(client.reverse_codec['tLeftBias'], tWinLeftBias)
-        wroteStr = 'sent to MWorks'
-    else:
-        wroteStr = 'not sent to MWorks'
+    
+    client.send_data(client.reverse_codec['tLeftBias'], tWinLeftBias)
+    wroteStr = 'sent to MWorks'
+    
 
     print 'sliding win %d resp trials (%d total); tRunningLeftBias: %4.2f, %s' % (nTrToUse, nToConsider, tWinLeftBias, wroteStr)
     sys.stdout.flush()
