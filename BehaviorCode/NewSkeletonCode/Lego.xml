@@ -162,10 +162,10 @@
               rotation="gratingDirectionDeg" 
               alpha_multiplier="dGratingContrast"></stimulus>
     <stimulus type="drifting_grating" tag="rewardGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
-              spatial_frequency="gratingSpatialFreqCPD" 
+              spatial_frequency=".000000000001" 
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
-              x_size="180" y_size="180" 
+              x_size="30" y_size="30" 
               x_position="0" y_position="0" 
               rotation="gratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
@@ -212,16 +212,35 @@
             <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
             <action tag="Update Display" type="update_stimulus_display"></action>
 
-            <action type="schedule" delay="250 ms" duration="1" repeats="1">
+            <action type="schedule" delay="125 ms" duration="1" repeats="1">
               <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
               <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>
+            <action type="schedule" delay="250 ms" duration="1" repeats="1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>
+            <action type="schedule" delay="375 ms" duration="1" repeats="1">
+              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+              <action type="report" message="RewardGrating Dequeued"/>
             </action>
             <action type="schedule" delay="500 ms" duration="1" repeats="1">
               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
               <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
               <action tag="Update Display" type="update_stimulus_display"></action>
             </action>
+            <action type="schedule" delay="625 ms" duration="1" repeats="1">
+              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>
             <action type="schedule" delay="750 ms" duration="1" repeats="1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+            </action>
+            <action type="schedule" delay="875 ms" duration="1" repeats="1">
               <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
               <action tag="Update Display" type="update_stimulus_display"></action>
               <action type="report" message="RewardGrating Dequeued"/>
