@@ -23,6 +23,7 @@
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
@@ -236,6 +237,8 @@
       <variable tag="tDoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDidDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
       <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
 
@@ -326,6 +329,7 @@
             <action type="assignment" tag="Reset End state" variable="isEndState" value="0"/>  
             <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/>  
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
+            <action type="assignment" tag="Reset tDidDeviantAfterMissing" variable="tDidDeviantAfterMissing" value="0"/>
 
             <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="(stimOnTimeMs+stimOffTimeMs)*nCyclesOn"/>
 
@@ -607,7 +611,8 @@
                   <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
                   <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
-                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>  
+                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                  <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>  
               </action> 
             <!-- Choose block 2 trial type -->
             <!--
@@ -645,6 +650,7 @@
                   <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
                   <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
                   <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
+                  <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
@@ -967,20 +973,20 @@
             <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
             	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-              <action type="if" condition="tDoAuditoryDetect">
+              <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                 <action type="play_sound" sound="targetSound"/>
               </action> 
-              <action type="if" condition="!tDoAuditoryDetect">
+              <action type="if" condition="!tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                 <action type="play_sound" sound="baseSound"/>
               </action> 
             </action>
             <action type="if" condition="nCyclesOn &lt; maxCyclesOn">
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                 <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-                <action type="if" condition="tDoAuditoryDetect">
+                <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                   <action type="play_sound" sound="targetSound"/>
                 </action> 
-                <action type="if" condition="!tDoAuditoryDetect">
+                <action type="if" condition="!tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                   <action type="play_sound" sound="baseSound"/>
                 </action> 
             </action>
@@ -1189,10 +1195,23 @@
           <task_system_state tag="EndTrialStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
-            <action type="play_sound" sound="baseSound"/>
-            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="tDoDeviantAfterMissing==0 || (tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==1)">
+              <action type="play_sound" sound="baseSound"/>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
+            <action type="if" condition="tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==0">
+              <action type="assignment" variable="tGratingContrast" value="1"/>
+              <action type="assignment" variable="tGratingDirectionDeg" value="90"/>
+              <action type="play_sound" sound="targetSound"/>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+              <action type="assignment" variable="tDidDeviantAfterMissing" value="1"/>
+            </action>
+
             <action type="report" message="End of Trial - Stim On"/>
             <action type="assignment" variable="stimTag" value="1"></action>
             
