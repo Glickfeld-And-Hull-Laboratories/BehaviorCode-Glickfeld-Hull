@@ -438,8 +438,11 @@
 
         <task_system_state tag="PastLeftThreshold" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="assignment" tag="" variable="tLeftReversal" value="tLeftReversal+1"/>
-          <action type="report" message="Past Left Reversal Threshold"/>
+
+          <action type="if" condition="doFeedbackMotion==0">
+            <action type="assignment" tag="" variable="tLeftReversal" value="tLeftReversal+1"/>
+            <action type="report" message="Past Left Reversal Threshold"/>
+          </action>
 
           <action type="if" condition="doFeedbackMotion==1">
             <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="feedbackMotionSensitivity*(quadrature-tQuadrature)"/>
@@ -459,8 +462,11 @@
 
         <task_system_state tag="PastRightThreshold" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="assignment" tag="" variable="tRightReversal" value="tRightReversal+1"/>
-          <action type="report" message="Past Right Reversal Threshold"/>
+
+          <action type="if" condition="doFeedbackMotion==0">
+            <action type="assignment" tag="" variable="tRightReversal" value="tRightReversal+1"/>
+            <action type="report" message="Past Right Reversal Threshold"/>
+          </action>
 
           <action type="if" condition="doFeedbackMotion==1">
             <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="feedbackMotionSensitivity*(quadrature-tQuadrature)"/>
