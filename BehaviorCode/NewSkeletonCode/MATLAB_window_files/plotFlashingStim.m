@@ -94,7 +94,7 @@ end
 if input.doContrastDetect
     vPowerV = abs(tGratingContrast-tBaseGratingContrast)*100;
 elseif input.doOriDetect
-    vPowerV = tGratingDirectionDeg;
+    vPowerV = abs(tGratingDirectionDeg-tBaseGratingDirectionDeg);
 end
 
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
