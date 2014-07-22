@@ -3,8 +3,8 @@ function input = exptSaveMatlabState(data_struct, input)
 cs = exptConstants;
 
 % compute whether to do export on this trial
-nTrialsToSkip = 10;
-maxSToSkip = 120;
+nTrialsToSkip = 20;
+maxSToSkip = 600;
 
 %% initialize variables
 nTrial = input.trialSinceReset;

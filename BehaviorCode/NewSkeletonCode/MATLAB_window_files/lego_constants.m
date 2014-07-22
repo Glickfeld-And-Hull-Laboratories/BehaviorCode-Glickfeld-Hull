@@ -8,3 +8,4 @@ homeDir = fullfile('/Users',tUsername);
 consts.centralDataPath = fullfile(homeDir, 'Documents/MWorks');
 consts.dataPath = fullfile(homeDir, 'Documents/MWorks/Data');
 consts.behavPdfPath = fullfile(homeDir, 'Documents/MWorks/BehavOutputPdfs');
+
