@@ -683,6 +683,21 @@ else
       set(lH4, 'Color', 0.8*[0 1 1]);
       ylim([0 1]);   
 end
+else
+  hSDiffsRealSec = diff(holdStarts)/1000;
+    xs = 1:length(hSDiffsRealSec);
+    pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
+    maxMin = sum(hSDiffsRealSec)./60;
+
+    ylabel('Time working (min)');
+    %set(gca, 'DataAspectRatio', [100 10 1]);
+    xLim = trXLim;
+    set(gca, 'XLim', xLim);
+    % compute data aspect ratio manually: matlab will keep y dim of
+    % plot box fixed and change x and we want the reverse
+    yLim = [0 max(xLim(2)/10, maxMin*1.1)];   
+    set(gca, 'YLim', yLim);
+    pH2 = plot(xLim, xLim/10, 'k--');
 end
 %%%%%%%%%%%%%%%
 
