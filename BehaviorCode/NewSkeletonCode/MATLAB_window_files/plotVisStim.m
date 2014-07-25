@@ -4,7 +4,7 @@ function input = plotVisStim(data_struct, input)
 figNum = 4;
 name = 'VisStim';
 consts = visstim_constants;
-spSz = {4,3};
+spSz = {2,2};
 
 smoothType = 'lowess';
 %% draw figure
