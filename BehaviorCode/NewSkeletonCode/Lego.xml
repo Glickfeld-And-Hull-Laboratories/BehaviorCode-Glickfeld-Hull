@@ -31,6 +31,7 @@
 
       <variable tag="feedbackMotionSensitivity" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Feedback Motion"/>
       <variable tag="doFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Feedback Motion"/>
+      <variable tag="feedbackMotionStartingEccentricity" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Feedback Motion"/>
 
       <variable tag="doBlocks" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block Control"/>
       <variable tag="blockLengthTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
@@ -363,7 +364,12 @@
           </action>
 
           <action type="if" condition="doFeedbackMotion==1">
-            <action type="assignment" variable="tGratingEccentricityDeg" value="0"/>
+            <action type="if" condition="tLeftTrial==1">
+              <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="0-feedbackMotionStartingEccentricity"/>
+            </action>
+            <action type="if" condition="tLeftTrial==0">
+              <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="feedbackMotionStartingEccentricity"/>
+            </action>
           </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -417,7 +423,12 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
           <action type="if" condition="doFeedbackMotion==1">
-            <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="feedbackMotionSensitivity*(quadrature-tQuadrature)"/>
+            <action type="if" condition="tLeftTrial==1">
+              <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))-feedbackMotionStartingEccentricity"/>
+            </action>
+            <action type="if" condition="tLeftTrial==0">
+              <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))+feedbackMotionStartingEccentricity"/>
+            </action>
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
             <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
             <action tag="Update Display" type="update_stimulus_display"/>
@@ -445,7 +456,12 @@
           </action>
 
           <action type="if" condition="doFeedbackMotion==1">
-            <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="feedbackMotionSensitivity*(quadrature-tQuadrature)"/>
+            <action type="if" condition="tLeftTrial==1">
+              <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))-feedbackMotionStartingEccentricity"/>
+            </action>
+            <action type="if" condition="tLeftTrial==0">
+              <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))+feedbackMotionStartingEccentricity"/>
+            </action>
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
             <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
             <action tag="Update Display" type="update_stimulus_display"/>
@@ -469,7 +485,12 @@
           </action>
 
           <action type="if" condition="doFeedbackMotion==1">
-            <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="feedbackMotionSensitivity*(quadrature-tQuadrature)"/>
+            <action type="if" condition="tLeftTrial==1">
+              <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))-feedbackMotionStartingEccentricity"/>
+            </action>
+            <action type="if" condition="tLeftTrial==0">
+              <action type="assignment" tag="tQuadrature zeroed" variable="tGratingEccentricityDeg" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))+feedbackMotionStartingEccentricity"/>
+            </action>
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
             <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
             <action tag="Update Display" type="update_stimulus_display"/>
