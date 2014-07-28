@@ -416,7 +416,7 @@ def sendObjectToLaser(tO, portNum):
     """Returns: number of bytes sent"""
     # Create a socket (SOCK_STREAM means a TCP socket)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(0.1) # no more than 100ms slop
+    sock.settimeout(10) # no more than 100ms slop
     
     # compute length etc
     data = p.dumps(tO)
