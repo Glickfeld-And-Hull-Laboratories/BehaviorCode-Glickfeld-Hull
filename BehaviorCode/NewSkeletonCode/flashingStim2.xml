@@ -31,6 +31,7 @@
       <variable tag="block2DoAuditoryStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoAuditoryDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
 
+	  <variable tag="doITIStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>	
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
@@ -309,13 +310,19 @@
           <action type="reset_selection" selection="svStimNumber"></action>
           <action type="assignment" variable="tNStimAccepted" value="0"></action> 
         </action>
+        <action type="if" condition="doVisualStim">
+        	<action type="if" condition="doITIStim">
+          		<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+          		<action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+      		</action>
+      	</action>
       <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
         <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
           <task_system_state tag="Initialization" interruptible="YES">
             <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
             <action type="queue_stimulus" stimulus="background"></action>
-            <action type="update_stimulus_display" tag="-"></action>
+            <action type="update_stimulus_display" tag="-"></action>           
             <!-- In this state, do all stimulus selection/tValue setting -->
             <action type="report" message="Initializing Trial"/>
             <!-- Reset t_____RemainingOn/Off to 0ms -->      
@@ -1029,8 +1036,10 @@
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
             
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="doITIStim == 0">
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            </action>	
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
             
@@ -1065,8 +1074,10 @@
             <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
             <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
             
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="doITIStim == 0">
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            </action>	
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>  
 
@@ -1098,8 +1109,10 @@
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
             
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="doITIStim == 0">
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            </action>	
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
 
