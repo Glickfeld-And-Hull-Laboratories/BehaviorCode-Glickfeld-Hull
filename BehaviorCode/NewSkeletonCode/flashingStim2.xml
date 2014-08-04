@@ -724,7 +724,12 @@
                 <action type="assignment" variable="tDoOriDetect" value="doOriDetect"/>
                 <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
                 <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
-                <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>                                               
+                <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
+                <action type="assignment" variable="block2DoVisualStim" value="doVisualStim"/>
+                <action type="assignment" variable="block2DoOriDetect" value="doOriDetect"/>
+                <action type="assignment" variable="block2DoContrastDetect" value="doContrastDetect"/>
+                <action type="assignment" variable="block2DoAuditoryDetect" value="doAuditoryDetect"/>
+                <action type="assignment" variable="block2DoAuditoryStim" value="doAuditoryStim"/>                                                
               </action>
               </action>
              <!-- !doBlock2 error checking -->
@@ -903,16 +908,15 @@
               <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>  
               <action type="play_sound" sound="pressSound"/>
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
+              <!-- turn on trial laser if requested -->
+              <action type="if" condition="tTrialLaserPowerMw > 0">
+                <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
+                <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+              </action>
             </action>
             
             <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
-            
-            <!-- turn on trial laser if requested -->
-            <action type="if" condition="tTrialLaserPowerMw > 0">
-              <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
-              <action type="report" message="********* SENDING LASER TRIGGER *********"/>
-              <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
-            </action>
 
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>

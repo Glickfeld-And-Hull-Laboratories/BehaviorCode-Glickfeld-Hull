@@ -92,9 +92,9 @@ else
   nLP = length(chop(unique(lPowerV(~isnan(lPowerV))),4));
 end
 if input.doContrastDetect
-    vPowerV = abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100;
+    vPowerV = abs(double(cell2mat(input.tGratingContrast))-double(cell2mat(input.tBaseGratingContrast)))*100;
 elseif input.doOriDetect
-    vPowerV = abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)));
+    vPowerV = abs(double(cell2mat(input.tGratingDirectionDeg))-double(cell2mat(input.tBaseGratingDirectionDeg)));
 end
 
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
