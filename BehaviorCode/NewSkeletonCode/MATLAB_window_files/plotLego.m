@@ -94,7 +94,7 @@ end
 
 % blockStr formatting
 if input.doBlocks==0,
-  blockStr = 'Blocks: off';
+  blockStr = sprintf('Blocks: off, probLeft: %1.1f, probSwitch: %1.1f', double(input.stimProbAvgLeft), double(input.stimProbAvgSwitch));
 
 elseif input.doBlocks==1,
   blockStr = strcat('Blocks: on, Block Length:', mat2str(input.blockLengthTrs));
