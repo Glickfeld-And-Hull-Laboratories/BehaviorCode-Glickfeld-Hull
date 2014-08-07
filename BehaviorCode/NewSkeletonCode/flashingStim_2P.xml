@@ -160,7 +160,9 @@
     </folder>  
     <folder tag="Fake Mouse">
       <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
+      <variable tag="doFakeMouseSuccessOnly" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
       <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Fake Mouse"/>
+
     </folder>
     <folder tag="Task Status">
       <variable tag="failure" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -903,6 +905,9 @@
             <!-- fake mouse calculations -->
             <action type="if" tag="if fakeMouse" condition="!doLever">
               <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="rand(0, fakeMouseMaxReactMs)"></action>
+              <action type="if" tag="if doFakeMouseSuccess" condition="doFakeMouseSuccessOnly">
+                <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="tTotalReqHoldTimeMs+tooFastTimeMs+10"></action>
+              </action>
             </action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
