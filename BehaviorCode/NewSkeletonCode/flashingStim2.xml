@@ -633,9 +633,7 @@
 
               <!-- grating appearance for block 2 -->                         
               <action type="if" condition="doBlock2">
-              <action type="if" condition="block2DoVisualStim">
-                <action type="assert" condition="doVisualStim == 1" stop_on_failure="1"
-                        message="doVisualStim must be 1 for block2DoVisualStim == 1"/> -->
+              <action type="if" condition="block2DoVisualStim || block2DoAuditoryStim">
 
                 <!-- same for both types of block2 trials -->
                 <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>      
@@ -778,6 +776,7 @@
             <action type="if" condition="tDoVisualStim == 0">
               <action type="assignment" variable="tBaseGratingContrast" value="0"></action>
               <action type="assignment" variable="tGratingContrast" value="0"></action>
+              <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"></action>
             </action>
             <action type="assert" condition="tGratingContrast >= 0" stop_on_failure="1" 
                     message="No negative contrasts allowed"/>

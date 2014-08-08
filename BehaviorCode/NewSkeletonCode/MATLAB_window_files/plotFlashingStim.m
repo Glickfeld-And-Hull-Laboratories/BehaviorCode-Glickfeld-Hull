@@ -92,9 +92,9 @@ else
   nLP = length(chop(unique(lPowerV(~isnan(lPowerV))),4));
 end
 if input.doContrastDetect
-    vPowerV = abs(double(cell2mat(input.tGratingContrast))-double(cell2mat(input.tBaseGratingContrast)))*100;
+    vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
 elseif input.doOriDetect
-    vPowerV = abs(double(cell2mat(input.tGratingDirectionDeg))-double(cell2mat(input.tBaseGratingDirectionDeg)));
+    vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
 end
 
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
@@ -117,7 +117,7 @@ elseif nLP >= 1
   showLaserStim = true;
   nStims = nLP;
 else
-  if all(isnan(vPowerV))
+  if all(isnan(vPowerV) & isnan(aPowerV))
     showLaserStim = true;
     nStims = 1;
   elseif all(isnan(lPowerV))
