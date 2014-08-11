@@ -109,8 +109,17 @@
       <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDelaySoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
+    <folder tag="Markov">
+      <variable tag="tMarkovOdds" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="a" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+      <variable tag="b" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+      <variable tag="probAvgLED" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov"/>
+      <variable tag="probAvgSwitch" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov"/>
+    </folder>
+
     <folder tag="LED Variables">
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="tLastTrialWasLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
@@ -237,6 +246,23 @@
             <action type="assert" condition="tTrialStartMWTimestampMs &lt;= 2147483648" 
                     message="tTrialStartMWTimestampMs is too large - should happen only after several days of running!?"
                     stop_on_failure="1"/>
+
+            <action type="if" condition="doBlock2==1">
+              <!-- choose block1/2 state based on probLED, probSwitch, and last trial state. -->
+              <action type="assignment" variable="tMarkovOdds" value="(1-probAvgLED)/probAvgLED" />
+              <action type="assignment" variable="b" value="probAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
+              <action type="assignment" variable="a" value="tMarkovOdds * b"/>
+
+              <action type="if" condition="tLastTrialWasLED == -1">  <!-- special case: no last trial / first trial -->
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; probAvgLED"/> 
+              </action>
+              <action type="if" condition="tLastTrialWasLED == 1">
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; (1-a)"/>
+              </action>
+              <action type="if" condition="tLastTrialWasLED == 0">
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; b"/>
+              </action>
+            </action>
               
             <!-- Encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
@@ -621,6 +647,7 @@
 
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
+            <action type="assignment" tag="" variable="tLastTrialWasLED" value="tBlock2TrialNumber"/>
             
             <!-- allow two trials after each timeout is over -->
             <action type="if" condition="tConsecErrors == nConsecErrorsCauseTimeout">
