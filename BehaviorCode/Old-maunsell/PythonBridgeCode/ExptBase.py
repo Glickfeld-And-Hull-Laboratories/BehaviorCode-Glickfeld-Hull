@@ -180,9 +180,13 @@ def computeLaserPowerTrialLaser(doDirTuningMapping=False):
     """as above"""
     inD = state.variableCurrValues
 
-    if not doDirTuningMapping:  # normal HandDC8 - use time of trial
-        #totalTrLen = inD['fixedReqHoldTimeMs']+inD['randReqHoldMaxMs']+inD['reactTimeMs']
-        thisTrLen = inD['tTotalReqHoldTimeMs']+inD['reactTimeMs']  # minimize the time laser is on
+    if not doDirTuningMapping:
+        if 'tTotalReqHoldTimeMs' not in inD:
+            thisTrLen = inD['delayTimeMs']+inD['postRewardWindowMs']
+        else:
+            # normal HandDC8 - use time of trial
+            #totalTrLen = inD['fixedReqHoldTimeMs']+inD['randReqHoldMaxMs']+inD['reactTimeMs']
+            thisTrLen = inD['tTotalReqHoldTimeMs']+inD['reactTimeMs']  # minimize the time laser is on
     else:  # dir tuning - use stimulus on time
         thisTrLen = (inD['stimulusOnTimeMs'] + inD['postStimulusTimeMs'] \
                      + (inD['itiTimeMs']-inD['laserOnTimeFromStartOfItiMs']))

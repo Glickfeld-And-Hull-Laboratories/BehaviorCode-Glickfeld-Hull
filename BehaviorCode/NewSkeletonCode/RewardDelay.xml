@@ -119,7 +119,7 @@
 
     <folder tag="LED Variables">
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
-      <variable tag="tLastTrialWasLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tLastTrialWasLED" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
@@ -163,7 +163,8 @@
       <variable tag="block2TrPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2TrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2TrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/> 
+      <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/> 
       <variable tag="block2DoRampLength" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"  groups="Block2 Laser"/>
       <variable tag="block2RampLengthMs2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2RampLengthPowerMaxMw2" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
@@ -224,6 +225,7 @@
       <action type="if" condition="success+late+early == 0">
         <action type="report" message="**** First trial since experiment load - initializing"></action>
         <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
+        <action type="assignment" variable="tLastTrialWasLED" value="-1"></action>
         <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
         <action type="assignment" variable="lastActualHoldTimeMs" value="0"></action>
       </action>
@@ -246,23 +248,6 @@
             <action type="assert" condition="tTrialStartMWTimestampMs &lt;= 2147483648" 
                     message="tTrialStartMWTimestampMs is too large - should happen only after several days of running!?"
                     stop_on_failure="1"/>
-
-            <action type="if" condition="doBlock2==1">
-              <!-- choose block1/2 state based on probLED, probSwitch, and last trial state. -->
-              <action type="assignment" variable="tMarkovOdds" value="(1-probAvgLED)/probAvgLED" />
-              <action type="assignment" variable="b" value="probAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
-              <action type="assignment" variable="a" value="tMarkovOdds * b"/>
-
-              <action type="if" condition="tLastTrialWasLED == -1">  <!-- special case: no last trial / first trial -->
-                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; probAvgLED"/> 
-              </action>
-              <action type="if" condition="tLastTrialWasLED == 1">
-                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; (1-a)"/>
-              </action>
-              <action type="if" condition="tLastTrialWasLED == 0">
-                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; b"/>
-              </action>
-            </action>
               
             <!-- Encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
@@ -291,6 +276,75 @@
             </action>
             <action type="if" condition="success &gt;= (dsNCorrLvl1 + dsNCorrLvl2)">
               <action type="assignment" tag="Assign level3 of rewardSound " variable="delaySoundVolume" value="dsLevel3"/>
+            </action>
+
+            <!-- choose block1/2 state based on probLED, probSwitch, and last trial state. -->
+            <action type="if" condition="doBlock2==1">
+              <action type="assignment" variable="tMarkovOdds" value="(1-probAvgLED)/probAvgLED" />
+              <action type="assignment" variable="b" value="probAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
+              <action type="assignment" variable="a" value="tMarkovOdds * b"/>
+
+              <action type="if" condition="tLastTrialWasLED == -1">  <!-- special case: no last trial / first trial -->
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; probAvgLED"/> 
+              </action>
+              <action type="if" condition="tLastTrialWasLED == 1">
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; (1-a)"/>
+              </action>
+              <action type="if" condition="tLastTrialWasLED == 0">
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; b"/>
+              </action>
+              <!-- End of block2 selection -->
+              <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+              <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
+              <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
+              <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
+              <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+              <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+              <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>    
+
+            <!-- using trial laser for block 2 -->
+              <action type="if" condition="block2DoTrialLaser">
+                <action type="assert" condition="!doLaserStim" stop_on_failure="1"
+                        message="When using trialLaser, doLaserStim must be off"/>
+
+
+                <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
+                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                </action>
+
+                <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
+                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
+                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="block2TrialLaserOffTimeMs"></action>
+                </action>                                                
+              </action>
+              </action>
+
+              <!-- !doBlock2 error checking -->
+              <action type="assert" stop_on_failure="1"
+                      condition="!doLaserStim || (laserDoLinearRamp || laserDoPulseTrain)" 
+                      message="When doLaserStim, ramp or train must be set"/>
+
+            <!-- choose laser power -->
+            <action type="if" condition="doLaserStim">
+              <action type="assignment" variable="tLaserPowerMw" 
+                      value="tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)"></action> 
+
+              <!-- adjust from baseline -->
+              <action type="if" condition="tLaserBaselinePowerMw > 0">
+                <action type="assignment" variable="tLaserPowerMw" 
+                        value="tLaserPowerMw + tLaserBaselinePowerMw"/>
+              </action>
+
+              <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
+
+              <action type="assert" condition="tTrialLaserPowerMw == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw != 0"/>
+            </action>
+            <action type="if" condition="!doLaserStim">
+              <action type="assignment" variable="tLaserPowerMw" value="0"/>
             </action>
 
             <!-- Assign the variable for this trial's hold time -->
@@ -336,6 +390,16 @@
               
             <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>
 
+            <action type="if" condition="tTrialLaserPowerMw > 0">
+                      <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
+              <action type="assignment" tag="Send laser paramsto controller" variable="sendLaserParams" value="0"></action>
+              <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/>
+              <action type="assert" stop_on_failure="1"
+                      condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
+                      message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
+            </action>
+
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="If Expired, Go To StartTrial" target="StartTrial" timer="interTrialTimer"></transition>
@@ -365,7 +429,13 @@
           <task_system_state tag="HoldLever" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>              
             <action type="start_timer" tag="Hold Time Before Timing Trial Timer" timer="holdToStartTrialTimerMs" timebase="" duration="tReqHoldToStartMs" duration_units="ms"></action>
-            <action type="assignment" tag="Set Test Robot React" variable="tTestRobotReactMs" value="rand(0, testRobotMaxReactMs)"></action>              
+            <action type="assignment" tag="Set Test Robot React" variable="tTestRobotReactMs" value="rand(0, testRobotMaxReactMs)"></action>
+
+            <action type="if" condition="tTrialLaserPowerMw > 0">
+                <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
+                <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+              </action>              
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If release lever, cycle to Trial Start"
@@ -376,11 +446,6 @@
           <task_system_state tag="Delay" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="play_sound" sound="startSound"></action>
-            <action type="if" condition="tTrialLaserPowerMw > 0">
-                <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
-                <action type="report" message="********* SENDING LASER TRIGGER *********"/>
-                <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
-              </action>
             <action type="assignment" tag="Assign tPreRewardWindow" variable="tPreRewardWindowMs" value="preRewardWindowMs"></action>
             <action type="assignment" tag="Assign tPostRewardWindow" variable="tPostRewardWindowMs" value="postRewardWindowMs"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
