@@ -96,6 +96,7 @@ if input.doContrastDetect
 elseif input.doOriDetect
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
 end
+vPowerV(find(vPowerV==0)) = NaN;
 
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
     aPowerV = 100;
@@ -113,6 +114,12 @@ end
 if nVP >= 1
   showLaserStim = false;
   nStims = nVP;
+  if nAP >= 1
+      nStims = nVP+nAP;
+  end
+elseif nAP >= 1
+  showLaserStim = false;
+  nStims = nAP;
 elseif nLP >= 1
   showLaserStim = true;
   nStims = nLP;
