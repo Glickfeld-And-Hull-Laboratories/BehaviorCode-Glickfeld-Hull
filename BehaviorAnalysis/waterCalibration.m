@@ -1,5 +1,5 @@
 %%
-[numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullMouseTrainingProtocol.xlsx');
+[numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullTrainingSpreadsheet.xlsx');
 waterStru = struct;
 %%
 xlsSubj = allSheet(:,1);
@@ -35,8 +35,8 @@ waterStru(4).values.subjN = xlsSubj(r4Ix);
 %waterStru(3).values.nCorrect = xlsCorrect(r3Ix);
 %waterStru(4).values.nCorrect = xlsCorrect(r4Ix);
 
-todayNum = datenum(today);
-trainingStartStr = 735472;
+todayNum = datenum(735815);
+trainingStartStr = 735751;
 
 for y=1:4;
     tDates = [];
