@@ -212,14 +212,14 @@ title('Trial Hold Times Histogram');
 %% 2 - react time CDF
 axH = subplot(subplotSz{:}, 8);
 reacts = cell2mat(input.reactTimesMs);
-if input.doBlock2==0,
+if sum(cell2mat_padded(input.tBlock2TrialNumber))==0,
     cdfplot([input.reactTimesMs{:}]);
     set(gca, 'XLim', [-(input.delayTimeMs) 1000], ...
          'YLim', [0 1]);
      hold on;
-elseif input.doBlock2==1,
-    b1Trs = cell2mat(input.tBlock2TrialNumber)==0;
-    b2Trs = cell2mat(input.tBlock2TrialNumber)==1;
+else,
+    b1Trs = cell2mat_padded(input.tBlock2TrialNumber)==0;
+    b2Trs = cell2mat_padded(input.tBlock2TrialNumber)==1;
     b1Reacts = reacts(b1Trs);
     b2Reacts = reacts(b2Trs);
     b1P = cdfplot(b1Reacts);
@@ -228,7 +228,7 @@ elseif input.doBlock2==1,
          'YLim', [0 1]);
      hold on
     b2P = cdfplot(b2Reacts);
-    set(b1P, 'Color', [0.6 0.6 0]);
+    set(b2P, 'Color', [0.6 0.6 0]);
     set(gca, 'XLim', [-(input.delayTimeMs) 1000], ...
          'YLim', [0 1]);
 end

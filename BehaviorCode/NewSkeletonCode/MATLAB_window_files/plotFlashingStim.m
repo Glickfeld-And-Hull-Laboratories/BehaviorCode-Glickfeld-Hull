@@ -100,9 +100,12 @@ vPowerV(find(vPowerV==0)) = NaN;
 
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
     aPowerV = 100;
+    nAP = 1;
     %future auditory steps
     %aPowerV = double(input.tTonePitchMHz{trN})- double(input.tBaseTonePitchMHz{trN})
-    nAP = length(chop(unique(aPowerV(~isnan(aPowerV))),4));
+    %nAP = length(chop(unique(aPowerV(~isnan(aPowerV))),4));
+else
+	nAP = 0;    
 end
 
 if all(vPowerV) == 0
