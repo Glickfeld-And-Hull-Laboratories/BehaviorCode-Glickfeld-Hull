@@ -61,6 +61,12 @@ else
         ds = subConcatenateDataBlocks(ds);
     end
 end
+
+%backwards compatibility
+if isfield(ds, 'stimOnTimeMs')
+    ds.gratingDurationMs = ds.stimOnTimeMs;
+end
+
 if nargout > 1
     ds0 = ds;
 end

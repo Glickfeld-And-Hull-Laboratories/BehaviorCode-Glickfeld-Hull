@@ -41,5 +41,5 @@ for iC = 1:nCols
 end
 
 %% write
-frm_xlswritepoi(xlsFileName, rawCell, sheetNumOrStr);
+xlswrite(xlsFileName, rawCell, sheetNumOrStr);
 

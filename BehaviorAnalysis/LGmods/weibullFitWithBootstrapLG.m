@@ -31,7 +31,7 @@ uo = stropt2struct(stropt_defaults(userDefs, varargin));
 haveBs = false;
 if  ~isempty(uo.Filename)
     % get data from mat file
-    bs = getBehavDataForDayLG(...
+    bs = getBehavDataForDay(...
         'Filename', uo.Filename, ...
         'WhichTrials', uo.WhichTrials, ...
         'DoCorrectEarlies', uo.DoCorrectEarlies, ...
@@ -77,7 +77,7 @@ end
     
 
 %% run fit
-fitS = weibullFit(intensV, pctCorr, uo.DoClampAtZero, false, ...
+fitS = weibullFitLG(intensV, pctCorr, uo.DoClampAtZero, false, ...
     { 'nTrials', nTrialsPerLevel'} ); % weight by # trials
 
 slope = fitS.coefEsts(2);
@@ -94,16 +94,22 @@ if uo.DoPlot
         hold on; 
     end
     isContrast = false;
+    isOri = false;
     if exist('bs')
         if bs.intensityIsChr2
             unitStr = 'mW';
             labelStr = 'power (mW)';
             intensScaleF = 1;
-        else
+        elseif bs.doContrast
             unitStr = '%';
             labelStr = 'contrast (%)';
             intensScaleF = 100;
             isContrast = true;
+        elseif bs.doOri
+            unitStr = 'deg';
+            labelStr = 'Orientation (deg)';
+            intensScaleF = 1;
+            isOri = true;
         end
     else
         unitStr = '';
@@ -186,7 +192,7 @@ if uo.DoBootstrap
         tPctCorr(tPctCorr == 0) = 0+10*eps;
         
         % do the fit
-        bootFitS = weibullFit(intensV, tPctCorr, uo.DoClampAtZero, false, ...
+        bootFitS = weibullFitLG(intensV, tPctCorr, uo.DoClampAtZero, false, ...
             {'nTrials', nTotB });  
         % 120710 - I choose to allow the weights to be recalculated from the
         % pctCorr on each bootstrap trial.  It probably yields tighter

@@ -21,7 +21,7 @@ rc = behavConstsHADC8;
 
 %% select which day's data and set params
 if ischar(uo.DoSubjAndDate) && strcmp(uo.DoSubjAndDate, 'next')
-    [fitXd fitRowN indexRowN] = findNextIndexEntryWithoutFit;
+    [fitXd fitRowN indexRowN] = findNextIndexEntryWithoutFitLG;
 
     if isempty(indexRowN)
         disp('No more records to do');

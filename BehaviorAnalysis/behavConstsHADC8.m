@@ -21,7 +21,7 @@ switch tHostname
             rc.pathStr = 'Z:\home\andrew\Behavior\Data';
             rc.dataPat = 'data-i%03d-%s.mat';
 
-            rootDir = 'Z:\home\lindsey\Analysis\Behavior';
+            rootDir = 'D:\Lindsey\Behavior';
             rc.indexFilename = fullfile(rootDir, 'experimentIndexes\subj-days-lg.xls');
             rc.fitOutputFilename = fullfile(rootDir, 'experimentIndexes\subj-fits-lg.xls');
             rc.fitOutputSummary = fullfile(rootDir, 'output\analysis\summary');

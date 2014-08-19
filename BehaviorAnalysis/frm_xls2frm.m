@@ -25,7 +25,8 @@ if nargin < 3, textFieldNames = []; end
 
 xc = frm_constants;
 
-[raw, typeMat] = frm_xlsreadpoi(xlsFileName, sheet);
+%[raw, typeMat] = frm_xlsreadpoi(xlsFileName, sheet); %old java code from MH 
+[raw, typeMat] = frm_activeX(xlsFileName, sheet); %new code- LG 140819
 
 % remove header line
 dsT.colNames = raw(1,:);
