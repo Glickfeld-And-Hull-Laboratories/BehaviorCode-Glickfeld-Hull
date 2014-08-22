@@ -96,16 +96,17 @@ if input.doContrastDetect
 elseif input.doOriDetect
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
 end
-vPowerV(find(vPowerV==0)) = NaN;
+
 
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
     aPowerV = 100;
     nAP = 1;
+    vPowerV(find(vPowerV==0)) = aPowerV;
     %future auditory steps
     %aPowerV = double(input.tTonePitchMHz{trN})- double(input.tBaseTonePitchMHz{trN})
     %nAP = length(chop(unique(aPowerV(~isnan(aPowerV))),4));
 else
-	nAP = 0;    
+	nAP = 0;
 end
 
 if all(vPowerV) == 0
