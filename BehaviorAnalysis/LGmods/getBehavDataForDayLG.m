@@ -242,7 +242,7 @@ for iB = 1:nBlock2Indices
     
     intensitiesC{iB} = unique(intensityV(b2Ix));
     nIntensities(iB) = length(intensitiesC{iB});
-
+    
     intensityNums = block2V*NaN;
     %% compute number of corrects and rts
     for iI = 1:nIntensities(iB)
@@ -364,14 +364,16 @@ pctCorr(pctCorr==1) = pctCorr(pctCorr==1)-10*eps;
 
 percentsCorrect = pctCorr;
 %% correct intensities
-if max(baseGratingContrast,[],2)>0
-    if ds.gratingMaxContrastStep<0
-        for iB = 1:nBlock2Indices
-            intensitiesC{iB} = max(baseGratingContrast,[],2)-intensitiesC{iB};
-        end
-    else
-        for iB = 1:nBlock2Indices
-            intensitiesC{iB} = intensitiesC{iB}-max(baseGratingContrast,[],2);
+if doContrast
+    if max(baseGratingContrast,[],2)>0
+        if ds.gratingMaxContrastStep<0
+            for iB = 1:nBlock2Indices
+                intensitiesC{iB} = max(baseGratingContrast,[],2)-intensitiesC{iB};
+            end
+        else
+            for iB = 1:nBlock2Indices
+                intensitiesC{iB} = intensitiesC{iB}-max(baseGratingContrast,[],2);
+            end
         end
     end
 end
