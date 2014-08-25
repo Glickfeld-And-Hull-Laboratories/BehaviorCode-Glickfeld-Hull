@@ -343,7 +343,7 @@
             <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/>  
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
 
-            <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="(stimOnTimeMs+stimOffTimeMs)*nCyclesOn"/>
+            <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="(stimOnTimeMs+stimOffTimeMs)*(1+nCyclesOn)"/>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -906,7 +906,7 @@
             <action type="if" tag="if fakeMouse" condition="!doLever">
               <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="rand(0, fakeMouseMaxReactMs)"></action>
               <action type="if" tag="if doFakeMouseSuccess" condition="doFakeMouseSuccessOnly">
-                <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="tTotalReqHoldTimeMs+tooFastTimeMs+10"></action>
+                <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="tTotalReqHoldTimeMs+tooFastTimeMs+100"></action>
               </action>
             </action>
               
@@ -923,8 +923,7 @@
             <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             <action type="assignment" variable="stimTag" value= "1"/>
             <action type="assignment" variable="tStimOnMs" value="now()/1000" />
-			
-			
+
             <action type="if" condition="tCyclesOn &lt; 1">
               <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>  
               <action type="play_sound" sound="pressSound"/>
@@ -983,6 +982,9 @@
             <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
             <action type="assignment" variable="cTargetOn" value="counter"/>
 
+            <action type="report" message="Grating Contrast is $tGratingContrast"></action>
+            <action type="report" message="Grating Orientation is $tGratingDirectionDeg"></action>
+
             <!-- Must dequeue stimulus in the doConstantStimulus case -->
             <action type="if" condition="doConstantStimulus==1">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
@@ -995,7 +997,7 @@
                 <action type="play_sound" sound="baseSound"/>
                 <action type="assignment" variable="isCatchTrial" value= "1"/>
             </action>
-            <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+            <action type="if" condition="(doLongCatchTrial==0)">
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
             	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
               <action type="if" condition="tDoAuditoryDetect">
