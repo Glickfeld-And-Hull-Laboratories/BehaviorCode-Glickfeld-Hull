@@ -221,11 +221,14 @@ else,
     b1Trs = cell2mat_padded(input.tBlock2TrialNumber)==0;
     b2Trs = cell2mat_padded(input.tBlock2TrialNumber)==1;
     b1Reacts = reacts(b1Trs);
+    nb1R = sum(b1Reacts);
     b2Reacts = reacts(b2Trs);
-    b1P = cdfplot(b1Reacts);
-    set(b1P, 'Color', 'b');
-    set(gca, 'XLim', [-(input.delayTimeMs) 1000], ...
+    if nb1R>0,
+        b1P = cdfplot(b1Reacts);
+        set(b1P, 'Color', 'b');
+        set(gca, 'XLim', [-(input.delayTimeMs) 1000], ...
          'YLim', [0 1]);
+    end
      hold on
     b2P = cdfplot(b2Reacts);
     set(b2P, 'Color', [0.6 0.6 0]);
