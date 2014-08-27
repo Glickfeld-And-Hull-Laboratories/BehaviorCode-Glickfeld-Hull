@@ -79,13 +79,13 @@ else
     block2DoVisDetect = 0;
 end
 
-if or(input.doOriDetect,input.block2DoOriDetect)
+if (input.doOriDetect+input.block2DoOriDetect)>0
   doOri = 1;
 else
   doOri = 0;
 end
 
-if or(input.doContrastDetect,input.block2DoContrastDetect)
+if (input.doContrastDetect+input.block2DoContrastDetect)>0
   doContrast = 1;
 else
   doContrast = 0;
@@ -125,6 +125,7 @@ if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
     %nAP = length(chop(unique(aPowerV(~isnan(aPowerV))),4));
 else
 	nAP = 0;
+  aPowerV = [];
 end
 
 vPowerV(find(vPowerV==0)) = NaN;
