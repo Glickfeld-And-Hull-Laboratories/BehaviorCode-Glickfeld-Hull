@@ -81,7 +81,7 @@
       <variable tag="cursorGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Match To Target"/>
       <variable tag="cursorGratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Match To Target"/>
       <variable tag="cursorGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Match To Target"/>
-      <variable tag="cursorGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Match To Target"/>
+      <variable tag="cursorGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Match To Target"/>
 
       <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="80" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
@@ -227,6 +227,7 @@
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
           <action type="assignment" tag="set LReversal back to 0" variable="tLeftReversal" value="0"/>
           <action type="assignment" tag="set RReversal back to 0" variable="tRightReversal" value="0"/>
+          <action type="assignment" tag="set cursorEccentricity back" variable="cursorGratingEccentricityDeg" value="0"/>
           <action type="assignment" variable="stimulusOn" value="0"/>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
           <action type="assert"  condition="doFeedbackMotion+doMatchToTarget &lt;= 1" 
@@ -437,8 +438,8 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
           <action type="if" condition="doMatchToTarget==1">
-            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
-            <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
+            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="cursorGrating"/>
+            <action type="play_dynamic_stimulus" stimulus="cursorGrating" tag="start"/>
             <action tag="Update Display" type="update_stimulus_display"/>
           </action>
 
@@ -474,7 +475,7 @@
             <action tag="Update Display" type="update_stimulus_display"/>
           </action>
 
-          <action type="if" condition="doMatchToSample==1">
+          <action type="if" condition="doMatchToTarget==1">
             <action type="if" condition="tLeftTrial==1">
               <action type="if" condition="quadrature-tQuadrature &gt; 0">
                 <action type="assignment" tag="" variable="cursorGratingEccentricityDeg" value="((quadrature-tQuadrature)/rightDecisionThreshold)*-tGratingEccentricityDeg"/>
@@ -493,7 +494,7 @@
               </action>
             </action>
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="cursorGrating"/>
-            <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
+            <action type="play_dynamic_stimulus" stimulus="cursorGrating" tag="start"/>
             <action tag="Update Display" type="update_stimulus_display"/>
           </action>
 
@@ -540,7 +541,7 @@
             <action tag="Update Display" type="update_stimulus_display"/>
           </action>
 
-          <action type="if" condition="doMatchToSample==1">
+          <action type="if" condition="doMatchToTarget==1">
             <action type="if" condition="tLeftTrial==1">
               <action type="if" condition="quadrature-tQuadrature &gt; 0">
                 <action type="assignment" tag="" variable="cursorGratingEccentricityDeg" value="((quadrature-tQuadrature)/rightDecisionThreshold)*-tGratingEccentricityDeg"/>
@@ -559,7 +560,7 @@
               </action>
             </action>
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="cursorGrating"/>
-            <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
+            <action type="play_dynamic_stimulus" stimulus="cursorGrating" tag="start"/>
             <action tag="Update Display" type="update_stimulus_display"/>
           </action>
 
@@ -604,7 +605,7 @@
             <action tag="Update Display" type="update_stimulus_display"/>
           </action>
 
-          <action type="if" condition="doMatchToSample==1">
+          <action type="if" condition="doMatchToTarget==1">
             <action type="if" condition="tLeftTrial==1">
               <action type="if" condition="quadrature-tQuadrature &gt; 0">
                 <action type="assignment" tag="" variable="cursorGratingEccentricityDeg" value="((quadrature-tQuadrature)/rightDecisionThreshold)*-tGratingEccentricityDeg"/>
@@ -623,7 +624,7 @@
               </action>
             </action>
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="cursorGrating"/>
-            <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
+            <action type="play_dynamic_stimulus" stimulus="cursorGrating" tag="start"/>
             <action tag="Update Display" type="update_stimulus_display"/>
           </action>
 
