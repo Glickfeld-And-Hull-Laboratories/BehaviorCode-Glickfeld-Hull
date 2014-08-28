@@ -618,10 +618,18 @@
                   <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
                   <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
                   <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
-                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
-                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
-                  <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>  
+                  <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>
+                  
+                  <action type="if" condition="doTrialLaser">
+                  	<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+                  	<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                  	<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                  </action>
+                  <action type="if" condition="!doTrialLaser">
+                  	<action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
+                  </action>  
               </action> 
             <!-- Choose block 2 trial type -->
             <!--
@@ -683,11 +691,19 @@
                   <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
                   <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
                   <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
-                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
-                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>  
+                    
               </action> 
-
+				<!-- using trial laser for block 1 -->
+				<action type="if" condition="doTrialLaser">
+					<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+                  	<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                  	<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                </action>
+                <action type="if" condition="!doTrialLaser">
+                  	<action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
+                  </action>  
               <!-- using trial laser for block 2 -->
               <action type="if" condition="block2DoTrialLaser">
                 <action type="assert" condition="!doLaserStim" stop_on_failure="1"
@@ -695,11 +711,18 @@
 
 
                 <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
-                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
-                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                	<action type="if" condition="doTrialLaser">
+                  		<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
+                  		<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                  		<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                	</action>
+					<action type="if" condition="doTrialLaser == 0">
+                  		<action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
+                  		<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
+                  		<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
+                	</action>
                 </action>
-
+                	
                 <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
                   <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
