@@ -91,10 +91,15 @@ else
   doContrast = 0;
 end
 
-if and(doOri,doContrast)
-  doOriAndContrast = 1;
+if or(and(input.doOriDetect,input.doContrastDetect),and(input.block2DoOriDetect,input.block2DoContrastDetect))
+	doOriAndContrastTogether = 1;
+	doOriAndContrastInterleaved = 0;
+elseif and(doOri,doContrast)
+  	doOriAndContrastInterleaved = 1;
+  	doOriAndContrastTogether = 0;
 else
-  doOriAndContrast = 0;
+  	doOriAndContrastInterleaved = 0;
+  	doOriAndContrastTogether = 0;
 end
 
 
@@ -107,7 +112,7 @@ if all(lPowerV) == 0
 else
   nLP = length(chop(unique(lPowerV(~isnan(lPowerV))),4));
 end
-if and(doContrast,doOri)
+if doOriAndContrastInterleaved
     vPowerV = (double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
      double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
 elseif doContrast
@@ -341,9 +346,9 @@ if length(holdStarts) > 2
             stimStr = 'visual and auditory stim';
           elseif input.block2DoVisualStim & input.block2DoAuditoryDetect
             stimStr = 'visual stim and auditory detect';
-          elseif and(doOriAndContrast,input.block2DoOriDetect)
+          elseif and(doOriAndContrastInterleaved,input.block2DoOriDetect)
             stimStr = 'visual stim ori detect';
-          elseif and(doOriAndContrast,input.block2DoContrastDetect)
+          elseif and(doOriAndContrastInterleaved,input.block2DoContrastDetect)
             stimStr = 'visual stim contrast detect';
           else
             stimStr = 'controlled';
@@ -547,7 +552,7 @@ end
 if showBlock2       
   b2T1Ns = find(block2Tr1Ix);
   b2T2Ns = find(block2Tr2Ix);
-  if ~or(doOriAndContrast,input.block2DoAuditoryDetect)
+  if ~or(doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
   	plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
     lH = plot(smooth(double(successIx), nTrial, smoothType));
     set(lH, 'Color', 'r', ...
@@ -585,10 +590,10 @@ if showBlock2
       set(lH4, 'Color', 0.8*[0 1 1]);
       if input.block2DoAuditoryDetect
         title('Visual stim responses')
-      elseif doOriAndContrast
-        if doOri
+      elseif doOriAndContrastInterleaved
+        if input.doOriDetect
           title('Ori responses')
-        elseif doContrast
+        elseif input.doContrastDetect
           title('Contrast responses')
         end
       end
@@ -692,7 +697,7 @@ title(sprintf('Last 6 (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
 axH = subplot(spSz{:},5);
 hold on;
 if showBlock2
-if ~or(doOriAndContrast,input.block2DoAuditoryDetect)
+if ~or(doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
     hSDiffsRealSec = diff(holdStarts)/1000;
     xs = 1:length(hSDiffsRealSec);
     pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
@@ -727,7 +732,7 @@ else
       ylim([0 1]);
       if input.block2DoAuditoryDetect
         title('Auditory stim responses')
-      elseif doOriAndContrast
+      elseif doOriAndContrastInterleaved
         if input.block2DoContrastDetect
           title('Contrast responses')
         elseif input.block2DoOriDetect
@@ -1100,7 +1105,7 @@ if nStims > 1
   
   if showLaserStim
     xlabel('power (mW)');
-  elseif doOriAndContrast
+  elseif doOriAndContrastInterleaved
     xlabel('contrast change (%) and direction (deg)');
   elseif input.doContrastDetect 
     xlabel('contrast change (%)');
