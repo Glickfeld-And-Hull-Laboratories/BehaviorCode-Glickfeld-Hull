@@ -7,8 +7,8 @@ startup
 %nLevels = number of stimuli to be created
 %durationS = duration of stimulus (in seconds)
 
-minFreqHz = log10(maxFreqHz)-stepsPerOctave;
-tFreqSpace = logspace(log10(maxFreqHz), minFreqHz, 8);
+minFreqHz = log2(maxFreqHz)-stepsPerOctave;
+tFreqSpace = logspace(log2(maxFreqHz), minFreqHz, 8);
 freqSpace=tFreqSpace(1:nLevels);
 for i=1:length(freqSpace);
     freq = freqSpace(i);
