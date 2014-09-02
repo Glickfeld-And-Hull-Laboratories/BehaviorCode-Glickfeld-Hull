@@ -147,6 +147,8 @@
           <action type="assignment" tag="tStimTimeUs Set" variable="tTactileStimulusDurationUs" value="tactileStimulusDurationUs"/>
           <action type="assignment" tag="-" variable="laserTriggerFIO" value="0"></action>
 
+          <action type="assert" condition="soundDurationMs == 100 || soundDurationMs == 200 || soundDurationMs == 300 || soundDurationMs == 400 || soundDurationMs == 500 || soundDurationMs == 600 || soundDurationMs == 700 || soundDurationMs == 800 || soundDurationMs == 900 || soundDurationMs == 1000" message="SoundDurationMs must be a multiple of 100 between 100ms and 1000ms!!!" stop_on_failure="1"/>  
+
       	
           <!-- initialize trial start/end times -->
           <action type="if" condition="tThisTrialStartTimeMs == -1">  
@@ -172,7 +174,36 @@
             <action type="report" message="*** Playing Tone Now"/>
 
             <!-- Debugging sound below: delete before committing -->
-            <action type="play_sound" sound="sound100ms"/>
+            <action type="if" condition="soundDurationMs == 100">
+              <action type="play_sound" sound="sound100ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 200">
+              <action type="play_sound" sound="sound200ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 300">
+              <action type="play_sound" sound="sound300ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 400">
+              <action type="play_sound" sound="sound400ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 500">
+              <action type="play_sound" sound="sound500ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 600">
+              <action type="play_sound" sound="sound600ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 700">
+              <action type="play_sound" sound="sound700ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 800">
+              <action type="play_sound" sound="sound800ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 900">
+              <action type="play_sound" sound="sound900ms"/>
+            </action>
+            <action type="if" condition="soundDurationMs == 1000">
+              <action type="play_sound" sound="sound1000ms"/>
+            </action>
       
             <!-- update display, finalize variables -->
             <action tag="Update Display" type="update_stimulus_display"></action>
