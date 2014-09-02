@@ -421,6 +421,11 @@
           <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
           <action tag="Update Display" type="update_stimulus_display"></action>
           <action type="assignment" variable="stimTimestampMs" value="now()/1000"/>
+          <action type="if" condition="doMatchToTarget==1">
+            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="cursorGrating"/>
+            <action type="play_dynamic_stimulus" stimulus="cursorGrating" tag="start"/>
+            <action tag="Update Display" type="update_stimulus_display"/>
+          </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="tooFastTimerMs" target="SetReact"></transition>
@@ -437,11 +442,6 @@
         <task_system_state tag="ZeroQuad" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
-          <action type="if" condition="doMatchToTarget==1">
-            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="cursorGrating"/>
-            <action type="play_dynamic_stimulus" stimulus="cursorGrating" tag="start"/>
-            <action tag="Update Display" type="update_stimulus_display"/>
-          </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="Reaction"></transition>
@@ -575,7 +575,7 @@
         <task_system_state tag="PastRightThreshold" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
-          <action type="if" condition="doFeedbackMotion==0">
+          <action type="if" condition="doFeedbackMotion==0 || doMatchToTarget==0">
             <action type="assignment" tag="" variable="tRightReversal" value="tRightReversal+1"/>
             <action type="report" message="Past Right Reversal Threshold"/>
           </action>
