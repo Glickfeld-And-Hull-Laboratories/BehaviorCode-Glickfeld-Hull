@@ -998,7 +998,7 @@ if nStims >= 1
 
   if showLaserStim
     xlabel('power (mW)')
-  elseif doOriAndContrast
+  elseif or(doOriAndContrastInterleaved,doOriAndContrastTogether)
     xlabel('contrast change (%) and direction (deg)');
   elseif input.doContrastDetect 
     xlabel('contrast change (%)');
