@@ -73,19 +73,19 @@ else
     doVisDetect = 0;
 end
 
-if (input.block2DoOriDetect+input.block2DoContrastDetect)>0
+if and((input.block2DoOriDetect+input.block2DoContrastDetect)>0, input.doBlock2)
     block2DoVisDetect = 1;
 else
     block2DoVisDetect = 0;
 end
 
-if (input.doOriDetect+input.block2DoOriDetect)>0
+if or(input.doOriDetect, and(input.doBlock2,input.block2DoOriDetect))
   doOri = 1;
 else
   doOri = 0;
 end
 
-if (input.doContrastDetect+input.block2DoContrastDetect)>0
+if or(input.doContrastDetect, and(input.dopBlock2,input.block2DoContrastDetect))
   doContrast = 1;
 else
   doContrast = 0;
