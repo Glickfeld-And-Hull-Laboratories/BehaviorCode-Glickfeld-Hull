@@ -784,12 +784,16 @@
               <action type="if" condition="tDoOriDetect">
                 <action type="assignment" variable="tGratingDirectionDeg" 
                         value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action> 
-                <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                <action type="if" condition="!tDoContrastDetect">        
+                  <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                </action>  
               </action>
               <action type="if" condition="tDoContrastDetect">
                 <action type="assignment" variable="tGratingContrast" 
                         value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> 
-                <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                <action type="if" condition="!tDoOriDetect">
+                  <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                </action>  
               </action>
               <action type="if" condition="!tDoContrastDetect &amp;&amp; !tDoOriDetect">
                 <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"></action> 
