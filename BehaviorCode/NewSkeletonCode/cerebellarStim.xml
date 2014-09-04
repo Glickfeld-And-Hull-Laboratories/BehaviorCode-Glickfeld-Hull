@@ -55,6 +55,7 @@
       <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="tttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tTactileStimulusDurationUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
 	    <variable tag="spCounter1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
@@ -69,6 +70,7 @@
       <variable tag="spCounter10" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
 
       <variable tag="tITIWheelCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="tISIWheelCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tStimWheelCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
@@ -171,6 +173,7 @@
       <task_system_state tag="PlaySound" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
+            <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action>
             <action type="report" message="*** Playing Tone Now"/>
 
             <!-- Debugging sound below: delete before committing -->
@@ -220,6 +223,7 @@
       <task_system_state tag="SendStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="report" message="*** Tactile Stimulus Sent -- Staying in Post-Stim State for $nScansOn scans."></action>
+            <action type="assignment" tag="Log Number of Wheel-pulses received during ISI" variable="tISIWheelCounter" value="counter2 - tttCounter2"></action>
             <action type="assignment" variable="tStimTurnedOn" value="now()/1000"/>
             <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
