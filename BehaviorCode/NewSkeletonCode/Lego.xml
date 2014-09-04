@@ -33,6 +33,7 @@
       <variable tag="feedbackMotionScreenWidthDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Feedback Motion"/>
 
       <variable tag="doMatchToTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Match To Target"/>
+      <variable tag="doEitherWay" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
       <variable tag="doBlocks" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block Control"/>
       <variable tag="blockLengthTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
@@ -566,7 +567,8 @@
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
           <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-leftDecisionThreshold))" target="Reward"></transition>
-          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-leftDecisionThreshold))" target="Incorrect"></transition>
+          <transition type="conditional" condition="doEitherWay == 0 &amp;&amp; tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-leftDecisionThreshold))" target="Incorrect"></transition>
+          <transition type="conditional" condition="doEitherWay==1 &amp;&amp; tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &lt; (0-leftDecisionThreshold))" target="Reward"></transition>
           <transition type="conditional" condition="(quadrature - tQuadrature) &gt; (0-leftReversalThreshold)" target="Reaction"></transition>
           <transition type="conditional" condition="doFeedbackMotion==1 || doMatchToTarget==1" target="PastLeftThreshold"></transition>
         </task_system_state>
@@ -630,7 +632,8 @@
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
           <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ((quadrature - tQuadrature) &gt; rightDecisionThreshold)" target="Reward"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; rightDecisionThreshold)" target="Incorrect"></transition>
+          <transition type="conditional" condition="doEitherWay == 0 &amp;&amp; tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; rightDecisionThreshold)" target="Incorrect"></transition>
+          <transition type="conditional" condition="doEitherWay==1 &amp;&amp; tLeftTrial==1 &amp;&amp; ((quadrature - tQuadrature) &gt; rightDecisionThreshold)" target="Reward"></transition>
           <transition type="conditional" condition="(quadrature - tQuadrature) &lt; rightReversalThreshold" target="Reaction"></transition>
           <transition type="conditional" condition="doFeedbackMotion==1 || doMatchToTarget==1" target="PastRightThreshold"></transition>
         </task_system_state>
