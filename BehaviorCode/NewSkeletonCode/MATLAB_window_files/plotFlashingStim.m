@@ -85,7 +85,7 @@ else
   doOri = 0;
 end
 
-if or(input.doContrastDetect, and(input.dopBlock2,input.block2DoContrastDetect))
+if or(input.doContrastDetect, and(input.doBlock2,input.block2DoContrastDetect))
   doContrast = 1;
 else
   doContrast = 0;
