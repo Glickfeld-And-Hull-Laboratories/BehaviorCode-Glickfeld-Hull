@@ -194,15 +194,15 @@ end
 %% 2 - smoothed perf curve
 axH = subplot(spSz{:},2);
 hold on;
-lH2 = plot(smooth(double(correctIx), 100, smoothType));
+lH2 = plot(smooth(double(correctIx), nTrials/5, smoothType));
 set(lH2, 'Color', 'k', ...
         'LineWidth', 2);
 
-lH3 = plot(smooth(double(ignoreIx), 100, smoothType));
+lH3 = plot(smooth(double(ignoreIx), nTrials/5, smoothType));
 set(lH3, 'Color', 'm', ...
          'LineWidth', 2);
 
-lH4 = plot(smooth(double(incorrectIx), 100, smoothType));
+lH4 = plot(smooth(double(incorrectIx), nTrials/5, smoothType));
   set(lH4, 'Color', 'g', ...
            'LineWidth', 2);
   anystack(lH4, 'bottom');
@@ -305,15 +305,15 @@ set(gca, 'XLim', trXLim);
 axH = subplot(spSz{:},3);
 hold on;
 if sum(leftTrialIx)>0,
-  lH2 = plot(leftTrNs, smooth(double(leftCorr), 100, smoothType));
+  lH2 = plot(leftTrNs, smooth(double(leftCorr), sum(leftTrNs)/10, smoothType));
 set(lH2, 'Color', 'k', ...
         'LineWidth', 2);
 
-lH3 = plot(leftTrNs, smooth(double(leftIgn), 100, smoothType));
+lH3 = plot(leftTrNs, smooth(double(leftIgn), sum(leftTrNs)/10, smoothType));
 set(lH3, 'Color', 'm', ...
          'LineWidth', 2);
 
-lH4 = plot(leftTrNs, smooth(double(leftInc), 100, smoothType));
+lH4 = plot(leftTrNs, smooth(double(leftInc), sum(leftTrNs)/10, smoothType));
   set(lH4, 'Color', 'g', ...
            'LineWidth', 2);
   anystack(lH4, 'bottom');
@@ -323,15 +323,15 @@ end
 if sum(~leftTrialIx)>0,
 axH = subplot(spSz{:},3);
 hold on;
-lH2 = plot(rightTrNs, smooth(double(rightCorr), 100, smoothType));
+lH2 = plot(rightTrNs, smooth(double(rightCorr), sum(rightTrNs)/10, smoothType));
 set(lH2, 'Color', 'k', ...
         'LineWidth', 2, 'LineStyle', '--');
 
-lH3 = plot(rightTrNs, smooth(double(rightIgn), 100, smoothType));
+lH3 = plot(rightTrNs, smooth(double(rightIgn), sum(rightTrNs)/10, smoothType));
 set(lH3, 'Color', 'm', ...
          'LineWidth', 2, 'LineStyle', '--');
 
-lH4 = plot(rightTrNs, smooth(double(rightInc), 100, smoothType));
+lH4 = plot(rightTrNs, smooth(double(rightInc), sum(rightTrNs)/10, smoothType));
   set(lH4, 'Color', 'g', ...
            'LineWidth', 2, 'LineStyle', '--');
   anystack(lH4, 'bottom');
