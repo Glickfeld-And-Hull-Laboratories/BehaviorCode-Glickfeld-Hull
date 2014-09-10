@@ -138,8 +138,8 @@ input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
                               '~/Documents/MWorks/Data', ...
                               mat2str(input.subjectNum), input.saveTime);
 save(input.savedDataName, 'input');
-
-disp('This is a trial! I wrote code that works!');
+ trStr = sprintf('Trial %1.0f Completed', trN);
+disp(trStr)
 
 %% Run Plotting Function
 input.holdStartsMs = input.tThisTrialStartTimeMs;

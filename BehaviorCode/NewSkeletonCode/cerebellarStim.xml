@@ -162,7 +162,7 @@
           <action type="assignment" tag="tStimTimeUs Set" variable="tTactileStimulusDurationUs" value="tactileStimulusDurationUs"/>
           <action type="assignment" tag="-" variable="laserTriggerFIO" value="0"></action>
 
-          <action type="assert" condition="soundDurationMs == 100 || soundDurationMs == 200 || soundDurationMs == 300 || soundDurationMs == 400 || soundDurationMs == 500 || soundDurationMs == 600 || soundDurationMs == 700 || soundDurationMs == 800 || soundDurationMs == 900 || soundDurationMs == 1000" message="SoundDurationMs must be a multiple of 100 between 100ms and 1000ms!!!" stop_on_failure="1"/>  
+          <action type="assert" condition="soundDurationMs == 100 || soundDurationMs == 200 || soundDurationMs == 300 || soundDurationMs == 400 || soundDurationMs == 500 || soundDurationMs == 600 || soundDurationMs == 700 || soundDurationMs == 800 || soundDurationMs == 900 || soundDurationMs == 1000" message="*******SoundDurationMs must be a multiple of 100 between 100ms and 1000ms!!!*******" stop_on_failure="1"/>  
 
       	
           <!-- initialize trial start/end times -->
@@ -186,7 +186,7 @@
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
           </action>
 
-          <action type="report" message="In InterStimInterval, waiting for $nScansOff frames"></action>
+          <action type="report" message="In Inter-Trial Interval, waiting for $nScansOff frames"></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="itiTimer1" target="itiCounter2"/> 
           <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
