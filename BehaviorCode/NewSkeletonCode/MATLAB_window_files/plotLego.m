@@ -97,7 +97,7 @@ if input.doBlocks==0,
   blockStr = sprintf('Blocks: off, probLeft: %1.1f, probSwitch: %1.1f \n', double(input.stimProbAvgLeft), double(input.stimProbAvgSwitch));
 
 elseif input.doBlocks==1,
-  blockStr = strcat('Blocks: on, Block Length:', mat2str(input.blockLengthTrs), '\n');
+  blockStr = sprintf('Blocks: on, L: %2.0f, R:%2.0f \n', double(input.blockLeftTrs), double(input.blockRightTrs));
 end
 
 if input.doMatchToTarget==1,

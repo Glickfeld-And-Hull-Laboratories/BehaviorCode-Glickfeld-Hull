@@ -36,7 +36,8 @@
       <variable tag="doEitherWay" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
       <variable tag="doBlocks" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block Control"/>
-      <variable tag="blockLengthTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
+      <variable tag="blockLeftTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
+      <variable tag="blockRightTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
 
       <variable tag="doRewardStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Reward Staircase"/>
       <variable tag="rewardStaircaseWindowWidth" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Reward Staircase"/>
@@ -140,7 +141,8 @@
       <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tNBlockTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
+      <variable tag="tNBlockLeftTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
+      <variable tag="tNBlockRightTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
 
       <!-- Shadow Vars From Mark -->
       <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -354,19 +356,19 @@
           </action>
 
           <action type="if" condition="doBlocks==1">
-            <action type="if" condition="(tNBlockTrsCompleted &lt; blockLengthTrs) &amp;&amp; tLastTrialWasLeft==1">
+            <action type="if" condition="(tNBlockLeftTrsCompleted &lt; blockLeftTrs) &amp;&amp; tLastTrialWasLeft==1">
               <action type="assignment" variable="tLeftTrial" value="1"/>
             </action>
-            <action type="if" condition="(tNBlockTrsCompleted &lt; blockLengthTrs) &amp;&amp; tLastTrialWasLeft==0">
+            <action type="if" condition="(tNBlockRightTrsCompleted &lt; blockRightTrs) &amp;&amp; tLastTrialWasLeft==0">
               <action type="assignment" variable="tLeftTrial" value="0"/>
             </action>
-            <action type="if" condition="(tNBlockTrsCompleted &gt;= blockLengthTrs) &amp;&amp; tLastTrialWasLeft==1">
+            <action type="if" condition="(tNBlockLeftTrsCompleted &gt;= blockLeftTrs) &amp;&amp; tLastTrialWasLeft==1">
               <action type="assignment" variable="tLeftTrial" value="0"/>
-              <action type="assignment" variable="tNBlockTrsCompleted" value="0"/>
+              <action type="assignment" variable="tNBlockRightTrsCompleted" value="0"/>
             </action>
-            <action type="if" condition="(tNBlockTrsCompleted &gt;= blockLengthTrs) &amp;&amp; tLastTrialWasLeft==0">
+            <action type="if" condition="(tNBlockRightTrsCompleted &gt;= blockRightTrs) &amp;&amp; tLastTrialWasLeft==0">
               <action type="assignment" variable="tLeftTrial" value="1"/>
-              <action type="assignment" variable="tNBlockTrsCompleted" value="0"/>
+              <action type="assignment" variable="tNBlockLeftTrsCompleted" value="0"/>
             </action>
           </action>
 
@@ -748,7 +750,12 @@
           <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
           <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
           <action type="if" condition="doBlocks==1">
-            <action type="assignment" variable="tNBlockTrsCompleted" value="tNBlockTrsCompleted+1"/>
+            <action type="if" condition="tLeftTrial==1">
+              <action type="assignment" variable="tNBlockLeftTrsCompleted" value="tNBlockLeftTrsCompleted+1"/>
+            </action>
+            <action type="if" condition="tLeftTrial==0">
+              <action type="assignment" variable="tNBlockRightTrsCompleted" value="tNBlockRightTrsCompleted+1"/>
+            </action>
           </action>
           <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
 
