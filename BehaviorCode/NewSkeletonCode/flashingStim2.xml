@@ -33,6 +33,7 @@
       <variable tag="block2DoAuditoryStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoAuditoryDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="block2DoMissAsCorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
 	
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
@@ -1053,7 +1054,8 @@
             <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; !doLever &amp;&amp; timerExpired(fakeMouseTimer)" target="EarlyRelease"></transition>
             <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
-            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer)" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
             <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="targetOnTimer"></transition>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer)" target="EndTrialStimOn"></transition>
             <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer)" target="EndTrialStimOff"></transition>
@@ -1273,7 +1275,8 @@
             <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="endOnTimer"></transition>
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
             <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
-            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer)" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
@@ -1304,7 +1307,8 @@
             <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endOffTimer"></transition>
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
             <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
-            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer)" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           </task_system_state>
 		  
