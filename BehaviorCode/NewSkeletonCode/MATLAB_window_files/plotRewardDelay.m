@@ -223,11 +223,12 @@ else,
     b1Reacts = reacts(b1Trs);
     nb1R = sum(b1Reacts);
     b2Reacts = reacts(b2Trs);
-    if nb1R>0,
+    if ~isempty(nb1R),
         b1P = cdfplot(b1Reacts);
         set(b1P, 'Color', 'b');
         set(gca, 'XLim', [-(input.delayTimeMs) 1000], ...
          'YLim', [0 1]);
+        hold on
     end
      hold on
     b2P = cdfplot(b2Reacts);
