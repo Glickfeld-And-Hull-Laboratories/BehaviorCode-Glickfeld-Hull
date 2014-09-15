@@ -22,6 +22,7 @@
 
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="preSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="itiTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="0" groups="ITICounters"/>
@@ -189,7 +190,7 @@
           <action type="report" message="In Inter-Trial Interval, waiting for $nScansOff frames"></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="itiTimer1" target="itiCounter2"/> 
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter2" interruptible="YES">
@@ -205,7 +206,7 @@
           
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" target="itiCounter3" timer="itiTimer2"></transition>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter3" interruptible="YES">
@@ -221,7 +222,7 @@
           
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" target="itiCounter4" timer="itiTimer3"></transition>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter4" interruptible="YES">
@@ -237,7 +238,7 @@
           
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" target="itiCounter5" timer="speedTimer4"></transition>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter5" interruptible="YES">
@@ -253,7 +254,7 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" target="itiCounter6" timer="itiTimer5"></transition>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter6" interruptible="YES">
@@ -269,7 +270,7 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" target="itiCounter7" timer="itiTimer6"></transition>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter7" interruptible="YES">
@@ -285,7 +286,7 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" target="itiCounter8" timer="itiTimer7"></transition>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter8" interruptible="YES">
@@ -301,7 +302,7 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" target="itiCounter9" timer="itiTimer8"></transition>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter9" interruptible="YES">
@@ -317,7 +318,7 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" target="itiCounter10" timer="speedTimer9"></transition>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter10" interruptible="YES">
@@ -332,7 +333,7 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
           <transition type="timer_expired" target="itiCounterEnd" timer="itiTimer10"></transition>
       </task_system_state>
 
@@ -341,13 +342,22 @@
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter10" value="counter2 - tCounter2"></action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
+      </task_system_state>
+
+      <task_system_state tag="PreSoundPause" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
+            <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action>
+            <action type="start_timer" tag="Start pre-sound timer" timer="preSoundPauseTimer" timebase="" duration="preSoundPauseDurationMs" duration_units="ms"></action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" timer="preSoundPauseTimer" target="PlaySound"/> 
       </task_system_state>
 
       <task_system_state tag="PlaySound" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action>
+
             <action type="report" message="*** Playing Tone Now"/>
 
             <!-- Debugging sound below: delete before committing -->
