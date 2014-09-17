@@ -237,7 +237,7 @@
             </action>
           
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter5" timer="speedTimer4"></transition>
+          <transition type="timer_expired" target="itiCounter5" timer="itiTimer4"></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
@@ -317,7 +317,7 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter10" timer="speedTimer9"></transition>
+          <transition type="timer_expired" target="itiCounter10" timer="itiTimer9"></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
@@ -349,6 +349,7 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
             <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action>
+            <action type="report" message="*** Sitting in PreSoundPause State for $preSoundPauseDurationMs ms"/>
             <action type="start_timer" tag="Start pre-sound timer" timer="preSoundPauseTimer" timebase="" duration="preSoundPauseDurationMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
