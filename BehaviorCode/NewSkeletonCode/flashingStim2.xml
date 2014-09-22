@@ -25,6 +25,7 @@
       <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doCustomTargetTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
@@ -38,6 +39,7 @@
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="targetOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
@@ -993,7 +995,12 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
             <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
-            <action type="start_timer" tag="" timer="targetOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+            <action type="if" condition="doCustomTargetTime==0">
+              <action type="start_timer" tag="" timer="targetOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+            </action>
+            <action type="if" condition="doCustomTargetTime==1">
+              <action type="start_timer" tag="" timer="targetOnTimer" duration="targetOnTimeMs" timebase="" duration_units="ms"/>
+            </action>
             <action type="assignment" variable="stimTag" value= "2"/>
             <action type="assignment" tag="set Stim on time" variable="tStimOnMs" value="now()/1000"/>
             <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
