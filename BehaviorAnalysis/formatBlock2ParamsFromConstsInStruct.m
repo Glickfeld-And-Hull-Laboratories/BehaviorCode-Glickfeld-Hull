@@ -65,13 +65,17 @@ elseif ds.doBlock2 == 1
         if ~isfield(ds, fList{iF}), ds.(fList{iF}) = 0; end
     end
 
-    if ((ds.block2DoGratingAppearance+ds.block2DoRampLength+ds.block2DoRampVTrain ...
-        +ds.block2DoTrialLaser) ~= 1)
-        error('MHS:badFile', 'more than one b2Do param?');
+%     if ((ds.block2DoGratingAppearance+ds.block2DoRampLength+ds.block2DoRampVTrain ...
+%         +ds.block2DoTrialLaser) ~= 1)
+%         error('MHS:badFile', 'more than one b2Do param?');
+%     end
+    if isfield(ds,'block2StimOnMs')
+       ds.block2GratingDurationMs = ds.block2StimOnMs; 
+    else
+        ds.block2GratingDurationMs = ds.gratingDurationMs;
     end
     
-
-    if ds.block2DoGratingAppearance
+    if ds.block2DoGratingAppearance == 1 & ds.block2DoTrialLaser==0
         if b2Num == 1
             str = subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
                 ds.gratingSpatialFreqCPD, ds.gratingDurationMs);
@@ -94,7 +98,7 @@ elseif ds.doBlock2 == 1
                 ds.laserTransitionRampUpDownMs);
             return
         end
-    elseif ds.block2DoTrialLaser
+    elseif ds.block2DoTrialLaser==1 & ds.block2DoGratingAppearance == 0
         
         tV = struct('trialLaserPowerMw', []);
         fieldList = { 'PowerMw', 'OnTimeMs', 'OffTimeMs' };
@@ -106,6 +110,26 @@ elseif ds.doBlock2 == 1
         end
         
         str = subFormatTrialLaserInfo(tV(b2Num));
+    elseif ds.block2DoTrialLaser & ds.block2DoGratingAppearance 
+        
+        tV = struct('trialLaserPowerMw', []);
+        fieldList = { 'PowerMw', 'OnTimeMs', 'OffTimeMs' };
+        blockPrefix = { 'trialLaser', 'block2TrialLaser'};
+        for iB = 1:2
+            for iF = 1:length(fieldList)
+                tV(iB).(fieldList{iF}) = ds.([blockPrefix{iB} fieldList{iF}]);
+            end
+        end
+        
+        if b2Num == 1
+            str = [subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
+                ds.gratingSpatialFreqCPD, ds.gratingDurationMs) [ ] subFormatTrialLaserInfo(tV(b2Num))];
+        elseif b2Num == 2
+            str = [subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
+                ds.gratingSpatialFreqCPD, ds.block2GratingDurationMs) [ ] subFormatTrialLaserInfo(tV(b2Num))];
+            return
+        end
+        
     else
         error('bug');
     end
