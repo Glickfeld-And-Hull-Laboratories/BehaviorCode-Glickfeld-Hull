@@ -27,11 +27,11 @@ switch tHostname
             rc.fitOutputPdfDir = fullfile(rootDir, 'output\pdfFits');
             rc.fitOutputMatDir = fullfile(rootDir, 'output\fitMatStats');
         elseif tUsername(1:8) == 'miaomiao'
-            rc.pathStr = 'Z:\home\andrew\Behavior\Data';
+            rc.pathStr = 'Z:\andrew\Behavior\Data';
             rc.dataPat = 'data-i%03d-%s.mat';
-            %rootDir = 'Z:\home\miaomiao\Analysis\Behavior';
-            rc.indexFilename = fullfile(rootDir, 'experimentIndexes\subj-days-lg.xls');
-            rc.fitOutputFilename = fullfile(rootDir, 'experimentIndexes\subj-fits-lg.xls');
+            rootDir = 'Z:\miaomiao\behavior\Behavior';
+            rc.indexFilename = fullfile(rootDir, 'experimentIndexes\subj-days-mj.xls');
+            rc.fitOutputFilename = fullfile(rootDir, 'experimentIndexes\subj-fits-mj.xls');
             rc.fitOutputSummary = fullfile(rootDir, 'output\analysis\summary');
             rc.fitOutputPdfDir = fullfile(rootDir, 'output\pdfFits');
             rc.fitOutputMatDir = fullfile(rootDir, 'output\fitMatStats');
