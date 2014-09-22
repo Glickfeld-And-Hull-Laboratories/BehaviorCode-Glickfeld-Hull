@@ -1078,6 +1078,12 @@
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
             
+            <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            
             <!-- update running variables -->
             <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
@@ -1117,6 +1123,12 @@
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>  
 
+            <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
             <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
@@ -1152,6 +1164,11 @@
             </action>	
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
