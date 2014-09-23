@@ -22,12 +22,17 @@
 
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="preSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="0" groups="SpeedCounters"/>
-      <variable tag="itiTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="0" groups="ITICounters"/>
+      <variable tag="preSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="StimulusSpecs"/>
+      <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="StimulusSpecs"/>
+      <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="SpeedCounters"/>
+      <variable tag="itiTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="ITICounters"/>
 
-      <variable tag="frameImagingRateMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="ImagingVars"/>
+      <variable tag="speedTimerNFrames" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="SpeedCounters"/>
+      <variable tag="itiTimerNFrames" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="ITICounters"/>
+      <variable tag="preSoundPauseNFrames" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="StimulusSpecs"/>
+      <variable tag="postSoundPauseNFrames" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="StimulusSpecs"/>
+
+      <variable tag="frameImagingFrequencyHz" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="ImagingVars"/>
       <variable tag="frameImagingExposureMs" scope="global" logging="when_changed" default_value="450" type="integer" persistant="1" groups="ImagingVars"/>	 
       <variable tag="frameImagingBinning" scope="global" logging="when_changed" default_value="4" type="integer" persistant="1" groups="ImagingVars"/>
 
@@ -162,6 +167,10 @@
           <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
           <action type="assignment" tag="tStimTimeUs Set" variable="tTactileStimulusDurationUs" value="tactileStimulusDurationUs"/>
           <action type="assignment" tag="-" variable="laserTriggerFIO" value="0"></action>
+          <action type="assignment" tag="Set spCounter intervals based on frames required" variable="speedTimerIntervalMs" value="(1/frameImagingFrequencyHz)*speedTimerNFrames"/>
+          <action type="assignment" tag="Set itiCounter intervals based on frames required" variable="itiTimerIntervalMs" value="(1/frameImagingFrequencyHz)*itiTimerNFrames"/>
+          <action type="assignment" tag="Set preSound interval based on frames required" variable="preSoundPauseDurationMs" value="(1/frameImagingFrequencyHz)*preSoundPauseNFrames"/>
+          <action type="assignment" tag="Set postSound interval based on frames required" variable="postSoundPauseDurationMs" value="(1/frameImagingFrequencyHz)*postSoundPauseNFrames"/>
 
           <action type="assert" condition="soundDurationMs == 100 || soundDurationMs == 200 || soundDurationMs == 300 || soundDurationMs == 400 || soundDurationMs == 500 || soundDurationMs == 600 || soundDurationMs == 700 || soundDurationMs == 800 || soundDurationMs == 900 || soundDurationMs == 1000" message="*******SoundDurationMs must be a multiple of 100 between 100ms and 1000ms!!!*******" stop_on_failure="1"/>  
 
