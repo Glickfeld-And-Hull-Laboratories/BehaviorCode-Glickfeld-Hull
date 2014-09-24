@@ -34,7 +34,7 @@ def replaceStrWithUserdir(inObj):
     else:
         print type(inObj)
         #import pdb; pdb.set_trace()
-        raise 'Error: Type unknown'
+        raise Exception('Error: Type unknown')
     return 
 
 ################
@@ -53,7 +53,7 @@ clientDefs = standardUserDefaults.persistentDomainForName_(domainName).mutableCo
 keyList = fileDefs.keys()
 for k in keyList:
   # replace $HOME strs
-  fileDefs[k] = replaceStrWithUserdir(fileDefs[k])
+  #fileDefs[k] = replaceStrWithUserdir(fileDefs[k])
   clientDefs.setObject_forKey_(fileDefs[k], k)
 
   

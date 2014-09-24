@@ -22,7 +22,7 @@ domainName = "org.mworks-project.MWClient"
 outFile = os.path.expanduser(os.path.join('~/Desktop', 'org.Behavior.MWClientSavedVars.plist'))
 keyNames = [ 
   'MATLAB client window - selected variables',
-  'MATLAB client window - MATLAB .m file',
+  '#MATLAB client window - MATLAB .m file',
   'recentPythonScripts' ]
 
 homedir = os.getenv('HOME')
@@ -37,13 +37,13 @@ def replaceUserdirWithStr(inObj):
         return subStr(inObj)
     elif isinstance(inObj, NSCFArray):
         for i in range(len(inObj)):
-            # do this recursively
+            # do this recursivel#y
             inObj[i] = replaceUserdirWithStr(inObj[i])
         return inObj
     else:
         print type(inObj)
         #import pdb; pdb.set_trace()
-        raise 'Error: Type unknown'
+        raise Exception('Error: Type unknown')
     return 
     
 
@@ -58,7 +58,7 @@ writeDict = NSMutableDictionary.dictionary()
 for k in clientDefs:
   if k in keyNames:
     tVal = clientDefs[k]
-    tVal = replaceUserdirWithStr(tVal)
+    #tVal = replaceUserdirWithStr(tVal)
     writeDict[k] = tVal
 
 # use the Cocoa call to write output as XML
