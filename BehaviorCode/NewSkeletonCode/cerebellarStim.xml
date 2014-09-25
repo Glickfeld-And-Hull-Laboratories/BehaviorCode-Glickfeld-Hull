@@ -167,10 +167,10 @@
           <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
           <action type="assignment" tag="tStimTimeUs Set" variable="tTactileStimulusDurationUs" value="tactileStimulusDurationUs"/>
           <action type="assignment" tag="-" variable="laserTriggerFIO" value="0"></action>
-          <action type="assignment" tag="Set spCounter intervals based on frames required" variable="speedTimerIntervalMs" value="(1/frameImagingFrequencyHz)*speedTimerNFrames"/>
-          <action type="assignment" tag="Set itiCounter intervals based on frames required" variable="itiTimerIntervalMs" value="(1/frameImagingFrequencyHz)*itiTimerNFrames"/>
-          <action type="assignment" tag="Set preSound interval based on frames required" variable="preSoundPauseDurationMs" value="(1/frameImagingFrequencyHz)*preSoundPauseNFrames"/>
-          <action type="assignment" tag="Set postSound interval based on frames required" variable="postSoundPauseDurationMs" value="(1/frameImagingFrequencyHz)*postSoundPauseNFrames"/>
+          <action type="assignment" tag="Set spCounter intervals based on frames required" variable="speedTimerIntervalMs" value="((1/frameImagingFrequencyHz)*speedTimerNFrames)*1000"/>
+          <action type="assignment" tag="Set itiCounter intervals based on frames required" variable="itiTimerIntervalMs" value="((1/frameImagingFrequencyHz)*itiTimerNFrames)*1000"/>
+          <action type="assignment" tag="Set preSound interval based on frames required" variable="preSoundPauseDurationMs" value="((1/frameImagingFrequencyHz)*preSoundPauseNFrames)*1000"/>
+          <action type="assignment" tag="Set postSound interval based on frames required" variable="postSoundPauseDurationMs" value="((1/frameImagingFrequencyHz)*postSoundPauseNFrames)*1000"/>
 
           <action type="assert" condition="soundDurationMs == 100 || soundDurationMs == 200 || soundDurationMs == 300 || soundDurationMs == 400 || soundDurationMs == 500 || soundDurationMs == 600 || soundDurationMs == 700 || soundDurationMs == 800 || soundDurationMs == 900 || soundDurationMs == 1000" message="*******SoundDurationMs must be a multiple of 100 between 100ms and 1000ms!!!*******" stop_on_failure="1"/>  
 
