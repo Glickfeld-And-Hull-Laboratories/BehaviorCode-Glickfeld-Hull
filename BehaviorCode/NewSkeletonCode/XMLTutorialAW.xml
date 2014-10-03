@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" lever2="" 
+              lever1_solenoid="FIO2"
+              lever2_solenoid=""
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Behavioral Control">
+      <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Timer Variables"/>
+      <variable tag="nCounterTicks" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Counter Ticks"/>
+      <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sound"/>
+      <variable tag="playSound" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Sound"/>
+      <variable tag="doDirectTransition" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Tinkering"/> 
+      <variable tag="stimulusDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Stimulus Parameters"/>
+    </folder>
+    <folder tag="Hardware variables">
+      <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
+      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"></variable>
+      <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Hardware"></variable>
+      <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+    </folder>
+  </variables>
+  <sounds tag="Sounds">
+    <sound tag="louderPressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
+  </sounds>
+  <stimuli tag="Stimuli">
+    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="drifting_grating" tag="base_grating"  direction="0"
+              starting_phase="0" 
+              spatial_frequency="0.25" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="30" y_size="30" 
+              x_position="0" y_position="0" 
+              rotation="0" 
+              alpha_multiplier="1.0"></stimulus>
+    <stimulus type="drifting_grating" tag="target_grating"  direction="0" 
+              starting_phase="0" 
+              spatial_frequency="0.25" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="30" y_size="30" 
+              x_position="0" y_position="0" 
+              rotation="90" 
+              alpha_multiplier="1.0"></stimulus>
+  </stimuli>    
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
+       <task_system tag="TS" full_name="TS" description="" interruptible="YES" 
+                     _error="Task Systems must contain >=1 transition that yields to parent">
+
+
+
+
+
+
+
+          <task_system_state tag="TimerState" interruptible="YES">
+            <action type="start_timer" timer="timerTimer" duration="timerDurationMs" timebase="" duration_units="ms" />
+            <action type="report" message="Waiting on the timer to expire...."/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="If timerTimer has expired, move to StimulusState" target="StimulusState" timer="timerTimer"></transition>
+            <transition type="conditional" condition="doDirectTransition==1" target="CounterState"/>
+          </task_system_state>
+
+
+
+
+          <task_system_state tag="StimulusState" interruptible="YES">
+            <action type="queue_stimulus" stimulus="target_grating"></action>
+            <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
+            <action type="update_stimulus_display" tag="-"></action> 
+            <action type="start_timer" timer="stimulusTimer" duration="stimulusDurationMs" timebase="" duration_units="ms" />
+            <action type="report" message="*****STIMULUS ON*****"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="If stimulusTimer has expired, move to CounterState" target="CounterState" timer="stimulusTimer"></transition>
+          </task_system_state>
+
+
+
+
+          <task_system_state tag="CounterState" interruptible="YES">
+            <action type="dequeue_stimulus" stimulus="target_grating"></action>
+            <action type="update_stimulus_display" tag="-"></action> 
+            <action type="assignment" variable="nCounterTicks" value="nCounterTicks+1"/>
+            <action type="report" message="Timer has expired, adding to nCounterTicks"/>
+            <action type="report" message="nCounterTicks = $nCounterTicks"/>
+
+            <action type="if" condition="playSound == 1">
+              <action type="play_sound" sound="louderPressSound"/>
+            </action>
+
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="yield" tag="return to parent task system"></transition>
+          </task_system_state>
+
+
+
+
+
+        </task_system>
+      </trial>
+    </protocol>
+  </experiment>
+</monkeyml>
