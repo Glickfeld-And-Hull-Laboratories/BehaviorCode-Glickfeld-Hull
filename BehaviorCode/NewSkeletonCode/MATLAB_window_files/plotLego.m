@@ -3,7 +3,7 @@ function input = plotLego(data_struct, input)
 % essential consts
 name = 'Lego';
 cs = lego_constants;
-spSz = {3,3};
+spSz = {4,3};
 
 smoothType = 'lowess';
 figNum = 1;
@@ -486,6 +486,40 @@ grid on;
 hold on;
 title('Decision Time CDF: y=right,b=left');
 xlabel('Time');
+
+
+%%%%%%%%%%%%%%%%
+%% 10 - Right/Left Contrast Decision
+
+axH  = subplot(spSz{:},10);
+hold on
+
+contrastDifferenceRight = cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast);
+plotTrs = contrastDifferenceRight(correctIx|incorrectIx);
+nLevels = unique(plotTrs);
+percentContCell = cell(1,length(nLevels));
+for kk=1:length(nLevels)
+    val = nLevels(kk);
+    valIx = contrastDifferenceRight==val;
+    totalNTrialsVal = sum(contrastDifferenceRight(valIx&(correctIx|incorrectIx)));
+    if val>=0,
+        rightNTrialsVal = sum(contrastDifferenceRight(valIx&correctIx));
+        percentContCell{kk} = rightNTrialsVal/totalNTrialsVal;
+    elseif val<0,
+        rightNTrialsVal = sum(contrastDifferenceRight(valIx&incorrectIx));
+        percentContCell{kk} = rightNTrialsVal/totalNTrialsVal;
+    end
+end
+plot(nLevels, cell2mat(percentContCell), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+vH = vert_lines(0);
+set(vH, 'Color', 'g');
+set(gca, 'XLim', [-1 1], ...
+         'YLim', [0 1], ...
+         'XTick', [-1:0.5:1], ...
+         'YTick', [0:0.25:1]);
+xlabel('Contrast Difference (R-L)')
+ylabel('% Right')
+grid on
 
 
 %%%%%%%%%%%%%%%%

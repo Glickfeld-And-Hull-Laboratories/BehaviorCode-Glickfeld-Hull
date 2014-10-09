@@ -47,6 +47,14 @@ stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
 input.quadStampsUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
 input.quadValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1);
 
+if input.tLeftTrial{trN}==1,
+    input.leftGratingContrast{trN} = input.tGratingContrast{trN};
+    input.rightGratingContrast{trN} = input.dGratingContrast{trN};
+else
+    input.leftGratingContrast{trN} = input.dGratingContrast{trN};
+    input.rightGratingContrast{trN} = input.tGratingContrast{trN};
+end
+
 %% disp status
 if input.tLeftTrial{trN}==1,
     tLeftStr = 'Left Trial';
