@@ -3,7 +3,7 @@ function input = plotLego(data_struct, input)
 % essential consts
 name = 'Lego';
 cs = lego_constants;
-spSz = {4,6};
+spSz = {3,3};
 
 smoothType = 'lowess';
 figNum = 1;
@@ -113,7 +113,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Performance Values
 
-        axH = subplot(spSz{:}, 1:2);						% default axes are 0 to 1
+        axH = subplot(spSz{:}, 1);						% default axes are 0 to 1
         
 	set(axH, 'Visible', 'off');
         set(axH, 'OuterPosition', [0.02 0.75, 0.25, 0.2])
@@ -192,7 +192,7 @@ end
 %%%%%%%%%%%%%%%
 
 %% 2 - smoothed perf curve
-axH = subplot(spSz{:},3:4);
+axH = subplot(spSz{:},2);
 hold on;
 lH2 = plot(smooth(double(correctIx), nTrials/5, smoothType));
 set(lH2, 'Color', 'k', ...
@@ -223,7 +223,7 @@ set(gca, 'XLim', trXLim);
 %% 4 - List changed text
 
 
-axH = subplot(spSz{:}, 7:8);
+axH = subplot(spSz{:}, 4);
 hold on;
 set(axH, 'Visible', 'off');
     set(axH, 'OuterPosition', [0.02 0.49, 0.25, 0.2])
@@ -272,7 +272,7 @@ if nTrial > 1
 %%%%%%%%%%
 
 %% 5 - bias plot
-axH = subplot(spSz{:},9:10);
+axH = subplot(spSz{:},5);
 hold on;
 if nTrial > 100,
     amtSmooth = round(nTrial*0.10);
@@ -302,7 +302,7 @@ set(gca, 'XLim', trXLim);
 
 %% 3 - Left and Right Outcomes
 
-axH = subplot(spSz{:},5:6);
+axH = subplot(spSz{:},3);
 hold on;
 if sum(leftTrialIx)>0,
   lH2 = plot(leftTrNs, smooth(double(leftCorr), sum(leftTrNs)/10, smoothType));
@@ -321,7 +321,7 @@ lH4 = plot(leftTrNs, smooth(double(leftInc), sum(leftTrNs)/10, smoothType));
   anystack(lH3, 'bottom');
 end
 if sum(~leftTrialIx)>0,
-axH = subplot(spSz{:},5:6);
+axH = subplot(spSz{:},3);
 hold on;
 lH2 = plot(rightTrNs, smooth(double(rightCorr), sum(rightTrNs)/10, smoothType));
 set(lH2, 'Color', 'k', ...
@@ -350,7 +350,7 @@ set(gca, 'XLim', trXLim);
 %%%%%%%%%%%%%%%
 
 % 6 - decision time over time
-axH = subplot(spSz{:}, 11:12);
+axH = subplot(spSz{:}, 6);
 hold on;
 
 noMissIx = correctIx|incorrectIx;
@@ -378,7 +378,7 @@ xlabel('Trials');
 
 
 %% 7 - Constrast Difference x Correct reaction times plot
-axH = subplot(spSz{:},13:14);
+axH = subplot(spSz{:},7);
 hold on;
 
 if nCorr>0 && input.doTestRobot==0,
@@ -424,7 +424,7 @@ end
 
 %% 8 - Contrast Difference x %Correct
 
-axH = subplot(spSz{:},15:16);
+axH = subplot(spSz{:},8);
 hold on;
 
 if nCorr>0 && input.doTestRobot==0,
@@ -458,7 +458,7 @@ end
 %%%%%%%%%%%%%%%%
 %% 9 - cdf of decision times
 
-axH = subplot(spSz{:},17:18);
+axH = subplot(spSz{:},9);
 hold on;
 
 decisionMax = ceil(input.reactionTimeMs/1000)*1000;
@@ -487,45 +487,6 @@ hold on;
 title('Decision Time CDF: y=right,b=left');
 xlabel('Time');
 
-%%%%%%%%%%%%%%%%
-%% Quadrature Kinetograms
-
-quadVals = input.quadValues;
-quadTimes = input.quadStampsUs;
-leftIx = logical(leftTrialIx);
-
-leftQV = quadVals(leftIx);
-leftQT = quadTimes(leftIx);
-L = length(leftQV);
-
-rightQV = quadVals(~leftIx);
-rightQT = quadTimes(~leftIx);
-R = length(rightQV);
-
-
-%% Left Kinetogram
-
-axH = subplot(spSz{:},19:21);
-hold on;
-plot(cell2mat(leftQV(L)), cell2mat(leftQT(L))/1000, 'k', 'LineWidth', 2);
-for i=1:L,
-  plot(cell2mat(leftQV(i)), cell2mat(leftQT(i))/1000);
-end
-title('Left Kinetogram');
-xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
-ylim([0 input.reactionTimeMs])
-
-%% Right Kinetogram
-
-axH = subplot(spSz{:},22:24);
-hold on;
-plot(cell2mat(rightQV(R)), cell2mat(rightQT(R))/1000, 'k', 'LineWidth', 2);
-for i=1:R,
-  plot(cell2mat(rightQV(i)), cell2mat(rightQT(i))/1000);
-end
-title('Right Kinetogram');
-xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
-ylim([0 input.reactionTimeMs])
 
 %%%%%%%%%%%%%%%%
 
