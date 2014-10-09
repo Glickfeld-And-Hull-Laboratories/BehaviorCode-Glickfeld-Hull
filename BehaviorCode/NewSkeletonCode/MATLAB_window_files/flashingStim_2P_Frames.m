@@ -94,7 +94,7 @@ leverDownUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 1, 1);
 leverUpUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 2, 0);
 
 %calculate cycle duration
-totalCycleTimeMs = input.stimOnTimeMs + input.stimOffTimeMs;
+totalCycleTimeMs = ((input.nFramesOn + input.nFramesOff)./input.frameRateHz).*1000;
 numberCyclesOn = input.nCyclesOn{trN};
 
 reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
@@ -102,11 +102,19 @@ reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
 holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
 reactTimeMs = (holdTimeMs - reqHoldTimeMs);
 
+%find StimOn frames
+stimOnFrames = zeros(1, maxCyclesOn);
+for istim = 1:numberCyclesOn
+	stimOnFrames(1,istim) = mwGetEventData(eventsTrial, ds.event_codec, 'cStimOn', istim);
+end
+	 
+
 % add to array
 input.holdStartsMs{trN} = leverDownUs/1000;
 input.holdTimesMs{trN} = holdTimeMs;
 input.reactTimesMs{trN} = reactTimeMs;
 input.tTotalReqHoldTimeMs{trN} = reqHoldTimeMs;
+input.cStimOnFrames{trN} = stimOnFrames;
 
 
 % backward compat
