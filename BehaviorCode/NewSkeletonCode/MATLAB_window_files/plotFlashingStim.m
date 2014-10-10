@@ -771,12 +771,15 @@ v1 = smooth(holdV(desIx), 25, 'rloess');
 v2 = smooth(holdV(desIx), 250, 'rlowess');
 desYIx = successIx;
 xYVals = find(desYIx);
-vy1 = smooth(reactV(successIx), 25, 'rloess');
-vy2 = smooth(reactV(successIx), 250, 'rlowess');
+xB1Vals = find(intersect(successIx, block2Tr1Ix));
+xB2Vals = find(intersect(successIx, block2Tr2Ix));
 
-if input.doBlock2
-	vy1 = smooth(reactV(intersect(successIx, block2Tr1Ix)), 100, 'rlowess');
-	vy2 = smooth(reactV(intersect(successIx, block2Tr2Ix)), 100, 'rlowess');
+if ~input.doBlock2
+    vy1 = smooth(reactV(successIx), 25, 'rloess');
+    vy2 = smooth(reactV(successIx), 250, 'rlowess');
+elseif input.doBlock2
+	vy1 = smooth(reactV(intersect(successIx, block2Tr1Ix)), 25, 'rloess');
+	vy2 = smooth(reactV(intersect(successIx, block2Tr2Ix)), 25, 'rloess');
 end
 	
 
@@ -808,14 +811,15 @@ end
 
 % 2nd axes
 if ~isempty(vy1) && ~isempty(vy2)
+    if ~input.doBlock2
     hyH(1) = plot(axH(2), xYVals, vy1);
     hyH(2) = plot(axH(2), xYVals, vy2);
-    
-    if ~input.doBlock2
     c2 = 'b';
     set(hyH, 'Color', c2);
     set(hyH(2), 'LineWidth', 2);
     else
+    hyH(1) = plot(axH(2), xB1Vals, vy1);
+    hyH(2) = plot(axH(2), xB2Vals, vy2);
     set(hyH(1), 'Color', 0.8*[0 1 1]);
     set(hyH(2), 'Color', 0.8*[1 1 0]);
     set(hyH(1), 'LineWidth', 1);
