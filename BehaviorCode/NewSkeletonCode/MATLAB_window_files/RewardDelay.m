@@ -4,7 +4,10 @@ function [retval] = RewardDelay(data_struct, input)
 % Created June 25, 2013 by Andrew McKinney
 % call: exptSetupBridge, exptProcessBridgeInput, do your own thing, then exptRunSubfunctions
 
-if nargin < 2, input = []; end
+if nargin < 2,
+    input = [];
+    input.saveTime = datestr(now, 'yymmdd-HHMM'); 
+end
 
 ds = data_struct;
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/MatlabSharedCode');

@@ -4,7 +4,8 @@ function [retval] = Lego(data_struct, input)
 % Created 140612 by Andrew McKinney
 
 if nargin < 2,
-    input = struct;
+    input = [];
+    input.saveTime = datestr(now, 'yymmdd-HHMM'); 
 end
 
 ds = data_struct;

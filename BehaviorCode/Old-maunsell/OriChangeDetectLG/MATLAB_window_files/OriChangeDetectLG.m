@@ -7,7 +7,10 @@ function [retval] = HoldAndDetectConstant(data_struct, input)
 % variable saving.
 %  MH 100115
 % $Id$
-
+if nargin < 2,
+    input = [];
+    input.saveTime = datestr(now, 'yymmdd-HHMM'); 
+end
 beep off;  % otherwise played through speakers to animal!
 format compact; 
 
