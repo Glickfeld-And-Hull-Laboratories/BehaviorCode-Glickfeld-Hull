@@ -255,6 +255,7 @@
       <variable tag="trials" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
       <variable tag="nCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="aCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -266,8 +267,8 @@
       <variable tag="isEndState" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="isCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 	  <variable tag="isFirstTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-	  <variable tag="didAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-	  <variable tag="tFramesAuditoryDelay" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
+	  <variable tag="didAuditoryTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+	  <variable tag="tFramesAuditoryDelay" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <!-- frame conversion -->
       <variable tag="tItiWaitFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -361,10 +362,11 @@
             <action type="assignment" tag="Reset target StimOn" variable="targetStimOnMs" value="0"/>
             <action type="assignment" tag="Reset tStimOn" variable="tStimOnMs" value="0"/>
             <action type="assignment" tag="Reset tCyclesOn" variable="tCyclesOn" value="0"/>
+            <action type="assignment" tag="Reset aCyclesOn" variable="aCyclesOn" value="0"/>
             <action type="assignment" tag="Reset too fast time over" variable="isTooFast" value="1"/>
             <action type="assignment" tag="Reset End state" variable="isEndState" value="0"/>  
             <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/> 
-            <action type="assignment" tag="Reset Did Auditory Stim" variable="didAuditoryStim" value="0"/>  
+            <action type="assignment" tag="Reset Did Auditory Stim" variable="didAuditoryTarget" value="0"/>  
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
 
             <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
@@ -1009,6 +1011,7 @@
 		  	<action_marker _unmoveable="1" tag="Actions"></action_marker>
 		  		
 		  		<action type="assignment" variable="cAuditoryStimOn" value="counter" />
+          <action type="assignment" variable="aCyclesOn" value="aCyclesOn+1" />
 		  		<action type="play_sound" sound="baseSound"/>
 		  	
 		  	<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -1037,7 +1040,7 @@
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TrialStimOn"></transition>
             <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TargetStimOn"></transition>
-          	<transition type="conditional" tag="If Auditory delay, play sound" condition="doAuditoryDelay &amp;&amp; counter &gt;= (cStimOn + tFramesAuditoryDelay)" target="AuditoryStimOn"></transition>
+          	<transition type="conditional" tag="If Auditory delay, play sound" condition="doAuditoryDelay &amp;&amp; (tCyclesOn &gt; aCyclesOn) &amp;&amp; counter &gt;= (cStimOn + tFramesAuditoryDelay)" target="AuditoryStimOn"></transition>
           </task_system_state>
 
           <task_system_state tag="TargetStimOn" interruptble="YES">
