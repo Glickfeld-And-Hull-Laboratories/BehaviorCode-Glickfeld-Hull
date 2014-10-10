@@ -267,6 +267,8 @@
       <variable tag="isCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 	  <variable tag="isFirstTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 	  <variable tag="didAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+	  <variable tag="tFramesAuditoryDelay" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
+
       <!-- frame conversion -->
       <variable tag="tItiWaitFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTotalReqHoldFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -991,12 +993,16 @@
             	<action type="play_sound" sound="baseSound"/>
             	<action type="assignment" variable="cAuditoryStimOn" value="counter" />
             </action>
-
+            
+            <action type="if" condition="doAuditoryDelay">
+				<action type="assignment" variable="tFramesAuditoryDelay" value="nFramesAuditoryDelay" />
+			</action>	
+				
              <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cFirstStim + nFramesOn + ((tCyclesOn-1)*(nFramesOn+nFramesOff)))" target="TrialStimOff"></transition>
-            <transition type="conditional" tag="If Auditory delay, play sound" condition="doAuditoryDelay &amp;&amp; counter &gt;= (cStimOn + nFramesAuditoryDelay)" target="AuditoryStimOn"></transition>
+            <transition type="conditional" tag="If Auditory delay, play sound" condition="doAuditoryDelay &amp;&amp; counter &gt;= (cStimOn + tFramesAuditoryDelay)" target="AuditoryStimOn"></transition>
           </task_system_state>
 
 		  <task_system_state tag="AuditoryStimOn" interruptble="YES">
@@ -1031,7 +1037,7 @@
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TrialStimOn"></transition>
             <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TargetStimOn"></transition>
-          	<transition type="conditional" tag="If Auditory delay, play sound" condition="doAuditoryDelay &amp;&amp; counter &gt;= (cStimOn + nFramesAuditoryDelay)" target="AuditoryStimOn"></transition>
+          	<transition type="conditional" tag="If Auditory delay, play sound" condition="doAuditoryDelay &amp;&amp; counter &gt;= (cStimOn + tFramesAuditoryDelay)" target="AuditoryStimOn"></transition>
           </task_system_state>
 
           <task_system_state tag="TargetStimOn" interruptble="YES">
@@ -1099,7 +1105,7 @@
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="conditional" tag="if nFramesTooFast elapsed, go to React"  condition="(counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
             <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff"></transition>
-            <transition type="conditional" tag="If Auditory delay, play sound" condition="doAuditoryDelay &amp;&amp; counter &gt;= (cTargetOn + nFramesAuditoryDelay)" target="AuditoryTargetOn"></transition>
+            <transition type="conditional" tag="If Auditory delay, play sound" condition="doAuditoryDelay &amp;&amp; counter &gt;= (cTargetOn + tFramesAuditoryDelay)" target="AuditoryTargetOn"></transition>
           </task_system_state>
           
           <task_system_state tag="AuditoryTargetOn" interruptble="YES">
@@ -1154,7 +1160,7 @@
             <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff" ></transition>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; (counter &gt;= (cEndOff + nFramesOff))" target="EndTrialStimOn"></transition>
             <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; (counter &gt;= (cEndOn + nFramesOn))" target="EndTrialStimOff"></transition>
-            <transition type="conditional" tag="If Auditory delay, and haven't yet, play sound" condition="doAuditoryDelay &amp;&amp; !didAuditoryTarget &amp;&amp; counter &gt;= (cTargetOn + nFramesAuditoryDelay)" target="AuditoryTargetOn"></transition>
+            <transition type="conditional" tag="If Auditory delay, and haven't yet, play sound" condition="doAuditoryDelay &amp;&amp; !didAuditoryTarget &amp;&amp; counter &gt;= (cTargetOn + tFramesAuditoryDelay)" target="AuditoryTargetOn"></transition>
           </task_system_state>
 
            <task_system_state tag="EarlyRelease" interruptible="YES">
@@ -1352,7 +1358,7 @@
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
             <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Reward"></transition>
             <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
-            <transition type="conditional" tag="If Auditory delay, and haven't yet, play sound" condition="doAuditoryDelay &amp;&amp; !didAuditoryTarget &amp;&amp; counter &gt;= (cTargetOn + nFramesAuditoryDelay)" target="AuditoryTargetOn"></transition>
+            <transition type="conditional" tag="If Auditory delay, and haven't yet, play sound" condition="doAuditoryDelay &amp;&amp; !didAuditoryTarget &amp;&amp; counter &gt;= (cTargetOn + tFramesAuditoryDelay)" target="AuditoryTargetOn"></transition>
 
           </task_system_state>
 
@@ -1380,7 +1386,7 @@
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
             <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Reward"></transition>
             <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
-            <transition type="conditional" tag="If Auditory delay, and haven't yet, play sound" condition="doAuditoryDelay &amp;&amp; !didAuditoryTarget &amp;&amp; counter &gt;= (cTargetOn + nFramesAuditoryDelay)" target="AuditoryTargetOn"></transition>
+            <transition type="conditional" tag="If Auditory delay, and haven't yet, play sound" condition="doAuditoryDelay &amp;&amp; !didAuditoryTarget &amp;&amp; counter &gt;= (cTargetOn + tFramesAuditoryDelay)" target="AuditoryTargetOn"></transition>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           </task_system_state>
 
