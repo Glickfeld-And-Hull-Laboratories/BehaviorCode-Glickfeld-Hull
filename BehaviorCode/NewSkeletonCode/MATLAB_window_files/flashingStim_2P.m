@@ -97,12 +97,19 @@ reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
 holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
 reactTimeMs = (holdTimeMs - reqHoldTimeMs);
 
+%find StimOn frames
+stimOnFrames = zeros(1, input.maxCyclesOn);
+ for istim = 1:numberCyclesOn
+    istim
+ 	stimOnFrames(1,istim) = mwGetEventValue(eventsTrial, ds.event_codec, 'cStimOn', istim);
+ end
+ 
 % add to array
 input.holdStartsMs{trN} = leverDownUs/1000;
 input.holdTimesMs{trN} = holdTimeMs;
 input.reactTimesMs{trN} = reactTimeMs;
 input.tTotalReqHoldTimeMs{trN} = reqHoldTimeMs;
-
+input.cStimOnFrames{trN} = stimOnFrames;
 
 % backward compat
 input.gratingContrast = input.tGratingContrast;
