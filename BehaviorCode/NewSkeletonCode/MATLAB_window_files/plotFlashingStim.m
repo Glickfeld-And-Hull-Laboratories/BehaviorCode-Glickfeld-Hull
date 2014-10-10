@@ -774,6 +774,12 @@ xYVals = find(desYIx);
 vy1 = smooth(reactV(successIx), 25, 'rloess');
 vy2 = smooth(reactV(successIx), 250, 'rlowess');
 
+if input.doBlock2
+	vy1 = smooth(reactV(intersect(successIx, block2Tr1Ix)), 100, 'rlowess');
+	vy2 = smooth(reactV(intersect(successIx, block2Tr2Ix)), 100, 'rlowess');
+end
+	
+
 [axH pH1 pH2] = plotyy(1,1,1,1);
 set(axH, 'NextPlot', 'add');
 
@@ -805,9 +811,16 @@ if ~isempty(vy1) && ~isempty(vy2)
     hyH(1) = plot(axH(2), xYVals, vy1);
     hyH(2) = plot(axH(2), xYVals, vy2);
     
+    if ~input.doBlock2
     c2 = 'b';
     set(hyH, 'Color', c2);
     set(hyH(2), 'LineWidth', 2);
+    else
+    set(hyH(1), 'Color', 0.8*[0 1 1]);
+    set(hyH(2), 'Color', 0.8*[1 1 0]);
+    set(hyH(1), 'LineWidth', 1);
+    set(hyH(2), 'LineWidth', 1);
+    end
     
     set(axH(2), 'YLim', [0 max(reactV)], ...
                 'YTickMode', 'auto', ...
