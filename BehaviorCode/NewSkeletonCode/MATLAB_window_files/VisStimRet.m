@@ -3,7 +3,6 @@ function [retval] = VisStimRet(data_struct, input)
 %   
 if nargin < 2,
     input = [];
-    input.trialSinceReset = 0;
     input.saveTime = datestr(now, 'yymmdd-HHMM');
     
 end

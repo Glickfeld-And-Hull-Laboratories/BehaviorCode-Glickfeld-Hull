@@ -27,7 +27,7 @@ if ~exist(outDir, 'file')
 end
 input.savedDataName = sprintf('%s/data-i%03d-%s.mat', ...
                               outDir, ...
-                              input.subjectNum, datestr(now, 'yymmdd'));
+                              input.subjectNum, input.saveTime);
 
 %% compute elapsed time
 if isempty(thisTimeMs)  % missing hold StartsMs; not sure when this happens

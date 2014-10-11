@@ -4,7 +4,8 @@ function [retval] = Lego(data_struct, input)
 % Created 140612 by Andrew McKinney
 
 if nargin < 2,
-    input = struct;
+    input = [];
+    input.saveTime = datestr(now, 'yymmdd-HHMM'); 
 end
 
 ds = data_struct;
@@ -44,8 +45,16 @@ trN = input.trialSinceReset;
 
 %% process reaction times for this trial
 stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
-input.quadStampsUs{trN} = (mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1))-stimOnUs;
-input.quadValues{trN} = (mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1)) - input.tQuadrature{trN};
+input.quadStampsUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
+input.quadValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1);
+
+if input.tLeftTrial{trN}==1,
+    input.leftGratingContrast{trN} = input.tGratingContrast{trN};
+    input.rightGratingContrast{trN} = input.dGratingContrast{trN};
+else
+    input.leftGratingContrast{trN} = input.dGratingContrast{trN};
+    input.rightGratingContrast{trN} = input.tGratingContrast{trN};
+end
 
 %% disp status
 if input.tLeftTrial{trN}==1,
