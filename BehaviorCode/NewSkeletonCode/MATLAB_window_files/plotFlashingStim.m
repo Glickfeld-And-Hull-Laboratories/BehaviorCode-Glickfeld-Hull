@@ -772,17 +772,16 @@ v1 = smooth(holdV(desIx), 25, 'rloess');
 v2 = smooth(holdV(desIx), 250, 'rlowess');
 desYIx = successIx;
 xYVals = find(desYIx);
-xB1Vals = intersect(find(successIx), find(block2Tr1Ix));
-xB2Vals = intersect(find(successIx), find(block2Tr2Ix));
+
 
 if ~input.doBlock2
     vy1 = smooth(reactV(successIx), 25, 'rloess');
     vy2 = smooth(reactV(successIx), 250, 'rlowess');
 elseif input.doBlock2
-	vy1 = smooth(reactV(intersect(successIx, block2Tr1Ix)), 25, 'rloess');
-	vy2 = smooth(reactV(intersect(successIx, block2Tr2Ix)), 25, 'rloess');
-  vy1 = reactV(intersect(find(successIx), find(block2Tr1Ix)));
-  vy2 = reactV(intersect(find(successIx), find(block2Tr2Ix)));
+	vy1 = reactV(intersect(find(successIx), find(block2Tr1Ix)));
+  	vy2 = reactV(intersect(find(successIx), find(block2Tr2Ix)));
+  	xB1Vals = intersect(find(successIx), find(block2Tr1Ix));
+	xB2Vals = intersect(find(successIx), find(block2Tr2Ix));
 end
 	
 
