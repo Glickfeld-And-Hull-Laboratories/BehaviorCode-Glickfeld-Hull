@@ -11,7 +11,7 @@ if nargin < 2,
 end
 
 ds = data_struct;
-addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/MatlabSharedCode');
+addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/MatlabSharedCode');
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
 
 varsOneValEachTrial = {...
@@ -110,14 +110,22 @@ reactTimeMs = (holdTimeMs - reqHoldTimeMs);
 %find StimOn frames
 stimOnFrames = zeros(1, input.maxCyclesOn);
  for istim = 1:numberCyclesOn
- 	stimOnFrames(1,istim) = mwGetEventValue(eventsTrial, ds.event_codec, 'cStimOn', istim);
+    try
+        stimOnFrames(1,istim) = mwGetEventValue(eventsTrial, ds.event_codec, 'cStimOn', istim);
+    catch err
+        stimOnFrames(1,istim) - NaN;
+    end
  end
 
 	 
 auditoryStimOnFrames = zeros(1, input.maxCyclesOn);
- for istim = 1:numberCyclesOn
-    auditoryStimOnFrames(1,istim) = mwGetEventValue(eventsTrial, ds.event_codec, 'cAuditoryStimOn', istim);
- end
+for istim = 1:numberCyclesOn
+    try
+        auditoryStimOnFrames(1,istim) = mwGetEventValue(eventsTrial, ds.event_codec, 'cAuditoryStimOn', istim);auditoryStimOnFrames(1,istim) = mwGetEventValue(eventsTrial, ds.event_codec, 'cAuditoryStimOn', istim);
+    catch err
+        auditoryStimOnFrames(1,istim) = NaN;
+    end
+end
 
 % add to array
 input.holdStartsMs{trN} = leverDownUs/1000;
