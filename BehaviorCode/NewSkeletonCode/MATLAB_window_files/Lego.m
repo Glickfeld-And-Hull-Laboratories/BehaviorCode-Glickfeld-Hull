@@ -46,7 +46,7 @@ trN = input.trialSinceReset;
 
 %% process reaction times for this trial
 stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
-input.quadStampsUs{trN} = [0 (mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1))-stimOnUs];
+input.quadStampsUs{trN} = [0 ((mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1))-stimOnUs)/1000];
 input.quadValues{trN} = [0 (mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1)) - input.tQuadrature{trN}];
 
 if input.tLeftTrial{trN}==1,

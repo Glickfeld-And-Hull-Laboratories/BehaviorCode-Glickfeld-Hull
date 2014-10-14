@@ -524,6 +524,8 @@ grid on
 %%%%%%%%%%%%%%%%
 %% Quadrature Kinetograms
  
+axH = subplot(spSz{:},11);
+hold on;
 quadVals = input.quadValues
 quadTimes = input.quadStampsUs
 leftIx = logical(leftTrialIx);
@@ -534,6 +536,25 @@ L = length(leftQV);
 
 input.leftQuadVect = leftQV;
 input.leftQuadTimesMs = leftQT;
+
+leftIncVects = leftQV(leftInc);
+leftIncTimes = leftQT(leftInc);
+whos leftIncVects
+whos leftIncTimes
+
+leftIncTimes{1}
+for i=1:length(leftIncVects),
+    maxT = max(leftIncTimes{i});
+    newTSamples = double(0:maxT/10:maxT);
+    newVals = interp1(double(leftIncTimes{i}), double(leftIncVects{i}) ,newTSamples);
+    newValues(i,:) = newVals;
+end
+plot(newTSamples, mean(newValues), 'g')
+axis tight
+
+leftCorrVects = leftQV(leftCorr);
+leftCorrTimes = leftQT(leftCorr);
+
  
 rightQV = quadVals(~leftIx);
 rightQT = quadTimes(~leftIx);
@@ -542,18 +563,23 @@ R = length(rightQV);
 input.rightQuadVect = rightQV;
 input.rightQuadTimesMs = rightQV;
 
+rightIncVects = rightQV(rightInc);
+rightIncTimes = rightQT(rightInc);
+rightCorrVects = rightQV(rightCorr);
+rightCorrTimes = rightQT(rightCorr);
+
  
 %% Left Kinetogram
  
-axH = subplot(spSz{:},11);
-hold on;
-plot(cell2mat(leftQV(L)), cell2mat(leftQT(L))/1000, 'k', 'LineWidth', 2);
-for i=1:L,
-  plot(cell2mat(leftQV(i)), cell2mat(leftQT(i))/1000);
-end
-title('Left Kinetogram');
-xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
-ylim([0 input.reactionTimeMs])
+%axH = subplot(spSz{:},11);
+%%hold on;
+%plot(cell2mat(leftQV(L)), cell2mat(leftQT(L))/1000, 'k', 'LineWidth', 2);
+%for i=1:L,
+%  plot(cell2mat(leftQV(i)), cell2mat(leftQT(i))/1000);
+%end
+%title('Left Kinetogram');
+%xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
+%ylim([0 input.reactionTimeMs])
  
 %% Right Kinetogram
  
