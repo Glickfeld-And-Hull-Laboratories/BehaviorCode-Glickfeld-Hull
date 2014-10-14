@@ -521,6 +521,52 @@ xlabel('Contrast Difference (R-L)')
 ylabel('% Right')
 grid on
 
+%%%%%%%%%%%%%%%%
+%% Quadrature Kinetograms
+ 
+quadVals = input.quadValues
+quadTimes = input.quadStampsUs
+leftIx = logical(leftTrialIx);
+ 
+leftQV = quadVals(leftIx);
+leftQT = quadTimes(leftIx);
+L = length(leftQV);
+
+input.leftQuadVect = leftQV;
+input.leftQuadTimesMs = leftQT;
+ 
+rightQV = quadVals(~leftIx);
+rightQT = quadTimes(~leftIx);
+R = length(rightQV);
+
+input.rightQuadVect = rightQV;
+input.rightQuadTimesMs = rightQV;
+
+ 
+%% Left Kinetogram
+ 
+axH = subplot(spSz{:},11);
+hold on;
+plot(cell2mat(leftQV(L)), cell2mat(leftQT(L))/1000, 'k', 'LineWidth', 2);
+for i=1:L,
+  plot(cell2mat(leftQV(i)), cell2mat(leftQT(i))/1000);
+end
+title('Left Kinetogram');
+xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
+ylim([0 input.reactionTimeMs])
+ 
+%% Right Kinetogram
+ 
+axH = subplot(spSz{:},12);
+hold on;
+plot(cell2mat(rightQV(R)), cell2mat(rightQT(R))/1000, 'k', 'LineWidth', 2);
+for i=1:R,
+  plot(cell2mat(rightQV(i)), cell2mat(rightQT(i))/1000);
+end
+title('Right Kinetogram');
+xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
+ylim([0 input.reactionTimeMs])
+
 
 %%%%%%%%%%%%%%%%
 
