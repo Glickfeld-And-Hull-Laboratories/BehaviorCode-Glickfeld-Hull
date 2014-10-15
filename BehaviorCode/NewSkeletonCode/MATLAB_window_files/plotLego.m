@@ -524,10 +524,8 @@ grid on
 %%%%%%%%%%%%%%%%
 %% Quadrature Kinetograms
  
-axH = subplot(spSz{:},11);
-hold on;
-quadVals = input.quadValues
-quadTimes = input.quadStampsUs
+quadVals = input.quadValues;
+quadTimes = input.quadStampsUs;
 leftIx = logical(leftTrialIx);
  
 leftQV = quadVals(leftIx);
@@ -539,22 +537,54 @@ input.leftQuadTimesMs = leftQT;
 
 leftIncVects = leftQV(leftInc);
 leftIncTimes = leftQT(leftInc);
-whos leftIncVects
-whos leftIncTimes
 
-leftIncTimes{1}
-for i=1:length(leftIncVects),
-    maxT = max(leftIncTimes{i});
+axH = subplot(spSz{:},11);
+hold on;
+if nLeftInc>0,
+  for i=1:length(leftIncVects),
+    times = double(cell2mat(leftIncTimes(i)));
+    vect = double(cell2mat(leftIncVects(i)));
+    maxT = max(times);
     newTSamples = double(0:maxT/10:maxT);
-    newVals = interp1(double(leftIncTimes{i}), double(leftIncVects{i}) ,newTSamples);
-    newValues(i,:) = newVals;
+    try
+      newVals = interp1(times, vect ,newTSamples);
+    catch
+      newVals = NaN;
+      newTSamples = NaN;
+      disp('LInc broken')
+    end
+    newValuesIL(i,:) = double(newVals);
+    newTimesIL(i,:) = newTSamples;
+  end
+  plot(mean(newValuesIL), mean(newTimesIL), 'g', 'LineWidth', 2)
 end
-plot(newTSamples, mean(newValues), 'g')
-axis tight
+hold on
 
 leftCorrVects = leftQV(leftCorr);
 leftCorrTimes = leftQT(leftCorr);
 
+if nLeftCorr>0,
+  for i=1:length(leftCorrVects),
+    times = double(cell2mat(leftCorrTimes(i)));
+    vect = double(cell2mat(leftCorrVects(i)));
+    maxT = max(times);
+    newTSamples = double(0:(maxT/5):maxT);
+    try
+      newVals = interp1(times, vect ,newTSamples);
+    catch
+      newVals = NaN;
+      newTSamples = NaN;
+      disp('LCorr broken')
+    end
+    newValuesCL(i,:) = double(newVals);
+    newTimesCL(i,:) = newTSamples;
+  end
+plot(mean(newValuesCL), mean(newTimesCL), 'k', 'LineWidth', 2)
+title('Left Kinetogram');
+grid on
+xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
+ylim([0 input.reactionTimeMs])
+end
  
 rightQV = quadVals(~leftIx);
 rightQT = quadTimes(~leftIx);
@@ -565,33 +595,55 @@ input.rightQuadTimesMs = rightQV;
 
 rightIncVects = rightQV(rightInc);
 rightIncTimes = rightQT(rightInc);
+
+axH = subplot(spSz{:},12);
+hold on;
+if nRightInc>0,
+  for i=1:length(rightIncVects),
+    times = double(cell2mat(rightIncTimes(i)));
+    vect = double(cell2mat(rightIncVects(i)));
+    maxT = max(times);
+    newTSamples = double(0:maxT/10:maxT);
+    try
+      newVals = interp1(times, vect ,newTSamples);
+    catch
+      newVals = NaN;
+      newTSamples = NaN;
+      disp('RInc broken')
+    end
+    newValuesIR(i,:) = double(newVals);
+    newTimesIR(i,:) = newTSamples;
+  end
+  plot(mean(newValuesIR), mean(newTimesIR), 'g', 'LineWidth', 2)
+  hold on
+end
+
 rightCorrVects = rightQV(rightCorr);
 rightCorrTimes = rightQT(rightCorr);
 
- 
-%% Left Kinetogram
- 
-%axH = subplot(spSz{:},11);
-%%hold on;
-%plot(cell2mat(leftQV(L)), cell2mat(leftQT(L))/1000, 'k', 'LineWidth', 2);
-%for i=1:L,
-%  plot(cell2mat(leftQV(i)), cell2mat(leftQT(i))/1000);
-%end
-%title('Left Kinetogram');
-%xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
-%ylim([0 input.reactionTimeMs])
- 
-%% Right Kinetogram
- 
-axH = subplot(spSz{:},12);
-hold on;
-plot(cell2mat(rightQV(R)), cell2mat(rightQT(R))/1000, 'k', 'LineWidth', 2);
-for i=1:R,
-  plot(cell2mat(rightQV(i)), cell2mat(rightQT(i))/1000);
-end
+if nRightCorr>0,
+  for i=1:length(rightCorrVects),
+    times = double(cell2mat(rightCorrTimes(i)));
+    vect = double(cell2mat(rightCorrVects(i)));
+    maxT = max(times);
+    newTSamples = double(0:maxT/10:maxT);
+    try
+      newVals = interp1(times, vect ,newTSamples);
+    catch
+      newVals = NaN;
+      newTSamples = NaN;
+      disp('RCorr broken')
+    end
+    newValuesCR(i,:) = double(newVals);
+    newTimesCR(i,:) = newTSamples;
+  end
+plot(mean(newValuesCR), mean(newTimesCR), 'k', 'LineWidth', 2)
 title('Right Kinetogram');
+grid on
 xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
 ylim([0 input.reactionTimeMs])
+end
+ 
 
 
 %%%%%%%%%%%%%%%%
