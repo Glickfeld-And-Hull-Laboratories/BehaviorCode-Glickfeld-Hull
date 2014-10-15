@@ -3,8 +3,6 @@ function [retval] = VisStimRet(data_struct, input)
 %   
 if nargin < 2,
     input = [];
-    input.saveTime = datestr(now, 'yymmdd-HHMM');
-    
 end
 
 ds = data_struct;
@@ -47,6 +45,26 @@ oneValEachTrialNames = { ...
 'spCounter8', ...
 'spCounter9', ...
 'spCounter10'};
+
+
+events = ds.events;
+eventsTrial = events;
+
+if isempty(input),
+    input.trialSinceReset = 1;
+    input.startDateVec = datevec(now);
+    input.saveTime = datestr(now, 'yymmdd-HHMM');
+    input.savedEvents = {};
+    input.eventCodecs = {};
+    input.eventCodecs{1} = ds.event_codec;
+    nOne = length(oneValEachTrialNames);
+    for iV = 1:nOne
+        input.(oneValEachTrialNames{iV}) = {};
+    end
+else
+    input.trialSinceReset = input.trialSinceReset+1;
+end
+trN = input.trialSinceReset;
 
 % Consts that govern tValues
 input.constList = { 'subjectNum',...
@@ -95,24 +113,6 @@ input.constList = { 'subjectNum',...
     'gratingTemporalFreqStepN',...
     'gratingStartingPhaseDeg',...
     'doRand'};
-
-events = ds.events;
-eventsTrial = events;
-
-if isempty(input),
-    input.trialSinceReset = 1;
-    input.startDateVec = datevec(now);
-    input.savedEvents = {};
-    input.eventCodecs = {};
-    input.eventCodecs{1} = ds.event_codec;
-    nOne = length(oneValEachTrialNames);
-    for iV = 1:nOne
-        input.(oneValEachTrialNames{iV}) = {};
-    end
-else
-    input.trialSinceReset = input.trialSinceReset+1;
-end
-trN = input.trialSinceReset;
 
 
 for iV = 1:length(oneValEachTrialNames)
