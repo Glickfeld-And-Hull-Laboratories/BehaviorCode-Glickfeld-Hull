@@ -5,7 +5,10 @@ function [retval] = HoldAndDetectConstant(data_struct, input)
 %  MH 130107: refactored into new expt* functions.
 % call: exptSetupBridge, exptProcessBridgeInput, do your own thing, then exptRunSubfunctions
 
-if nargin < 2, input = []; end
+if nargin < 2, 
+    input = [];
+    input.saveTime = datestr(now, 'yymmdd-HHMM');  
+end
 
 ds = data_struct;
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/MatlabSharedCode');
