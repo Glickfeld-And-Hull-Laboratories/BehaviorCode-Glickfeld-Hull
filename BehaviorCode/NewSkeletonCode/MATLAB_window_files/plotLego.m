@@ -556,7 +556,8 @@ if nLeftInc>0,
     newValuesIL(i,:) = double(newVals);
     newTimesIL(i,:) = newTSamples;
   end
-  plot(mean(newValuesIL), mean(newTimesIL), 'g', 'LineWidth', 2)
+  plot(nanmean(newValuesIL), nanmean(newTimesIL)/10, 'g', 'LineWidth', 2)
+  axis tight
 end
 hold on
 
@@ -579,11 +580,12 @@ if nLeftCorr>0,
     newValuesCL(i,:) = double(newVals);
     newTimesCL(i,:) = newTSamples;
   end
-plot(mean(newValuesCL), mean(newTimesCL), 'k', 'LineWidth', 2)
+plot(nanmean(newValuesCL), nanmean(newTimesCL)/10, 'k', 'LineWidth', 2)
 title('Left Kinetogram');
 grid on
 xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
 ylim([0 input.reactionTimeMs])
+axis tight
 end
  
 rightQV = quadVals(~leftIx);
@@ -614,8 +616,9 @@ if nRightInc>0,
     newValuesIR(i,:) = double(newVals);
     newTimesIR(i,:) = newTSamples;
   end
-  plot(mean(newValuesIR), mean(newTimesIR), 'g', 'LineWidth', 2)
+  plot(nanmean(newValuesIR), nanmean(newTimesIR)/10, 'g', 'LineWidth', 2)
   hold on
+  axis tight
 end
 
 rightCorrVects = rightQV(rightCorr);
@@ -637,11 +640,12 @@ if nRightCorr>0,
     newValuesCR(i,:) = double(newVals);
     newTimesCR(i,:) = newTSamples;
   end
-plot(mean(newValuesCR), mean(newTimesCR), 'k', 'LineWidth', 2)
+plot(nanmean(newValuesCR), nanmean(newTimesCR)/10, 'k', 'LineWidth', 2)
 title('Right Kinetogram');
 grid on
 xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
 ylim([0 input.reactionTimeMs])
+axis tight
 end
  
 
