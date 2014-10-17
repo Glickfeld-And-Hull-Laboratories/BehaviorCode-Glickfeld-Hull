@@ -61,6 +61,7 @@
     <folder tag="Internal Variables">
       <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="ttCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
@@ -406,8 +407,6 @@
             <action tag="Update Display" type="update_stimulus_display"></action>
             <action type="start_timer" tag="Start timer with same duration as sound" timer="postSoundPauseTimer" timebase="" duration="postSoundPauseDurationMs" duration_units="ms"></action> 
 
-
-
             <!-- Can't actually have a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" timer="postSoundPauseTimer" target="SendStim"/> 
@@ -422,6 +421,8 @@
             <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
             <action type="assignment" tag="reset ttCounter2 to counter2" variable="ttCounter2" value="counter2"></action>
+            <action type="assignment" tag="reset ttCounter to counter" variable="ttCounter" value="counter"></action>
+
 
 
             <action type="start_timer" tag="Start 1st Speed Timer" timer="speedTimer1" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action> 
@@ -434,7 +435,7 @@
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" timer="speedTimer1" target="speedCounter2"/> 
-            <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+            <transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter2" interruptible="YES">
@@ -450,7 +451,7 @@
       		
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" target="speedCounter3" timer="speedTimer2"></transition>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter3" interruptible="YES">
@@ -466,7 +467,7 @@
       		
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" target="speedCounter4" timer="speedTimer3"></transition>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter4" interruptible="YES">
@@ -482,7 +483,7 @@
       		
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" target="speedCounter5" timer="speedTimer4"></transition>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter5" interruptible="YES">
@@ -498,7 +499,7 @@
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" target="speedCounter6" timer="speedTimer5"></transition>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter6" interruptible="YES">
@@ -514,7 +515,7 @@
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" target="speedCounter7" timer="speedTimer6"></transition>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter7" interruptible="YES">
@@ -530,7 +531,7 @@
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" target="speedCounter8" timer="speedTimer7"></transition>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter8" interruptible="YES">
@@ -546,7 +547,7 @@
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" target="speedCounter9" timer="speedTimer8"></transition>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter9" interruptible="YES">
@@ -562,7 +563,7 @@
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
       		<transition type="timer_expired" target="speedCounter10" timer="speedTimer9"></transition>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter10" interruptible="YES">
@@ -577,7 +578,7 @@
             </action>
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
           <transition type="timer_expired" target="speedCounterEnd" timer="speedTimer10"></transition>
       </task_system_state>
 
@@ -586,7 +587,7 @@
           <action type="assignment" tag="Log Speed of previous Interval" variable="spCounter10" value="counter2 - tCounter2"></action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+          <transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
                     
       <task_system_state tag="EndTrial" interruptible="YES">
