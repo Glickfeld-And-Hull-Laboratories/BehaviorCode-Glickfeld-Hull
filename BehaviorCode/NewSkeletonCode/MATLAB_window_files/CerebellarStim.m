@@ -6,7 +6,6 @@ function [retval] = CerebellarStim(data_struct, input)
 
 if nargin < 2,
     input = [];
-    input.saveTime = datestr(now, 'yymmdd-HHMM');
 end
 
 ds = data_struct;
@@ -54,6 +53,7 @@ oneValEachTrialNames = { ...
 if isempty(input),
     input.trialSinceReset = 1;
     input.startDateVec = datevec(now);
+    input.saveTime = datestr(now, 'yymmdd-HHMM');
     input.savedEvents = {};
     input.eventCodecs = {};
     input.eventCodecs{1} = ds.event_codec;
