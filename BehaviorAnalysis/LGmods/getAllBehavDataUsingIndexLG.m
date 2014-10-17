@@ -69,9 +69,9 @@ end
 
 %% parse whichtrials
 whichTrs = x1d.TrialRangeToUse;
-if isempty(whichTrs) || all(isnan(whichTrs))
+if whichTrs == 'NaN';
     whichTrs = [];
-elseif ischar(whichTrs)
+else
     try
         whichTrs = eval(whichTrs);
     catch mexc
@@ -96,6 +96,11 @@ if isempty(x1d.SplitBlock1)
 else
     splitB1 = x1d.SplitBlock1;
 end
+if isempty(x1d.MergeAllMatFiles)
+    mergeMats = false;
+else
+    mergeMats = x1d.MergeAllMatFiles;
+end
 %% load data
 fName = fullfile(rc.pathStr,sprintf(rc.dataPat, uo.Subject, uo.DateStr));
 [bs ds] = getBehavDataForDayLG(...
@@ -105,7 +110,8 @@ fName = fullfile(rc.pathStr,sprintf(rc.dataPat, uo.Subject, uo.DateStr));
     'DoCorrectEarlies', x1d.DoCorrectEarlies, ...
     'MergeBlock1And2', mergeB1And2, ...
     'DoBlock1Only', doB1only, ...
-    'SplitBlock1', splitB1);
+    'SplitBlock1', splitB1, ...
+    'MergeMats', mergeMats);
 
 if nargout > 6
     tMatFilename = fitX1d.MatFilename;

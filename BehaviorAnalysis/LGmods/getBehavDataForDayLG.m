@@ -21,7 +21,8 @@ userDefs = { ...
     'Debug', false, ...
     'MergeBlock1And2', false, ...
     'DoBlock1Only', false, ...
-    'SplitBlock1', false};
+    'SplitBlock1', false, ...
+    'MergeMats', false,};
 
 uo = stropt2struct(stropt_defaults(userDefs, varargin));
 
@@ -56,7 +57,27 @@ else
     else
         dIndex = uo.DataIndex;
     end
-    ds =  mwLoadData(fName, dIndex, lDebug);
+    %compatibility with new naming HHMM
+    if ~exist(fName)
+        rtc = behavConstsHADC8;
+        n  = dir([fName(1:45) '*']);
+        if size(n,1) == 1
+            fName = fullfile(rtc.pathStr, n.name);
+            ds =  mwLoadData(fName, dIndex, lDebug);
+        elseif size(n,1) > 1
+            if uo.MergeMats == 1
+                for ifile = 1:size(n,1)
+                    fName = fullfile(rtc.pathStr, n(ifile).name);
+                    ds(ifile) =  mwLoadData(fName, dIndex, lDebug);
+                    ds = concatenateDataBlocks(ds);
+                end
+            else
+                error('Too many mat files- need to choose');
+            end              
+        end
+    else
+         ds =  mwLoadData(fName, dIndex, lDebug);
+    end
     if iscell(ds)
         ds = subConcatenateDataBlocks(ds);
     end
@@ -404,6 +425,7 @@ if nBlock2Indices == 1
 end
 
 
+
 function outS = subConcatenateDataBlocks(blockC)
 
 outS = struct([]);
@@ -452,4 +474,24 @@ for iF = 1:nF
         error('missing field');
     end
 end
+
+
+%% combining multiple mat files
+
+function outS = concatenateDataBlocks(blockC)
+    fNames = fieldnames(blockC(1));
+    nF = length(fNames);
+    outS = struct([]);
+    trs = blockC(1).trialSinceReset;
+    for iF = 1:nF
+        fN = cell2mat(fNames(iF,:));
+        outS(1).(fN) = blockC(1).(fN);
+        if size(blockC(1).(fN),2) == trs;
+            for iblock = 2:size(blockC,2)
+                outS.(fN) = [outS.(fN) blockC(iblock).(fN)];
+            end
+        else
+            outS.(fN) = blockC(1).(fN);
+        end
+    end
 
