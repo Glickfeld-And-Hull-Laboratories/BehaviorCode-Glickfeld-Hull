@@ -21,6 +21,7 @@
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
+      <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
@@ -922,7 +923,7 @@
               <action tag="Report StimOn" full_name="ReportDigital" type="report" message="StimOn (still holding; signaling release ok)"></action>
 
               <!-- vis stim on -->
-              <action type="if" condition="doVisualStim">
+              <action type="if" condition="doVisualStim &amp;&amp; doNoStimulusChange==0">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                 <action tag="Update Display" type="update_stimulus_display"></action>
                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
