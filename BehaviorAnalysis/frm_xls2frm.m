@@ -25,8 +25,15 @@ if nargin < 3, textFieldNames = []; end
 
 xc = frm_constants;
 
-%[raw, typeMat] = frm_xlsreadpoi(xlsFileName, sheet); %old java code from MH 
-[raw, typeMat] = frm_activeX(xlsFileName, sheet); %new code- LG 140819
+if ispc
+    [raw, typeMat] = frm_activeX(xlsFileName, sheet); %new code- LG 140819
+elseif ismac
+    [raw, typeMat] = frm_xlsreadpoi(xlsFileName, sheet); %old java code from MH 
+else
+    error('not pc or mac- need to figure out how to read xls')
+end
+
+
 
 % remove header line
 dsT.colNames = raw(1,:);
