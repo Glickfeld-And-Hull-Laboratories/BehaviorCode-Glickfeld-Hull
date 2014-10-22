@@ -69,9 +69,12 @@ end
 
 %% parse whichtrials
 whichTrs = x1d.TrialRangeToUse;
-if whichTrs == 'NaN';
-    whichTrs = [];
-else
+if length(whichTrs)== 3
+    if whichTrs == 'NaN';
+        whichTrs = [];
+    end
+end
+if ~isempty(whichTrs)
     try
         whichTrs = eval(whichTrs);
     catch mexc
