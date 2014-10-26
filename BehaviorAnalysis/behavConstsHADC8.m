@@ -27,6 +27,15 @@ switch tHostname
         rc.fitOutputPdfDir = fullfile(rootDir, 'output/pdfFits');
         rc.fitOutputMatDir = fullfile(rootDir, 'output/fitMatStats');
 
+    case {'lgair'}
+        rc.pathStr = 'andrew/Behavior/Data';
+        rc.dataPat = 'data-i%03d-%s.mat';
+        rootDir = '/Users/llglick/Desktop';
+        rc.indexFilename = fullfile(rootDir, 'experimentIndexes/subj-days-lg.xls');
+        rc.fitOutputFilename = fullfile(rootDir, 'experimentIndexes/subj-fits-lg.xls');
+        rc.fitOutputSummary = fullfile(rootDir, 'output/analysis/summary');
+        rc.fitOutputPdfDir = fullfile(rootDir, 'output/pdfFits');
+        rc.fitOutputMatDir = fullfile(rootDir, 'output/fitMatStats');
         
     case {'nuke'}
         if tUsername(1:7) == 'lindsey'

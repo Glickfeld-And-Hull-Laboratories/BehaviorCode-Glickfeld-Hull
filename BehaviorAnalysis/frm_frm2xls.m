@@ -41,11 +41,11 @@ for iC = 1:nCols
 end
 
 %% write
-if ispc
+ if ispc
     xlswrite(xlsFileName, rawCell, sheetNumOrStr);
-elseif ismac
-    frm_xlswritepoi(xlsFileName, rawCell, sheetNumOrStr);
-else
-    error('not pc or mac- need to figure out how to write xls')
-end
+ elseif ismac
+    xlwrite(xlsFileName, rawCell, sheetNumOrStr);
+ else
+     error('not pc or mac- need to figure out how to write xls')
+ end
 

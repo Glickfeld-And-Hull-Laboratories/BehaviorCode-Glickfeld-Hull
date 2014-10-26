@@ -60,7 +60,7 @@ else
     %compatibility with new naming HHMM
     if ~exist(fName)
         rtc = behavConstsHADC8;
-        n  = dir([fName(1:45) '*']);
+        n  = dir([fName(1:(length(rtc.pathStr)+17)) '*']);
         if size(n,1) == 1
             fName = fullfile(rtc.pathStr, n.name);
             ds =  mwLoadData(fName, dIndex, lDebug);
