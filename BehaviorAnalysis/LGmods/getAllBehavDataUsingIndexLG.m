@@ -69,6 +69,9 @@ end
 
 %% parse whichtrials
 whichTrs = x1d.TrialRangeToUse;
+if isnan(whichTrs)
+    whichTrs = [];
+end
 if length(whichTrs)== 3
     if whichTrs == 'NaN';
         whichTrs = [];
