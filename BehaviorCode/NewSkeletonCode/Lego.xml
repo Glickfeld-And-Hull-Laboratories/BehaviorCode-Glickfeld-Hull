@@ -41,9 +41,11 @@
 
       <variable tag="doRewardStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Reward Staircase"/>
       <variable tag="rewardStaircaseWindowWidth" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Reward Staircase"/>
-      <variable tag="tLeftBias" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Reward Staircase"/>
+      <variable tag="tLeftBias" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0" groups="Reward Staircase"/>
       <variable tag="rewardStaircaseMinReward" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward Staircase"/>
       <variable tag="rewardStaircaseMaxReward" scope="global" logging="when_changed" default_value="200000" type="integer" persistant="1" groups="Reward Staircase"/>
+
+      <variable tag="doBiasStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Bias Staircase"/>
 
       <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
       <variable tag="incorrectTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
@@ -126,6 +128,7 @@
       <variable tag="tRightReversal" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tLastTrialWasLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tLeftTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Markov"/>
+      <variable tag="tStimProbAvgLeft" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
 
       <variable tag="tGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -236,6 +239,13 @@
                     message="*****Cannot select both doFeedbackMotion and doMatchToTarget*****"
                     stop_on_failure="1"/>
 
+          <action type="if" condition="doBiasStaircase == 1 ">
+            <action type="assignment" variable="tStimProbAvgLeft" value="1 - tLeftBias"/>
+          </action>
+          <action type="if" condition="doBiasStaircase == 0">
+            <action type="assignment" variable="tStimProbAvgLeft" value="stimProbAvgLeft"/>
+          </action>
+
           <action type="if" condition="tLastTrialCorrect == 1">
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
             <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
@@ -339,12 +349,12 @@
 
           <!-- if not doing blocks, choose left/right state based on left, switch, and last trial state. -->
           <action type="if" condition="doBlocks==0">
-            <action type="assignment" variable="tMarkovOdds" value="(1-stimProbAvgLeft)/stimProbAvgLeft" />
+            <action type="assignment" variable="tMarkovOdds" value="(1-tStimProbAvgLeft)/tStimProbAvgLeft" />
             <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
             <action type="assignment" variable="a" value="tMarkovOdds * b"/>
 
           <action type="if" condition="tLastTrialWasLeft == -1">  <!-- special case: no last trial / first trial -->
-            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; stimProbAvgLeft"/> 
+            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; tStimProbAvgLeft"/> 
           </action>
           <action type="if" condition="tLastTrialWasLeft == 1">
             <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; (1-a)"/>

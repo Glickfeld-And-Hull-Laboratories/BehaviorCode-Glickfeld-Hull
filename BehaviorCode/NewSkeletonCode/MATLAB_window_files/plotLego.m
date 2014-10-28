@@ -18,7 +18,7 @@ clf;
 %set(figH, 'Visible', 'off');
 
 switch hostname
- case 'MaunsellMouse1'
+ case 'test-rig'
   figPos = [1111 208 806 923];
  otherwise
   figPos = [930 140 780 905];
@@ -94,7 +94,7 @@ end
 
 % blockStr formatting
 if input.doBlocks==0,
-  blockStr = sprintf('Blocks: off, probLeft: %1.2f, probSwitch: %1.2f \n', double(input.stimProbAvgLeft), double(input.stimProbAvgSwitch));
+  blockStr = sprintf('Blocks: off, probLeft: %1.2f, probSwitch: %1.2f \n', double(input.tStimProbAvgLeft{nTrials}), double(input.stimProbAvgSwitch));
 
 elseif input.doBlocks==1,
   blockStr = sprintf('Blocks: on, L: %2.0f, R:%2.0f \n', double(input.blockLeftTrs), double(input.blockRightTrs));
