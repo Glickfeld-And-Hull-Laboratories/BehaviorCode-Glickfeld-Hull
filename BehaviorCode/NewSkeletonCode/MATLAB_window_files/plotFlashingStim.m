@@ -134,18 +134,32 @@ if doOriAndContrastInterleaved
 elseif doContrast
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
 elseif doOri
-    vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+    vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
 end
 
-if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial,
-	if doOriAndContrastInterleaved
-    	cPowerV = (double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
-     	double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
-	elseif doContrast
-    	cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
-	elseif doOri
-    	cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial
+	if find(cell2mat_padded(input.tShortCatchTrial) == 1)
+		if doOriAndContrastInterleaved
+    		cPowerV = (double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
+     		double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
+		elseif doContrast
+    		cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
+		elseif doOri
+    		cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+		end
+		cPowerV(find(cPowerV==0)) = NaN;
+		if all(cPowerV) == 0
+  			nCP = 0;
+		else
+  			nCP = length(chop(unique(cPowerV(~isnan(cPowerV))),4));
+		end
+	else
+		nCP  = 0;
+		cPowerV = NaN;
 	end
+else
+	nCP  = 0;
+	cPowerV = NaN;
 end
 
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
@@ -161,18 +175,11 @@ end
 
 vPowerV(find(vPowerV==0)) = NaN;
 aPowerV(find(aPowerV==0)) = NaN;
-cPowerV(find(cPowerV==0)) = NaN;
 
 if all(vPowerV) == 0
   nVP = 0;
 else
   nVP = length(chop(unique(vPowerV(~isnan(vPowerV))),4));
-end
-
-if all(cPowerV) == 0
-  nCP = 0;
-else
-  nCP = length(chop(unique(cPowerV(~isnan(cPowerV))),4));
 end
 
 if all(aPowerV) == 0
@@ -933,9 +940,15 @@ if nStims >= 1
     end
     if nCP>0
     	catchPowerV = chop(cPowerV,2);
+    else
+    	catchPowerV = NaN;
     end
   end
   powerLevels = unique(stimPowerV(~isnan(stimPowerV)));
+  if nCP>0
+  	catchLevels = unique(catchPowerV(~isnan(catchPowerV)));
+  	powerLevels = union(catchLevels, powerLevels);
+  end
   nL = length(powerLevels);
   
   % init structure for later use in for loop
