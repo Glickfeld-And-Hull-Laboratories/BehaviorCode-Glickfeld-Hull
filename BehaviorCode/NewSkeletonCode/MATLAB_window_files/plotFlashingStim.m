@@ -48,6 +48,19 @@ nFail = sum(failureIx);
 nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
+if input.doShortCatchTrial
+	catchOnFrame = celleqel2mat_padded(input.cCatchOn);
+	leverDownFrame = celleqel2mat_padded(input.cLeverDown);
+	leverUpFrame = celleqel2mat_padded(input.cLeverUp);
+	catchIx = zeros(size(catchOnFrame));
+	catchIx(find((catchOnFrame-leverDownFrame)>0)) = 1;
+	falseAlarmIx = celleqel2mat_padded(input.tFalseAlarm);
+	correctRejectIx = zeros(size(catchOnFrame));
+	correctRejectIx(find((leverUpFrame-catchOnFrame)>input.nReactFrames)) = 1;
+	nFA = sum(falseAlarmIx);
+	nCR = sum(correctRejectIx);
+end
+
 
 %  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
 tGratingDirectionDeg = celleqel2mat_padded(input.tGratingDirectionDeg);
@@ -938,6 +951,8 @@ if nStims >= 1
       powerP.block2Early2(iP) = sum(trIx & block2Tr2Ix & earlyIx);
       powerP.block2Total1(iP) = sum(trIx & block2Tr1Ix);
       powerP.block2Total2(iP) = sum(trIx & block2Tr2Ix);
+      powerP.block2FA(iP) = sum(trIx & block2Tr2Ix & falseAlarmIx);
+      powerP.block2Catch(iP) = sum(trIx & block2Tr2Ix & catchIx);
     end
     
   end
@@ -952,8 +967,10 @@ if nStims >= 1
   if showBlock2
     pctCorr1Block2 = powerP.block2Correct1 ./ (powerP.block2Total1-powerP.block2Early1) * 100;
     pctCorr2Block2 = powerP.block2Correct2 ./ (powerP.block2Total2-powerP.block2Early2) * 100;
+    pctFABlock2 = powerP.block2FA ./ (powerP.block2Catch) * 100;
     des1Ix = ~isnan(pctCorr1Block2);
     des2Ix = ~isnan(pctCorr2Block2);
+    des2FAIx = ~isnan(pctCorr2cBlock2);
     pH=[NaN NaN];
     if sum(des1Ix)>0
       pH(1) = plot(powerLevels(des1Ix), pctCorr1Block2(des1Ix), '.-b');
@@ -961,6 +978,9 @@ if nStims >= 1
     if sum(des2Ix)>0
       pH(2) = plot(powerLevels(des2Ix), pctCorr2Block2(des2Ix), '.-');
       set(pH(2), 'Color', yColor);
+    end
+    if sum(des2FAIx)>0
+      pH(2) = plot(powerLevels(des2FAIx), pctFABlock2(des2FAIx), '.-m');
     end
   else
     pH = plot(powerLevels, pctCorr, '.-b');
