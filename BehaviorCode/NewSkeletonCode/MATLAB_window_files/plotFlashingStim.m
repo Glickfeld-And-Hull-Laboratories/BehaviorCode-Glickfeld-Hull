@@ -983,7 +983,7 @@ if nStims >= 1
     	pctFABlock2 = powerP.block2FA ./ (powerP.block2FA+powerP.block2CR) * 100;
     	des2FAIx = ~isnan(pctFABlock2);
     	if sum(des2FAIx)>0
-      		pH(2) = plot(powerLevels(des2FAIx), pctFABlock2(des2FAIx), '.-m');
+      		pH(3) = plot(powerLevels(des2FAIx), pctFABlock2(des2FAIx), '.-m');
     	end
     end    	
   else
