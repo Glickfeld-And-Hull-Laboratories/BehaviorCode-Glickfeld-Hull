@@ -245,11 +245,16 @@
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
+	  <variable tag="tCatchGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tCatchGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      
       <variable tag="tDoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoCatchContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoCatchOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
       <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
 
@@ -332,6 +337,14 @@
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tGratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
+    <stimulus type="drifting_Grating" tag="catch_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
+              spatial_frequency="tGratingSpatialFreqCPD" 
+              speed="tGratingSpeedDPS" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
+              x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
+              rotation="tCatchGratingDirectionDeg" 
+              alpha_multiplier="tCatchGratingContrast"></stimulus>          
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -774,8 +787,8 @@
                   <action type="assignment" variable="tDoAuditoryDetect" value="block2DoAuditoryDetect"/>
                   <action type="assignment" variable="tDoAuditoryStim" value="block2DoAuditoryStim"/>
                   <action type="if" condition="tShortCatchTrial == 1">
-                  	<action type="assignment" variable="tDoOriDetect" value="doOriDetect"/>
-                  	<action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
+                  	<action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
+                  	<action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
                   	<action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
                   	<action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   	<action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
@@ -869,12 +882,12 @@
             <action type="if" condition="tDoVisualStim"> 
               <action type="if" condition="tDoOriDetect">
                 <action type="assignment" variable="tGratingDirectionDeg" 
-                        value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action> 
+                        value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action>
                 <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
               </action>
               <action type="if" condition="tDoContrastDetect">
                 <action type="assignment" variable="tGratingContrast" 
-                        value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> 
+                        value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> tD
                 <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
               </action>
               <action type="if" condition="!tDoContrastDetect &amp;&amp; !tDoOriDetect">
@@ -882,7 +895,20 @@
                 <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
               </action>
             </action>
-
+			
+			<action type="if" condition="tShortCatchTrial">
+				<action type="if" condition="tDoCatchOriDetect">
+					<action type="assignment" variable="tCatchGratingDirectionDeg" 
+                        value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action>
+                    <action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
+              	</action>
+				<action type="if" condition="tDoCatchContrastDetect">
+              		<action type="assignment" variable="tCatchGratingContrast" 
+                    	value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> 
+                	<action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+              	</action>
+            </action>
+              	
             <action type="if" condition="tDoVisualStim == 0">
               <action type="assignment" variable="tBaseGratingContrast" value="0"></action>
               <action type="assignment" variable="tGratingContrast" value="0"></action>
@@ -1068,8 +1094,8 @@
             		<action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
             	</action>
             	<action type="if" condition="tCyclesOn == catchCyclesOn">
-            		<action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action> 
-            		<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+            		<action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="catch_grating"></action> 
+            		<action type="play_dynamic_stimulus" stimulus="catch_grating" tag="StimOn"></action>
             		<action type="update_stimulus_display" tag="justincase"></action>
             		<action type="assignment" variable="cCatchOn" value="counter" />
             		<action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
@@ -1094,6 +1120,7 @@
             <action type="if" condition="!doConstantStimulus">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
 
@@ -1128,14 +1155,8 @@
                 <action type="play_sound" sound="baseSound"/>
             </action>
             <action type="if" condition="!isCatchTrial">
-            	<action type="if" condition="tShortCatchTrial">
-            		<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
-                	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-                </action>
-                <action type="if" condition="!tShortCatchTrial"> 
-            		<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
-            		<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-            	</action>	
+            	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+            	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
             	<action type="if" condition="tDoAuditoryDetect">
                 	<action type="play_sound" sound="targetSound"/>
                 </action> 
@@ -1382,8 +1403,8 @@
             <action type="assignment" variable="cEndOff" value="counter"></action> 
             <action type="if" condition="!doConstantStimulus">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            	<action type="update_stimulus_display" tag="justincase"></action>
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
             	<action type="update_stimulus_display" tag="justincase"></action>
             	<action type="report" message="End of Trial - Stim Off"/>
             </action>	

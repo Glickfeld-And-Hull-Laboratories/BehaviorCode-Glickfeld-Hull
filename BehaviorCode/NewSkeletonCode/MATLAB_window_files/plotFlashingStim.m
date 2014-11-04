@@ -59,6 +59,8 @@ if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial,
 	correctRejectIx(find((leverUpFrame-catchOnFrame)>input.nFramesReact)) = 1;
 	nFA = sum(falseAlarmIx);
 	nCR = sum(correctRejectIx);
+	tCatchGratingDirectionDeg = celleqel2mat_padded(input.tCatchGratingDirectionDeg);
+	tCatchGratingContrast = celleqel2mat_padded(input.tCatchGratingContrast, NaN, 'double');
 end
 
 
@@ -74,6 +76,7 @@ tTrialLaserPowerMwV = celleqel2mat_padded(input.tTrialLaserPowerMw);
 tBlock2TrialNumberV = celleqel2mat_padded(input.tBlock2TrialNumber);
 tStimulusNumberV = celleqel2mat_padded(input.tStimulusNumber);
 tLaserBaselinePowerMwV = celleqel2mat_padded(input.tLaserBaselinePowerMw);
+tDoAuditoryDetect = celleqel2mat_padded(input.tDoAuditoryDetect);
 
 reactV = celleqel2mat_padded(input.reactTimesMs);
 holdV = celleqel2mat_padded(input.holdTimesMs);  % sometimes on client restart have empty elements here; should figure out why
@@ -134,10 +137,20 @@ elseif doOri
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
 end
 
+if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial,
+	if doOriAndContrastInterleaved
+    	cPowerV = (double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
+     	double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
+	elseif doContrast
+    	cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
+	elseif doOri
+    	cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+	end
+end
+
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
-    aPowerV = 100;
-    nAP = 1;
-    vPowerV(find(vPowerV==0)) = aPowerV;
+    aPowerV = zeros(size(vPowerV));
+    aPowerV(find(tDoAuditoryDetect)) = 100;
     %future auditory steps
     %aPowerV = double(input.tTonePitchMHz{trN})- double(input.tBaseTonePitchMHz{trN})
     %nAP = length(chop(unique(aPowerV(~isnan(aPowerV))),4));
@@ -147,11 +160,25 @@ else
 end
 
 vPowerV(find(vPowerV==0)) = NaN;
+aPowerV(find(aPowerV==0)) = NaN;
+cPowerV(find(cPowerV==0)) = NaN;
 
 if all(vPowerV) == 0
   nVP = 0;
 else
   nVP = length(chop(unique(vPowerV(~isnan(vPowerV))),4));
+end
+
+if all(cPowerV) == 0
+  nCP = 0;
+else
+  nCP = length(chop(unique(cPowerV(~isnan(cPowerV))),4));
+end
+
+if all(aPowerV) == 0
+  nAP = 0;
+else
+  nAP = 1;
 end
 
 if nVP >= 1
@@ -901,6 +928,12 @@ if nStims >= 1
     stimPowerV = chop(lPowerV,2);
   else
     stimPowerV = chop(vPowerV,2);
+    if nAP>0
+    	stimPowerV = [stimPowerV; chop(aPowerV,2)];
+    end
+    if nCP>0
+    	catchPowerV = chop(cPowerV,2);
+    end
   end
   powerLevels = unique(stimPowerV(~isnan(stimPowerV)));
   nL = length(powerLevels);
@@ -926,7 +959,8 @@ if nStims >= 1
 
   for iP=1:nL
     tP = powerLevels(iP);
-    trIx = stimPowerV == tP;
+    trIx = sum(stimPowerV == tP,1);
+    ctrIx = catchPowerV == tP;
     
     powerP(1).correct(iP) = sum(trIx & successIx);
     powerP.early(iP) = sum(trIx & earlyIx);
@@ -951,9 +985,9 @@ if nStims >= 1
       powerP.block2Early2(iP) = sum(trIx & block2Tr2Ix & earlyIx);
       powerP.block2Total1(iP) = sum(trIx & block2Tr1Ix);
       powerP.block2Total2(iP) = sum(trIx & block2Tr2Ix);
-      if input.doShortCatchTrial
-      	powerP.block2FA(iP) = sum(trIx & block2Tr2Ix & falseAlarmIx);
-      	powerP.block2CR(iP) = sum(trIx & block2Tr2Ix & correctRejectIx);
+      if isfield(input,'doShortCatchTrial') & input.doShortCatchTrial
+      	powerP.block2FA(iP) = sum(ctrIx & block2Tr2Ix & falseAlarmIx);
+      	powerP.block2CR(iP) = sum(ctrIx & block2Tr2Ix & correctRejectIx);
       end
     end
     
@@ -979,7 +1013,7 @@ if nStims >= 1
       pH(2) = plot(powerLevels(des2Ix), pctCorr2Block2(des2Ix), '.-');
       set(pH(2), 'Color', yColor);
     end
-    if input.doShortCatchTrial
+    if isfield(input,'doShortCatchTrial') & input.doShortCatchTrial
     	pctFABlock2 = powerP.block2FA ./ (powerP.block2FA+powerP.block2CR) * 100;
     	des2FAIx = ~isnan(pctFABlock2);
     	if sum(des2FAIx)>0
@@ -1085,7 +1119,7 @@ if nStims > 1
 
   for iP=1:nL
     tP = powerLevels(iP);
-    trIx = stimPowerV == tP;
+    trIx = sum(stimPowerV == tP,1);
     
     powerP.rtMean(iP) = mean(reactV(trIx & successIx));
     powerP.rtStd(iP) = std(reactV(trIx & successIx));
