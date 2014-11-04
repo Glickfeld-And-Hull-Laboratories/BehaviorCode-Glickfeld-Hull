@@ -56,7 +56,7 @@ if input.doShortCatchTrial
 	catchIx(find((catchOnFrame-leverDownFrame)>0)) = 1;
 	falseAlarmIx = celleqel2mat_padded(input.tFalseAlarm);
 	correctRejectIx = zeros(size(catchOnFrame));
-	correctRejectIx(find((leverUpFrame-catchOnFrame)>input.nReactFrames)) = 1;
+	correctRejectIx(find((leverUpFrame-catchOnFrame)>input.nFramesReact)) = 1;
 	nFA = sum(falseAlarmIx);
 	nCR = sum(correctRejectIx);
 end

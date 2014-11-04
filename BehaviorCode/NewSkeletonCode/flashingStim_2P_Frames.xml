@@ -376,7 +376,10 @@
             <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
             <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>  
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
-            <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, nCyclesOn)"/>
+            <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(minCyclesOn-1, nCyclesOn)"/>
+            <action type="if" condition="nCyclesOn == maxCyclesOn">
+					<action type="assignment" variable="isCatchTrial" value="1"/> 
+            </action>
 
             <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
             <action type="assignment" tag="Calculate nFramesOff" variable="nFramesOff" value="ceil((stimOffTimeMs/1000)*frameRateHz)"/>
@@ -1050,19 +1053,27 @@
             <action type="assignment" variable="tStimOnMs" value="now()/1000" />
             <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
 			
-			<action type="if" condition="!tShortCatchTrial || tCyclesOn != catchCyclesOn">
+			<action type="if" condition="!tShortCatchTrial">
             	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
             	<action type="update_stimulus_display" tag="justincase"></action>
             	<action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
-            	<action type="assignment" variable="cCatchOn" value="counter" />
             </action>
             
-            <action type="if" condition="tShortCatchTrial &amp;&amp; tCyclesOn == catchCyclesOn">
-            	<action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action> 
-            	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-            	<action type="update_stimulus_display" tag="justincase"></action>
-            	<action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
+            <action type="if" condition="tShortCatchTrial"> 
+            	<action type="if" condition="tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
+            		<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+            		<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+            		<action type="update_stimulus_display" tag="justincase"></action>
+            		<action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
+            	</action>
+            	<action type="if" condition="tCyclesOn == catchCyclesOn">
+            		<action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action> 
+            		<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+            		<action type="update_stimulus_display" tag="justincase"></action>
+            		<action type="assignment" variable="cCatchOn" value="counter" />
+            		<action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
+            	</action>
             </action>
             
             <action type="play_sound" sound="baseSound"/>
@@ -1082,6 +1093,7 @@
             
             <action type="if" condition="!doConstantStimulus">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
 
@@ -1110,33 +1122,27 @@
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
-            <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==maxCyclesOn)">
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+            <action type="if" condition="isCatchTrial"> 
+            	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
                 <action type="play_sound" sound="baseSound"/>
-                <action type="assignment" variable="isCatchTrial" value= "1"/>
             </action>
-            <action type="if" condition="(doLongCatchTrial==0)">
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
-            	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-              <action type="if" condition="tDoAuditoryDetect">
-                <action type="play_sound" sound="targetSound"/>
-              </action> 
-              <action type="if" condition="!tDoAuditoryDetect">
-                <action type="play_sound" sound="baseSound"/>
-              </action> 
-            </action>
-            <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn &lt; maxCyclesOn)">
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
-                <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-                <action type="if" condition="tDoAuditoryDetect">
-                  <action type="play_sound" sound="targetSound"/>
+            <action type="if" condition="!isCatchTrial">
+            	<action type="if" condition="tShortCatchTrial">
+            		<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
+                	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                </action>
+                <action type="if" condition="!tShortCatchTrial"> 
+            		<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+            		<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+            	</action>	
+            	<action type="if" condition="tDoAuditoryDetect">
+                	<action type="play_sound" sound="targetSound"/>
                 </action> 
                 <action type="if" condition="!tDoAuditoryDetect">
-                  <action type="play_sound" sound="baseSound"/>
+                  	<action type="play_sound" sound="baseSound"/>
                 </action> 
             </action>
-             
 
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="Target Stim On for $nFramesOn frames"/>
