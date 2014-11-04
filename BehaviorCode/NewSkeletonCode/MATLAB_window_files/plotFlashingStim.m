@@ -48,7 +48,7 @@ nFail = sum(failureIx);
 nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
-if input.doShortCatchTrial
+if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial,
 	catchOnFrame = celleqel2mat_padded(input.cCatchOn);
 	leverDownFrame = celleqel2mat_padded(input.cLeverDown);
 	leverUpFrame = celleqel2mat_padded(input.cLeverUp);
