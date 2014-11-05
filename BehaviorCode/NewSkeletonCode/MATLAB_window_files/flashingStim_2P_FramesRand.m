@@ -104,9 +104,9 @@ stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
 
 input.nVisualStimOffFrames{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'tVisualFramesOff', 'all');
 input.nAuditoryStimOffFrames{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'tAuditoryFramesOff', 'all');
-numberCyclesOn = input.nCyclesOn{trN};
 
 if input.tDoAuditoryDetect{trN}
+	numberCyclesOn = input.taCyclesOn{trN};
 	offFrames = input.nAuditoryStimOffFrames{trN};
 	totFrames = sum(offFrames(1,1:numberCyclesOn));
 	extraFrames = (input.aCyclesOn{trN}-input.taCyclesOn{trN}).*((input.minFramesOff+input.maxFramesOff)./2);
@@ -114,6 +114,7 @@ if input.tDoAuditoryDetect{trN}
 end
 
 if or(input.tDoOriDetect{trN}, input.tDoContrastDetect{trN})
+	numberCyclesOn = input.tvCyclesOn{trN};
 	offFrames = input.nVisualStimOffFrames{trN};
 	totFrames = sum(offFrames(1,1:numberCyclesOn)) + (numberCyclesOn.*input.nFramesOn);
 	extraFrames = (input.vCyclesOn{trN}-input.tvCyclesOn{trN}).*(((input.minFramesOff+input.maxFramesOff)./2)+input.nFramesOn);
