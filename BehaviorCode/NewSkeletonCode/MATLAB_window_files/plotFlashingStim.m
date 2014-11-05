@@ -49,14 +49,25 @@ nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
 if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial,
-	catchOnFrame = celleqel2mat_padded(input.cCatchOn);
-	leverDownFrame = celleqel2mat_padded(input.cLeverDown);
-	leverUpFrame = celleqel2mat_padded(input.cLeverUp);
-	catchIx = zeros(size(catchOnFrame));
-	catchIx(find((catchOnFrame-leverDownFrame)>0)) = 1;
-	falseAlarmIx = celleqel2mat_padded(input.tFalseAlarm);
-	correctRejectIx = zeros(size(catchOnFrame));
-	correctRejectIx(find((leverUpFrame-catchOnFrame)>input.nFramesReact)) = 1;
+	if isfield(input, 'nFramesOn')
+		catchOnFrame = celleqel2mat_padded(input.cCatchOn);
+		leverDownFrame = celleqel2mat_padded(input.cLeverDown);
+		leverUpFrame = celleqel2mat_padded(input.cLeverUp);
+		catchIx = zeros(size(catchOnFrame));
+		catchIx(find((catchOnFrame-leverDownFrame)>0)) = 1;
+		falseAlarmIx = celleqel2mat_padded(input.tFalseAlarm);
+		correctRejectIx = zeros(size(catchOnFrame));
+		correctRejectIx(find((leverUpFrame-catchOnFrame)>input.nFramesReact)) = 1;
+	elseif isfield(input, 'stimOnTimeMs')
+		catchOnTimeMs = celleqel2mat_padded(input.tCatchTimeMs);
+		leverDownTimeMs = celleqel2mat_padded(input.leverDownTimeMs);
+		leverUpTimeMs = celleqel2mat_padded(input.leverUpTimeMs);
+		catchIx = zeros(size(successIx));
+		catchIx(find((catchOnTimeMs-leverDownTimeMs)>0)) = 1;
+		falseAlarmIx = celleqel2mat_padded(input.tFalseAlarm);
+		correctRejectIx = zeros(size(successIx));
+		correctRejectIx(find((leverUpTimeMs-catchOnTimeMs)>input.reactTimeMs)) = 1;
+	end
 	nFA = sum(falseAlarmIx);
 	nCR = sum(correctRejectIx);
 	tCatchGratingDirectionDeg = celleqel2mat_padded(input.tCatchGratingDirectionDeg);
