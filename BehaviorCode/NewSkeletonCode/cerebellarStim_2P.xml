@@ -22,10 +22,10 @@
 
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="preSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="StimulusSpecs"/>
-      <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="StimulusSpecs"/>
-      <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="SpeedCounters"/>
-      <variable tag="itiTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="ITICounters"/>
+      <variable tag="preSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
+      <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
+      <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
+      <variable tag="itiTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
 
       <variable tag="speedTimerNFrames" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="NFrames"/>
       <variable tag="itiTimerNFrames" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="NFrames"/>
@@ -356,17 +356,19 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
             <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action>
-            <action type="report" message="*** Sitting in PreSoundPause State for $preSoundPauseDurationMs ms"/>
-            <action type="start_timer" tag="Start pre-sound timer" timer="preSoundPauseTimer" timebase="" duration="preSoundPauseDurationMs" duration_units="ms"></action>
+            <action type="assignment" tag="Zero ttCounter for time calculation" variable="ttCounter" value="counter"></action>
+
+            <action type="report" message="*** Sitting in PreSoundPause State for $preSoundPauseNFrames frames"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" timer="preSoundPauseTimer" target="PlaySound"/> 
+            <transition type="conditional" tag="PlaySound when preSoundPauseNFrames exceeded" condition="counter-ttCounter >= preSoundPauseNFrames" target="PlaySound" ></transition>
       </task_system_state>
 
       <task_system_state tag="PlaySound" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
-            <action type="report" message="*** Playing Tone Now"/>
+            <action type="report" message="***** Playing Tone Now *****"/>
+            <action type="assignment" tag="Zero ttCounter for time calculation" variable="ttCounter" value="counter"></action>
 
             <!-- Debugging sound below: delete before committing -->
             <action type="if" condition="soundDurationMs == 100">
@@ -402,11 +404,11 @@
       
             <!-- update display, finalize variables -->
             <action tag="Update Display" type="update_stimulus_display"></action>
-            <action type="start_timer" tag="Start timer that BEGINS with sound and activates the tactile stimulus when it expires" timer="postSoundPauseTimer" timebase="" duration="postSoundPauseDurationMs" duration_units="ms"></action> 
+            <action type="report" message="*** Sitting in PostSoundPause State for $postSoundPauseNFrames frames"/>
 
             <!-- Can't actually have a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" timer="postSoundPauseTimer" target="SendStim"/> 
+            <transition type="conditional" tag="SendStim when postSoundPauseNFrames exceeded" condition="counter-ttCounter >= postSoundPauseNFrames" target="SendStim" ></transition>
       </task_system_state>
 
 
