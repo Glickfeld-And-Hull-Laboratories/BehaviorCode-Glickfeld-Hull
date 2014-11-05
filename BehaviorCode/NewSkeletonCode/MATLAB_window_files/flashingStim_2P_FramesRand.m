@@ -110,7 +110,7 @@ if input.tDoAuditoryDetect{trN}
 	offFrames = input.nAuditoryStimOffFrames{trN};
 	totFrames = sum(offFrames(1,1:numberCyclesOn));
 	extraFrames = (input.aCyclesOn{trN}-input.taCyclesOn{trN}).*((input.minFramesOff+input.maxFramesOff)./2);
-	reqHoldTimeMs = ((totFrames+extraFrames)/input.frameRateHz).*1000;
+	reqHoldTimeMs = (double(totFrames+extraFrames)/input.frameRateHz).*1000;
 end
 
 if or(input.tDoOriDetect{trN}, input.tDoContrastDetect{trN})
@@ -118,7 +118,7 @@ if or(input.tDoOriDetect{trN}, input.tDoContrastDetect{trN})
 	offFrames = input.nVisualStimOffFrames{trN};
 	totFrames = sum(offFrames(1,1:numberCyclesOn)) + (numberCyclesOn.*input.nFramesOn);
 	extraFrames = (input.vCyclesOn{trN}-input.tvCyclesOn{trN}).*(((input.minFramesOff+input.maxFramesOff)./2)+input.nFramesOn);
-	reqHoldTimeMs = ((totFrames+extraFrames)./input.frameRateHz).*1000;
+	reqHoldTimeMs = (double(totFrames+extraFrames)./input.frameRateHz).*1000;
 end
 	
 %trialStartUs = mwGetEventTime(eventsTrial, ds.event_codec, 'trialStart', 1);
@@ -162,7 +162,7 @@ input.gratingContrast = input.tGratingContrast;
 input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
 input.stimOnTimeMs = (input.nFramesOn./input.frameRateHz)*1000;
-input.stimOffTimeMs = (((minFramesOff+maxFramesOff)./2)./input.frameRateHz)*1000;
+input.stimOffTimeMs = (((input.minFramesOff+input.maxFramesOff)./2)./input.frameRateHz)*1000;
 
 %Andrew's Post-Hoc Reaction Time Method
 % if input.targetStimOnMs{trN} <= 1;
