@@ -1038,7 +1038,7 @@
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
-            <action type="if" condition="doOriDetect || doContrastDetect">
+            <action type="if" condition="tDoOriDetect || tDoContrastDetect">
             	<action type="report" message="Lever Down - Trial Started - Stim On $tvCyclesOn of $nCyclesOn"/>
             </action>
                         
@@ -1049,7 +1049,7 @@
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
 		  	<transition type="conditional" tag="Dequeue Visual Stimulus" condition="stimTag == 1 &amp;&amp; counter &gt;= cVisualStimOn + nFramesOn" target="TrialStimOff"></transition>
 		  	<transition type="conditional" tag="Queue base sound" condition="(taCyclesOn &lt; aCyclesOn) &amp;&amp; counter &gt;= cAuditoryStimOn + tAuditoryFramesOff" target="AuditoryStimOn"></transition>
-          	<transition type="conditional" tag="Queue target sound" condition="(taCyclesOn &gt;= aCyclesOn) &amp;&amp; counter &gt;= cAuditoryStimOn + tAuditoryFramesOff" target="AuditoryTargetOn"></transition>
+          	<transition type="conditional" tag="Queue target sound" condition="tDoAuditoryDetect &amp;&amp; (taCyclesOn &gt;= aCyclesOn) &amp;&amp; counter &gt;= cAuditoryStimOn + tAuditoryFramesOff" target="AuditoryTargetOn"></transition>
 		  </task_system_state>
           
           <task_system_state tag="AuditoryStimOn" interruptble="YES">
@@ -1059,7 +1059,7 @@
           	<action type="assignment" variable="taCyclesOn" value="taCyclesOn+1" />
 		  	<action type="play_sound" sound="baseSound"/>
 		  	
-		  	<action type="if" condition="doAuditoryDetect">
+		  	<action type="if" condition="tDoAuditoryDetect">
             	<action type="report" message="Lever Down - Trial Started - Stim On $taCyclesOn of $nCyclesOn"/>
             </action>
 		  	
@@ -1070,9 +1070,9 @@
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
 		  	<transition type="conditional" tag="Dequeue Visual Stimulus" condition="stimTag == 1 &amp;&amp; counter &gt;= cVisualStimOn + nFramesOn" target="TrialStimOff"></transition>
 		  	<transition type="conditional" tag="Queue Base Visual Stimulus" condition="stimTag == 0 &amp;&amp; (tvCyclesOn &lt; vCyclesOn) &amp;&amp; counter  &gt;= cStimOff + tVisualFramesOff" target="VisualStimOn"></transition>
-            <transition type="conditional" tag="Queue Target Visual Stimulus" condition="stimTag == 0 &amp;&amp; (tvCyclesOn &gt;= vCyclesOn) &amp;&amp; counter  &gt;= cStimOff + tVisualFramesOff" target="VisualTargetOn"></transition>
+            <transition type="conditional" tag="Queue Target Visual Stimulus" condition="tDoOriDetect || tDoContrastDetect &amp;&amp; stimTag == 0 &amp;&amp; (tvCyclesOn &gt;= vCyclesOn) &amp;&amp; counter  &gt;= cStimOff + tVisualFramesOff" target="VisualTargetOn"></transition>
             <transition type="conditional" tag="Queue base sound" condition="(taCyclesOn &lt; aCyclesOn) &amp;&amp; counter &gt;= cAuditoryStimOn + tAuditoryFramesOff" target="AuditoryStimOn"></transition>
-          	<transition type="conditional" tag="Queue target sound" condition="(taCyclesOn &gt;= aCyclesOn) &amp;&amp; counter &gt;= cAuditoryStimOn + tAuditoryFramesOff" target="AuditoryTargetOn"></transition>
+          	<transition type="conditional" tag="Queue target sound" condition="tDoAuditoryDetect &amp;&amp; (taCyclesOn &gt;= aCyclesOn) &amp;&amp; counter &gt;= cAuditoryStimOn + tAuditoryFramesOff" target="AuditoryTargetOn"></transition>
 		  </task_system_state>
 
           <task_system_state tag="VisualTargetOn" interruptble="YES">
@@ -1398,7 +1398,7 @@
             <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames))&amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cVisualStimOn + nFramesOn))" target="EndTrialStimOff"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(stimTag &gt; 0 &amp;&amp; counter &gt;= (cVisualStimOn + nFramesOn))" target="EndTrialStimOff"></transition>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="stimTag == 0 &amp;&amp; (counter &gt;= (cEndOff + tVisualFramesOff))" target="EndTrialVisualStim"></transition>
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
             <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Reward"></transition>

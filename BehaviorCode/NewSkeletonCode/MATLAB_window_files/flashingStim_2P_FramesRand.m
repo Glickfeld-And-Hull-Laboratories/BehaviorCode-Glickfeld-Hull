@@ -107,23 +107,17 @@ input.nAuditoryStimOffFrames{trN} = mwGetEventValue(eventsTrial, ds.event_codec,
 numberCyclesOn = input.nCyclesOn{trN};
 
 if input.tDoAuditoryDetect{trN}
-	if input.taCyclesOn{trN} == input.aCyclesOn{trN}
-		offFrames = input.nAuditoryStimOffFrames{trN};
-		totFrames = sum(offFrames(1,1:numberCyclesOn));
-		reqHoldTimeMs = (totFrames./input.frameRateHz).*1000;
-	else
-		reqHoldTimeMs = NaN;
-	end
+	offFrames = input.nAuditoryStimOffFrames{trN};
+	totFrames = sum(offFrames(1,1:numberCyclesOn));
+	extraFrames = (input.aCyclesOn{trN}-input.taCyclesOn{trN}).*((input.minFramesOff+input.maxFramesOff)./2);
+	reqHoldTimeMs = ((totFrames+extraFrames)/input.frameRateHz).*1000;
 end
 
 if or(input.tDoOriDetect{trN}, input.tDoContrastDetect{trN})
-	if input.tvCyclesOn{trN} == input.vCyclesOn{trN}
-		offFrames = input.nVisualStimOffFrames{trN};
-		totFrames = sum(offFrames(1,1:numberCyclesOn));
-		reqHoldTimeMs = (totFrames./input.frameRateHz).*1000;
-	else
-		reqHoldTimeMs = NaN;
-	end
+	offFrames = input.nVisualStimOffFrames{trN};
+	totFrames = sum(offFrames(1,1:numberCyclesOn)) + (numberCyclesOn.*input.nFramesOn);
+	extraFrames = (input.vCyclesOn{trN}-input.tvCyclesOn{trN}).*(((input.minFramesOff+input.maxFramesOff)./2)+input.nFramesOn);
+	reqHoldTimeMs = ((totFrames+extraFrames)./input.frameRateHz).*1000;
 end
 	
 %trialStartUs = mwGetEventTime(eventsTrial, ds.event_codec, 'trialStart', 1);
@@ -166,6 +160,8 @@ input.cAuditoryStimOnFrames{trN} = auditoryStimOnFrames;
 input.gratingContrast = input.tGratingContrast;
 input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
+input.stimOnTimeMs = (input.nFramesOn./input.frameRateHz)*1000;
+input.stimOffTimeMs = (((minFramesOff+maxFramesOff)./2)./input.frameRateHz)*1000;
 
 %Andrew's Post-Hoc Reaction Time Method
 % if input.targetStimOnMs{trN} <= 1;
