@@ -88,6 +88,8 @@ if isfield(ds, 'stimOnTimeMs')
     ds.gratingDurationMs = ds.stimOnTimeMs;
 end
 
+ds.is2AFC = isfield(ds, 'tQuadrature');
+
 if nargout > 1
     ds0 = ds;
 end
@@ -96,59 +98,93 @@ end
 
 %% process vectors in input
 nTrTemp = size(ds.trialOutcomeCell);
-vFields = { 'tLaserPowerMw', 'tGratingContrast', 'tBaseGratingContrast', 'tTotalReqHoldTimeMs', ...
-    'tGratingDirectionDeg', ...
-    'tTotalReqHoldTimeMs', 'holdTimesMs' };
-for iV=1:length(vFields)
-    if isfield(ds, vFields{iV})
-        eval(sprintf('%s = celleqel2mat_padded(ds.%s);', vFields{iV}, vFields{iV}));
-    else
-        eval(sprintf('%s = repmat(NaN, [1 nTrTemp]);', vFields{iV}));
-    end
-end
 
-laserPowerMw = tLaserPowerMw;
-gratingContrast = tGratingContrast;
-gratingDirectionDeg = tGratingDirectionDeg;
-reqHoldTimesMs = tTotalReqHoldTimeMs;
-baseGratingContrast = tBaseGratingContrast;
-
-nLaserTrials = sum(~(isnan(laserPowerMw)|laserPowerMw==0));
-nContrastTrials = sum(find(gratingContrast>min(tGratingContrast,[],2)));
-nOriTrials = sum(find(gratingDirectionDeg>min(tGratingDirectionDeg,[],2)));
-nGratingTrials = nContrastTrials + nOriTrials;
-
-if nLaserTrials > 0 && nGratingTrials == 0
-    intensityIsChr2 = true;
-end
-if nLaserTrials == 0 && nGratingTrials >0
-    intensityIsChr2 = false;
-    if nOriTrials>0
-        doContrast = false;
-        doOri = true;
-    else
-        doContrast = true;
-        doOri = false;
-    end
-elseif ~isfield(ds, 'tGratingContrast')
-    %hack for changed names
-    gratingContrast = celleqel2mat_padded(ds.gratingContrast);
-    nContrastTrials = sum(find(gratingContrast>min(gratingContrast,[],2)));
-    nOriTrials = sum(find(tGratingDirectionDeg>min(tGratingDirectionDeg,[],2)));
-    nGratingTrials = nContrastTrials + nOriTrials;
-    if nGratingTrials > 0
-        intensityIsChr2 = false;
-        if nOriTrials>0
-            doContrast = false;
-            doOri = true;
+if ds.is2AFC == 0
+    vFields = { 'tLaserPowerMw', 'tGratingContrast', 'tBaseGratingContrast', 'tTotalReqHoldTimeMs', ...
+        'tGratingDirectionDeg', 'holdTimesMs' };
+    for iV=1:length(vFields)
+        if isfield(ds, vFields{iV})
+            eval(sprintf('%s = celleqel2mat_padded(ds.%s);', vFields{iV}, vFields{iV}));
         else
-            doContrast = true;
-            doOri = false;
+            eval(sprintf('%s = repmat(NaN, [1 nTrTemp]);', vFields{iV}));
         end
     end
-    elseif isfield(ds, 'tGratingContrast')
-    % both empty
-    error('Cannot handle such data files w/ both laser and grating yet - check code');
+
+    laserPowerMw = tLaserPowerMw;
+    gratingContrast = tGratingContrast;
+    gratingDirectionDeg = tGratingDirectionDeg;
+    reqHoldTimesMs = tTotalReqHoldTimeMs;
+    baseGratingContrast = tBaseGratingContrast;
+
+    nLaserTrials = sum(~(isnan(laserPowerMw)|laserPowerMw==0));
+    nContrastTrials = sum(find(gratingContrast>min(tGratingContrast,[],2)));
+    nOriTrials = sum(find(gratingDirectionDeg>min(tGratingDirectionDeg,[],2)));
+    nGratingTrials = nContrastTrials + nOriTrials;
+
+    if nLaserTrials > 0 && nGratingTrials == 0
+        intensityIsChr2 = true;
+    end
+    if nLaserTrials == 0 && nGratingTrials >0
+        intensityIsChr2 = false;
+        if nOriTrials>0
+            doOri = true;
+        else
+            doOri = false;
+        end 
+        if nContrastTrials>0
+            doContrast = true;
+        else
+            doContrast = false;
+        end
+    end
+    elseif ~isfield(ds, 'tGratingContrast')
+        %hack for changed names
+        gratingContrast = celleqel2mat_padded(ds.gratingContrast);
+        nContrastTrials = sum(find(gratingContrast>min(gratingContrast,[],2)));
+        nOriTrials = sum(find(tGratingDirectionDeg>min(tGratingDirectionDeg,[],2)));
+        nGratingTrials = nContrastTrials + nOriTrials;
+        if nGratingTrials > 0
+            intensityIsChr2 = false;
+            if nOriTrials>0
+                doOri = true;
+            else
+                doOri = false;
+            end 
+            if nContrastTrials>0
+                doContrast = true;
+            else
+                doContrast = false;
+            end
+        elseif isfield(ds, 'tGratingContrast')
+        % both empty
+        error('Cannot handle such data files w/ both laser and grating yet - check code');
+    end
+end
+
+if ds.is2AFC
+    %works for now but will need changes as conditions are added
+    vFields = {'rightGratingContrast', 'leftGratingContrast', 'tTotalReqHoldTimeMs', 'holdTimesMs' };
+    for iV=1:length(vFields)
+        if isfield(ds, vFields{iV})
+            eval(sprintf('%s = celleqel2mat_padded(ds.%s);', vFields{iV}, vFields{iV}));
+        else
+            eval(sprintf('%s = repmat(NaN, [1 nTrTemp]);', vFields{iV}));
+        end
+    end
+
+    reqHoldTimesMs = tTotalReqHoldTimeMs;
+    gratingContrast = rightGratingContrast-leftGratingContrast;
+    
+    %this is hard coded for now:
+    nContrastTrials = sum(find(gratingContrast>=0));
+    doContrast = true;
+    nOriTrials = 0;
+    doOri = false;
+    intensityIsChr2 = 0;
+end
+
+if nOriTrials>0 & nContrastTrials>0
+    error('Cannot handle such data files w/ both ori and contrast changes yet');
 end
 
 if intensityIsChr2 
@@ -216,11 +252,15 @@ if ~isempty(uo.WhichTrials)
         error('No trials remaining after selection');
     end
 
-    
-    laserPowerMw = laserPowerMw(desIx);
-    gratingContrast = gratingContrast(desIx);
-    gratingDirectionDeg = gratingDirectionDeg(desIx);
-    intensityV = intensityV(desIx);
+    if ds.is2AFC
+         gratingContrast = gratingContrast(desIx);
+         intensityV = intensityV(desIx);
+    else
+        laserPowerMw = laserPowerMw(desIx);
+        gratingContrast = gratingContrast(desIx);
+        gratingDirectionDeg = gratingDirectionDeg(desIx);
+        intensityV = intensityV(desIx);
+    end
 
     block2V = block2V(desIx);
     reactTimesMs = reactTimesMs(desIx);
@@ -251,8 +291,14 @@ assert(nBlock2Indices > 0 && nBlock2Indices <= 2);
 
 intensityV = chop(intensityV,2);  % if you change the top value during session each power only accurate to 2 sig figs
 successIx = strcmp(trialOutcomeCell, 'success');
-earlyIx = strcmp(trialOutcomeCell, 'failure');
-missedIx = strcmp(trialOutcomeCell, 'ignore');
+if ~ds.is2AFC
+    earlyIx = strcmp(trialOutcomeCell, 'failure');
+    missedIx = strcmp(trialOutcomeCell, 'ignore');
+elseif ds.is2AFC
+    missedIx = strcmp(trialOutcomeCell, 'incorrect');
+    earlyIx = strcmp(trialOutcomeCell, 'ignore'); %not right, but can figure out a different solution later
+end
+    
 
 
 
@@ -385,7 +431,7 @@ pctCorr(pctCorr==1) = pctCorr(pctCorr==1)-10*eps;
 
 percentsCorrect = pctCorr;
 %% correct intensities
-if doContrast
+if doContrast & ~ds.is2AFC
     if max(baseGratingContrast,[],2)>0
         if ds.gratingMaxContrastStep<0
             for iB = 1:nBlock2Indices

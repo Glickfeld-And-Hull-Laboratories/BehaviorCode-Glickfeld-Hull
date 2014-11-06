@@ -69,12 +69,18 @@ for iB = 1:bs.nBlock2Indices
     axH(iB) = subplot(spSz{:}, iB); cla; hold on;
     
     bs0 = behavDataExtractOneBlock(bs, iB);
+    if ds.is2AFC
+        doClampAtZero = false;
+    else
+        doClampAtZero = true;
+    end
     [fitS(iB) bootS(iB)] = weibullFitWithBootstrapLG(...
         'BehavDataStruct', bs0, ...
         'DoPlot', true, ...
         fitParams{:}, ...
         'DoBootstrap', true, ...
-        'NBootstrapReps', uo.NBootstrapReps);
+        'NBootstrapReps', uo.NBootstrapReps, ...
+        'DoClampAtZero', doClampAtZero);
             
     if x1d.MergeBlock1And2 == true
         title('merged block 1 and 2');
