@@ -27,111 +27,121 @@ if (~isfield(ds, 'doBlock2') ... % backward compat
         error('MHS:badFile', 'old file format that lacks correct constant info - get from doc file');
     end
         
-    if ds.doLaserStim
-        if ds.laserDoLinearRamp && ~ds.laserDoPulseTrain
-            rampOrTrainStr = 'ramp';
-            % backward compat
-            doExp = 0;
-            extraLenMs = 0;
-            if isfield(ds, 'laserRampDoExpRamp') 
-                doExp = ds.laserRampDoExpRamp;
+    if isfield(ds,'doLaserStim')
+        if ds.doLaserStim
+            if ds.laserDoLinearRamp && ~ds.laserDoPulseTrain
+                rampOrTrainStr = 'ramp';
+                % backward compat
+                doExp = 0;
+                extraLenMs = 0;
+                if isfield(ds, 'laserRampDoExpRamp') 
+                    doExp = ds.laserRampDoExpRamp;
+                end
+                if isfield(ds, 'laserRampExtraConstantLengthMs')
+                    extraLenMs = ds.laserRampExtraConstantLengthMs;
+                end
+
+                str = subFormatLaserInfo('ramp', ds.laserRampLengthMs, doExp, extraLenMs, ...
+                    [], [], [], ds.laserTransitionRampUpDownMs);
+                return
+            elseif ds.laserDoPulseTrain
+                rampOrTrainStr = 'train';
+                str = subFormatLaserInfo('train', [], [], [], ...
+                    ds.laserTrainLengthMs, ds.laserPulseLengthMs, ds.laserPulsePeriodMs, ...
+                    ds.laserTransitionRampUpDownMs);
+                return
+            else
+                error('neither ramp or train is true');
             end
-            if isfield(ds, 'laserRampExtraConstantLengthMs')
-                extraLenMs = ds.laserRampExtraConstantLengthMs;
-            end
-            
-            str = subFormatLaserInfo('ramp', ds.laserRampLengthMs, doExp, extraLenMs, ...
-                [], [], [], ds.laserTransitionRampUpDownMs);
-            return
-        elseif ds.laserDoPulseTrain
-            rampOrTrainStr = 'train';
-            str = subFormatLaserInfo('train', [], [], [], ...
-                ds.laserTrainLengthMs, ds.laserPulseLengthMs, ds.laserPulsePeriodMs, ...
-                ds.laserTransitionRampUpDownMs);
-            return
-        else
-            error('neither ramp or train is true');
         end
-    elseif ds.doVisualStim
+    elseif isfield(ds,'doVisualStim')
+        if ds.doVisualStim
+            str = subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
+                ds.gratingSpatialFreqCPD, ds.gratingDurationMs);
+            return
+        end
+    elseif isfield(ds,'tQuadrature')
         str = subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
-            ds.gratingSpatialFreqCPD, ds.gratingDurationMs);
+            ds.gratingSpatialFreqCPD, ds.reactionTimeMs);
         return
     end
     
-elseif ds.doBlock2 == 1
-    fList = { 'block2DoGratingAppearance', 'block2DoRampLength', 'block2DoRampVTrain', ...
-        'block2DoTrialLaser' };
-    for iF = 1:length(fList)
-        if ~isfield(ds, fList{iF}), ds.(fList{iF}) = 0; end
-    end
+elseif isfield(ds, 'doBlock2')
+    if ds.doBlock2 == 1
+        fList = { 'block2DoGratingAppearance', 'block2DoRampLength', 'block2DoRampVTrain', ...
+            'block2DoTrialLaser' };
+        for iF = 1:length(fList)
+            if ~isfield(ds, fList{iF}), ds.(fList{iF}) = 0; end
+        end
 
-%     if ((ds.block2DoGratingAppearance+ds.block2DoRampLength+ds.block2DoRampVTrain ...
-%         +ds.block2DoTrialLaser) ~= 1)
-%         error('MHS:badFile', 'more than one b2Do param?');
-%     end
-    if isfield(ds,'block2StimOnMs')
-       ds.block2GratingDurationMs = ds.block2StimOnMs; 
-    else
-        ds.block2GratingDurationMs = ds.gratingDurationMs;
-    end
-    
-    if ds.block2DoGratingAppearance == 1 & ds.block2DoTrialLaser==0
-        if b2Num == 1
-            str = subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
-                ds.gratingSpatialFreqCPD, ds.gratingDurationMs);
-        elseif b2Num == 2
-            str = subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
-                ds.gratingSpatialFreqCPD, ds.block2GratingDurationMs);
-            return
+    %     if ((ds.block2DoGratingAppearance+ds.block2DoRampLength+ds.block2DoRampVTrain ...
+    %         +ds.block2DoTrialLaser) ~= 1)
+    %         error('MHS:badFile', 'more than one b2Do param?');
+    %     end
+        if isfield(ds,'block2StimOnMs')
+           ds.block2GratingDurationMs = ds.block2StimOnMs; 
+        else
+            ds.block2GratingDurationMs = ds.gratingDurationMs;
         end
-    elseif ds.block2DoRampLength
-        error('implement this now');
-    elseif ds.block2DoRampVTrain
-        if b2Num == 1
-            str = subFormatLaserInfo('ramp', ds.laserRampLengthMs, ds.laserRampDoExpRamp, ...
-                ds.laserRampExtraConstantLengthMs, ...
-                [], [], [], ds.laserTransitionRampUpDownMs);
-            return
-        elseif b2Num == 2
-            str = subFormatLaserInfo('train', [], [], [], ...
-                ds.laserTrainLengthMs, ds.laserPulseLengthMs, ds.laserPulsePeriodMs, ...
-                ds.laserTransitionRampUpDownMs);
-            return
-        end
-    elseif ds.block2DoTrialLaser==1 & ds.block2DoGratingAppearance == 0
-        
-        tV = struct('trialLaserPowerMw', []);
-        fieldList = { 'PowerMw', 'OnTimeMs', 'OffTimeMs' };
-        blockPrefix = { 'trialLaser', 'block2TrialLaser'};
-        for iB = 1:2
-            for iF = 1:length(fieldList)
-                tV(iB).(fieldList{iF}) = ds.([blockPrefix{iB} fieldList{iF}]);
+
+        if ds.block2DoGratingAppearance == 1 & ds.block2DoTrialLaser==0
+            if b2Num == 1
+                str = subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
+                    ds.gratingSpatialFreqCPD, ds.gratingDurationMs);
+            elseif b2Num == 2
+                str = subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
+                    ds.gratingSpatialFreqCPD, ds.block2GratingDurationMs);
+                return
             end
-        end
-        
-        str = subFormatTrialLaserInfo(tV(b2Num));
-    elseif ds.block2DoTrialLaser & ds.block2DoGratingAppearance 
-        
-        tV = struct('trialLaserPowerMw', []);
-        fieldList = { 'PowerMw', 'OnTimeMs', 'OffTimeMs' };
-        blockPrefix = { 'trialLaser', 'block2TrialLaser'};
-        for iB = 1:2
-            for iF = 1:length(fieldList)
-                tV(iB).(fieldList{iF}) = ds.([blockPrefix{iB} fieldList{iF}]);
+        elseif ds.block2DoRampLength
+            error('implement this now');
+        elseif ds.block2DoRampVTrain
+            if b2Num == 1
+                str = subFormatLaserInfo('ramp', ds.laserRampLengthMs, ds.laserRampDoExpRamp, ...
+                    ds.laserRampExtraConstantLengthMs, ...
+                    [], [], [], ds.laserTransitionRampUpDownMs);
+                return
+            elseif b2Num == 2
+                str = subFormatLaserInfo('train', [], [], [], ...
+                    ds.laserTrainLengthMs, ds.laserPulseLengthMs, ds.laserPulsePeriodMs, ...
+                    ds.laserTransitionRampUpDownMs);
+                return
             end
+        elseif ds.block2DoTrialLaser==1 & ds.block2DoGratingAppearance == 0
+
+            tV = struct('trialLaserPowerMw', []);
+            fieldList = { 'PowerMw', 'OnTimeMs', 'OffTimeMs' };
+            blockPrefix = { 'trialLaser', 'block2TrialLaser'};
+            for iB = 1:2
+                for iF = 1:length(fieldList)
+                    tV(iB).(fieldList{iF}) = ds.([blockPrefix{iB} fieldList{iF}]);
+                end
+            end
+
+            str = subFormatTrialLaserInfo(tV(b2Num));
+        elseif ds.block2DoTrialLaser & ds.block2DoGratingAppearance 
+
+            tV = struct('trialLaserPowerMw', []);
+            fieldList = { 'PowerMw', 'OnTimeMs', 'OffTimeMs' };
+            blockPrefix = { 'trialLaser', 'block2TrialLaser'};
+            for iB = 1:2
+                for iF = 1:length(fieldList)
+                    tV(iB).(fieldList{iF}) = ds.([blockPrefix{iB} fieldList{iF}]);
+                end
+            end
+
+            if b2Num == 1
+                str = [subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
+                    ds.gratingSpatialFreqCPD, ds.gratingDurationMs) [ ] subFormatTrialLaserInfo(tV(b2Num))];
+            elseif b2Num == 2
+                str = [subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
+                    ds.gratingSpatialFreqCPD, ds.block2GratingDurationMs) [ ] subFormatTrialLaserInfo(tV(b2Num))];
+                return
+            end
+
+        else
+            error('bug');
         end
-        
-        if b2Num == 1
-            str = [subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
-                ds.gratingSpatialFreqCPD, ds.gratingDurationMs) [ ] subFormatTrialLaserInfo(tV(b2Num))];
-        elseif b2Num == 2
-            str = [subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
-                ds.gratingSpatialFreqCPD, ds.block2GratingDurationMs) [ ] subFormatTrialLaserInfo(tV(b2Num))];
-            return
-        end
-        
-    else
-        error('bug');
     end
 end
 

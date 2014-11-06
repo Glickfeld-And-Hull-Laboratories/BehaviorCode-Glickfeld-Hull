@@ -40,10 +40,7 @@ else
     ads = {ds.input};
 end
 
-
-
-    
-nTrs = cellfun(@(x) length(x.holdStartsMs), ads);
+nTrs = cellfun(@(x) length(x.tThisTrialStartTimeMs), ads);
 nDataBlocks = length(ads);
 
 if debug

@@ -163,7 +163,7 @@ end
 
 if ds.is2AFC
     %works for now but will need changes as conditions are added
-    vFields = {'rightGratingContrast', 'leftGratingContrast', 'tTotalReqHoldTimeMs', 'holdTimesMs' };
+    vFields = {'tGratingContrast', 'dGratingContrast', 'tTotalReqHoldTimeMs', 'holdTimesMs' };
     for iV=1:length(vFields)
         if isfield(ds, vFields{iV})
             eval(sprintf('%s = celleqel2mat_padded(ds.%s);', vFields{iV}, vFields{iV}));
@@ -173,7 +173,7 @@ if ds.is2AFC
     end
 
     reqHoldTimesMs = tTotalReqHoldTimeMs;
-    gratingContrast = rightGratingContrast-leftGratingContrast;
+    gratingContrast = tGratingContrast-dGratingContrast;
     
     %this is hard coded for now:
     nContrastTrials = sum(find(gratingContrast>=0));
@@ -195,7 +195,12 @@ elseif nContrastTrials>0
     intensityV = gratingContrast;
 end
 
-reactTimesMs = double(cellvect2mat_padded(ds.reactTimesMs));
+if ~ds.is2AFC
+    reactTimesMs = double(cellvect2mat_padded(ds.reactTimesMs));
+else 
+    reactTimesMs = double(cellvect2mat_padded(ds.tDecisionTimeMs));
+end
+
 if isfield(ds, 'tBlock2TrialNumber') 
     block2V = cellvect2mat_padded(ds.tBlock2TrialNumber);
 

@@ -70,17 +70,16 @@ for iB = 1:bs.nBlock2Indices
     
     bs0 = behavDataExtractOneBlock(bs, iB);
     if ds.is2AFC
-        doClampAtZero = false;
+        bs0.doClampAtZero = 0.5;
     else
-        doClampAtZero = true;
+        bs0.doClampAtZero = true;
     end
     [fitS(iB) bootS(iB)] = weibullFitWithBootstrapLG(...
         'BehavDataStruct', bs0, ...
         'DoPlot', true, ...
         fitParams{:}, ...
         'DoBootstrap', true, ...
-        'NBootstrapReps', uo.NBootstrapReps, ...
-        'DoClampAtZero', doClampAtZero);
+        'NBootstrapReps', uo.NBootstrapReps);
             
     if x1d.MergeBlock1And2 == true
         title('merged block 1 and 2');

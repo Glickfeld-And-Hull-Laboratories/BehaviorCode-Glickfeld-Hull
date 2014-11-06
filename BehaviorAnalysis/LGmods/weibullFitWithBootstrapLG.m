@@ -77,6 +77,7 @@ end
     
 
 %% run fit
+uo.DoClampAtZero = bs.doClampAtZero;
 fitS = weibullFitLG(intensV, pctCorr, uo.DoClampAtZero, false, ...
     { 'nTrials', nTrialsPerLevel'} ); % weight by # trials
 
@@ -117,9 +118,8 @@ if uo.DoPlot
         intensScaleF = 1;
     end
     
-    
     maxI = max(intensV);
-    minI = min(intensV); 
+    minI = min(intensV);
     xgrid = logspace(log10(minI*0.5),log10(maxI*1.5),100);
     line(xgrid*intensScaleF, fitS.modelFun(fitS.coefEsts, xgrid), 'Color','k');
     hold on;

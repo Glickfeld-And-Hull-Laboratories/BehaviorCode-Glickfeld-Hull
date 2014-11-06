@@ -67,9 +67,7 @@ optSet = optimset('Display', 'none');
 inputWeights = inputWeights ./ sum(inputWeights);
 outS.fitWeights = inputWeights;
 
-
-
-if clampAtZero
+if clampAtZero == 1
     modelFun = @(p,xs) (p(3) .* (1 - exp( -(xs./p(1)) .^ p(2))));    
     optFun = @(p) (modelFun(p,intensityV) - fractCorr).*inputWeights;
     startingVals = [midVal, 1, fractCorr(end)];
@@ -81,6 +79,18 @@ if clampAtZero
                     optSet);
 
     coefEsts(4) = 0;
+elseif clampAtZero == 0.5
+     modelFun = @(p,xs) (0.5+ (p(3)-0.5) .* (1 - exp( -(xs./p(1)) .^ p(2))));    
+    optFun = @(p) (modelFun(p,intensityV) - fractCorr).*inputWeights;
+    startingVals = [midVal, 1, fractCorr(end)];
+
+    [coefEsts resnorm residual exitflag] ...
+        = lsqnonlin(optFun, startingVals, ...
+                    [0 0 0], ...
+                    [Inf Inf 1], ...
+                    optSet);
+
+    coefEsts(4) = 0.5;
 else
     modelFun = @(p,xs) (p(4) + (p(3)-p(4)) .* (1 - exp( -(xs./p(1)) .^ p(2))));
     optFun = @(p) (modelFun(p,intensityV) - fractCorr) .* inputWeights;
