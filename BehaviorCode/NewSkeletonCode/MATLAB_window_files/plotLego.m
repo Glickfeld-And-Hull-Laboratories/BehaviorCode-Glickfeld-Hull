@@ -105,6 +105,12 @@ if input.doMatchToTarget==1,
 else
   MTTstr = 'Off';
 end
+
+if input.doConsecCorrectReward==1,
+  rewStr = strcat(mat2str(input.consecCorrRewardInterval/1000), 'x nCorr');
+else
+  rewStr = mat2str(input.rewardTimeUs/1000);
+end
          
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -165,7 +171,7 @@ end
             
         tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
                          'Thresholds (L,R):\t%4.0f, %4.0f pulses\n', ...
-                         'Too-Fast Time: %d ms;  Reward: %d ms \n', ...
+                         'Too-Fast Time: %d ms;  Reward: %s ms \n', ...
                          'Timeouts (ign,inc):\t%4.1f, %4.1f s\n', ...
                          'trPer80: %s\n', ...
                          'Stim: %s \n', ...
@@ -176,7 +182,7 @@ end
                         input.leftDecisionThreshold, ...
                         input.rightDecisionThreshold, ...
                         input.tooFastTimeMs, ...
-                        input.rewardTimeUs/1000, ...
+                        rewStr, ...
                         input.ignoreTimeoutMs/1000, ...
                         input.incorrectTimeoutMs/1000, ...
                         trPer80Str, ...
@@ -475,13 +481,17 @@ end
 
 pH = cdfplot([input.tDecisionTimeMs{:}]);
     set(pH, 'Color', 'g');
-pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
+if nLeft>0,
+  pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
     set(pH1, 'Color', 'b');
-pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
+end
+if nRight>0,
+  pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
     set(pH2, 'Color', [0.8 0.8 0]);
 set(gca, 'XLim', [0 decMax], ...
          'YLim', [0 1], ...
          'XTick', [0:decisionInterval:decMax]);
+end
 grid on;
 hold on;
 title('Decision Time CDF: y=right,b=left');
@@ -522,134 +532,57 @@ ylabel('% Right')
 grid on
 
 %%%%%%%%%%%%%%%%
-%% Quadrature Kinetograms
- 
-quadVals = input.quadValues;
-quadTimes = input.quadStampsUs;
-leftIx = logical(leftTrialIx);
- 
-leftQV = quadVals(leftIx);
-leftQT = quadTimes(leftIx);
-L = length(leftQV);
+if input.doBlocks==1
 
-input.leftQuadVect = leftQV;
-input.leftQuadTimesMs = leftQT;
+%% Block Performance
+%% Indexing and pre-analysis
+tLeftTrial = leftTrialIx;
+leftBlockN = cell2mat_padded(input.tNBlockLeftTrsCompleted);
+rightBlockN = cell2mat_padded(input.tNBlockRightTrsCompleted);
+as = struct;
 
-leftIncVects = leftQV(leftInc);
-leftIncTimes = leftQT(leftInc);
-
-axH = subplot(spSz{:},11);
-hold on;
-if nLeftInc>0,
-  for i=1:length(leftIncVects),
-    times = double(cell2mat(leftIncTimes(i)));
-    vect = double(cell2mat(leftIncVects(i)));
-    maxT = max(times);
-    newTSamples = double(0:maxT/10:maxT);
-    try
-      newVals = interp1(times, vect ,newTSamples);
-    catch
-      newVals = NaN;
-      newTSamples = NaN;
-      disp('LInc broken')
-    end
-    newValuesIL(i,:) = double(newVals);
-    newTimesIL(i,:) = newTSamples;
-  end
-  plot(nanmean(newValuesIL), nanmean(newTimesIL)/10, 'g', 'LineWidth', 2)
-  axis tight
+%% Left Analysis
+if nLeft>0,
+  axH  = subplot(spSz{:},11);
+LBlockValues = unique(leftBlockN);
+for i = 1:length(LBlockValues),
+    trIx = (leftBlockN==LBlockValues(i)) & tLeftTrial;
+    nTrs = sum(trIx);
+    as.LnTrs(i) = nTrs;
+    as.leftSuccess(i) = sum(trIx & correctIx)/nTrs; 
+    as.leftIncorrs(i) = sum(trIx & incorrectIx)/nTrs; 
+    as.leftIgnore(i) = sum(trIx & ignoreIx)/nTrs; 
 end
 hold on
-
-leftCorrVects = leftQV(leftCorr);
-leftCorrTimes = leftQT(leftCorr);
-
-if nLeftCorr>0,
-  for i=1:length(leftCorrVects),
-    times = double(cell2mat(leftCorrTimes(i)));
-    vect = double(cell2mat(leftCorrVects(i)));
-    maxT = max(times);
-    newTSamples = double(0:(maxT/5):maxT);
-    try
-      newVals = interp1(times, vect ,newTSamples);
-    catch
-      newVals = NaN;
-      newTSamples = NaN;
-      disp('LCorr broken')
-    end
-    newValuesCL(i,:) = double(newVals);
-    newTimesCL(i,:) = newTSamples;
-  end
-plot(nanmean(newValuesCL), nanmean(newTimesCL)/10, 'k', 'LineWidth', 2)
-title('Left Kinetogram');
-grid on
-xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
-ylim([0 input.reactionTimeMs])
-axis tight
-end
- 
-rightQV = quadVals(~leftIx);
-rightQT = quadTimes(~leftIx);
-R = length(rightQV);
-
-input.rightQuadVect = rightQV;
-input.rightQuadTimesMs = rightQV;
-
-rightIncVects = rightQV(rightInc);
-rightIncTimes = rightQT(rightInc);
-
-axH = subplot(spSz{:},12);
-hold on;
-if nRightInc>0,
-  for i=1:length(rightIncVects),
-    times = double(cell2mat(rightIncTimes(i)));
-    vect = double(cell2mat(rightIncVects(i)));
-    maxT = max(times);
-    newTSamples = double(0:maxT/10:maxT);
-    try
-      newVals = interp1(times, vect ,newTSamples);
-    catch
-      newVals = NaN;
-      newTSamples = NaN;
-      disp('RInc broken')
-    end
-    newValuesIR(i,:) = double(newVals);
-    newTimesIR(i,:) = newTSamples;
-  end
-  plot(nanmean(newValuesIR), nanmean(newTimesIR)/10, 'g', 'LineWidth', 2)
-  hold on
-  axis tight
+plot(LBlockValues, as.leftSuccess, 'k', LBlockValues, as.leftIncorrs, 'm', LBlockValues, as.leftIgnore, 'g')
+xlabel('Block Position')
+ylabel('Fraction of Outcomes')
+title('Left Block Analysis')
+xlim([1 length(LBlockValues)])
 end
 
-rightCorrVects = rightQV(rightCorr);
-rightCorrTimes = rightQT(rightCorr);
 
-if nRightCorr>0,
-  for i=1:length(rightCorrVects),
-    times = double(cell2mat(rightCorrTimes(i)));
-    vect = double(cell2mat(rightCorrVects(i)));
-    maxT = max(times);
-    newTSamples = double(0:maxT/10:maxT);
-    try
-      newVals = interp1(times, vect ,newTSamples);
-    catch
-      newVals = NaN;
-      newTSamples = NaN;
-      disp('RCorr broken')
-    end
-    newValuesCR(i,:) = double(newVals);
-    newTimesCR(i,:) = newTSamples;
-  end
-plot(nanmean(newValuesCR), nanmean(newTimesCR)/10, 'k', 'LineWidth', 2)
-title('Right Kinetogram');
-grid on
-xlim([-input.leftDecisionThreshold input.rightDecisionThreshold])
-ylim([0 input.reactionTimeMs])
-axis tight
+
+%% Right Analysis
+if nRight>0,
+axH  = subplot(spSz{:},12);
+RBlockValues = unique(rightBlockN);
+for i = 1:length(RBlockValues),
+    trIx = (rightBlockN==RBlockValues(i)) & ~tLeftTrial;
+    nTrs = sum(trIx);
+    as.RnTrs(i) = nTrs;
+    as.rightSuccess(i) = sum(trIx & correctIx)/nTrs; 
+    as.rightIncorrs(i) = sum(trIx & incorrectIx)/nTrs; 
+    as.rightIgnore(i) = sum(trIx & ignoreIx)/nTrs; 
 end
- 
-
-
+hold on
+plot(RBlockValues, as.rightSuccess, 'k', RBlockValues, as.rightIncorrs, 'm', RBlockValues, as.rightIgnore, 'g')
+xlabel('Block Position')
+ylabel('Fraction of Outcomes')
+title('Right Block Analysis')
+xlim([1 length(RBlockValues)])
+end
+end
 %%%%%%%%%%%%%%%%
 
 %% Add a save button

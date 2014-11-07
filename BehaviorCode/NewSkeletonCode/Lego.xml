@@ -47,6 +47,10 @@
 
       <variable tag="doBiasStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Bias Staircase"/>
 
+      <variable tag="doConsecCorrectReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Consecutive Corrects Reward"/>
+      <variable tag="consecCorrRewardInterval" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Consecutive Corrects Reward"/>
+      <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Consecutive Corrects Reward"/>
+
       <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
       <variable tag="incorrectTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
 
@@ -135,6 +139,8 @@
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+      <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
 
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
@@ -386,12 +392,14 @@
             <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
             <action type="assignment" variable="dGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
             <action type="assignment" variable="tGratingDirectionDeg" value="0"/>
+            <action type="assignment" variable="gratingDirectionDeg" value="180"/>
           </action>
 
           <action type="if" condition="tLeftTrial == 1">
             <action type="assignment" variable="tGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
             <action type="assignment" variable="dGratingEccentricityDeg" value="gratingEccentricityDeg"/>
             <action type="assignment" variable="tGratingDirectionDeg" value="180"/>
+            <action type="assignment" variable="gratingDirectionDeg" value="0"/>
           </action>
 
           <action type="if" condition="doTestRobot==1">
@@ -657,16 +665,30 @@
           <action type="dequeue_stimulus" stimulus="cursorGrating"></action>
           <action type="update_stimulus_display"></action>
           <action type="play_sound" sound="correctSound"/>
+          <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
+          <action type="assignment" tag="" variable="tConsecErrors" value="0"/>
           <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
           <action type="report" tag="Report" message="Decision Time = $tDecisionTimeMs"></action>
           <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success!!! **"></action>
           <!-- update running variables -->
           <action type="assignment" tag="success++" variable="success" value="success+1"></action>
           <action type="assignment" variable="tLastTrialCorrect" value="1"></action>
-          <action type="assignment" variable="juice" value="rewardTimeUs"></action>
+          <action type="if" condition="doConsecCorrectReward==1">
+            <action type="if" condition="tConsecCorrects &lt; maxConsecCorrects">
+              <action type="assignment" variable="tRewardTimeUs" value="tConsecCorrects*consecCorrRewardInterval"/>
+            </action>
+            <action type="if" condition="tConsecCorrects &gt;= maxConsecCorrects">
+              <action type="assignment" variable="tRewardTimeUs" value="maxConsecCorrects*consecCorrRewardInterval"/>
+            </action>
+          </action>
+
+          <action type="if" condition="doConsecCorrectReward==0">
+            <action type="assignment" variable="tRewardTimeUs" value="rewardTimeUs"/>
+          </action>
+
+          <action type="assignment" variable="juice" value="tRewardTimeUs"></action>
           <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
-          <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
-          <action type="assignment" tag="" variable="tConsecErrors" value="0"/>
+
                     <!-- accept stim selection -->
           <action type="accept_selections" selection="svStimNumber"></action>
           <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
