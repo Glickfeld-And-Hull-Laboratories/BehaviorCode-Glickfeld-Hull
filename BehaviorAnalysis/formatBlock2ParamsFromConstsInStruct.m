@@ -1,4 +1,4 @@
-function str = formatBlock2ParamsFromConstsInStruct(ds, b2Num)
+function str = formatBlock2ParamsFromConstsInStruct(ds, b2Num, side)
 
 assert(isempty(b2Num) || b2Num == 1 || b2Num == 2, 'invalid b2Num');
 
@@ -61,8 +61,8 @@ if (~isfield(ds, 'doBlock2') ... % backward compat
             return
         end
     elseif isfield(ds,'tQuadrature')
-        str = subFormatVisualInfo(ds.gratingHeightDeg, ds.gratingWidthDeg, ...
-            ds.gratingSpatialFreqCPD, ds.reactionTimeMs);
+        sides = strvcat('right', 'left', 'both');
+        str = [' ' sides(side,:) ' side'];
         return
     end
     

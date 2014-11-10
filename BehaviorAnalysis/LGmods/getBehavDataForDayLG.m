@@ -163,7 +163,7 @@ end
 
 if ds.is2AFC
     %works for now but will need changes as conditions are added
-    vFields = {'tGratingContrast', 'dGratingContrast', 'tTotalReqHoldTimeMs', 'holdTimesMs' };
+    vFields = {'tGratingContrast', 'dGratingContrast', 'rightGratingContrast', 'leftGratingContrast', 'tTotalReqHoldTimeMs', 'holdTimesMs' };
     for iV=1:length(vFields)
         if isfield(ds, vFields{iV})
             eval(sprintf('%s = celleqel2mat_padded(ds.%s);', vFields{iV}, vFields{iV}));
@@ -174,7 +174,8 @@ if ds.is2AFC
 
     reqHoldTimesMs = tTotalReqHoldTimeMs;
     gratingContrast = tGratingContrast-dGratingContrast;
-    
+    rightTrials = rightGratingContrast>leftGratingContrast;
+    leftTrials = leftGratingContrast>rightGratingContrast;
     %this is hard coded for now:
     nContrastTrials = sum(find(gratingContrast>=0));
     doContrast = true;
@@ -238,7 +239,7 @@ if ~isempty(uo.WhichTrials)
     else
         whichTrials = uo.WhichTrials;
     end
-    
+    nsi
     desIx = false(size(trialOutcomeCell));
     desIx(whichTrials) = true;
 
@@ -260,13 +261,22 @@ if ~isempty(uo.WhichTrials)
     if ds.is2AFC
          gratingContrast = gratingContrast(desIx);
          intensityV = intensityV(desIx);
+         nsides = 3;
+         doClampAtZero = 0.5;
+         trialsBySide = zeros(nsides,length(whichTrials));
+         trialsBySide(1,:) = rightTrials(desIx);
+         trialsBySide(2,:) = leftTrials(desIx);
+         trialsBySide(3,:) = ones(size(trialOutcomeCell));
     else
         laserPowerMw = laserPowerMw(desIx);
         gratingContrast = gratingContrast(desIx);
         gratingDirectionDeg = gratingDirectionDeg(desIx);
         intensityV = intensityV(desIx);
+        trialsBySide = ones(size(intensityV));
+        nsides = 1;
+        doClampAtZero = true;
     end
-
+    ds.nsides = nsides;
     block2V = block2V(desIx);
     reactTimesMs = reactTimesMs(desIx);
     
@@ -279,7 +289,21 @@ if ~isempty(uo.WhichTrials)
 else
     desIx = true(size(trialOutcomeCell));
     whichTrials = find(desIx);
+    if ds.is2AFC
+        nsides = 3;
+        trialsBySide = zeros(nsides,length(whichTrials));
+        trialsBySide(1,:) = rightTrials(desIx);
+        trialsBySide(2,:) = leftTrials(desIx);
+        trialsBySide(3,:) = ones(size(trialOutcomeCell));
+        doClampAtZero = 0.5;
+    else
+        nsides = 1;
+        trialsBySide = ones(size(trialOutcomeCell));
+        doClampAtZero = true;
+    end
 end
+outS.nsides = nsides;
+outS.doClampAtZero = doClampAtZero;
 
 %% process vectors post-trim
 if all(isnan(block2V))
@@ -317,30 +341,32 @@ for iB = 1:nBlock2Indices
     
     intensityNums = block2V*NaN;
     %% compute number of corrects and rts
-    for iI = 1:nIntensities(iB)
-        tI = intensitiesC{iB}(iI);
-        iIx = intensityV == tI;
-        
-        nCorr(iB, iI) = sum(iIx & successIx & b2Ix);
-        nEarly(iB, iI) = sum(iIx & earlyIx & b2Ix);
-        nMiss(iB, iI) = sum(iIx & missedIx & b2Ix);
-        nRawTot(iB, iI) = sum(iIx & b2Ix);
+    for iS = 1:nsides
+        for iI = 1:nIntensities(iB)
+            tI = intensitiesC{iB}(iI);
+            iIx = intensityV == tI;
 
-        tV = reactTimesMs(iIx & successIx & b2Ix);
-        if length(tV) == 0, 
-            assert( sum(iIx & b2Ix) > 0 );
-            assert( sum(iIx & b2Ix & successIx) == 0);
-            tV = NaN; 
-        end 
-        outS.reactTimesByPower{iI,iB} = tV;
-        outS.reactTimeMean(iI,iB) = mean(tV);
-        outS.reactTimeStd(iI,iB) = std(tV);
-        outS.reactTimeSEM(iI,iB) = std(tV) ./ sqrt(length(tV));
-        
-        outS.intensityNums(iIx) = iI;
-        
+            nCorr(iB, iI, iS) = sum(iIx & successIx & b2Ix & trialsBySide(iS,:));
+            nEarly(iB, iI, iS) = sum(iIx & earlyIx & b2Ix & trialsBySide(iS,:));
+            nMiss(iB, iI, iS) = sum(iIx & missedIx & b2Ix & trialsBySide(iS,:));
+            nRawTot(iB, iI, iS) = sum(iIx & b2Ix & trialsBySide(iS,:));
+
+            tV = reactTimesMs(iIx & successIx & b2Ix & trialsBySide(iS,:));
+            if length(tV) == 0, 
+                assert( sum(iIx & b2Ix & trialsBySide(iS,:)) > 0 );
+                assert( sum(iIx & b2Ix & successIx & trialsBySide(iS,:)) == 0);
+                tV = NaN; 
+            end 
+            outS.reactTimesByPower{iI,iB,iS} = tV;
+            outS.reactTimeMean(iI,iB,iS) = mean(tV);
+            outS.reactTimeStd(iI,iB,iS) = std(tV);
+            outS.reactTimeSEM(iI,iB,iS) = std(tV) ./ sqrt(length(tV));
+
+            outS.intensityNums(iIx) = iI;
+
+        end
+        nCorrPlusMissC{iB,iS} = nCorr(iB,1:nIntensities(iB),iS) + nMiss(iB,1:nIntensities(iB),iS);
     end
-    nCorrPlusMissC{iB} = nCorr(iB,1:nIntensities(iB)) + nMiss(iB,1:nIntensities(iB));
 end
 nCorrPlusMiss = nCorr+nMiss;
 

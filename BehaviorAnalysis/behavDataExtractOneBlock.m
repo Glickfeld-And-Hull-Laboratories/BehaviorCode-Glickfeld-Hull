@@ -1,4 +1,4 @@
-function [outS] = behavDataExtractOneBlock(bs, block2N)
+function [outS] = behavDataExtractOneBlock(bs, block2N, side)
 % given bs from getBehavDataForData, extract one set of params for block2
 %
 % histed 121004
@@ -30,14 +30,16 @@ for iF = 1:length(matFields)
         outS.(tFN) = bs.(tFN)(block2N,:);
     elseif desDim == 2
         outS.(tFN) = bs.(tFN)(:,block2N);
+    elseif desDim == 3
+        outS.(tFN) = bs.(tFN)(:,block2N, side);
     else
-        error('bug: non-2d?');
+        error('bug: too many dims?');
     end
 end
 
 for iF = 1:length(cellExtractFields)
     tFN = cellExtractFields{iF};
-    outS.(tFN) = bs.(tFN){block2N};       % extracts the cell contents
+    outS.(tFN) = bs.(tFN){block2N, side};       % extracts the cell contents
 
 end
 
