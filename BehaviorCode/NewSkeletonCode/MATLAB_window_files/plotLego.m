@@ -554,7 +554,7 @@ for i = 1:length(LBlockValues),
     as.leftIgnore(i) = sum(trIx & ignoreIx)/nTrs; 
 end
 hold on
-plot(LBlockValues, as.leftSuccess, 'k', LBlockValues, as.leftIncorrs, 'm', LBlockValues, as.leftIgnore, 'g')
+plot(LBlockValues, as.leftSuccess, 'k', LBlockValues, as.leftIncorrs, 'g', LBlockValues, as.leftIgnore, 'm')
 xlabel('Block Position')
 ylabel('Fraction of Outcomes')
 title('Left Block Analysis')
@@ -576,7 +576,7 @@ for i = 1:length(RBlockValues),
     as.rightIgnore(i) = sum(trIx & ignoreIx)/nTrs; 
 end
 hold on
-plot(RBlockValues, as.rightSuccess, 'k', RBlockValues, as.rightIncorrs, 'm', RBlockValues, as.rightIgnore, 'g')
+plot(RBlockValues, as.rightSuccess, 'k', RBlockValues, as.rightIncorrs, 'g', RBlockValues, as.rightIgnore, 'm')
 xlabel('Block Position')
 ylabel('Fraction of Outcomes')
 title('Right Block Analysis')
