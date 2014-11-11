@@ -22,10 +22,6 @@
 
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="preSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
-      <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
-      <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
-      <variable tag="itiTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
 
       <variable tag="speedTimerNFrames" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="NFrames"/>
       <variable tag="itiTimerNFrames" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="NFrames"/>
@@ -59,7 +55,6 @@
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
-      <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="ttCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
@@ -590,12 +585,12 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="Log Speed of entire stim Interval" variable="tStimWheelCounter" value="counter2 - ttCounter2"></action>
             <action type="assignment" variable="laserTriggerFIO" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
+            <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="yield" tag="return to parent task system"></transition>

@@ -1,1 +1,1 @@
-python ~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/scripts/experimentLoadDefaultsFromFile.py ~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/Scripts/Plists/org.Behavior.cerebellarStim.plist
+python ~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/scripts/experimentLoadDefaultsFromFile.py ~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/Scripts/Plists/org.Behavior.cerebellarStim_2P.plist
