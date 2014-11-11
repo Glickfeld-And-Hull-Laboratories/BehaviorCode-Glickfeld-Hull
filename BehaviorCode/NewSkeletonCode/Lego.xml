@@ -62,6 +62,9 @@
 
       <variable tag="doTestRobot" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Test Robot"/>
       <variable tag="robotLeftProb" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Test Robot"/>
+
+      <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Stimuli">
       <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
@@ -302,50 +305,98 @@
 
             <!-- level 1 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))"> 
-              <action type="assignment" variable="tStimulusNumber" value="0"/> 
+              <action type="assignment" variable="tStimulusNumber" value="0"/>
+              <action type="if" condition="doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level1-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action> 
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
 
             <!-- level 2 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level2))"> 
-              <action type="assignment" variable="tStimulusNumber" value="1"/> 
+              <action type="assignment" variable="tStimulusNumber" value="1"/>
+              <action type="if" condition="doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level2-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action>  
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level2"/>
 
             <!-- level3 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level3))"> 
-              <action type="assignment" variable="tStimulusNumber" value="2"/> 
+              <action type="assignment" variable="tStimulusNumber" value="2"/>
+              <action type="if" condition="doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level3-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action>  
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level3"/>
 
             <!-- level4 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level4))"> 
-              <action type="assignment" variable="tStimulusNumber" value="3"/> 
+              <action type="assignment" variable="tStimulusNumber" value="3"/>
+              <action type="if" condition="doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level4-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action>  
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level4"/>
 
             <!-- level5 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level5))"> 
-              <action type="assignment" variable="tStimulusNumber" value="4"/> 
+              <action type="assignment" variable="tStimulusNumber" value="4"/>
+              <action type="if" condition="doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level5-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action>  
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level5"/>
 
             <!-- level6 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level6))"> 
               <action type="assignment" variable="tStimulusNumber" value="5"/> 
+              <action type="if" condition="doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level6-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action> 
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level6"/>
 
             <!-- level7 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level7))"> 
-              <action type="assignment" variable="tStimulusNumber" value="6"/> 
+              <action type="assignment" variable="tStimulusNumber" value="6"/>
+              <action type="if" condition="doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level7-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action>  
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level7"/>
 
 
             <!-- level8 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level8))"> 
-              <action type="assignment" variable="tStimulusNumber" value="7"/> 
+              <action type="assignment" variable="tStimulusNumber" value="7"/>
+              <action type="if" condition="doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level8-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action>  
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level8"/>
 
