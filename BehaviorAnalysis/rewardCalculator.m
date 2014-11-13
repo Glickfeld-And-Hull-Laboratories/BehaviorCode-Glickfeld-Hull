@@ -18,7 +18,7 @@ elseif nargin == 3,
 end
 
 %% Indexing/Constants Evaluation
-[numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullMouseTrainingProtocol.xlsx');
+[numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullTrainingSpreadsheet1.xlsx');
 rewReg = struct;
 xlsSubj = allSheet(2:end,1);
 xlsDate = numSheet(:,1);

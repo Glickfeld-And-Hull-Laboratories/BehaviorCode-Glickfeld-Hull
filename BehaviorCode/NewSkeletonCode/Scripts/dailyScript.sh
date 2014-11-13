@@ -2,7 +2,7 @@
 #  dailyScript.sh
 #  
 # Depends on RSA handshake between HullGlickN computers.
-#  Created by Andrew McKinney on 11/12/13.
+#  Created by Andrew McKinney on 11/8/2014.
 #
 scp -r hullglick@hullglick2.dhe.duke.edu:~/Documents/MWorks/Data ~/Documents/MWorks
 scp -r hullglick@hullglick2.dhe.duke.edu:~/Documents/MWorks/BehavOutputPdfs ~/Documents/MWorks
@@ -17,7 +17,7 @@ scp -r ~/Documents/MWorks/Data ~/Desktop/Crash_server/
 
 #/Applications/MATLAB_R2012b.app/bin/matlab -nosplash -nodesktop -r "dailyScript([212 213 214 305 306]);"
 #/Applications/MATLAB_R2012b.app/bin/matlab -nosplash -nodesktop -r "quit"
-scp -r ~/Documents/MWorks/DailyPlots ~/Desktop/Crash_server/
+#scp -r ~/Documents/MWorks/DailyPlots ~/Desktop/Crash_server/
 
 umount ~/Desktop/Crash_Server
 

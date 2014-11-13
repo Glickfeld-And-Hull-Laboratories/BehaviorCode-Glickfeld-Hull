@@ -1,5 +1,5 @@
 %%
-[numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullTrainingSpreadsheet.xlsx');
+[numSheet, strSheet, allSheet] = xlsread('~/Downloads/HullTrainingSpreadsheet1.xlsx');
 waterStru = struct;
 %%
 xlsSubj = allSheet(:,1);
@@ -35,8 +35,8 @@ waterStru(4).values.subjN = xlsSubj(r4Ix);
 %waterStru(3).values.nCorrect = xlsCorrect(r3Ix);
 %waterStru(4).values.nCorrect = xlsCorrect(r4Ix);
 
-todayNum = datenum(735815);
-trainingStartStr = 735751;
+todayNum = datenum(today-1);
+trainingStartStr = 735839;
 
 for y=1:4;
     tDates = [];
@@ -50,12 +50,23 @@ for y=1:4;
 %    waterStru(y).values.nCorrect = waterStru(y).values.nCorrect(dateIx);
 end
     
-
+pathName = '~/Documents/MWorks/Data/';
 %%
 for x = 1:4,
     for i = 1:length(waterStru(x).values.date),
         fName = strcat('~/Documents/MWorks/Data/data-', char(waterStru(x).values.subjN(i)), '-', mat2str(waterStru(x).values.date(i)), '.mat');
-        ds = mwLoadData(fName, 'max');
+        try
+            ds = mwLoadData(fName, 'max');
+        catch
+            n  = dir([fName(1:40) '*']);
+            if size(n,1) == 1
+                fName = fullfile(pathName, n.name);
+                ds =  mwLoadData(fName, 'max');
+            elseif size(n,1) > 1
+                disp(fName)
+                error('Too many mat files- need to choose');
+            end              
+        end
         waterStru(x).values.avgJuiceTime(i,1) = mean(cell2mat(ds.juiceTimesMsCell));
         waterStru(x).values.nCorrect(i,1) = sum(strcmp(ds.trialOutcomeCell, 'success'));
     end
