@@ -47,11 +47,8 @@ nFail = sum(failureIx);
 nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
-dnscIx = boolean(celleqel2mat_padded(input.tDoNoStimulusChange));
-dnscTrs = find(dnscIx);
-dnscCorrIx = dnscIx & successIx;
-dnscCorrTrs = find(dnscCorrIx);
-dnscCorrIx = dnscCorrIx(dnscIx);
+dnstIx = input.tDoNoStimulusChange;
+dnstTrs = find(dnstIx);
 
 %  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
 tGratingDurationMsV = celleqel2mat_padded(input.tGratingDurationMs);
@@ -398,16 +395,10 @@ end
 
 %% 2 - react time CDF
 axH = subplot(spSz{:},4);
-reacts = [input.reactTimesMs{:}];
-cdfplot(reacts);
+cdfplot([input.reactTimesMs{:}]);
 set(gca, 'XLim', [-1000 1000], ...
          'YLim', [0 1]);
 hold on;
-if sum(dnscIx)>0,
-    dnscP = cdfplot(reacts(dnscIx));
-    set(dnscP,'Color', [0 0.6 0]);
-    set(gca, 'XLim', [-1000 1000], 'YLim', [0 1]);
-end
 vH = vert_lines(0:200:1000);
 set(vH, 'LineStyle', ':', 'Color', 0.5*[1 1 1]);
 title('');
@@ -470,10 +461,8 @@ set(lH3, 'Color', 'm', ...
          'LineWidth', 2, ...
          'LineStyle', '-.');
      
-if sum(dnscIx)>0,
-    lH5 = plot(dnscTrs, smooth(dnscCorrIx, 10, smoothType));
-    set(lH5, 'Color',[0 0.6 0], ...
-           'LineWidth', 2);
+if sum(dnstIx)>0,
+    lH4 = plot(smooth(double))
 end
 if showBlock2
   b2T1Ns = find(block2Tr1Ix);
@@ -563,7 +552,7 @@ end
 
 ylabel('trial start time diff (s)');
 xLim = trXLim;
-set(axesH, 'XLim', xLim);
+set(axesH(~isnan(axesH)), 'XLim', xLim);
 lH = plot(xLim, 20*[1 1], '--k');
 
 set(axesH(1),'YLim', [0 121], ...
@@ -571,7 +560,7 @@ set(axesH(1),'YLim', [0 121], ...
              'YTickLabelMode', 'auto', ...
              'YColor', 'k');
 
-if ~isempty(axesH(2)) 
+if ~isnan(axesH(2)) 
   ylabel(axesH(2), 'Trials/min; avg rew (ms/sec)');
   yLim2 = get(axesH(2), 'YLim');
   yLim2 = [0 max(yLim2(2), 6)];
@@ -622,6 +611,7 @@ desYIx = successIx;
 xYVals = find(desYIx);
 vy1 = smooth(reactV(successIx), 25, 'rloess');
 vy2 = smooth(reactV(successIx), 250, 'rlowess');
+
 [axH pH1 pH2] = plotyy(1,1,1,1);
 set(axH, 'NextPlot', 'add');
 
@@ -651,13 +641,6 @@ end
 % 2nd axes
 if ~isempty(vy1) && ~isempty(vy2)
     hyH(1) = plot(axH(2), xYVals, vy1);
-    hyH(2) = plot(axH(2), xYVals, vy2);
-    if sum(dnscIx)>0,
-        dnscCorrIx = dnscIx & successIx;
-        dnscCorrIx = dnscCorrIx(dnscIx);
-        dnscVals = smooth(reactV(dnscCorrIx), 25, 'rloess');
-        plot(axH(2), dnscCorrTrs, dnscVals, 'Color', [0 0.6 0]);
-    end
     hyH(2) = plot(axH(2), xYVals, vy2);
     
     c2 = 'b';
@@ -801,7 +784,7 @@ if nStims >= 1
   else
     pH = plot(powerLevels, pctCorr, '.-b');
   end
-  if all(~isempty(pH))
+  if all(~isnan(pH))
     set(pH, 'LineWidth', 2)
   end
 
@@ -847,7 +830,7 @@ if nStims >= 1
   end
 
   anystack([pH1;pH2], 'bottom');
-  if all(~isempty(pH))
+  if all(~isnan(pH))
     anystack(pH, 'top');
   end
 
