@@ -11,7 +11,7 @@ smoothType = 'lowess';
 figH = figure(figNum);
 set(figH, 'ToolBar', 'none');
 clf;
-figPos = [930 140 905 905];
+figPos = [700 140 780 770];
 set(figH, 'Position', figPos);
 orange = [1 0.64 0];
 

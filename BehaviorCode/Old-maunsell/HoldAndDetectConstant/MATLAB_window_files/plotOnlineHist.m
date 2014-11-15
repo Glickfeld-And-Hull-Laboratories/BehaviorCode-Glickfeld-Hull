@@ -22,7 +22,7 @@ switch hostname
  case 'MaunsellMouse1'
   figPos = [1111 208 806 923];
  otherwise
-  figPos = [930 140 780 905];
+  figPos = [700 140 780 770];
 end
 set(figH, 'Position', figPos);
 
