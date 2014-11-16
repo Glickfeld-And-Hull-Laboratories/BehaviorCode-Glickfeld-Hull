@@ -723,12 +723,12 @@ if ~isempty(hSDiffsSec) && sum(~isnan(hSDiffsSec)) > 1
   
 else
   axesH(1) = gca;
-  axesH(2) = NaN;
+  axesH(2) = [];
 end
 
 ylabel('trial start time diff (s)');
 xLim = trXLim;
-set(axesH(~isnan(axesH)), 'XLim', xLim);
+set(axesH(~isempty(axesH)), 'XLim', xLim);
 lH = plot(xLim, 20*[1 1], '--k');
 
 set(axesH(1),'YLim', [0 121], ...
@@ -736,7 +736,7 @@ set(axesH(1),'YLim', [0 121], ...
              'YTickLabelMode', 'auto', ...
              'YColor', 'k');
 
-if ~isnan(axesH(2)) 
+if ~isempty(axesH(2)) 
   ylabel(axesH(2), 'Trials/min; avg rew (ms/sec)');
   yLim2 = get(axesH(2), 'YLim');
   yLim2 = [0 max(yLim2(2), 6)];
