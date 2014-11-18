@@ -1029,7 +1029,7 @@ if nStims >= 1
     pctCorr2Block2 = powerP.block2Correct2 ./ (powerP.block2Total2-powerP.block2Early2) * 100;
     des1Ix = ~isnan(pctCorr1Block2);
     des2Ix = ~isnan(pctCorr2Block2);
-    pH=[NaN NaN];
+    pH=[];
     if sum(des1Ix)>0
       pH(1) = plot(powerLevels(des1Ix), pctCorr1Block2(des1Ix), '.-b');
     end
@@ -1047,7 +1047,7 @@ if nStims >= 1
   else
     pH = plot(powerLevels, pctCorr, '.-b');
   end
-  if all(~isnan(pH))
+  if all(~isempty(pH))
     set(pH, 'LineWidth', 2)
   end
 
@@ -1093,7 +1093,7 @@ if nStims >= 1
   end
 
   anystack([pH1;pH2], 'bottom');
-  if all(~isnan(pH))
+  if all(~isempty(pH))
     anystack(pH, 'top');
   end
 
