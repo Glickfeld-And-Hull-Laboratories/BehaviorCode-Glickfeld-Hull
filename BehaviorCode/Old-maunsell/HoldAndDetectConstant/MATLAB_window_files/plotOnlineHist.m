@@ -471,7 +471,7 @@ set(lH3, 'Color', 'm', ...
          'LineStyle', '-.');
      
 if sum(dnscIx)>0,
-    lH5 = plot(dnscTrs, smooth(dnscCorrIx, 10, smoothType));
+    lH5 = plot(dnscTrs, smooth(dnscCorrIx, 100, smoothType));
     set(lH5, 'Color',[0 0.6 0], ...
            'LineWidth', 2);
 end
