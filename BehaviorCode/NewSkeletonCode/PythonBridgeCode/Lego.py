@@ -156,7 +156,7 @@ def main():
     global sp
     global client
     global state  # ini
-    exptIdStr = 'DualPress'
+    exptIdStr = 'Lego'
 
 
     try:

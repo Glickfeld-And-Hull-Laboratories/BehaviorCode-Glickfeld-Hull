@@ -63,7 +63,7 @@ elif thisHostname == "test-rig":
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
     
-HOST = "mark-laser-PC.local"
+HOST = "192.168.1.242"
 laserParamCode = 'sendLaserParams'
 lastSendTime = 0
 nCodesSent = 0
@@ -182,8 +182,11 @@ def computeLaserPowerTrialLaser(doDirTuningMapping=False):
     inD = state.variableCurrValues
 
     if not doDirTuningMapping:  # normal HandDC8 - use time of trial
-        #totalTrLen = inD['fixedReqHoldTimeMs']+inD['randReqHoldMaxMs']+inD['reactTimeMs']
-        thisTrLen = inD['tTotalReqHoldTimeMs']+inD['reactTimeMs']  # minimize the time laser is on
+        if 'tTotalReqHoldTimeMs' not in inD:
+            thisTrLen = inD['delayTimeMs']+inD['reactionTimeMs']
+        else:
+            #totalTrLen = inD['fixedReqHoldTimeMs']+inD['randReqHoldMaxMs']+inD['reactTimeMs']
+            thisTrLen = inD['tTotalReqHoldTimeMs']+inD['reactTimeMs']  # minimize the time laser is on
     else:  # dir tuning - use stimulus on time
         thisTrLen = (inD['stimulusOnTimeMs'] + inD['postStimulusTimeMs'] \
                      + (inD['itiTimeMs']-inD['laserOnTimeFromStartOfItiMs']))
@@ -269,7 +272,8 @@ def cbSendLaserParams(evts):
     if evts.data == 1:
         # do only on true
         if (state.experimentXmlTrialId == cs.experimentXmlTrialIds['HoldAndDetectConstant5']
-            or state.experimentXmlTrialId == cs.experimentXmlTrialIds['HoldAndDetectConstant8']):
+            or state.experimentXmlTrialId == cs.experimentXmlTrialIds['HoldAndDetectConstant8']
+                or state.experimentXmlTrialId == cs.experimentXmlTrialIds['Lego']):
 
             if ((state.variableCurrValues['doBlock2'] == 1 and state.variableCurrValues['block2DoTrialLaser'] == 1)
                 or (state.variableCurrValues['trialLaserPowerMw'] > 0)):
@@ -417,7 +421,7 @@ def sendObjectToLaser(tO, portNum):
     """Returns: number of bytes sent"""
     # Create a socket (SOCK_STREAM means a TCP socket)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(0.1) # no more than 100ms slop
+    sock.settimeout(10) # no more than 100ms slop
     
     # compute length etc
     data = p.dumps(tO)
