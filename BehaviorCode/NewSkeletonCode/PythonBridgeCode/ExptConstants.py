@@ -22,7 +22,8 @@ experimentXmlTrialIds = {
     'DirTuningMapping' :  11, 
     'ChRMappingTwelve' :  12, 
     'ChRMappingTen' :  13, 
-    'DualPress' :  14 }
+    'DualPress' :  14,
+    'Lego' : 15 }
 
 trialOutcomes = [ 
     'success', 
