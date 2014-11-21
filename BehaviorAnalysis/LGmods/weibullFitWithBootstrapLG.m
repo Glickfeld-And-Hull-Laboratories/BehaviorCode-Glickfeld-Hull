@@ -1,4 +1,4 @@
-function [outDs bootDs axH] = weibullFitWithBootstrapLG(varargin)
+function [outDs bootDs bs] = weibullFitWithBootstrapLG(varargin)
 %
 %   [outDs bootStats] = weibullFitWithBootstrap(varargin)
 %
@@ -28,6 +28,7 @@ userDefs = { ...
 uo = stropt2struct(stropt_defaults(userDefs, varargin));
 
 %% get data if requested
+
 haveBs = false;
 if  ~isempty(uo.Filename)
     % get data from mat file
@@ -44,20 +45,22 @@ elseif ~isempty(uo.BehavDataStruct)
     haveBs = true;
     assert(isempty(uo.Filename), 'specify a single data source: filename or bds');
 end
+
 rep = bs.rep;
 iB = bs.iB;
 x1d = bs.x1d;
 ds = bs.ds;
 for iS = 1:bs.nsides;
-bs = behavDataExtractOneBlock(bs, iB, iS);
+nblocks = bs.nBlock2Indices;
+bsOneBlock = behavDataExtractOneBlock(bs, iB, iS);
 if haveBs
-    if bs.nBlock2Indices > 1
+    if bsOneBlock.nBlock2Indices > 1
         error('Only one type of trials should be included in fit');
     end
     
-    intensV = bs.intensitiesC{1};
-    pctCorr = bs.percentsCorrect;
-    nTrialsPerLevel = bs.nCorrPlusMiss;
+    intensV = bsOneBlock.intensitiesC{1};
+    pctCorr = bsOneBlock.percentsCorrect;
+    nTrialsPerLevel = bsOneBlock.nCorrPlusMiss;
     
     dropIx = nTrialsPerLevel == 0;
     if any(dropIx)
@@ -83,9 +86,9 @@ end
 
 %% run fit
 uo.DoClampAtZero = bs.doClampAtZero;
-spSz = {bs.nBlock2Indices,bs.nsides};
-axH(rep) = subplot(spSz{:,:}, rep); cla; hold on;
-    
+spSz = {nblocks,bs.nsides};
+rep = bs.rep;
+axH(rep) = subplot(spSz{:,:}, rep); cla; hold on;   
 fitS = weibullFitLG(intensV, pctCorr(:,:,iS), uo.DoClampAtZero, false, ...
     { 'nTrials', squeeze(nTrialsPerLevel(:,:,iS))'}, iS); % weight by # trials
 
@@ -293,7 +296,6 @@ end
         title(formatBlock2ParamsFromConstsInStruct(ds, iB, iS));
     end
     bs.rep = bs.rep+1;
-    rep = rep+1;
 end
 
 

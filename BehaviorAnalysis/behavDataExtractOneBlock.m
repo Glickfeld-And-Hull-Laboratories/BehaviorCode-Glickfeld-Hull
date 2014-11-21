@@ -24,7 +24,7 @@ for iF = 1:length(matFields)
     tFN = matFields{iF};
     tF = bs.(tFN);
     desDim = find(size(tF) == 2);
-    assert(~isempty(desDim), 'bug: field not found');
+    assert(~isempty(desDim), ['bug: field #' num2str(iF) ' not found']);
     
     if desDim == 1
         outS.(tFN) = bs.(tFN)(block2N,:);
