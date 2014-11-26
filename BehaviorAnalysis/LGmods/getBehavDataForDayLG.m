@@ -239,7 +239,7 @@ if ~isempty(uo.WhichTrials)
     else
         whichTrials = uo.WhichTrials;
     end
-    nsi
+   
     desIx = false(size(trialOutcomeCell));
     desIx(whichTrials) = true;
 
