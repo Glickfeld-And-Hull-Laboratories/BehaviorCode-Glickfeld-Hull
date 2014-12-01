@@ -237,7 +237,7 @@
               x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
               x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
               rotation="tGratingDirectionDeg"
-              alpha_multiplier="tGratingContrast"></stimulus>
+              alpha_multiplier="1"></stimulus>
     <stimulus type="drifting_grating" tag="targetGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingSpeedDPS" 
@@ -646,8 +646,12 @@
           <action type="assignment" variable="stimulusOn" value="1"/>
           <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
           <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
-          <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
-          <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"></action>
+
+          <action type="if" condition="doBlackAndWhite==0 || (doBlackAndWhite==1 &amp;&amp; (dGratingContrast &gt; 0.99)) ">
+            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
+            <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"></action>
+          </action>
+
           <action type="if" condition="doBlackAndWhite==1">
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="blackground2"></action>
             <action type="play_dynamic_stimulus" stimulus="blackground2" tag="start"></action>
