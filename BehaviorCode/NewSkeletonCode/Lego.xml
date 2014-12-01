@@ -46,6 +46,7 @@
       <variable tag="rewardStaircaseMaxReward" scope="global" logging="when_changed" default_value="200000" type="integer" persistant="1" groups="Reward Staircase"/>
 
       <variable tag="doBiasStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Bias Staircase"/>
+      <variable tag="doCorrectiveTrials" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Corrective Trials"/>
 
       <variable tag="doConsecCorrectReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Consecutive Corrects Reward"/>
       <variable tag="consecCorrRewardInterval" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Consecutive Corrects Reward"/>
@@ -457,7 +458,7 @@
           <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
 
           <!-- if not doing blocks, choose left/right state based on left, switch, and last trial state. -->
-          <action type="if" condition="doBlocks==0">
+          <action type="if" condition="(doBlocks==0) || ((doCorrectiveTrials == 1) &amp;&amp; (tConsecErrors == 0))">
             <action type="assignment" variable="tMarkovOdds" value="(1-tStimProbAvgLeft)/tStimProbAvgLeft" />
             <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
             <action type="assignment" variable="a" value="tMarkovOdds * b"/>
@@ -474,7 +475,7 @@
           </action>
           </action>
 
-          <action type="if" condition="doBlocks==1">
+          <action type="if" condition="doBlocks==1 &amp;&amp; doCorrectiveTrials == 0">
             <action type="if" condition="(tNBlockLeftTrsCompleted &lt; blockLeftTrs) &amp;&amp; tLastTrialWasLeft==1">
               <action type="assignment" variable="tLeftTrial" value="1"/>
             </action>
@@ -489,6 +490,10 @@
               <action type="assignment" variable="tLeftTrial" value="1"/>
               <action type="assignment" variable="tNBlockLeftTrsCompleted" value="0"/>
             </action>
+          </action>
+
+          <action type="if" condition="(doCorrectiveTrials == 1) &amp;&amp; (tConsecErrors &gt; 0)">
+            <action type="assignment" variable="tLeftTrial" value="tLastTrialWasLeft" />
           </action>
 
           <action type="if" condition="doBlock2">
@@ -915,15 +920,17 @@
 
                     <!-- accept stim selection -->
           <action type="accept_selections" selection="svStimNumber"></action>
-          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+          <action type="if" condition="doCorrectiveTrials==0">
+            <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+          </action>
 
           <!-- update selection variable -->
-          <action type="if" condition="tNStimAccepted &gt;= 80">
+          <action type="if" condition="(tNStimAccepted &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
             <action type="reset_selection" selection="svStimNumber"/>
             <action type="assignment" variable="tNStimAccepted" value="0"></action>
             <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
           </action>
-          <action type="if" condition="tNStimAccepted &lt; 80">
+          <action type="if" condition="(tNStimAccepted &lt; 80) &amp;&amp; doCorrectiveTrials==0">
             <action type="next_selection" selection="svStimNumber"/>
             <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
           </action>
@@ -949,15 +956,17 @@
           
                     <!-- accept stim selection -->
           <action type="accept_selections" selection="svStimNumber"></action>
-          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+          <action type="if" condition="doCorrectiveTrials==0">
+            <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+          </action>
 
           <!-- update selection variable -->
-          <action type="if" condition="tNStimAccepted &gt;= 80">
+          <action type="if" condition="(tNStimAccepted &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
             <action type="reset_selection" selection="svStimNumber"/>
             <action type="assignment" variable="tNStimAccepted" value="0"></action>
             <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
           </action>
-          <action type="if" condition="tNStimAccepted &lt; 80">
+          <action type="if" condition="(tNStimAccepted &lt; 80) &amp;&amp; doCorrectiveTrials==0">
             <action type="next_selection" selection="svStimNumber"/>
             <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
           </action>
