@@ -35,6 +35,8 @@
       <variable tag="doMatchToTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Match To Target"/>
       <variable tag="doEitherWay" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
+      <variable tag="doBlackAndWhite" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Black And White"/>
+
       <variable tag="doBlocks" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block Control"/>
       <variable tag="blockLeftTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
       <variable tag="blockRightTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
@@ -227,6 +229,15 @@
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="blank_screen" tag="blackground1" color="0.0,0.0,0.0"></stimulus>
+    <stimulus type="drifting_grating" tag="blackground2"  direction="0" starting_phase="180"
+              spatial_frequency=".000000000001" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
+              x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
+              rotation="tGratingDirectionDeg"
+              alpha_multiplier="tGratingContrast"></stimulus>
     <stimulus type="drifting_grating" tag="targetGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingSpeedDPS" 
@@ -262,7 +273,7 @@
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
-      <action type="queue_stimulus" stimulus="background"></action>
+      <action type="queue_stimulus" stimulus="background"/>
       <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
       <!-- init actions before running trials after any press of start-->
       <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
@@ -284,6 +295,11 @@
       <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
         <task_system_state tag="InterTrialInterval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="if" condition="doBlackAndWhite==1">
+            <action type="queue_stimulus" stimulus="blackground1"></action>
+            <action type="update_stimulus_display"/>
+            <action type="assignment" variable="gratingSpatialFreqCPD" value="0.0000000001"/>
+          </action>
           <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms"></action>
           <action type="start_timer" timer="itiTimerMs" timebase="" duration="itiTimeMs" duration_units="ms"/>
           <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
@@ -632,6 +648,10 @@
           <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
           <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
           <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"></action>
+          <action type="if" condition="doBlackAndWhite==1">
+            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="blackground2"></action>
+            <action type="play_dynamic_stimulus" stimulus="blackground2" tag="start"></action>
+          </action>
           <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
           <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
           <action tag="Update Display" type="update_stimulus_display"></action>
@@ -858,6 +878,9 @@
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
           <action type="dequeue_stimulus" stimulus="cursorGrating"></action>
+          <action type="if" condition="doBlackAndWhite==1">
+            <action type="dequeue_stimulus" stimulus="blackground2"></action>
+          </action>
           <action type="update_stimulus_display"></action>
           <action type="play_sound" sound="correctSound"/>
           <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
@@ -908,6 +931,9 @@
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
           <action type="dequeue_stimulus" stimulus="cursorGrating"></action>
+          <action type="if" condition="doBlackAndWhite==1">
+            <action type="dequeue_stimulus" stimulus="blackground2"></action>
+          </action>
           <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
           <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
           <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect: Time-Out for $incorrectTimeoutMs **"></action>
@@ -944,6 +970,9 @@
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
           <action type="dequeue_stimulus" stimulus="cursorGrating"></action>
+          <action type="if" condition="doBlackAndWhite==1">
+            <action type="dequeue_stimulus" stimulus="blackground2"></action>
+          </action>
           <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
           <action tag="Report Ignore" full_name="ReportDigital" type="report" message="** Ignore: Time-Out for $ignoreTimeoutMs **"></action>
           <action type="update_stimulus_display"></action>
