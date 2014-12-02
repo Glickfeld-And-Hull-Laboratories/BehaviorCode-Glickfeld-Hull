@@ -415,7 +415,11 @@ if nCorr>0 && input.doTestRobot==0,
     maxX = max(uqDiff);
     xLimm = [minX maxX];
     pH = plot(uqDiff, cell2mat(corrDiffCell));
-    xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
+    if ~(xLimm(1)==0),
+      xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
+    else
+      xL1 = [0 ceil(log10(xLimm(2)))];
+    end
     xTickL = 10.^(xL1(1):1:xL1(2));
     xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
     xTLabelL = cellstr(num2str(xTickL(:)));
