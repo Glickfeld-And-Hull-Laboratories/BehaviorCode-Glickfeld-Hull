@@ -679,21 +679,21 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="Log Speed of entire stim Interval" variable="tStimWheelCounter" value="counter2 - ttCounter2"></action>
           <!-- Must use next selection and reset selection here to move through rand/seq -->
+          <action type="if" condition="doRand == 0 &amp;&amp; tNStimAccepted &lt; 89">
+              <action type="next_selection" selection="svSeqStimNumber"/>
+              <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+          </action>
+          <action type="if" condition="doRand == 0 &amp;&amp; tNStimAccepted &gt;= 89">
+              <action type="reset_selection" selection="svSeqStimNumber"/>
+              <action type="assignment" variable="tNStimAccepted" value="0"></action>
+          </action>
+          
           <action type="if" condition="doRand == 1 &amp;&amp; tNStimAccepted &lt; 89">
               <action type="next_selection" selection="svRandStimNumber"/>
               <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
           </action>
           <action type="if" condition="doRand == 1 &amp;&amp; tNStimAccepted &gt;= 89">
               <action type="reset_selection" selection="svRandStimNumber"/>
-              <action type="assignment" variable="tNStimAccepted" value="0"></action>
-          </action>
-          
-          <action type="if" condition="doRand == 0 &amp;&amp; tNStimAccepted &lt; 89">
-              <action type="next_selection" selection="svSeqStimNumber"/>
-              <action type="assignment" variable="tNStimAccepted" value="0"></action>
-          </action>
-          <action type="if" condition="doRand == 0 &amp;&amp; tNStimAccepted &gt;= 89">
-              <action type="reset_selection" selection="svSeqStimNumber"/>
               <action type="assignment" variable="tNStimAccepted" value="0"></action>
           </action>
           
