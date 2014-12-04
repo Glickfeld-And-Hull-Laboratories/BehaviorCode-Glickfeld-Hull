@@ -35,6 +35,9 @@
       <variable tag="doMatchToTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Match To Target"/>
       <variable tag="doEitherWay" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
+      <variable tag="ifLeftInfiniteRight" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Infinites"/>
+      <variable tag="ifRightInfiniteLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Infinites"/>
+
       <variable tag="doBlackAndWhite" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Black And White"/>
 
       <variable tag="doBlocks" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block Control"/>
@@ -739,6 +742,8 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
+          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; ifRightInfiniteLeft==1 &amp;&amp;((quadrature - tQuadrature) &lt; (0-leftReversalThreshold))" target="ZeroQuad"></transition>
+          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; ifLeftInfiniteRight==1 &amp;&amp; ((quadrature - tQuadrature) &gt; rightReversalThreshold)" target="ZeroQuad"></transition>
           <transition type="conditional" condition="(quadrature - tQuadrature) &lt; (0-leftReversalThreshold)" target="PastLeftThreshold"></transition>
           <transition type="conditional" condition="(quadrature - tQuadrature) &gt; rightReversalThreshold" target="PastRightThreshold"></transition>
           <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &lt; 0.5) &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
