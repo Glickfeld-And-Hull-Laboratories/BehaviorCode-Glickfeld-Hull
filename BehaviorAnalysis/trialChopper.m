@@ -14,19 +14,15 @@ if nargin>1,
         trStart = tr(1);
         trEnd = tr(2);
         iX = trStart:trEnd;
-        disp('got to here1')
     else
         iX = logical(tr);
-        disp('got to here2')
     end
     if nargin>2,
         rTs = randTrials;
         rg = trEnd-trStart;
         randIx = randperm(rg, rTs);
-        disp('got to here3')
     else
         rTs = [];
-        disp('got to here4')
     end
 end
             
@@ -40,7 +36,6 @@ for i=1:nFNs,
     a = strcat('input.', fieldNames(i));
     field = eval(a{1});
     if length(field)==nTrs && ~strcmp(fieldNames(i), 'savedEvents'),
-        disp(field);
         field = field(iX);
         outStruct.(fieldNames{i}) = field;
         if ~isempty(rTs),
@@ -50,3 +45,4 @@ for i=1:nFNs,
         outStruct.(fieldNames{i}) = field;
     end    
 end
+outStruct.trialSinceReset = 1;
