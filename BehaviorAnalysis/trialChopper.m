@@ -8,7 +8,6 @@ function [outStruct] = trialChopper(input, tr, randTrials)
 % Designed to index a range of trials within a data structure, then randomly select
 % randTrials number of trials from that range, then output the reformatted
 % structure.
-nargin = 3
 if nargin>1,
     if length(tr)==2 && issorted(tr),
         trStart = tr(1);
