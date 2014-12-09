@@ -1,5 +1,5 @@
 function pv = behavParamsPVContrast
-    pv.task_mat = [Con Ori];  
+    pv.task_mat = strvcat('Con', 'Ori');  
     pv.pos_mat = [35];
     pv.mouse_mat = [502 503];
     pv.chr2_mat = [1 1];
