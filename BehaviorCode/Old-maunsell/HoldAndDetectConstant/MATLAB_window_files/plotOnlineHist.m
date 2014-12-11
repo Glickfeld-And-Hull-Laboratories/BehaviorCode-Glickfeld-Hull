@@ -47,11 +47,13 @@ nFail = sum(failureIx);
 nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
-dnscIx = boolean(celleqel2mat_padded(input.tDoNoStimulusChange));
-dnscTrs = find(dnscIx);
-dnscCorrIx = dnscIx & successIx;
-dnscCorrTrs = find(dnscCorrIx);
-dnscCorrIx = dnscCorrIx(dnscIx);
+if isfield(input, 'tDoNoStimulusChange'),
+    dnscIx = boolean(celleqel2mat_padded(input.tDoNoStimulusChange));
+    dnscTrs = find(dnscIx);
+    dnscCorrIx = dnscIx & successIx;
+    dnscCorrTrs = find(dnscCorrIx);
+    dnscCorrIx = dnscCorrIx(dnscIx);
+end
 
 %  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
 tGratingDurationMsV = celleqel2mat_padded(input.tGratingDurationMs);
@@ -403,10 +405,12 @@ cdfplot(reacts);
 set(gca, 'XLim', [-1000 1000], ...
          'YLim', [0 1]);
 hold on;
-if sum(dnscIx)>0,
-    dnscP = cdfplot(reacts(dnscIx));
-    set(dnscP,'Color', [0 0.6 0]);
-    set(gca, 'XLim', [-1000 1000], 'YLim', [0 1]);
+if isfield(input, 'tDoNoStimulusChange'),
+    if sum(dnscIx)>0,
+        dnscP = cdfplot(reacts(dnscIx));
+        set(dnscP,'Color', [0 0.6 0]);
+        set(gca, 'XLim', [-1000 1000], 'YLim', [0 1]);
+    end
 end
 vH = vert_lines(0:200:1000);
 set(vH, 'LineStyle', ':', 'Color', 0.5*[1 1 1]);
@@ -470,7 +474,7 @@ set(lH3, 'Color', 'm', ...
          'LineWidth', 2, ...
          'LineStyle', '-.');
      
-if sum(dnscIx)>0,
+if isfield(input, 'tDoNoStimulusChange') & sum(dnscIx)>0,
     lH5 = plot(dnscTrs, smooth(dnscCorrIx, 100, smoothType));
     set(lH5, 'Color',[0 0.6 0], ...
            'LineWidth', 2);
@@ -652,7 +656,7 @@ end
 if ~isempty(vy1) && ~isempty(vy2)
     hyH(1) = plot(axH(2), xYVals, vy1);
     hyH(2) = plot(axH(2), xYVals, vy2);
-    if sum(dnscIx)>0,
+    if isfield(input, 'tDoNoStimulusChange') && sum(dnscIx)>0,
         dnscCorrIx = dnscIx & successIx;
         dnscCorrIx = dnscCorrIx(dnscIx);
         dnscVals = smooth(reactV(dnscCorrIx), 25, 'rloess');
