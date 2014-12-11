@@ -294,20 +294,37 @@
           
           
           <!--Select retinotopy position; choose a value from selection var, 0-origin -->
-          <action type="if" condition="doRetStim = 1">
-          	<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>
-          	<action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
+          <action type="if" condition="doRetStim">
+            <!--Select direction with Retinotopy -->
+            <action type="if" condition="doDirStim">
+              <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingDirectionStepN)"/>
+              <action type="if" condition="tTempStim &lt; (gratingAzimuthStepN * gratingDirectionStepN)">
+                <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+                <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(tTempStim/gratingDirectionStepN))"/>
+                <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim % gratingDirectionStepN))"/>
+                <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Direction is $tGratingDirectionDeg"/>
+              </action>
+              <action type="if" condition="tTempStim &gt;= (gratingAzimuthStepN * gratingDirectionStepN)">
+                <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg + (gratingElevationStepDeg * (floor(tTempStim / (gratingAzimuthStepN * gratingDirectionStepN))))"/>
+                <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(((tTempStim) % (gratingAzimuthStepN * gratingDirectionStepN))/gratingDirectionStepN))"/>
+                <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim % gratingDirectionStepN))"/>
+                <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Direction is $tGratingDirectionDeg"/>
+              </action>
+            </action> 
+            <action type="if" condition="!doDirStim">
+            <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>    
+          	 <action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
               	<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim))"/>
               	<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
-        		<action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
-      		</action>
-      		<action type="if" condition="tTempStim &gt;= gratingAzimuthStepN">
+        		    <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
+      		    </action>
+      		    <action type="if" condition="tTempStim &gt;= gratingAzimuthStepN">
               	<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg+ (gratingAzimuthStepDeg * ((tTempStim) % gratingAzimuthStepN))"/>
               	<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg+ (gratingElevationStepDeg * (floor(tTempStim / gratingAzimuthStepN)))"/>
-        		<action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
-      		</action>
+        		    <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
+      		    </action>
+            </action>
           </action>
-          
           <action type="if" condition="doRetStim = 0">
 			        <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
@@ -328,7 +345,7 @@
           <!--Select spatial frequency -->
           <action type="if" condition="doSFStim = 1">	
     		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingSpatialFreqStepN"/>          	
-          	<!--Select spatial frequency with Retinotopy -->
+          	
           	<action type="if" condition="doRetStim = 1">
           		<action type="assignment" variable="tTempStim" value= "floor((tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingSpatialFreqStepN))/(gratingElevationStepN * gratingAzimuthStepN))"/>
 	      	</action>	
@@ -354,7 +371,7 @@
           </action> 
           
           <!--Select direction -->
-          <action type="if" condition="doDirStim = 1">
+          <action type="if" condition="doDirStim &amp;&amp; !doRetStim">
           	<action type="if" condition="doMovingDots != 1">
             	<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDirectionStepN"/>
               <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim))"/>
@@ -367,7 +384,7 @@
             </action> 
           </action>		
           <action type="if" condition="doDirStim = 0">
-			 <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
+			       <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
              <action type="assignment" variable="tDotDirectionDeg" value= "dotDirectionDeg"/>
           </action>
           
