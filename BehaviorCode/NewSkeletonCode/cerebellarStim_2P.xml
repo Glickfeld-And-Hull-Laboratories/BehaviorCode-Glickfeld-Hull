@@ -54,9 +54,11 @@
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
-    <folder tag="Internal Variables">
+    <folder tag="Internal Variables">   <!--added Counter and Counter2 to the internal variables liste-->
+      <variable tag="Counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="ttCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="Counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
@@ -133,7 +135,7 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
        
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
-          <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
+          <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; (tTrialsDoneSinceStart &gt;= stopAfterNTrials)">
               <action type="report" message="** Stopping after completing $stopAfterNTrials trials"></action>
               <action type="stop_experiment"></action>  
           </action>
@@ -328,6 +330,7 @@
           <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter9" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
+          <action type="report" message="REACHED ITI COUNTER 10!!!!!!!!!!!!!!!!!"/>
           
           <action type="if" condition="counter-tCounter >= nScansOff"> 
             <action type="assignment" tag="Log Speed of current Interval" variable="itiCounter10" value="counter2 - tCounter2"></action>
@@ -335,13 +338,14 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-ttCounter >= nScansOff" target="PreSoundPause" ></transition>
-          <transition type="conditional" condition="counter-tCounter >= itiTimerNFrames" target="itiCounterEnd" ></transition>
+          <transition type="conditional" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounterEnd" ></transition> <!-- Mati FIX!!-->
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition> 
       </task_system_state>
 
       <task_system_state tag="itiCounterEnd" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter10" value="counter2 - tCounter2"></action>
+          <action type="report" message="in itiCounterEnd"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
@@ -349,8 +353,8 @@
 
       <task_system_state tag="PreSoundPause" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action>
+            <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - ttCounter2"></action> 
+            <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action> 
             <action type="assignment" tag="Zero ttCounter for time calculation" variable="ttCounter" value="counter"></action>
 
             <action type="report" message="*** Sitting in PreSoundPause State for $preSoundPauseNFrames frames"/>
@@ -361,7 +365,7 @@
 
       <task_system_state tag="PlaySound" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
+        
             <action type="report" message="***** Playing Tone Now *****"/>
             <action type="assignment" tag="Zero ttCounter for time calculation" variable="ttCounter" value="counter"></action>
 
@@ -410,7 +414,7 @@
       <task_system_state tag="SendStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="report" message="*** Tactile Stimulus Sent -- Staying in Post-Stim State for $nScansOn scans."></action>
-            <action type="assignment" tag="Log Number of Wheel-pulses received during ISI" variable="tISIWheelCounter" value="counter2 - tttCounter2"></action>
+            <action type="assignment" tag="Log Number of Wheel-pulses received during ISI" variable="tISIWheelCounter" value="counter2 - tttCounter2"></action> <!-- tISIWheelCounter is the sum of pre+post sound -->
             <action type="assignment" variable="tStimTurnedOn" value="now()/1000"/>
             <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
