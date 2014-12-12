@@ -44,7 +44,7 @@ switch tHostname
             rootDir = 'Z:\home\lindsey\Analysis\Behavior';
             rc.indexFilename = fullfile(rootDir, 'experimentIndexes\subj-days-lg.xls');
             rc.fitOutputFilename = fullfile(rootDir, 'experimentIndexes\subj-fits-lg.xls');
-            rc.fitOutputSummary = fullfile(rootDir, 'output\analysis\summary');
+            rc.fitOutputSummary = fullfile(rootDir, 'output\summary');
             rc.fitOutputPdfDir = fullfile(rootDir, 'output\pdfFits');
             rc.fitOutputMatDir = fullfile(rootDir, 'output\fitMatStats');
         elseif tUsername(1:8) == 'miaomiao'
