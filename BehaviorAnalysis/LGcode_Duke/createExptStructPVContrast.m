@@ -11,10 +11,12 @@ for itask = tasks
     % find all days for each position
     for imouse = 1:length(pv.mouse_mat)
         mouse(imouse).ind = find(xd.Subject ==  pv.mouse_mat(imouse));
+        mouse(imouse).name = pv.mouse_mat(imouse);
         mouse(imouse).task(itask).ind = intersect(find(strcmp(xd.Task,task)), mouse(imouse).ind);
         for ipos = 1:length(pv.pos_mat)
             pos = pv.pos_mat(ipos);
             mouse(imouse).task(itask).pos(ipos).ind = intersect(find(xd.Position==pos), mouse(imouse).task(itask).ind);
+            mouse(imouse).task(itask).pos(ipos).name = pos;
         end
     end
     
@@ -24,6 +26,7 @@ for itask = tasks
             for ipow = 1:length(pv.power_mat)
                 pow = pv.power_mat(ipow);
                 mouse(imouse).task(itask).pos(ipos).pow(ipow).ind = intersect(find(xd.Power==pow), mouse(imouse).task(itask).pos(ipos).ind);
+                mouse(imouse).task(itask).pos(ipos).pow(ipow).name = pow;
             end
         end    
     end
@@ -35,6 +38,7 @@ for itask = tasks
                 for icon = 1:length(pv.basecon_mat);
                     con = pv.basecon_mat(icon);
                     mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).ind = intersect(find(xd.BaseContrast==con), mouse(imouse).task(itask).pos(ipos).pow(ipow).ind);
+                    mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).name = con;
                 end
             end
         end    
@@ -53,8 +57,10 @@ for itask = tasks
                     fit_early_max = zeros(nexp,3,2);
                     date = zeros(nexp,1);
                     for iexp = 1:nexp
+                        dateStr = cell2mat(xd.DateStr(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).ind(iexp)));
                         mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).expt(iexp).laser = [];
-                        fn = fullfile(rc.fitOutputMatDir, ['subj' num2str(pv.mouse_mat(imouse)) '-' cell2mat(xd.DateStr(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).ind(iexp))) '-' cell2mat(xd.DataBlock(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).ind(iexp))) '.mat']);
+                        mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).expt(iexp).date = dateStr;
+                        fn = fullfile(rc.fitOutputMatDir, ['subj' num2str(pv.mouse_mat(imouse)) '-' dateStr '-' cell2mat(xd.DataBlock(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).ind(iexp))) '.mat']);
                         load(fn);
                         for las = 1:length(fitS)
                             %check confidence intervals
@@ -130,6 +136,7 @@ for itask = tasks
                         plot(1:nexp,thresh,'o')
                         ylim([0 0.5])
                         xlim([1 nexp])
+                        title('Threshold- control(blue) LED(green)')
                         subplot(2,3,2)
                         plot([1:2],early_pct,'-')
                         ylim([0 0.5])
@@ -142,10 +149,12 @@ for itask = tasks
                         plot(1:nexp,(thresh(:,2)./thresh(:,1))','o')
                         ylim([0.5 3])
                         xlim([1 nexp])
+                        title('Threshold- LED/control')
                         subplot(2,3,6)
                         plot((thresh(:,2)./thresh(:,1)),(early_pct(:,2)./early_pct(:,1)),'o')
                         ylim([0.5 1.5])
                         xlim([0.5 3])
+                        title('LED/Control: Threshold(X) vs FalseAlarm (Y)')
                         suptitle([num2str(pv.mouse_mat(imouse)) ' ' pv.task_mat(itask,:) ' ' num2str(pv.power_mat(ipow)) ' mW']);
                         fname = ['ThresholdSummary_i' num2str(pv.mouse_mat(imouse)) '_' pv.task_mat(itask,:) num2str(pv.power_mat(ipow)) 'mW.pdf'];
                         fn_out = fullfile(rc.fitOutputSummary, fname);
@@ -153,12 +162,12 @@ for itask = tasks
                         figure;
                     end
                     if length(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).ind)>0
-                        subplot(2,3,4); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,1,2),'o')
+                        subplot(2,3,4); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,1,2),'o'); title('LED')
                         subplot(2,3,1); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,1,1),'o'); title('fit')
                         subplot(2,3,2); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,2,1),'o'); title('early')
-                        subplot(2,3,5); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,2,2),'o')
-                        subplot(2,3,3); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,3,1),'o'), title('max')
-                        subplot(2,3,6); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,3,2),'o')
+                        subplot(2,3,5); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,2,2),'o'); title('LED')
+                        subplot(2,3,3); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,3,1),'o'); title('max')
+                        subplot(2,3,6); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,3,2),'o'); title('LED')
                         suptitle([num2str(pv.mouse_mat(imouse)) ' ' pv.task_mat(itask,:) ' ' num2str(pv.power_mat(ipow)) ' mW']);
                         fn_out = fullfile(rc.fitOutputSummary, ['FitEarlyMax_i' num2str(pv.mouse_mat(imouse)) '_'  pv.task_mat(itask,:) '_' num2str(pv.power_mat(ipow)) 'mW.pdf']);
                         exportfig_print(gcf, fn_out, 'FileFormat', 'pdf');
@@ -168,6 +177,8 @@ for itask = tasks
         end
     end
 end
+fn_out = fullfile(rc.fitOutputSummary, ['PVcon_summarystruct_' date '.mat']);
+save(fn_out, 'mouse');
 
 %% combining multiple mat files
 
