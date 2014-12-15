@@ -174,7 +174,12 @@ end
 %              'VerticalAlignment', 'top', ...
 %              'HorizontalAlignment', 'left');
          
-            
+if isfield(input, 'gratingTargetEccentricity')
+  input.leftDecisionThreshold = (input.gratingEccentricityDeg-input.gratingTargetEccentricity)./ input.feedbackMotionSensitivity;
+  input.rightDecisionThreshold = (input.gratingEccentricityDeg-input.gratingTargetEccentricity)./ input.feedbackMotionSensitivity;
+end
+
+
         tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
                          'Thresholds (L,R):\t%4.0f, %4.0f pulses\n', ...
                          'Too-Fast Time: %d ms;  Reward: %s ms \n', ...
