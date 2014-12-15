@@ -11,10 +11,10 @@ end
 ds = data_struct; %added Couunter ttCounter and Counter2
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/MatlabSharedCode');
 oneValEachTrialNames = { ...
-    'Counter', ...
+    'counter', ...
     'tCounter', ...
     'ttCounter', ...
-    'Counter2', ...
+    'counter2', ...
     'tCounter2', ...
     'ttCounter2', ...
     'tttCounter2', ...
@@ -133,6 +133,23 @@ for iC = 1:nConsts
   end
 end
 input.constChangedOnTrial{input.trialSinceReset} = b;
+
+try
+    input.counterTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'counter', 'all', [], 1);
+    input.counterValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'counter', 'all', 1) ;
+catch
+    input.counterTimesUs{trN} = NaN;
+    input.counterValues{trN} = NaN;
+end
+
+try
+  input.counter2TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'counter2', 'all', [], 1);
+  input.counter2Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'counter2', 'all', 1) ;
+catch
+  input.counter2TimesUs{trN} = NaN;
+  input.counter2Values{trN} = NaN;
+end
+
 
 
 input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
