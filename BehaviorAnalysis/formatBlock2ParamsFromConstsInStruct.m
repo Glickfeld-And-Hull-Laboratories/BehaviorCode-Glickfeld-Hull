@@ -60,7 +60,9 @@ if (~isfield(ds, 'doBlock2') ... % backward compat
                 ds.gratingSpatialFreqCPD, ds.gratingDurationMs);
             return
         end
-    elseif isfield(ds,'tQuadrature')
+    end
+    if isfield(ds,'tQuadrature')
+         x = 'true'
         sides = strvcat('right', 'left', 'both');
         str = [' ' sides(side,:) ' side'];
         return
