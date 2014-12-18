@@ -79,17 +79,39 @@ for j = subjMat;
         dataStru(j).values.nTrials(1, iN)= nTrials;
         dataStru(j).values.holdTimesCell{iN} = histc(double(cell2mat(ds.holdTimesMs)), 0:100:5000);
         
+        if isfield(ds, 'doNoStimulusChange')
+            if ds.doNoStimulusChange == 1,
+                dataStru(j).values.timing(1, iN)= 1;
+                dataStru(j).values.fixedCue(1, iN)= 0;
+                dataStru(j).values.randCue(1, iN)= 0;
+                % Then calculate things for timing conditions
+            elseif ds.doNoStimulusChange == 0,
+                dataStru(j).values.timing(1, iN)= 0;
+                if ds.randReqHoldMaxMs > 5,
+                    % Calculate things for random cued conditions
+                    dataStru(j).values.randCue(1, iN)= 1;
+                    dataStru(j).values.fixedCue(1, iN)= 0;
+                else
+                    % Calculate things for fixed cued conditions
+                    dataStru(j).values.randCue(1, iN)= 0;
+                    dataStru(j).values.fixedCue(1, iN)= 1;
+                end
+            end
+        else
+            % ASK EUNYOUNG HOW SHE DOES TIMING CONDITIONS W/O DNSC
+        end
+        
         
         disp('Daily Data Loaded')  
     end
-    disp(strcat('Subject Data from i', ds.subjectNum, ' Loaded'))
+    disp(strcat('Subject Data from i', num2str(j), ' Loaded'))
 end
 
 beep
 disp('Loading complete!')
        
 for i=1:length(subjMat),
-    subPlotSz = {2,1};
+    subPlotSz = {3,1};
     sub = subjMat(i); 
     pCorr = dataStru(sub).values.perCorrects;
     pEarly = dataStru(sub).values.perEarlies;
@@ -105,9 +127,9 @@ for i=1:length(subjMat),
 
     axH = subplot(subPlotSz{:}, 1);
     hold on
-    plot(pCorr, 'k', 'LineWidth', 2);
-    plot(pEarly, 'c', 'LineWidth', 2);
-    plot(pLate, 'm', 'LineWidth', 2);
+    plot(pCorr, '-kv', 'LineWidth', 2);
+    plot(pEarly, '-cv', 'LineWidth', 2);
+    plot(pLate, '-mv', 'LineWidth', 2);
     ylabel('Percent');
     xlabel('Training Day');
     tName = strcat('Trial Outcome Performance -- i', num2str(sub), '-- Generated:', datestr(today, 'dd mmmm yyyy'));
@@ -117,7 +139,7 @@ for i=1:length(subjMat),
     %legend('Correct', 'Early', 'Late', 'No Release', 'Location', 'Best') ;
     grid on;
 
-    axH = subplot(subPlotSz{:}, 2);
+    axH = subplot(subPlotSz{:}, 3);
     hold on
     medPlot = plot(medH, 'k', 'LineWidth', 2);
 %    winPlot = plot(winS, 'r', 'LineWidth', 2);
@@ -136,7 +158,7 @@ for i=1:length(subjMat),
     set(gcf, 'Name', fName);
     
     
-    sName = strcat('~/Documents/MWorks/DailyPlots/graphPerformance-i', num2str(sub),'-', datestr(today, 'yymmdd'), '.pdf');
+    sName = strcat('~/Documents/MWorks/DailyPlots/plotPerformance-i', num2str(sub),'-', datestr(today, 'yymmdd'), '.pdf');
     epParams = { gcf, sName, ...
              'FileFormat', 'pdf', ...
              'Size', [12 12], ...

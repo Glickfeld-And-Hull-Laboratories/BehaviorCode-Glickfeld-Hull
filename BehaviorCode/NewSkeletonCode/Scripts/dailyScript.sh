@@ -4,9 +4,9 @@
 # Depends on RSA handshake between HullGlickN computers.
 #  Created by Andrew McKinney on 11/8/2014.
 #
-scp -r hullglick@hullglick2.dhe.duke.edu:~/Documents/MWorks/Data ~/Documents/MWorks
-scp -r hullglick@hullglick2.dhe.duke.edu:~/Documents/MWorks/BehavOutputPdfs ~/Documents/MWorks
-scp -r hullglick@hullglick3.dhe.duke.edu:~/Documents/MWorks/Data ~/Documents/MWorks
+scp -r hullglick@hullglick2.local:~/Documents/MWorks/Data ~/Documents/MWorks
+scp -r hullglick@hullglick2.local:~/Documents/MWorks/BehavOutputPdfs ~/Documents/MWorks
+scp -r hullglick@hullglick3.local:~/Documents/MWorks/Data ~/Documents/MWorks
 scp -r hullglick@hullglick3.local:~/Documents/MWorks/BehavOutputPdfs ~/Documents/MWorks
 scp -r hullglick@hullglick4.local:~/Documents/MWorks/Data ~/Documents/MWorks
 scp -r hullglick@hullglick4.local:~/Documents/MWorks/BehavOutputPdfs ~/Documents/MWorks
