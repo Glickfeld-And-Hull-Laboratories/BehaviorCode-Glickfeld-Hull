@@ -55,7 +55,12 @@ for j = subjMat;
         nCorrect = sum(strcmp(ds.trialOutcomeCell, 'success'));
         nEarly = sum(strcmp(ds.trialOutcomeCell, 'failure'));
         nLate = sum(strcmp(ds.trialOutcomeCell, 'ignore'));
-        nNR = sum(strcmp(ds.trialOutcomeCell, 'norelease'));       
+        nNR = sum(strcmp(ds.trialOutcomeCell, 'norelease'));    
+        
+        dataStru(j).values.minReq(1, iN) = min(cell2mat(ds.tTotalReqHoldTimeMs))+ds.tooFastTimeMs;
+        dataStru(j).values.maxReq(1, iN) = max(cell2mat(ds.tTotalReqHoldTimeMs))+ds.reactTimeMs;
+        
+        
 
         perCorrect= nCorrect/nTrials;
         perEarly= nEarly/nTrials;
@@ -112,45 +117,81 @@ disp('Loading complete!')
        
 for i=1:length(subjMat),
     subPlotSz = {3,1};
-    sub = subjMat(i); 
-    pCorr = dataStru(sub).values.perCorrects;
-    pEarly = dataStru(sub).values.perEarlies;
-    pLate = dataStru(sub).values.perLates;
-    pNR = dataStru(sub).values.perNR;   
-    medH = dataStru(sub).values.medianHold;
-    uSTD = dataStru(sub).values.uSTD;
-    lSTD = dataStru(sub).values.lSTD;
-    nTrials = dataStru(sub).values.nTrials;
-    nCorr = dataStru(sub).values.nCorrects;
+    sub = subjMat(i);
+    v = dataStru(sub).values;
+    pCorr = v.perCorrects;
+    pEarly = v.perEarlies;
+    pLate = v.perLates;
+    pNR = v.perNR;   
+    medH = v.medianHold;
+    uSTD = v.uSTD;
+    lSTD = v.lSTD;
+    nTrials = v.nTrials;
+    nCorr = v.nCorrects;
     nDays = length(medH);
     xDays = 1:nDays;
 
+%%    
     axH = subplot(subPlotSz{:}, 1);
+    
+    cueIx = v.fixedCue | v.randCue;
     hold on
-    plot(pCorr, '-kv', 'LineWidth', 2);
-    plot(pEarly, '-cv', 'LineWidth', 2);
-    plot(pLate, '-mv', 'LineWidth', 2);
-    ylabel('Percent');
+    cueCorr = pCorr;
+    cueCorr(~cueIx) = NaN;
+    cueEarly = pEarly;
+    cueEarly(~cueIx) = NaN;
+    cueLate = pLate;
+    cueLate(~cueIx) = NaN;
+   
+    plot(cueCorr, '-kv', 'LineWidth', 2);
+    plot(cueEarly, '-cv', 'LineWidth', 2);
+    plot(cueLate, '-mv', 'LineWidth', 2);
+    ylabel('Percent (Cued)');
     xlabel('Training Day');
-    tName = strcat('Trial Outcome Performance -- i', num2str(sub), '-- Generated:', datestr(today, 'dd mmmm yyyy'));
+    tName = strcat('Trial Outcomes for Cued Conditions -- i', num2str(sub), '-- Generated:', datestr(today, 'mmmm dd yyyy'));
+    title(tName)
+    xlim([1 nDays])
+    ylim([0 1]);
+    %legend('Correct', 'Early', 'Late', 'No Release', 'Location', 'Best') ;
+    grid on; 
+%%
+    axH = subplot(subPlotSz{:}, 2);
+    
+    tIx = logical(v.timing)
+    hold on
+    timingCorr = pCorr;
+    timingCorr(~tIx) = NaN;
+    timingEarly = pEarly;
+    timingEarly(~tIx) = NaN;
+    timingLate = pLate;
+    timingLate(~tIx) = NaN;
+   
+    plot(timingCorr, '-kv', 'LineWidth', 2);
+    plot(timingEarly, '-cv', 'LineWidth', 2);
+    plot(timingLate, '-mv', 'LineWidth', 2);
+    ylabel('Percent (Timing)');
+    xlabel('Training Day');
+    tName = 'Trial Outcomes for Timing Conditions';
     title(tName);
-    axis tight
+    xlim([1 nDays])
     ylim([0 1]);
     %legend('Correct', 'Early', 'Late', 'No Release', 'Location', 'Best') ;
     grid on;
 
+%%
     axH = subplot(subPlotSz{:}, 3);
     hold on
     medPlot = plot(medH, 'k', 'LineWidth', 2);
+    [ax] = jbfill(xDays, v.maxReq, v.minReq, [0 0 1], [0 0 1], 1, [0.5]);
+    anystack(ax, 'bottom');
 %    winPlot = plot(winS, 'r', 'LineWidth', 2);
 %    hTSPlot = plot(hTS, 'g', 'LineWidth', 2);
-%    SD = jbfill(xDays, uSTD, lSTD, [0.25 0.25 1], [0.25 0.25 1], 1, 0.5);
     ylabel('Hold Time (ms)');
     xlabel('Training Day');
     axis tight
     grid on
-    ylim([0 2500]);
-    tName = strcat('Lever Hold Performance -- i', num2str(sub));%' -- Generated:', datestr(today, 'dd mmmm yyyy'));
+    ylim([0 5000]);
+    tName = 'Median Hold Times and Reward Window Sizes';
     title(tName);
     %legend('\pm 1 SD', 'Median Hold Time', 'Reward Window Start', 'Location', 'Best');
     
