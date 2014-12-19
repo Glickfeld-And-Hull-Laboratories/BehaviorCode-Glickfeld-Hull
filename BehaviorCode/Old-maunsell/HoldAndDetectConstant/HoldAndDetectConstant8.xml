@@ -6,6 +6,8 @@
               lever1="FIO1" lever2="" 
               lever1_solenoid="FIO2"
               lever2_solenoid=""
+              counter="counter"
+              counter2="counter2"
               laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -49,6 +51,13 @@
       <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Reward"/>
       <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Reward"/>
       <variable tag="rewardEveryNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
+
+      <variable tag="doCounterTracking" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Counter"/>
+      <variable tag="cTrialStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+      <variable tag="cTrialEnd" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+      <variable tag="cLeverDown" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+      <variable tag="cTargetOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+      <variable tag="cLeverUp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
       
     </folder>
     <folder tag="Stimuli">
@@ -182,6 +191,8 @@
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="counter2" full_name="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="counter" full_name="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -330,6 +341,9 @@
 
 
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+            <action type="if" condition="doCounterTracking">
+              <action type="assignment" variable="cTrialStart" value="counter"></action>
+            </action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
@@ -886,6 +900,9 @@
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
 
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
+            <action type="if" condition="doCounterTracking==1">
+              <action type="assignment" variable="cLeverDown" value="counter"></action>
+            </action>
 
             <action type="if" condition="doVisualStim">
               <action type="if" condition="!doITIStim">
@@ -933,6 +950,9 @@
 
               <action type="assignment" tag="Set StimulusOn" variable="stimulusOn" value="1"></action>
               <action tag="Report StimOn" full_name="ReportDigital" type="report" message="StimOn (still holding; signaling release ok)"></action>
+              <action type="if" condition="doCounterTracking==1">
+                <action type="assignment" variable="cTargetOn" value="counter"></action>
+              </action>
 
               <!-- vis stim on -->
               <action type="if" condition="doVisualStim &amp;&amp; doNoStimulusChange==0">
@@ -1010,6 +1030,9 @@
           <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="if" condition="doCounterTracking==1">
+              <action type="assignment" variable="cLeverUp" value="counter"></action>
+            </action>
 
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
 
@@ -1050,6 +1073,9 @@
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="if" condition="doCounterTracking==1">
+              <action type="assignment" variable="cLeverUp" value="counter"></action>
+            </action>
 
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
 
@@ -1164,6 +1190,9 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
+            <action type="if" condition="doCounterTracking==1">
+              <action type="assignment" variable="cLeverUp" value="counter"></action>
+            </action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
@@ -1222,6 +1251,9 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="assignment" variable="laserTriggerFIO" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="if" condition="doCounterTracking==1">
+              <action type="assignment" variable="cTrialEnd" value="counter"></action>
+            </action>
 
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
