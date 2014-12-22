@@ -1,4 +1,4 @@
-function [x] = plotHullPerformance(subjMat, dateMat)
+function [x] = plotHullPerformance(subjMat)
 % Rewritten December 16th 2014 to automatically detect experiment type and load all dates in
 % the Data folder for a given mouse.
 global dataStru
@@ -13,27 +13,20 @@ nSubjs= length(subjMat);
 % Next line skips ".", "..", and ".DS_Store" hidden files. May not be applicable
 % in systems where hidden files are still hidden and should be removed if
 % it leads to data skippage.
-fileNames = fileNames(4:end);
+fileNames = fileNames(5:end);
 %% Data File Indexing and Pre-Processing
-outR = regexp(fileNames, 'data-i([0-9]*)-([0-9]*)-([0-9]*).mat', 'tokens');
+outR = regexp(fileNames, 'data-i([0-9]*)-(??????????????', 'tokens');
 outRV = cat(1, outR{:});
 outRM = cat(1, outRV{:});
 subjNumList = str2double(outRM(:,1));
-dateStrList = str2double(outRM(:,2));
-hourStrList = str2double(outRM(:,3));
+%dateStrList = str2double(outRM(:,2));
+%hourStrList = str2double(outRM(:,3));
 dataStru=struct;
 
 %% This section searches dataPath for files specific to each animal for the specified days, then loads specified parts of data into struData.
 for j = subjMat;
     subjIx = subjNumList == j;
-    if nargin<2,
-        dateIx = dateStrList(subjIx);
-    else
-        dateIx = ismember(dateStrList, dateMat);
-    end
-    subjDateIx = subjIx & dateIx;
-    %dataStru(j).dates= dateMat;
-    desNames = fileNames(subjDateIx);
+    desNames = fileNames(subjIx);
     nNames = length(desNames);
     for iN = 1:nNames;
         tName = fullfile(dataPath, desNames{iN});
@@ -51,22 +44,27 @@ for j = subjMat;
           lSTD = 0;
         end
         nTrials= length(ds.trialOutcomeCell);
-        
+        disp(ds.savedDataName)
         nCorrect = sum(strcmp(ds.trialOutcomeCell, 'success'));
-        nEarly = sum(strcmp(ds.trialOutcomeCell, 'failure'));
         nLate = sum(strcmp(ds.trialOutcomeCell, 'ignore'));
-        nNR = sum(strcmp(ds.trialOutcomeCell, 'norelease'));    
-        
-        dataStru(j).values.minReq(1, iN) = min(cell2mat(ds.tTotalReqHoldTimeMs))+ds.tooFastTimeMs;
-        dataStru(j).values.maxReq(1, iN) = max(cell2mat(ds.tTotalReqHoldTimeMs))+ds.reactTimeMs;
-        
-        
-
+        nNR = sum(strcmp(ds.trialOutcomeCell, 'norelease'));
         perCorrect= nCorrect/nTrials;
-        perEarly= nEarly/nTrials;
-        perLate= nLate/nTrials;
         perNR = nNR/nTrials;
-  
+        
+        if isfield(ds, 'tTotalReqHoldTimeMs'),
+            dataStru(j).values.minReq(1, iN) = min(cell2mat(ds.tTotalReqHoldTimeMs))+ds.tooFastTimeMs;
+            dataStru(j).values.maxReq(1, iN) = max(cell2mat(ds.tTotalReqHoldTimeMs))+ds.reactTimeMs;
+            nLate = sum(strcmp(ds.trialOutcomeCell, 'ignore'));
+            nEarly = sum(strcmp(ds.trialOutcomeCell, 'failure'));
+        elseif isfield(ds, 'delayTimeMs'),
+            dataStru(j).values.minReq(1, iN) = min(cell2mat(ds.tDelayTimeMs)-ds.preRewardWindowMs);
+            dataStru(j).values.maxReq(1, iN) = max(cell2mat(ds.tDelayTimeMs)+ds.postRewardWindowMs);
+            nLate = sum(strcmp(ds.trialOutcomeCell, 'late'));
+            nEarly = sum(strcmp(ds.trialOutcomeCell, 'early'));
+        end
+        perLate= nLate/nTrials;
+        perEarly= nEarly/nTrials;
+        
         dataStru(j).values.nCorrects(1,iN)= nCorrect;
         dataStru(j).values.nEarlies(1,iN)= nEarly;
         dataStru(j).values.nLates(1,iN)= nLate;
@@ -83,38 +81,50 @@ for j = subjMat;
         dataStru(j).values.ITI(1, iN)= ds.itiTimeMs;
         dataStru(j).values.nTrials(1, iN)= nTrials;
         dataStru(j).values.holdTimesCell{iN} = histc(double(cell2mat(ds.holdTimesMs)), 0:100:5000);
-        
-        if isfield(ds, 'doNoStimulusChange')
-            if ds.doNoStimulusChange == 1,
-                dataStru(j).values.timing(1, iN)= 1;
-                dataStru(j).values.fixedCue(1, iN)= 0;
-                dataStru(j).values.randCue(1, iN)= 0;
-                % Then calculate things for timing conditions
-            elseif ds.doNoStimulusChange == 0,
-                dataStru(j).values.timing(1, iN)= 0;
-                if ds.randReqHoldMaxMs > 5,
-                    % Calculate things for random cued conditions
-                    dataStru(j).values.randCue(1, iN)= 1;
+        if isfield(ds, 'tTotalReqHoldTimeMs')
+            if isfield(ds, 'doNoStimulusChange')
+                if ds.doNoStimulusChange == 1,
+                    dataStru(j).values.timing(1, iN)= 1;
                     dataStru(j).values.fixedCue(1, iN)= 0;
-                else
-                    % Calculate things for fixed cued conditions
                     dataStru(j).values.randCue(1, iN)= 0;
+                % Then calculate things for timing conditions
+                elseif ds.doNoStimulusChange == 0,
+                    dataStru(j).values.timing(1, iN)= 0;
+                    if ds.randReqHoldMaxMs > 5,
+                        % Calculate things for random cued conditions
+                        dataStru(j).values.randCue(1, iN)= 1;
+                        dataStru(j).values.fixedCue(1, iN)= 0;
+                    else
+                        % Calculate things for fixed cued conditions
+                        dataStru(j).values.randCue(1, iN)= 0;
+                        dataStru(j).values.fixedCue(1, iN)= 1;
+                    end
+                end
+            else %disp('ERROR IN CATEGORIZATION: HADC8 without doNoStimulusChange')
+                if ds.randReqHoldMaxMs > 5,
+                    dataStru(j).values.timing(1, iN)= 0;
+                    dataStru(j).values.fixedCue(1, iN)= 0;
+                    dataStru(j).values.randCue(1, iN)= 1;
+                else
+                    dataStru(j).values.timing(1, iN)= 0;
                     dataStru(j).values.fixedCue(1, iN)= 1;
+                    dataStru(j).values.randCue(1, iN)= 0;
                 end
             end
-        else
-            % ASK EUNYOUNG HOW SHE DOES TIMING CONDITIONS W/O DNSC
+        elseif isfield(ds, 'delayTimeMs'),
+            dataStru(j).values.timing(1, iN)= 1;
+            dataStru(j).values.randCue(1, iN)= 0;
+            dataStru(j).values.fixedCue(1, iN)= 0;
         end
-        
-        
-        disp('Daily Data Loaded')  
     end
     disp(strcat('Subject Data from i', num2str(j), ' Loaded'))
 end
 
 beep
 disp('Loading complete!')
-       
+ 
+
+%%
 for i=1:length(subjMat),
     subPlotSz = {3,1};
     sub = subjMat(i);
@@ -134,7 +144,7 @@ for i=1:length(subjMat),
 %%    
     axH = subplot(subPlotSz{:}, 1);
     
-    cueIx = v.fixedCue | v.randCue;
+    cueIx = v.fixedCue|v.randCue;
     hold on
     cueCorr = pCorr;
     cueCorr(~cueIx) = NaN;
@@ -142,6 +152,11 @@ for i=1:length(subjMat),
     cueEarly(~cueIx) = NaN;
     cueLate = pLate;
     cueLate(~cueIx) = NaN;
+    if sum(v.perNR>0),
+        timingNR = v.perNR;
+        timingNR(~cueIx) = NaN;
+        plot(timingNR, '-v', 'Color', [1 0.6 0])
+    end
    
     plot(cueCorr, '-kv', 'LineWidth', 2);
     plot(cueEarly, '-cv', 'LineWidth', 2);
@@ -165,6 +180,12 @@ for i=1:length(subjMat),
     timingEarly(~tIx) = NaN;
     timingLate = pLate;
     timingLate(~tIx) = NaN;
+    if sum(v.perNR>0),
+        timingNR = v.perNR;
+        timingNR(~tIx) = NaN;
+        plot(timingNR, '-v', 'Color', [1 0.6 0])
+    end
+        
    
     plot(timingCorr, '-kv', 'LineWidth', 2);
     plot(timingEarly, '-cv', 'LineWidth', 2);
@@ -190,7 +211,12 @@ for i=1:length(subjMat),
     xlabel('Training Day');
     axis tight
     grid on
-    ylim([0 5000]);
+    m = max(v.maxReq)
+    if m>5000,
+        ylim([0 5000]);
+    else
+        ylim([0 m]);
+    end
     tName = 'Median Hold Times and Reward Window Sizes';
     title(tName);
     %legend('\pm 1 SD', 'Median Hold Time', 'Reward Window Start', 'Location', 'Best');
