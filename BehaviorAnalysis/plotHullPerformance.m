@@ -45,7 +45,13 @@ for j = subjMat;
         end
         nTrials= length(ds.trialOutcomeCell);
         disp(ds.savedDataName)
-        nCorrect = sum(strcmp(ds.trialOutcomeCell, 'success'));
+        corrIx = strcmp(ds.trialOutcomeCell, 'success');
+        nCorrect = sum(corrIx);
+        corrHolds = rawHoldTimes(corrIx);
+        
+        dataStru(j).values.correctHoldSD(1, iN) = nanstd(double(corrHolds));
+        dataStru(j).values.correctHoldMean(1, iN) = nanmean(corrHolds);
+        
         nLate = sum(strcmp(ds.trialOutcomeCell, 'ignore'));
         nNR = sum(strcmp(ds.trialOutcomeCell, 'norelease'));
         perCorrect= nCorrect/nTrials;
