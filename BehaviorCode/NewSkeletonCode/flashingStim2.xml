@@ -1040,6 +1040,12 @@
             <action type="assignment" variable="stimTag" value= "1"/>
             <action type="assignment" variable="tStimOnMs" value="now()/1000" />
 
+            <action type="if" condition="tTrialLaserPowerMw > 0">
+              <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
+              <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+              <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+            </action>
+
             <action type="if" condition="tCyclesOn &lt; 1">
               <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>  
               <action type="play_sound" sound="pressSound"/>
