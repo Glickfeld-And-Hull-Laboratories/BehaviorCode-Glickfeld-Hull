@@ -22,7 +22,7 @@ colorCell = {[0 0 1], ... % blue
 % it leads to data skippage.
 fileNames = fileNames(3:end);
 %% Data File Indexing and Pre-Processing
-outR = regexp(fileNames, 'data-i([0-9]*)-([0-9]*).mat', 'tokens');
+outR = regexp(fileNames, 'data-i([0-9]*)-([0-9]*)?', 'tokens');
 outRV = cat(1, outR{:});
 outRM = cat(1, outRV{:});
 subjNumList = str2double(outRM(:,1));
