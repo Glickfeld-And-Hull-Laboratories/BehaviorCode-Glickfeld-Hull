@@ -152,6 +152,168 @@ end
 
 
 
+%% Block to acquire all sp/itiCounter times and tValues
+try
+  input.spCounter1TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter1', 'all', [], 1);
+  input.spCounter1Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter1', 'all', 1) ;
+catch
+  input.spCounter1TimesUs{trN} = NaN;
+  input.spCounter1Values{trN} = NaN;
+end
+
+try
+  input.spCounter2TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter2', 'all', [], 1);
+  input.spCounter2Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter2', 'all', 1) ;
+catch
+  input.spCounter2TimesUs{trN} = NaN;
+  input.spCounter2Values{trN} = NaN;
+end
+
+try
+  input.spCounter3TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter3', 'all', [], 1);
+  input.spCounter3Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter3', 'all', 1) ;
+catch
+  input.spCounter3TimesUs{trN} = NaN;
+  input.spCounter3Values{trN} = NaN;
+end
+
+try
+  input.spCounter4TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter4', 'all', [], 1);
+  input.spCounter4Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter4', 'all', 1) ;
+catch
+  input.spCounter4TimesUs{trN} = NaN;
+  input.spCounter4Values{trN} = NaN;
+end
+
+try
+  input.spCounter5TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter5', 'all', [], 1);
+  input.spCounter5Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter5', 'all', 1) ;
+catch
+  input.spCounter5TimesUs{trN} = NaN;
+  input.spCounter5Values{trN} = NaN;
+end
+
+try
+  input.spCounter6TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter6', 'all', [], 1);
+  input.spCounter6Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter6', 'all', 1) ;
+catch
+  input.spCounter6TimesUs{trN} = NaN;
+  input.spCounter6Values{trN} = NaN;
+end
+
+try
+  input.spCounter7TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter7', 'all', [], 1);
+  input.spCounter7Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter7', 'all', 1) ;
+catch
+  input.spCounter7TimesUs{trN} = NaN;
+  input.spCounter7Values{trN} = NaN;
+end
+
+try
+  input.spCounter8TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter8', 'all', [], 1);
+  input.spCounter8Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter8', 'all', 1) ;
+catch
+  input.spCounter8TimesUs{trN} = NaN;
+  input.spCounter8Values{trN} = NaN;
+end
+
+try
+  input.spCounter9TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter9', 'all', [], 1);
+  input.spCounter9Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter9', 'all', 1) ;
+catch
+  input.spCounter9TimesUs{trN} = NaN;
+  input.spCounter9Values{trN} = NaN;
+end
+
+try
+  input.spCounter10TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'spCounter10', 'all', [], 1);
+  input.spCounter10Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'spCounter10', 'all', 1) ;
+catch
+  input.spCounter10TimesUs{trN} = NaN;
+  input.spCounter10Values{trN} = NaN;
+end
+
+try
+  input.itiCounter1TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter1', 'all', [], 1);
+  input.itiCounter1Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter1', 'all', 1) ;
+catch
+  input.itiCounter1TimesUs{trN} = NaN;
+  input.itiCounter1Values{trN} = NaN;
+end
+
+try
+  input.itiCounter2TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter2', 'all', [], 1);
+  input.itiCounter2Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter2', 'all', 1) ;
+catch
+  input.itiCounter2TimesUs{trN} = NaN;
+  input.itiCounter2Values{trN} = NaN;
+end
+
+try
+  input.itiCounter3TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter3', 'all', [], 1);
+  input.itiCounter3Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter3', 'all', 1) ;
+catch
+  input.itiCounter3TimesUs{trN} = NaN;
+  input.itiCounter3Values{trN} = NaN;
+end
+
+try
+  input.itiCounter4TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter4', 'all', [], 1);
+  input.itiCounter4Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter4', 'all', 1) ;
+catch
+  input.itiCounter4TimesUs{trN} = NaN;
+  input.itiCounter4Values{trN} = NaN;
+end
+
+try
+  input.itiCounter5TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter5', 'all', [], 1);
+  input.itiCounter5Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter5', 'all', 1) ;
+catch
+  input.itiCounter5TimesUs{trN} = NaN;
+  input.itiCounter5Values{trN} = NaN;
+end
+
+try
+  input.itiCounter6TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter6', 'all', [], 1);
+  input.itiCounter6Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter6', 'all', 1) ;
+catch
+  input.itiCounter6TimesUs{trN} = NaN;
+  input.itiCounter6Values{trN} = NaN;
+end
+
+try
+  input.itiCounter7TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter7', 'all', [], 1);
+  input.itiCounter7Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter7', 'all', 1) ;
+catch
+  input.itiCounter7TimesUs{trN} = NaN;
+  input.itiCounter7Values{trN} = NaN;
+end
+
+try
+  input.itiCounter8TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter8', 'all', [], 1);
+  input.itiCounter8Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter8', 'all', 1) ;
+catch
+  input.itiCounter8TimesUs{trN} = NaN;
+  input.itiCounter8Values{trN} = NaN;
+end
+
+try
+  input.itiCounter9TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter9', 'all', [], 1);
+  input.itiCounter9Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter9', 'all', 1) ;
+catch
+  input.itiCounter9TimesUs{trN} = NaN;
+  input.itiCounter9Values{trN} = NaN;
+end
+
+try
+  input.itiCounter10TimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'itiCounter10', 'all', [], 1);
+  input.itiCounter10Values{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'itiCounter10', 'all', 1) ;
+catch
+  input.itiCounter10TimesUs{trN} = NaN;
+  input.itiCounter10Values{trN} = NaN;
+end
+
+
 input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
                               '~/Documents/MWorks/Data', ...
                               mat2str(input.subjectNum), input.saveTime);
