@@ -85,19 +85,39 @@ for itask = tasks
                             ind = mouse(imouse).task(itask).pos(ipos).pow(ipow).ind(iexp);
                             fName = rc.computeFName(pv.mouse_mat(imouse), cell2mat(xd.DateStr(ind)));
                             n  = dir([fName(1:(length(rc.pathStr)+17)) '*']);
+                            clear ds;
+                            clear temp;
                             if size(n,1) == 1
                                 fName = fullfile(rc.pathStr, n.name);
-                                ds = load(fName);
+                                ds = mwLoadData(fName);
                             elseif size(n,1) > 1
-                                error('Too many mat files- need to choose');
+                                if xd.MergeAllMatFiles(ind) == 1
+                                    for ifile = 1:size(n,1)
+                                        fName = fullfile(rc.pathStr, n(ifile).name);
+                                        temp = mwLoadData(fName);
+                                        ds(ifile) = temp;
+                                        if ifile>1
+                                            ds = concatenateDataBlocks(ds);
+                                        end
+                                    end
+%                                 elseif ~isnan(xd.ChooseMatFile(ind))
+%                                     for ifile = 1:size(n,1)
+%                                         if ~isempty(strfind(n(ifile).name,num2str(xd.ChooseMatFile(ind))))
+%                                             fName = fullfile(rc.pathStr, n(ifile).name);
+%                                             ds = load(fName);
+%                                         end
+%                                     end
+                                else
+                                    error('Too many mat files- need to choose');
+                                end
                             end    
                             trials = str2num(cell2mat(xd.TrialRangeToUse(ind)));
                             if ~isnan(trials)
-                                ds.input = trialChopper(ds.input,[trials(1) trials(end)]);
+                                ds = trialChopper(ds,[trials(1) trials(end)]);
                             end
-                            ind_all = find(cell2mat(ds.input.tBlock2TrialNumber)==(las-1));
-                            ind_hold = intersect(find(cell2mat(ds.input.holdTimesMs)>200), ind_all);
-                            RTs = cell2mat(ds.input.reactTimesMs);
+                            ind_all = find(cell2mat(ds.tBlock2TrialNumber)==(las-1));
+                            ind_hold = intersect(find(cell2mat(ds.holdTimesMs)>200), ind_all);
+                            RTs = cell2mat(ds.reactTimesMs);
                             ind_early = find(RTs(ind_hold)<=125);
                             mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).expt(iexp).laser(las).early_pct = length(ind_early)./length(ind_hold);
                             if mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).expt(iexp).laser(las).early_pct>0.5
@@ -159,9 +179,9 @@ for itask = tasks
                         fname = ['ThresholdSummary_i' num2str(pv.mouse_mat(imouse)) '_' pv.task_mat(itask,:) num2str(pv.power_mat(ipow)) 'mW.pdf'];
                         fn_out = fullfile(rc.fitOutputSummary, fname);
                         exportfig_print(gcf, fn_out, 'FileFormat', 'pdf');
-                        figure;
                     end
                     if length(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).ind)>0
+                        figure;
                         subplot(2,3,4); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,1,2),'o'); title('LED')
                         subplot(2,3,1); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,1,1),'o'); title('fit')
                         subplot(2,3,2); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,2,1),'o'); title('early')
@@ -171,6 +191,21 @@ for itask = tasks
                         suptitle([num2str(pv.mouse_mat(imouse)) ' ' pv.task_mat(itask,:) ' ' num2str(pv.power_mat(ipow)) ' mW']);
                         fn_out = fullfile(rc.fitOutputSummary, ['FitEarlyMax_i' num2str(pv.mouse_mat(imouse)) '_'  pv.task_mat(itask,:) '_' num2str(pv.power_mat(ipow)) 'mW.pdf']);
                         exportfig_print(gcf, fn_out, 'FileFormat', 'pdf');
+                        figure;
+                        for las = 1:2
+                            fit_early = find(squeeze(sum(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,1:2,las),2))==2);
+                            fit_max = find(squeeze(sum(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,[1 3],las),2))==2);
+                            early_max = find(squeeze(sum(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,2:3,las),2))==2);
+                            sum(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max(:,1:2,las),2)
+                            size(fit_early)
+                            size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1)
+                            subplot(2,3,1+((las-1)*3)); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1),fit_early,'o'); title('fit_early')
+                            subplot(2,3,1+((las-1)*3)); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), fit_max,'o'); title('fit_max')
+                            subplot(2,3,1+((las-1)*3)); plot(1:size(mouse(imouse).task(itask).pos(ipos).pow(ipow).con(icon).fit_early_max,1), early_max,'o'); title('early_max')
+                        end
+                        suptitle([num2str(pv.mouse_mat(imouse)) ' ' pv.task_mat(itask,:) ' ' num2str(pv.power_mat(ipow)) ' mW']);
+                        fn_out = fullfile(rc.fitOutputSummary, ['FitEarlyMax_pairs_i' num2str(pv.mouse_mat(imouse)) '_'  pv.task_mat(itask,:) '_' num2str(pv.power_mat(ipow)) 'mW.pdf']);
+                        exportfig_print(gcf, fn_out, 'FileFormat', 'pdf');
                     end
                 end
             end
@@ -179,22 +214,3 @@ for itask = tasks
 end
 fn_out = fullfile(rc.fitOutputSummary, ['PVcon_summarystruct_' date '.mat']);
 save(fn_out, 'mouse');
-
-%% combining multiple mat files
-
-function outS = concatenateDataBlocks(blockC)
-    fNames = fieldnames(blockC(1));
-    nF = length(fNames);
-    outS = struct([]);
-    trs = blockC(1).trialSinceReset;
-    for iF = 1:nF
-        fN = cell2mat(fNames(iF,:));
-        outS(1).(fN) = blockC(1).(fN);
-        if size(blockC(1).(fN),2) == trs;
-            for iblock = 2:size(blockC,2)
-                outS.(fN) = [outS.(fN) blockC(iblock).(fN)];
-            end
-        else
-            outS.(fN) = blockC(1).(fN);
-        end
-    end
