@@ -115,6 +115,25 @@ input.gratingContrast = input.tGratingContrast;
 input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
 
+% short catch trial calculations
+if input.tShortCatchTrial{trN}
+    if input.tFalseAlarm{trN}
+        input.catchTrialOutcomeCell{trN} = 'FA';
+    end
+    if isempty(input.tCatchTimeMs{trN})
+        input.tCatchTimeMs{trN} = NaN;
+        input.catchTrialOutcomeCell{trN} = 'failure';
+    end
+    if (input.leverUpTimeMs{trN}-input.tCatchTimeMs{trN})>input.reactTimeMs
+        input.catchTrialOutcomeCell{trN} = 'CR';
+    end
+    if (input.leverUpTimeMs{trN}-input.tCatchTimeMs{trN})<input.tooFastTimeMs
+        input.catchTrialOutcomeCell{trN} = 'failure';
+    end
+else
+    input.catchTrialOutcomeCell{trN} = 'NaN';
+end
+
 %Andrew's Post-Hoc Reaction Time Method
 % if input.targetStimOnMs{trN} <= 1;
 %     tCyclesShort = input.nCyclesOn{trN} - input.tCyclesOn{trN};
