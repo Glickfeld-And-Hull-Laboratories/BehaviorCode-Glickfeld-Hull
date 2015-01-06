@@ -400,7 +400,11 @@ axH = subplot(spSz{:},7);
 hold on;
 
 if nCorr>0 && input.doTestRobot==0,
+  if isfield(input, 'dGratingContrastDiff')
+    contDiffV = cell2mat_padded(input.tGratingContrast) ./ cell2mat_padded(input.dGratingContrast);
+  else
     contDiffV = cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast);
+  end
     corrDiffV = contDiffV(correctIx);
     uqDiff = unique(corrDiffV);
     nLevels = length(uqDiff);
@@ -433,7 +437,7 @@ if nCorr>0 && input.doTestRobot==0,
         'Marker', '.', ...
         'MarkerSize', 9);
     set(gca, 'YLim', [minD-100 maxD+100], ...
-           'XLim', [0 1], ...
+           'XLim', [min(contDiffV,[],2) max(contDiffV,[],2)], ...
            'XScale', 'log', ...
            'XGrid', 'on');
        set(gca, 'XTick', xTickL);
@@ -520,7 +524,12 @@ xlabel('Time');
 axH  = subplot(spSz{:},10);
 hold on
 
-contrastDifferenceRight = cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast);
+if isfield(input, 'dGratingContrastDiff')
+  contrastDifferenceRight = cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast);
+else
+  contrastDifferenceRight = cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast);
+end
+
 plotTrs = contrastDifferenceRight(correctIx|incorrectIx);
 nLevels = unique(plotTrs);
 percentContCell = cell(1,length(nLevels));
@@ -539,11 +548,15 @@ end
 plot(nLevels, cell2mat(percentContCell), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 vH = vert_lines(0);
 set(vH, 'Color', 'g');
-set(gca, 'XLim', [-1 1], ...
+set(gca, 'XLim', [min(contrastDifferenceRight,[],2) max(contrastDifferenceRight,[],2)], ...
          'YLim', [0 1], ...
          'XTick', [-1:0.5:1], ...
          'YTick', [0:0.25:1]);
-xlabel('Contrast Difference (R-L)')
+if isfield(input, 'dGratingContrastDiff')
+  xlabel('Contrast Difference (R/L)')
+else
+  xlabel('Contrast Difference (R-L)')
+end
 ylabel('% Right')
 grid on
 

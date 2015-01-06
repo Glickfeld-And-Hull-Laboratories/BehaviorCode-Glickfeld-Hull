@@ -64,8 +64,9 @@
       <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
 
       <variable tag="gratingMaxContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
-      <variable tag="gratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingContrastDiffSPO" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
 
 	  <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>    
@@ -179,6 +180,7 @@
       <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="dGratingContrastDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
       <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -197,10 +199,14 @@
       <!-- Shadow Vars From Mark -->
       <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="ttStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tSvStimNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tSvStimNumber2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
+                selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
+      <variable type="selection" tag="svStimNumber2" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
                 selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
 
     </folder>
@@ -332,13 +338,11 @@
               <action type="report" message="RewardGrating Dequeued"/>
             </action>
           </action>
-
-          <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
-          <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
-
 		   		
           <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
+          <action type="assignment" variable="tSvStimNumber2" value="svStimNumber2"/>
           <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
+          <action type="assignment" variable="ttTempStimOdds" value="0"/>
           <action type="report" message="tNStimAccepted=$tNStimAccepted"/>
 
             <!-- level 1 -->                         
@@ -350,6 +354,9 @@
               <action type="if" condition="!doBlock2">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action> 
+            </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level1))"> 
+              <action type="assignment" variable="ttStimulusNumber" value="0"/>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
 
@@ -363,6 +370,9 @@
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>  
             </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level2))"> 
+              <action type="assignment" variable="ttStimulusNumber" value="1"/>
+            </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level2"/>
 
             <!-- level3 -->                         
@@ -374,6 +384,9 @@
               <action type="if" condition="!doBlock2">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>  
+            </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level3))"> 
+              <action type="assignment" variable="ttStimulusNumber" value="2"/>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level3"/>
 
@@ -387,6 +400,9 @@
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>  
             </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level4))"> 
+              <action type="assignment" variable="ttStimulusNumber" value="3"/>
+            </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level4"/>
 
             <!-- level5 -->                         
@@ -398,6 +414,9 @@
               <action type="if" condition="!doBlock2">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>  
+            </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level5))"> 
+              <action type="assignment" variable="ttStimulusNumber" value="4"/>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level5"/>
 
@@ -411,6 +430,9 @@
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action> 
             </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level6))"> 
+              <action type="assignment" variable="ttStimulusNumber" value="5"/>
+            </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level6"/>
 
             <!-- level7 -->                         
@@ -422,6 +444,9 @@
               <action type="if" condition="!doBlock2">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>  
+            </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level7))"> 
+              <action type="assignment" variable="ttStimulusNumber" value="6"/>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level7"/>
 
@@ -436,10 +461,17 @@
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>  
             </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level8))"> 
+              <action type="assignment" variable="ttStimulusNumber" value="7"/>
+            </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level8"/>
 
 
-          <action type="assignment" variable="dGratingContrast" value="(gratingMaxContrast - (gratingMaxDiff/ (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))))"></action>
+          <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))"/>
+          <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
+
+          <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff / (pow(2, 1.0*ttStimulusNumber/gratingContrastDiffSPO))"></action>
+          <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
           <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
 
           <!-- if not doing blocks, choose left/right state based on left, switch, and last trial state. -->
