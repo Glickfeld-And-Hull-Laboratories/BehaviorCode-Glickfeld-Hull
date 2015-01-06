@@ -787,7 +787,6 @@ else
       lH4 = plot(b2T2Ns, smooth(double(failureIx(block2Tr2Ix)), 75, smoothType));
       set([lH4], 'LineWidth', 2, 'LineStyle', '-.');
       set(lH4, 'Color', 0.8*[0 1 1]);
-      ylim([0 1]);
       if input.block2DoAuditoryDetect
         title('Auditory stim responses')
       elseif doOriAndContrastInterleaved
@@ -798,6 +797,8 @@ else
         end
       end     
 end
+      ylabel('pct correct');
+      set(gca, 'YLim', [0 1]);
 else
   hSDiffsRealSec = diff(holdStarts)/1000;
     xs = 1:length(hSDiffsRealSec);
@@ -814,7 +815,7 @@ else
     set(gca, 'YLim', yLim);
     pH2 = plot(xLim, xLim/10, 'k--');
 end
-axis tight
+
 %%%%%%%%%%%%%%%
 
 % %%%%%%%%%%%%%%%%
