@@ -568,7 +568,6 @@ end
 minX = min(contrastDifferenceRight,[],2);
 maxX = max(contrastDifferenceRight,[],2);
 xLimm = [minX maxX];
-    pH = plot(uqDiff, cell2mat(corrDiffCell));
     if ~(xLimm(1)==0),
       xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
     else
