@@ -431,7 +431,7 @@ if nCorr>0 && input.doTestRobot==0,
 
     minD = min(cell2mat(corrDiffCell));
     maxD = max(cell2mat(corrDiffCell));
-
+    
     xLimm = [minX maxX];
     pH = plot(uqDiff, cell2mat(corrDiffCell));
     if ~(xLimm(1)==0),
@@ -446,9 +446,20 @@ if nCorr>0 && input.doTestRobot==0,
         'LineWidth', 1.5, ...
         'Marker', '.', ...
         'MarkerSize', 9);
-    set(gca, 'YLim', [minD-100 maxD+100], ...
-           'XLim', [minX maxX], ...
-           'XScale', 'log', ...
+    if isnan(minD)|isnan(maxD)
+      axis tight
+    else
+      ylim([minD-100 maxD+100])
+    end
+    if isnan(minX)|isnan(maxX)
+      axis tight
+    elseif minX == maxX
+      xlim([minX-100 maxX+100])
+    elseif minX<maxX
+      xlim([minX maxX])
+    end   
+
+    set(gca,'XScale', 'log', ...
            'XGrid', 'on');
        set(gca, 'XTick', xTickL);
        set(gca, 'XTickLabel', xTLabelL);
@@ -481,12 +492,16 @@ if nCorr>0 && input.doTestRobot==0,
         'Marker', '.', ...
         'MarkerSize', 9);
     set(gca, 'YLim', [0 1], ...
-           'XLim', [minX maxX], ...
            'XScale', 'log', ...
            'XGrid', 'on');
        set(gca, 'XTick', xTickL);
        set(gca, 'XTickLabel', xTLabelL);
        ylabel('Correct (%)')
+       if minX==maxX
+         xlim([minX-100 maxX+100])
+       elseif minX<maxX
+         xlim([minX maxX])
+       end
        xlabel('Contrast Difference')
        title('Percent Correct by Contrast Difference')
 end
