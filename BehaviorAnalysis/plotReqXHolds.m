@@ -1,13 +1,14 @@
 function [] = plotReqXHolds( ds )
 % Used to plot x = hold times y = required hold time when input is a
 % behavior structure for HADC8.xml
-if ds.randReqHoldMaxMs > 5,
+disp(isfield(ds, 'randReqHoldMaxMs'))
+if isfield(ds, 'randReqHoldMaxMs'),
     hts = cell2mat_padded(ds.holdTimesMs);
     req = cell2mat_padded(ds.tTotalReqHoldTimeMs)+ds.tooFastTimeMs;
     
     [rewOnset, Ix] = sort(req);
     rewEnd = cell2mat_padded(ds.tTotalReqHoldTimeMs)+ds.reactTimeMs;
-    rewEnd = rewEnd(Ix);
+    rewEnd = rewEnd(Ix);    
     
     [a] = scatter(req, hts);
     jbfill(rewOnset, rewEnd, rewOnset, 'g', 'g', 1, 0.25)

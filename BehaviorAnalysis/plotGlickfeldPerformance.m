@@ -150,9 +150,9 @@ for i=1:length(subjMat),
     %legend('Correct', 'Early', 'Late', 'No Release', 'Location', 'Best') ;
     grid on; 
 %%
-%    axH = subplot(subPlotSz{:}, 2);
-%    hold on
-%    grid on; 
+    axH = subplot(subPlotSz{:}, 2);
+    hold on
+    grid on; 
     
  
     fName = strcat('Performance -- i', num2str(sub), ' -- Generated:', datestr(today, 'dd mmmm yyyy'));

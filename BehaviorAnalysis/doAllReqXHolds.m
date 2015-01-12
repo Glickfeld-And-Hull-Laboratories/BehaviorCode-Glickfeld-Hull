@@ -2,6 +2,7 @@ function [dataStru outR] = doAllReqXHolds(subjMat, dateMat)
 global dataStru
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
 % Data Path Formatting
+global dataStru
 disp('Loading data from MWorks Data folder...')
 dataPath = '~/Documents/MWorks/Data';
 dirListing = dir(dataPath);
@@ -11,16 +12,13 @@ nSubjs= length(subjMat);
 % Next line skips ".", "..", and ".DS_Store" hidden files. May not be applicable
 % in systems where hidden files are still hidden and should be removed if
 % it leads to data skippage.
-fileNames = fileNames(4:end);
+fileNames = fileNames(3:end);
 %% Data File Indexing and Pre-Processing
-outR = regexp(fileNames, 'data-i([0-9]*)-([0-9]*)-([0-9]*).mat', 'tokens');
+outR = regexp(fileNames, 'data-i([0-9]*)-([0-9]*)([???]*)', 'tokens');
 outRV = cat(1, outR{:});
 outRM = cat(1, outRV{:});
-outR
-global outR
 subjNumList = str2double(outRM(:,1));
 dateStrList = str2double(outRM(:,2));
-hourStrList = str2double(outRM(:,3));
 dataStru=struct;
 
 %% This section searches dataPath for files specific to each animal for the specified days, then loads specified parts of data into struData.
