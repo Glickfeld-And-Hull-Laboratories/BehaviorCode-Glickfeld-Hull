@@ -770,6 +770,7 @@ if ~or(doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
     yLim = [0 max(xLim(2)/10, maxMin*1.1)];   
     set(gca, 'YLim', yLim);
     pH2 = plot(xLim, xLim/10, 'k--');
+    axis tight
 else
     b2T2Ns = find(block2Tr2Ix);
     plot(b2T2Ns, smooth(double(successIx(block2Tr2Ix)), ceil(nTrial/10), smoothType));
@@ -814,6 +815,7 @@ else
     yLim = [0 max(xLim(2)/10, maxMin*1.1)];   
     set(gca, 'YLim', yLim);
     pH2 = plot(xLim, xLim/10, 'k--');
+    axis tight
 end
 
 %%%%%%%%%%%%%%%
