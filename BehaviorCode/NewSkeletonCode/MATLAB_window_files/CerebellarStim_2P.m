@@ -19,6 +19,8 @@ oneValEachTrialNames = { ...
     'ttCounter2', ...
     'tttCounter2', ...
     'tTactileStimulusDurationUs', ...
+    'preSoundWheelCounter', ...
+    'postSoundWheelCounter', ...
     'spCounter1', ...
     'spCounter2', ...
     'spCounter3', ...
@@ -311,6 +313,22 @@ try
 catch
   input.itiCounter10TimesUs{trN} = NaN;
   input.itiCounter10Values{trN} = NaN;
+end
+
+try
+  input.preSoundWheelCounterTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'preSoundWheelCounter', 'all', [], 1);
+  input.preSoundWheelCounterValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'preSoundWheelCounter', 'all', 1) ;
+catch
+  input.preSoundWheelCounterTimesUs{trN} = NaN;
+  input.preSoundWheelCounterValues{trN} = NaN;
+end
+
+try
+  input.postSoundWheelCounterTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'postSoundWheelCounter', 'all', [], 1);
+  input.postSoundWheelCounterValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'postSoundWheelCounter', 'all', 1) ;
+catch
+  input.postSoundWheelCounterTimesUs{trN} = NaN;
+  input.postSoundWheelCounterValues{trN} = NaN;
 end
 
 
