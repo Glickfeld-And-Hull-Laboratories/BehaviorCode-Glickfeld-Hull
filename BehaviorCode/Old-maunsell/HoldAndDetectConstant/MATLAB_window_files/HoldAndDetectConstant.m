@@ -130,6 +130,15 @@ fprintf(1,'Hold %d, req %d, react %d, %s%s %s- %d rew %dms\n', ...
         stimStr, block2Str, ...
         nJ, round(juiceD));
 
+%% Counter/Frames Synchronization Section
+try
+    input.counterTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'counter', 'all', [], 1);
+    input.counterValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'counter', 'all', 1) ;
+catch
+    input.counterTimesUs{trN} = NaN;
+    input.counterValues{trN} = NaN;
+end
+
 %% run subfunctions
 input = exptRunSubfunctions(ds, input, { @plotOnlineHist });
 
