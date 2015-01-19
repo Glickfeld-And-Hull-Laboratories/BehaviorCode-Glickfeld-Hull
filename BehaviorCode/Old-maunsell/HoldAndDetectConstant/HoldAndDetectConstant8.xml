@@ -6,10 +6,9 @@
               lever1="FIO1" lever2="" 
               lever1_solenoid="FIO2"
               lever2_solenoid=""
-              counter="counter"
-              counter2="counter2"
               laser_trigger="laserTriggerFIO"
-              strobed_digital_word="strobedDigitalWord"/>
+              strobed_digital_word="strobedDigitalWord"
+              counter="counter"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -53,11 +52,6 @@
       <variable tag="rewardEveryNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
 
       <variable tag="doCounterTracking" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Counter"/>
-      <variable tag="cTrialStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-      <variable tag="cTrialEnd" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-      <variable tag="cLeverDown" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-      <variable tag="cTargetOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-      <variable tag="cLeverUp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
       
     </folder>
     <folder tag="Stimuli">
@@ -163,6 +157,12 @@
       <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" />
       <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
 
+      <variable tag="cTrialStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+      <variable tag="cTrialEnd" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+      <variable tag="cLeverDown" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+      <variable tag="cTargetOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+      <variable tag="cLeverUp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
+
     </folder>
     <folder tag="Fake Mouse">
       <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
@@ -191,8 +191,7 @@
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="counter2" full_name="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="counter" full_name="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -300,6 +299,7 @@
       <!-- init actions run only on first trial after loading experiment -->
       <action type="if" condition="success+ignore+failure == 0">
         <action type="report" message="**** First trial since experiment load - initializing"></action>
+        <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
 
         <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
         <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
@@ -315,8 +315,8 @@
                      _error="Task Systems must contain >=1 transition that yields to parent">
           <task_system_state tag="Intertrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            
-            <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+
+            <action type="assignment" tag="reset counter" variable="counter" value="0"></action>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -341,9 +341,6 @@
 
 
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
-            <action type="if" condition="doCounterTracking">
-              <action type="assignment" variable="cTrialStart" value="counter"></action>
-            </action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
@@ -353,6 +350,9 @@
             <action type="assignment" variable="tStimTurnedOn" value="0"></action>
             <action type="assignment" variable="tDoNoStimulusChange" value="doNoStimulusChange"></action>
             <action type="assignment" variable="tDoAllCorrects" value="doAllCorrects"></action>
+            <action type="if" condition="doCounterTracking">
+              <action type="assignment" variable="cTrialStart" value="counter"></action>
+            </action>
 
             <!-- choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 -->
             <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
@@ -1255,7 +1255,6 @@
               <action type="assignment" variable="cTrialEnd" value="counter"></action>
             </action>
 
-            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
             <action type="if" condition="doITIStim == 0">
