@@ -145,7 +145,9 @@ if doOriAndContrastInterleaved
 elseif doContrast
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
 elseif doOri
-    vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+    vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+elseif ~(doVisDetect | doBlock2VisDetect);
+	vPowerV = zeros(size(lPowerV));
 end
 
 if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial
