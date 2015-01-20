@@ -146,7 +146,7 @@ elseif doContrast
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
 elseif doOri
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
-elseif ~(doVisDetect | doBlock2VisDetect);
+elseif ~(doVisDetect | block2DoVisDetect);
 	vPowerV = zeros(size(lPowerV));
 end
 

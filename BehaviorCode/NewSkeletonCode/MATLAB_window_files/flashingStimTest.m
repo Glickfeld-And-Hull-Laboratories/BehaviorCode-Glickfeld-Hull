@@ -159,6 +159,7 @@ if input.tBlock2TrialNumber{trN} == 0
     end
     if input.doAuditoryStim
         if input.doAuditoryDetect
+            stimStr = [stimStr sprintf(' tone chg')];
             % stimStr = [stimStr sprintf('pitch chg %g%MHz ', chop(double(input.tTonePitchMHz{trN})- double(input.baseTonePitchMHz{trN}),2))];
         end
     end
