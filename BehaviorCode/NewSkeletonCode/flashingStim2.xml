@@ -24,17 +24,21 @@
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doCustomTargetTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>            
       <variable tag="block2DoAuditoryStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoAuditoryDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="block2DoAuditoryCue" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoMissAsCorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="block2DoNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
 	
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
@@ -59,6 +63,7 @@
         
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundIncorrectAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
@@ -245,6 +250,7 @@
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
+	  <variable tag="tSoundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/> 
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 	  
@@ -252,10 +258,12 @@
       <variable tag="tCatchGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDoCatchContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoCatchOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       
       <variable tag="tDoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -297,6 +305,7 @@
   <sounds tag="Sounds">
     <sound tag="pressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
     <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="soundBasePressAmplitude"></sound>
+    <sound tag="cueSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundCueAmplitude"></sound>
     <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBaseAmplitude"></sound>
     <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundTargetAmplitude"></sound>
     <sound tag="incorrectSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="soundIncorrectAmplitude"></sound>
@@ -701,10 +710,12 @@
                   <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
                   <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
                   <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
+                  <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/>
                   <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
                   <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
                   <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
                   <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>
+                  <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>
                   
                   <action type="if" condition="doTrialLaser">
                   	<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
@@ -751,7 +762,9 @@
                   <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
                   <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
                   <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
+                  <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/>
                   <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>
+                  <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
@@ -772,6 +785,8 @@
                   <action type="assignment" variable="tDoContrastDetect" value="block2DoContrastDetect"/>
                   <action type="assignment" variable="tDoAuditoryDetect" value="block2DoAuditoryDetect"/>
                   <action type="assignment" variable="tDoAuditoryStim" value="block2DoAuditoryStim"/>
+                  <action type="assignment" variable="tDoAuditoryCue" value="block2DoAuditoryCue"/>
+                  <action type="assignment" variable="tDoNoResponse" value="block2DoNoResponse"/>
                   <action type="if" condition="tShortCatchTrial == 1">
                   	<action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
                   	<action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
@@ -845,11 +860,8 @@
                 <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
                 <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
                 <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
-                <action type="assignment" variable="block2DoVisualStim" value="doVisualStim"/>
-                <action type="assignment" variable="block2DoOriDetect" value="doOriDetect"/>
-                <action type="assignment" variable="block2DoContrastDetect" value="doContrastDetect"/>
-                <action type="assignment" variable="block2DoAuditoryDetect" value="doAuditoryDetect"/>
-                <action type="assignment" variable="block2DoAuditoryStim" value="doAuditoryStim"/>                                                
+                <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/> 
+                <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>                                                
               </action>
               </action>
              <!-- !doBlock2 error checking -->
@@ -937,7 +949,19 @@
               <action type="assignment" variable="tSoundBaseAmplitude" value="0"/> 
               <action type="assignment" variable="tSoundTargetAmplitude" value="0"/> 
             </action>
+            
+            <action type="if" condition="tDoAuditoryCue">
+              <action type="assignment" variable="tSoundCueAmplitude" value="soundCueAmplitude"/>
+            </action>
+            <action type="if" condition="!tDoAuditoryCue"> 
+              <action type="assignment" variable="tSoundCueAmplitude" value="0"/>
+            </action>  
 
+			<!-- set doNoResponse params -->
+			<action type="if" condition="tDoNoResponse">
+				<action type="assignment" variable="isCatchTrial" value="1"/>
+		    </action>
+			
             <!-- send laser params to controller -->
             <action type="if" condition="doLaserStim">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
@@ -1052,6 +1076,7 @@
               <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>  
               <action type="play_sound" sound="pressSound"/>
               <action type="play_sound" sound="basePressSound"/>
+              <action type="play_sound" sound="cueSound"/>
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             </action>
             
