@@ -251,6 +251,7 @@
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
 	  <variable tag="tSoundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/> 
+      <variable tag="tSoundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 	  
@@ -304,7 +305,7 @@
   </variables>
   <sounds tag="Sounds">
     <sound tag="pressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
-    <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="soundBasePressAmplitude"></sound>
+    <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBasePressAmplitude"></sound>
     <sound tag="cueSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundCueAmplitude"></sound>
     <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBaseAmplitude"></sound>
     <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundTargetAmplitude"></sound>
@@ -936,7 +937,8 @@
 
             <!-- choose auditory stim -->  
             <action type="if" condition="tDoAuditoryStim">
-              <action type="assignment" variable="tSoundBaseAmplitude" value="soundBaseAmplitude"/> 
+              <action type="assignment" variable="tSoundBaseAmplitude" value="soundBaseAmplitude"/>
+              <action type="assignment" variable="tSoundBasePressAmplitude" value="soundBasePressAmplitude"/>  
               <action type="if" condition="tDoAuditoryDetect">     
                 <action type="assignment" variable="tSoundTargetAmplitude" value="soundTargetAmplitude"/>
               </action>
@@ -946,6 +948,7 @@
             </action>
 
             <action type="if" condition="!tDoAuditoryStim"> 
+              <action type="assignment" variable="tSoundBasePressAmplitude" value="0"/> 
               <action type="assignment" variable="tSoundBaseAmplitude" value="0"/> 
               <action type="assignment" variable="tSoundTargetAmplitude" value="0"/> 
             </action>
