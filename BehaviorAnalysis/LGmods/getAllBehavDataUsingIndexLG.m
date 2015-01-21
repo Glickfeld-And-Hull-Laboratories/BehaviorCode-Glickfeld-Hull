@@ -107,6 +107,11 @@ if isempty(x1d.MergeAllMatFiles)
 else
     mergeMats = x1d.MergeAllMatFiles;
 end
+if isempty(x1d.ChooseMatFile)
+    chooseMats = false;
+else
+    chooseMats = x1d.ChooseMatFile;
+end
 %% load data
 fName = fullfile(rc.pathStr,sprintf(rc.dataPat, uo.Subject, uo.DateStr));
 [bs ds] = getBehavDataForDayLG(...
@@ -117,7 +122,8 @@ fName = fullfile(rc.pathStr,sprintf(rc.dataPat, uo.Subject, uo.DateStr));
     'MergeBlock1And2', mergeB1And2, ...
     'DoBlock1Only', doB1only, ...
     'SplitBlock1', splitB1, ...
-    'MergeMats', mergeMats);
+    'MergeMats', mergeMats,...
+    'ChooseMats', chooseMats);
 
 if nargout > 6
     tMatFilename = fitX1d.MatFilename;

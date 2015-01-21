@@ -22,7 +22,8 @@ userDefs = { ...
     'MergeBlock1And2', false, ...
     'DoBlock1Only', false, ...
     'SplitBlock1', false, ...
-    'MergeMats', false,};
+    'MergeMats', false, ...
+    'ChooseMats', false};
 
 uo = stropt2struct(stropt_defaults(userDefs, varargin));
 
@@ -65,7 +66,10 @@ else
             fName = fullfile(rtc.pathStr, n.name);
             ds =  mwLoadData(fName, dIndex, lDebug);
         elseif size(n,1) > 1
-            if uo.MergeMats == 1
+            if ~isnan(uo.ChooseMats)
+                fName = [fName(1:(length(rtc.pathStr)+17)) '-' num2str(uo.ChooseMats) '.mat'];
+                ds =  mwLoadData(fName, dIndex, lDebug);
+            elseif uo.MergeMats == 1
                 for ifile = 1:size(n,1)
                     fName = fullfile(rtc.pathStr, n(ifile).name);
                     ds(ifile) =  mwLoadData(fName, dIndex, lDebug);
