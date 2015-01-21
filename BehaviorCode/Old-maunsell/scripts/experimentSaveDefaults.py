@@ -19,7 +19,7 @@ import re
 
 domainName = "org.mworks-project.MWClient"
 
-outFile = os.path.expanduser(os.path.join('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/Scripts/Plists', 'org.Behavior.FlashingStim_2P_Frames.plist'))
+outFile = os.path.expanduser(os.path.join('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/Scripts/Plists', 'org.Behavior.Lego.plist'))
 keyNames = [ 
   'MATLAB client window - selected variables',
   'MATLAB client window - MATLAB .m file',

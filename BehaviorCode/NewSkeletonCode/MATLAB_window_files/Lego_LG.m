@@ -22,7 +22,6 @@ varsOneValEachTrial = { ...
     'tGratingContrast', ...
     'dGratingContrast', ...
     'dGratingContrastDiff', ...
-    'tQuadrature', ...
     'tDecisionTimeMs', ...
     'tTrialsDoneSinceStart', ...
     'tTrialStartMWTimestampMs', ...
@@ -59,13 +58,13 @@ trN = input.trialSinceReset;
 
 %% process reaction times for this trial
 stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
-try
-    input.quadStampsUs{trN} = [0 ((mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1))-stimOnUs)/1000];
-    input.quadValues{trN} = [0 (mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1)) - input.tQuadrature{trN}];
-catch
-    input.quadStampsUs{trN} = NaN;
-    input.quadValues{trN} = NaN;
-end
+%try
+%    input.quadStampsUs{trN} = [0 ((mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1))-stimOnUs)/1000];
+%    input.quadValues{trN} = [0 (mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1)) - input.tQuadrature{trN}];
+%catch
+%    input.quadStampsUs{trN} = NaN;
+%    input.quadValues{trN} = NaN;
+%end
 
 if input.tLeftTrial{trN}==1,
     input.leftGratingContrast{trN} = input.tGratingContrast{trN};
