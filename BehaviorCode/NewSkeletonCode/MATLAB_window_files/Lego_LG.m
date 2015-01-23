@@ -104,6 +104,6 @@ input = exptRunSubfunctions(ds, input, { @plotLego });
 
 %% save variables for next trial
 retval = input;
-input = exptSaveMatlabState(data_struct, input);
+%input = exptSaveMatlabState(data_struct, input);
 
 return

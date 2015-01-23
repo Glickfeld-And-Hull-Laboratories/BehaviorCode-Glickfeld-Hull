@@ -17,7 +17,11 @@ end
 
 tic
 try
-    input = exptSaveMatlabState(data_struct, input);
+    if ~(input.experimentXmlTrialId==15), %completely skip 
+        input = exptSaveMatlabState(data_struct, input);
+    else
+        disp('Lego Detected, must save manually')
+    end
 
     % do the plot
     if ~isfield(input, 'lastPlotElapsedS')
