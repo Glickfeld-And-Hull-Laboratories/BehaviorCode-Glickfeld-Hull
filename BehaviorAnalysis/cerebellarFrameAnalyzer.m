@@ -15,7 +15,7 @@ totalTimes = totalTimes(3:end); % removes start-stop-start artifact and 0 value 
 totalVals= totalVals(3:end); % removes start-stop-start artifact and 0 value initial state value
 lastTrCounter = cell2mat(input.counter);
 
-imagingRate = 15.5; % in Hz
+imagingRate = 4; % in Hz
 frameIntUs = 1000000/imagingRate;
 %% Check that counter was not reset mid-trial
 assert(ismonotonic(totalTimes), 'counterTimesUs is not monotonically increasing: was experiment reset?');
@@ -41,7 +41,8 @@ hold on
 %% Replicate graphing to allow frame skipping feedback
 [a b c] = plotyy(1:length(pulseDiff), pulseDiff, problemFrameNumbers, howManyMissed)
 title('Estimates of Missed Frames')
-set(a(2), 'Ylim', [0 6])
+set(a(1), 'Ylim', [0 max(pulseDiff)])
+set(a(2), 'Ylim', [0 max(howManyMissed)])
 set(c, 'Marker', 'x')
 set(c, 'LineStyle', 'none')
 ylabel('Inter-Frame Latency (us)')
@@ -50,7 +51,7 @@ set(get(a(2),'Ylabel'),'String','Frames Missed')
 %% WRITE CODE HERE TO CROP OUT TRIALS WITH 1 SECOND HOLES
 
 %% WRITE CODE HERE TO IMPORT IMAGE
-img = imread(dataFile);
+%img = imread(dataFile);
 %% WRITE CODE HERE TO INDEX IMAGE
 
 %% WRITE CODE HERE TO CHECK IF IMAGE HAS THE SAME NUMBER OF FRAMES AS BEHAVIOR FILE HAS IN COUNTERS
