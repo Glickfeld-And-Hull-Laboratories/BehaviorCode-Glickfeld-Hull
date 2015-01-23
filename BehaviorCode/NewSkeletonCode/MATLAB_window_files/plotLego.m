@@ -744,7 +744,7 @@ bH2 = uicontrol(figNum, 'Style', 'pushbutton', ...
                'String', sprintf('SAVE DATA FILE'), ...
                'Units', 'pixels', ...
               'Position', [465 5 350 20], ...
-               'Callback', {@garbage, matParams});
+               'Callback', {@saveFile,input});
 end
 end
 
@@ -759,8 +759,8 @@ function saveButtonCb(hObject, eventdata, epParamsIn)
 exportfig_print(epParamsIn{:});
 end
 
-function garbage(matParams, a, b, c, d)
-    save(matParams{:})
+function saveFile(hObject, evendata, input)
+    save(input.savedDataName, 'input')
 end
 
 function outM = subCell2PadVect(cellV, padChar, nMaxTrials)
