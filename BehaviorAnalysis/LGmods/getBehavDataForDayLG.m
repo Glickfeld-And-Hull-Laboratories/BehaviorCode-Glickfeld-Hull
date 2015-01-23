@@ -92,7 +92,7 @@ if isfield(ds, 'stimOnTimeMs')
     ds.gratingDurationMs = ds.stimOnTimeMs;
 end
 
-ds.is2AFC = isfield(ds, 'tQuadrature');
+ds.is2AFC = isfield(ds, 'leftDecisionThreshold');
 
 if nargout > 1
     ds0 = ds;
