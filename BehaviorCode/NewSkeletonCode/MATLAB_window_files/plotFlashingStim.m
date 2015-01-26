@@ -1037,23 +1037,27 @@ if nStims >= 1
     pH=[];
     if sum(des1Ix)>0
       pH(1) = plot(powerLevels(des1Ix), pctCorr1Block2(des1Ix), '.-b');
+      set(pH(1), 'LineWidth', 2)
     end
-    if sum(des2Ix)>0
-      pH(2) = plot(powerLevels(des2Ix), pctCorr2Block2(des2Ix), '.-');
-      set(pH(2), 'Color', yColor);
+    if or(or(input.block2DoAuditoryDetect, input.block2DoOriDetect), input.block2DoContrastDetect)
+      if sum(des2Ix)>0
+        pH(2) = plot(powerLevels(des2Ix), pctCorr2Block2(des2Ix), '.-');
+        set(pH(2), 'Color', yColor, 'LineWidth', 2);
+      end
     end
     if isfield(input,'doShortCatchTrial') & input.doShortCatchTrial
     	pctFABlock2 = powerP.block2FA ./ (powerP.block2FA+powerP.block2CR) * 100;
     	des2FAIx = ~isnan(pctFABlock2);
     	if sum(des2FAIx)>0
       		pH(3) = plot(powerLevels(des2FAIx), pctFABlock2(des2FAIx), '.-m');
+          set(pH(3), 'LineWidth', 2)
     	end
     end    	
   else
     pH = plot(powerLevels, pctCorr, '.-b');
-  end
-  if all(~isempty(pH))
-    set(pH, 'LineWidth', 2)
+    if all(~isempty(pH))
+      set(pH, 'LineWidth', 2)
+    end
   end
 
   pH1 = plot(powerLevels, pctCorr1, '-g');
@@ -1098,9 +1102,9 @@ if nStims >= 1
   end
 
   anystack([pH1;pH2], 'bottom');
-  if all(~isempty(pH))
-    anystack(pH, 'top');
-  end
+  %if all(~isempty(pH()))
+  %  anystack(pH, 'top');
+  %end
 
   if showLaserStim
     xlabel('power (mW)')
