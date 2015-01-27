@@ -128,6 +128,7 @@ fprintf(1,'Hold %d, req %d, react %d, %s%s %s- %d rew %dms\n', ...
         stimStr, block2Str, ...
         nJ, round(juiceD));
 
+
 %% Counter/Frames Synchronization Section
 try
     input.counterTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'counter', 'all', [], 1);
@@ -136,6 +137,16 @@ catch
     input.counterTimesUs{trN} = NaN;
     input.counterValues{trN} = NaN;
 end
+
+%% Mati's Lever Tracking Addition -- Polls for all lever changes (high or low)
+try
+    input.leverTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'FIO1', 'all', [], 1);
+    input.leverValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'FIO1', 'all', 1) ;
+catch
+    input.leverTimesUs{trN} = NaN;
+    input.leverValues{trN} = NaN;
+end
+
 
 %% run subfunctions
 input = exptRunSubfunctions(ds, input, { @plotOnlineHist });
