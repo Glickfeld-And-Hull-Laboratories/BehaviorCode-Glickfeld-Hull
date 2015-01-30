@@ -24,6 +24,8 @@
       <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+
+      <variable tag="doLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="LED Debug"/>
       
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
@@ -317,6 +319,12 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="assignment" tag="reset counter" variable="counter" value="0"></action>
+            <action type="if" condition="doLED==1">
+            <action type="assignment" variable="laserTriggerFIO" value="1"/>
+            <action type="schedule" delay="125 ms" duration="1" repeats="1">
+              <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            </action>
+          </action>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 

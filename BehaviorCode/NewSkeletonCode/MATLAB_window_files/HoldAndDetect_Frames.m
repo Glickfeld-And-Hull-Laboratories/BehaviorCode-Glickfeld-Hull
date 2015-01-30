@@ -147,6 +147,13 @@ catch
     input.leverValues{trN} = NaN;
 end
 
+if input.doLED==1
+    input.LEDTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'laserTriggerFIO', 'all', [], 1);
+else
+    input.LEDTimesUs{trN} = NaN;
+end
+
+
 
 %% run subfunctions
 input = exptRunSubfunctions(ds, input, { @plotOnlineHist });
