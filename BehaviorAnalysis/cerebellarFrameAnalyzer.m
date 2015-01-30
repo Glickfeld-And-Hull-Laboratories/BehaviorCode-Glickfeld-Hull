@@ -1,6 +1,7 @@
 % processing for cerebellarStim(_2P) data that processes errors in trial
 % length that point to dropped or added frames and builds an index
 
+dataStruct = struct;
 %% formatting assumes "input" is a cerebellarStim data set
 ds = input;
 % and also enforces it
@@ -15,7 +16,7 @@ totalTimes = totalTimes(3:end); % removes start-stop-start artifact and 0 value 
 totalVals= totalVals(3:end); % removes start-stop-start artifact and 0 value initial state value
 lastTrCounter = cell2mat(input.counter);
 
-imagingRate = 4; % in Hz
+imagingRate = input.frameImagingFrequencyHz; % in Hz
 frameIntUs = 1000000/imagingRate;
 %% Check that counter was not reset mid-trial
 assert(ismonotonic(totalTimes), 'counterTimesUs is not monotonically increasing: was experiment reset?');
@@ -39,27 +40,47 @@ howManyMissed = problematic./avgFrame;
 assert(sum(howManyMissed>imagingRate)<1, '*** Do not use data: there is a skip of %3d second skip between frames. ****', problematic(howManyMissed>15)/1000000);
 hold on
 %% Replicate graphing to allow frame skipping feedback
-[a b c] = plotyy(1:length(pulseDiff), pulseDiff, problemFrameNumbers, howManyMissed)
-title('Estimates of Missed Frames')
-set(a(1), 'Ylim', [0 max(pulseDiff)])
-set(a(2), 'Ylim', [0 max(howManyMissed)])
-set(c, 'Marker', 'x')
-set(c, 'LineStyle', 'none')
-ylabel('Inter-Frame Latency (us)')
-xlabel('Frames')
-set(get(a(2),'Ylabel'),'String','Frames Missed')
+if length(problemFrameNumbers)>0,
+    [a b c] = plotyy(1:length(pulseDiff), pulseDiff, problemFrameNumbers, howManyMissed)
+    title('Estimates of Missed Frames')
+    set(a(1), 'Ylim', [0 max(pulseDiff)])
+    set(a(2), 'Ylim', [0 max(howManyMissed)])
+    set(c, 'Marker', 'x')
+    set(c, 'LineStyle', 'none')
+    ylabel('Inter-Frame Latency (us)')
+    xlabel('Frames')
+    set(get(a(2),'Ylabel'),'String','Frames Missed')
+else
+    plot(1:length(pulseDiff), pulseDiff)
+    ylim([0 max(pulseDiff)])
+    xlabel('Frames')
+    ylabel('Inter-Frame Latency (us)')
+end
+
+%% Generate the good frames index
+shift = 0;
+blankIx = ones(1,length(totalVals)+sum(howManyMissed));
+for i = 1:length(problemFrameNumbers),
+    insertFrames = howManyMissed(i);
+    startFrame = problemFrameNumbers(i)+1; %to correct for 1 frame "diff" offset
+    blankIx((startFrame+shift):(startFrame+insertFrames+shift)) = 0;
+    shift = shift+insertFrames;
+end
+dataStruct.goodFramesIx = blankIx;
 %% WRITE CODE HERE TO CROP OUT TRIALS WITH 1 SECOND HOLES
 
 %% WRITE CODE HERE TO IMPORT IMAGE
-%img = imread(dataFile);
+dataStruct.img = imread('');
 %% WRITE CODE HERE TO INDEX IMAGE
 
 %% WRITE CODE HERE TO CHECK IF IMAGE HAS THE SAME NUMBER OF FRAMES AS BEHAVIOR FILE HAS IN COUNTERS
 
 %% IF doLED ACTIVE, SEARCH FOR HIGH LUMINANCE SPIKES
 
-if input.doLED==1,
+if isfield(input, 'doLED')
+    if input.doLED==1,
     % do LED searchy type things: probably something like "all the luminous frames please stand up"
     % and then correlate that with trial starts/ends to see if you're all
     % matched up
+    end
 end
