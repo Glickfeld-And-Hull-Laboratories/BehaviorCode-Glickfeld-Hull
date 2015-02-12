@@ -95,7 +95,7 @@ for j = subjMat;
         perCorrect= nCorrect/nTrials;
         perLate= nLate/nTrials;
         %perEarly= nEarly/nTrials;
-        incIx = strcmp(ds.trialOutcomeCell, 'incorrect')
+        incIx = strcmp(ds.trialOutcomeCell, 'incorrect');
         perInc= sum(incIx)/nTrials;
         dataStru(j).values.perInc(1,iN)= perInc;
         
@@ -124,7 +124,6 @@ disp('Loading complete!')
  
 
 %%
-subjMat = [513 514 518 520];
 for i=1:length(subjMat),
     subPlotSz = {3,1};
     sub = subjMat(i);
@@ -141,10 +140,11 @@ for i=1:length(subjMat),
     nDays = length(v.perCorrects);
     xDays = 1:nDays;
 
-%%    
+%%  
+
     axH = subplot(subPlotSz{:}, 1);
     hold on
-   
+    try
     plot(pCorr, '-kv', 'LineWidth', 2);
     plot(pEarly, '-cv', 'LineWidth', 2);
     plot(pLate, '-mv', 'LineWidth', 2);
@@ -155,13 +155,17 @@ for i=1:length(subjMat),
     title(tName)
     xlim([1 nDays])
     ylim([0 1]);
-    %legend('Correct', 'Early', 'Late', 'No Release', 'Location', 'Best') ;
+    %legend('Correct', 'Early', 'Late', 'No Release', 'Location', 'Best')
+    catch
+        disp('Fig 1 failed');
+    end;
     grid on; 
 %%
     axH = subplot(subPlotSz{:}, 2);
     hold on
     grid on; 
     
+    try
     lIx = cell2mat(v.leftIx);
     LCorr = pCorr(lIx);
     LLate = pLate(lIx); 
@@ -185,7 +189,10 @@ for i=1:length(subjMat),
     ylabel('Right Percent');
     xlabel('Training Day');
     
- 
+    catch
+        disp('Fig 2 Failed')
+    end
+    
     fName = strcat('Performance -- i', num2str(sub), ' -- Generated:', datestr(today, 'dd mmmm yyyy'));
     set(gcf, 'Name', fName);
     
