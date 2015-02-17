@@ -28,7 +28,7 @@ dataStruct.stimPlot=mean(dataStruct.stimOnClips,1);
 %creates a df/f movie to later average
 Fn = squeeze(mean(dataStruct.image,3));
 dFoverF = NaN(size(dataStruct.image));
-for i = 1:size(dFoverF,3);
+for i = size(dFoverF,3);
     dFoverF(:,:,i) = (double(dataStruct.image(:,:,i))-Fn)./Fn;
 end
 dataStruct.dFoverF = dFoverF;
@@ -45,13 +45,13 @@ avgMovie = squeeze(mean(avgMovie,4));
 writetiff(avgMovie,'Z:\Data\WidefieldImaging\GCaMP\150202_img19_2\avgMovie');    
     
 %create avg trace of the dfoverf
-dFoverFAvg = NaN(1002,1004,[2*frameWindow+1],length(stimOns));
+dFoverFMovie = NaN(1002,1004,[2*frameWindow+1],length(stimOns));
 aa = 1; 
 for i = stimOns;
-    dFoverFAvg(:,:,:,aa) = dataStruct.dFoverF(:,:,[i-frameWindow:i+frameWindow]);
+    dFoverF(:,:,:,aa) = dataStruct.dFoverF(:,:,[i-frameWindow:i+frameWindow]);
     aa = aa +1;
 end
-dFoverFAvg = squeeze(mean(dFoverFAvg,4));
-%wrtie a tiff file to view    
-writetiff(dFoverFAvg,'Z:\Data\WidefieldImaging\GCaMP\150202_img19_2\dFoverFAvg');  
+avgMovie = squeeze(mean(avgMovie,4));
+%wrtie a tiff file to view avgMovie    
+writetiff(avgMovie,'Z:\Data\WidefieldImaging\GCaMP\150202_img19_2\avgMovie');  
     
