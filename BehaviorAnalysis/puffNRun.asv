@@ -1,20 +1,21 @@
 % function [dataStruct] = puffNRun(folder)
-imgName = 'Z:\Data\WidefieldImaging\GCaMP\150202_img19_2\150202_img19_2_MMStack.ome';
-input = load('Z:\Data\WidefieldImaging\GCaMP\150202_img19_2\data-img19-150203-1714');
+pathName = 'Z:\Data\WidefieldImaging\GCaMP\150218_img19_2';
+imgName = [pathName '\150218_img19_2_MMStack.ome'];
+input = load([pathName '\data-img19-150218-1620']);
 if isfield(input,'input'),
     input = input.input;
 end
 info = imfinfo(imgName, 'TIF');
-cerebellarFrameAnalyzer
+cerebellarFrameAnalyzer;
 %dataStruct.cameraFrameTimes = get_frame_time_by_movie_info(ds)
 %%
-pathName = 'Z:\Data\WidefieldImaging\GCaMP\150202_img19_2';
+
 dataStruct.image = readtiff(pathName);
 %% mean image field things
 dataStruct.avgF = squeeze(mean(mean(dataStruct.image,1),2))';
 %% end things
 dataStruct.behaviorFramesAsCameraFrames = cumsum(dataStruct.goodFramesIx);
-frameWindow = 10;
+frameWindow = 15;
 stimOns = find(dataStruct.stimOnIx);
 %plot average fluoresence of each timepoint in a trial
 for i = 1:length(stimOns),
@@ -26,12 +27,14 @@ end
 dataStruct.stimOnClips = frames;
 dataStruct.stimPlot=mean(dataStruct.stimOnClips,1);
 %creates a df/f movie to later average
-Fn = squeeze(mean(dataStruct.image,3));
+Fn = squeeze(mean(dataStruct.image(:,:,[620:690]),3));     %HARDCODED
 dFoverF = NaN(size(dataStruct.image));
-for i = size(dFoverF,3);
+%for i = 45:size(dFoverF,3)
+for i = 1:size(dFoverF,3);
     dFoverF(:,:,i) = (double(dataStruct.image(:,:,i))-Fn)./Fn;
 end
 dataStruct.dFoverF = dFoverF;
+%dataStruct.dFoverF = dFoverF(45:end);
 
 %create a movie showing avgF before during and after puff
 avgMovie = NaN(1002,1004,[2*frameWindow+1],length(stimOns));
@@ -42,16 +45,17 @@ for i = stimOns;
 end
 avgMovie = squeeze(mean(avgMovie,4));
 %wrtie a tiff file to view avgMovie    
-writetiff(avgMovie,'Z:\Data\WidefieldImaging\GCaMP\150202_img19_2\avgMovie');    
+writetiff(avgMovie,[pathName '\avgMovie']);    
     
 %create avg trace of the dfoverf
-dFoverFMovie = NaN(1002,1004,[2*frameWindow+1],length(stimOns));
+dFoverFAvg = NaN(1002,1004,[2*frameWindow+1],length(stimOns));
 aa = 1; 
 for i = stimOns;
-    dFoverF(:,:,:,aa) = dataStruct.dFoverF(:,:,[i-frameWindow:i+frameWindow]);
+%for i = stimOns(2:end)-44;
+    dFoverFAvg(:,:,:,aa) = dataStruct.dFoverF(:,:,[i-frameWindow:i+frameWindow]);
     aa = aa +1;
 end
-avgMovie = squeeze(mean(avgMovie,4));
-%wrtie a tiff file to view avgMovie    
-writetiff(avgMovie,'Z:\Data\WidefieldImaging\GCaMP\150202_img19_2\avgMovie');  
+dFoverFAvg = squeeze(mean(dFoverFAvg,4));
+%wrtie a tiff file to view    
+writetiff(dFoverFAvg,[pathName '\dFoverFAvg']);  
     
