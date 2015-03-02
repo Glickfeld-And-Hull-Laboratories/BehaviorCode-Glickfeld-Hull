@@ -1,7 +1,7 @@
 % function [dataStruct] = puffNRun(folder)
-pathName = 'Z:\Data\WidefieldImaging\GCaMP\150218_img19_2';
-imgName = [pathName '\150218_img19_2_MMStack.ome'];
-input = load([pathName '\data-img19-150218-1620']);
+pathName = 'Z:\Data\WidefieldImaging\GCaMP\150225__img17_4';
+imgName = [pathName '\150225__img17_4_MMStack.ome'];
+input = load([pathName '\data-img17-150225-1555']);
 if isfield(input,'input'),
     input = input.input;
 end
@@ -14,11 +14,11 @@ dataStruct.image = readtiff(pathName);
 %% mean image field things
 dataStruct.avgF = squeeze(mean(mean(dataStruct.image,1),2))';
 %% end things
-dataStruct.behaviorFramesAsCameraFrames = cumsum(dataStruct.goodFramesIx);
+dataStruct.behaviorFramesAsCameraFrames = cumsum(dataStruct.goodFramesIx); %each space represents which camera frame it is. Each value represents which 
 frameWindow = 15;
 stimOns = find(dataStruct.stimOnIx);
 %plot average fluoresence of each timepoint in a trial
-for i = 1:length(stimOns),
+for i = 1:length(stimOns);
     stim = stimOns(i);
     frameBeg = stim-frameWindow;
     frameEnd = stim+frameWindow;
@@ -27,7 +27,7 @@ end
 dataStruct.stimOnClips = frames;
 dataStruct.stimPlot=mean(dataStruct.stimOnClips,1);
 %creates a df/f movie to later average
-Fn = squeeze(mean(dataStruct.image(:,:,;),3));     %HARDCODED  enter in an identified quiescent period into the 3rd dim of dataStruct.image
+Fn = squeeze(mean(dataStruct.image(:,:,[630:740]),3));     %HARDCODED  enter in an identified quiescent period into the 3rd dim of dataStruct.image
 dFoverF = NaN(size(dataStruct.image));
 %for i = 45:size(dFoverF,3)
 for i = 1:size(dFoverF,3);
@@ -45,7 +45,7 @@ for i = stimOns;
 end
 avgMovie = squeeze(mean(avgMovie,4));
 %wrtie a tiff file to view avgMovie    
-writetiff(avgMovie,[pathName '\avgMovie']);    
+%writetiff(avgMovie,[pathName '\avgMovie']);    
     
 %create avg trace of the dfoverf
 dFoverFAvg = NaN(1002,1004,[2*frameWindow+1],length(stimOns));
@@ -57,5 +57,5 @@ for i = stimOns;
 end
 dFoverFAvg = squeeze(mean(dFoverFAvg,4));
 %wrtie a tiff file to view    
-writetiff(dFoverFAvg,[pathName '\dFoverFAvg']);  
+%writetiff(dFoverFAvg,[pathName '\dFoverFAvg']);  
     
