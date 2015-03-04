@@ -48,6 +48,10 @@ assert(sum(howManyMissed>imagingRate)<1, '*** Do not use data: there is a skip o
 hold on
 %%
 emptyMat = [];
+emptyTimes = [];
+locoVals = [];
+
+counterStart = input.itiCounter1TimesUs{1}(end);
 for i=1:nTrs,
     trN = i;
     itiInt = input.nScansOff/10;
@@ -70,6 +74,31 @@ for i=1:nTrs,
     iti9Mat = itiMat*double(input.itiCounter9{trN}/itiInt);
     iti10Mat = itiMat*double(input.itiCounter10{trN}/itiInt);
 
+    iti1Time = input.itiCounter1TimesUs{trN}(end);
+    iti2Time = input.itiCounter2TimesUs{trN}(end);
+    iti3Time = input.itiCounter3TimesUs{trN}(end);
+    iti4Time = input.itiCounter4TimesUs{trN}(end);
+    iti5Time = input.itiCounter5TimesUs{trN}(end);
+    iti6Time = input.itiCounter6TimesUs{trN}(end);
+    iti7Time = input.itiCounter7TimesUs{trN}(end);
+    iti8Time = input.itiCounter8TimesUs{trN}(end);
+    iti9Time = input.itiCounter9TimesUs{trN}(end);
+    iti10Time = input.itiCounter10TimesUs{trN}(end);
+
+    iti1Val = input.itiCounter1{trN};
+    iti2Val = input.itiCounter2{trN};
+    iti3Val = input.itiCounter3{trN};
+    iti4Val = input.itiCounter4{trN};
+    iti5Val = input.itiCounter5{trN};
+    iti6Val = input.itiCounter6{trN};
+    iti7Val = input.itiCounter7{trN};
+    iti8Val = input.itiCounter8{trN};
+    iti9Val = input.itiCounter9{trN};
+    iti10Val = input.itiCounter10{trN};
+
+
+
+
     sp1Mat = spMat*double(input.spCounter1{trN}/spInt);
     sp2Mat = spMat*double(input.spCounter2{trN}/spInt);
     sp3Mat = spMat*double(input.spCounter3{trN}/spInt);
@@ -80,13 +109,43 @@ for i=1:nTrs,
     sp8Mat = spMat*double(input.spCounter8{trN}/spInt);
     sp9Mat = spMat*double(input.spCounter9{trN}/spInt);
     sp10Mat = spMat*double(input.spCounter10{trN}/spInt);
-    
+
+    sp1Val = input.spCounter1{trN};
+    sp2Val = input.spCounter2{trN};
+    sp3Val = input.spCounter3{trN};
+    sp4Val = input.spCounter4{trN};
+    sp5Val = input.spCounter5{trN};
+    sp6Val = input.spCounter6{trN};
+    sp7Val = input.spCounter7{trN};
+    sp8Val = input.spCounter8{trN};
+    sp9Val = input.spCounter9{trN};
+    sp10Val = input.spCounter10{trN};
+
+
+
+
+    sp1Time = input.spCounter1TimesUs{trN}(end);
+    sp2Time = input.spCounter2TimesUs{trN}(end);
+    sp3Time = input.spCounter3TimesUs{trN}(end);
+    sp4Time = input.spCounter4TimesUs{trN}(end);
+    sp5Time = input.spCounter5TimesUs{trN}(end);
+    sp6Time = input.spCounter6TimesUs{trN}(end);
+    sp7Time = input.spCounter7TimesUs{trN}(end);
+    sp8Time = input.spCounter8TimesUs{trN}(end);
+    sp9Time = input.spCounter9TimesUs{trN}(end);
+    sp10Time = input.spCounter10TimesUs{trN}(end);
+
     stimMat = stimMat*double(input.tISIWheelCounter{trN}/preInt+postInt);
+    stimTime = input.postSoundWheelCounterTimesUs{trN}(end);
+    stimVal = input.tISIWheelCounter{trN}
 
-    locoMat = [iti1Mat iti2Mat iti3Mat iti4Mat iti5Mat iti6Mat iti7Mat iti8Mat iti9Mat iti10Mat stimMat sp1Mat sp2Mat sp3Mat sp4Mat sp5Mat sp6Mat sp7Mat sp8Mat sp9Mat sp10Mat]
-    emptyMat = [emptyMat locoMat];
-    
+    locoMatFrame = [iti1Mat iti2Mat iti3Mat iti4Mat iti5Mat iti6Mat iti7Mat iti8Mat iti9Mat iti10Mat stimMat sp1Mat sp2Mat sp3Mat sp4Mat sp5Mat sp6Mat sp7Mat sp8Mat sp9Mat sp10Mat];
+    emptyMat = [emptyMat locoMatFrame];
+    locoTimeUs = [iti1Time iti2Time iti3Time iti4Time iti5Time iti6Time iti7Time iti8Time iti9Time iti10Time stimTime sp1Time sp2Time sp3Time sp4Time sp5Time sp6Time sp7Time sp8Time sp9Time sp10Time];
+    emptyTimes = [emptyTimes locoTimeUs];
 
+    tLocoVals =[iti1Val iti2Val iti3Val iti4Val iti5Val iti6Val iti7Val iti8Val iti9Val iti10Val stimVal sp1Val sp2Val sp3Val sp4Val sp5Val sp6Val sp7Val sp8Val sp9Val sp10Val];
+    locoVals = [locoVals tLocoVals];
 end
 
 
@@ -121,7 +180,9 @@ for i = 1:length(problemFrameNumbers),
 end
 dataStruct.goodFramesIx = boolean(blankIx);
 dataStruct.stimOnIx = boolean(stimOnIx)
-dataStruct.locomotionMat = emptyMat;
+dataStruct.locomotionMatFrames = emptyMat;
+dataStruct.locomotionTimes = emptyTimes;
+dataStruct.locomotionVals = locoVals;
 %% WRITE CODE HERE TO CROP OUT TRIALS WITH 1 SECOND HOLES
 
 %% WRITE CODE HERE TO IMPORT IMAGE
