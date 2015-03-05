@@ -63,7 +63,7 @@ elif thisHostname == "test-rig":
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
     
-HOST = "192.168.1.242"
+HOST = "192.168.1.28"
 laserParamCode = 'sendLaserParams'
 lastSendTime = 0
 nCodesSent = 0
