@@ -54,6 +54,7 @@ rightTrNs = find(rightTrialIx);
 leftTrialIx = logical(leftTrialIx);
 nLeft = sum(leftTrialIx);
 nRight = sum(rightTrialIx);
+block2Ix = cell2mat_padded(input.tBlock2TrialNumber);
 
 leftOutcomes = input.trialOutcomeCell(leftTrialIx);
 leftCorr = strcmp(leftOutcomes, 'success');
@@ -558,6 +559,7 @@ if isfield(input, 'dGratingContrastDiff'),
 else
   contrastDifferenceRight = cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast);
 end
+<<<<<<< HEAD
 %%
 plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
 nLevelsB1 = unique(plotTrsB1);
@@ -614,6 +616,65 @@ for kk=1:length(nLevelsB2)
 end
 end
 %%
+=======
+
+plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
+nLevelsB1 = unique(plotTrsB1);
+percentContCellB1 = cell(1,length(nLevelsB1));
+for kk=1:length(nLevelsB1)
+    valB1 = nLevelsB1(kk);
+    valIxB1 = contrastDifferenceRight==valB1;
+    totalNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
+    if isfield(input, 'dGratingContrastDiff')
+      if valB1>=1,
+          rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&correctIx&~block2Ix));
+          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+      elseif valB1<1,
+          rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&incorrectIx&~block2Ix));
+          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+      end
+    else
+      if valB1>=0,
+          rightNTrialsValB1 = sum(contrastDifferenceRight((valIxB1&correctIx)&~block2Ix));
+          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+      elseif valB1<0,
+          rightNTrialsValB1 = sum(contrastDifferenceRight((valIxB1&incorrectIx)&~block2Ix));
+          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+      end
+    end
+end
+
+
+if sum(block2Ix)>=1
+  plotTrsB2 = contrastDifferenceRight((correctIx|incorrectIx)&block2Ix);
+  nLevelsB2 = unique(plotTrsB2);
+  percentContCellB2 = cell(1,length(nLevelsB2));
+  for kk=1:length(nLevelsB2)
+    valB2 = nLevelsB2(kk);
+    valIxB2 = contrastDifferenceRight==valB2;
+    totalNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&(correctIx|incorrectIx)&block2Ix));
+    if isfield(input, 'dGratingContrastDiff')
+      if valB2>=1,
+          rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&correctIx&block2Ix));
+          percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
+      elseif valB2<1,
+          rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&incorrectIx&block2Ix));
+          percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
+      end
+    else
+      if valB2>=0,
+          rightNTrialsValB2 = sum(contrastDifferenceRight((valIxB2&correctIx)&block2Ix));
+          percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
+      elseif valB2<0,
+          rightNTrialsValB2 = sum(contrastDifferenceRight((valIxB2&incorrectIx)&block2Ix));
+          percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
+      end
+    end
+end
+end
+
+
+>>>>>>> plotLego block 2 added
 minX = min(contrastDifferenceRight,[],2);
 maxX = max(contrastDifferenceRight,[],2);
 xLimm = [minX maxX];
@@ -626,10 +687,16 @@ xTickL = 10.^(xL1(1):1:xL1(2));
 xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
 xTLabelL = cellstr(num2str(xTickL(:)));
 
+<<<<<<< HEAD
 plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 hold on
 if sum(block2Ix)>0,
     plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', [.5 .5 0], 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+=======
+pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+if sum(block2Ix)>= 1
+  pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+>>>>>>> plotLego block 2 added
 end
 vH = vert_lines(0);
 set(vH, 'Color', 'g');
@@ -658,6 +725,7 @@ hold on;
 
 if nCorr>0 && input.doTestRobot==0,
     contTargetV = cell2mat_padded(input.tGratingContrast).*100;
+<<<<<<< HEAD
     plotTrs = contTargetV(correctIx|incorrectIx);
     uqTarget = unique(plotTrs);
     nLevels = length(uqTarget);
@@ -668,8 +736,36 @@ if nCorr>0 && input.doTestRobot==0,
         totalNTrialsValB1 = sum(contTargetV(valIx&(correctIx|incorrectIx)));
         corrNTrialsVal = sum(contTargetV(valIx&correctIx));
         percentCell{jj} = corrNTrialsVal/totalNTrialsValB1;
+=======
+    plotTrsB1 = contTargetV((correctIx|incorrectIx)&~block2Ix);
+    uqTargetB1 = unique(plotTrsB1);
+    nLevelsB1 = length(uqTargetB1);
+    percentCellB1 = cell(1,nLevelsB1);
+    for jj=1:nLevelsB1
+        valB1 = uqTargetB1(jj);
+        valIxB1 = contTargetV==valB1;
+        totalNTrialsValB1 = sum(contTargetV(valIxB1&(correctIx|incorrectIx)&~block2Ix));
+        corrNTrialsValB1 = sum(contTargetV(valIxB1&correctIx&~block2Ix));
+        percentCellB1{jj} = corrNTrialsValB1/totalNTrialsValB1;
     end
-    pH = plot(uqTarget, cell2mat(percentCell));
+    if sum(block2Ix)>=1
+      plotTrsB2 = contTargetV((correctIx|incorrectIx)&block2Ix);
+    uqTargetB2 = unique(plotTrsB2);
+    nLevelsB2 = length(uqTargetB2);
+    percentCellB2 = cell(1,nLevelsB2);
+    for jj=1:nLevelsB2
+        valB2 = uqTargetB2(jj);
+        valIxB2 = contTargetV==valB2;
+        totalNTrialsValB2 = sum(contTargetV(valIxB2&(correctIx|incorrectIx)&block2Ix));
+        corrNTrialsValB2 = sum(contTargetV(valIxB2&correctIx&block2Ix));
+        percentCellB2{jj} = corrNTrialsValB2/totalNTrialsValB2;
+    end
+    end
+    pH1 = plot(uqTargetB1, cell2mat(percentCellB1));
+    if sum(block2Ix)>=1
+      ph2 = plot(uqTargetB2, cell2mat(percentCellB2),'Color', yColor);
+>>>>>>> plotLego block 2 added
+    end
     minX = 10;
     maxX = 100;
     xLimm = [minX maxX];
