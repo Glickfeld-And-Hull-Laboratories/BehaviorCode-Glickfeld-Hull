@@ -9,8 +9,8 @@ info = imfinfo(imgName, 'TIF');
 cerebellarFrameAnalyzer;
 %dataStruct.cameraFrameTimes = get_frame_time_by_movie_info(ds)
 %%
-%sum(dataStruct.puffRun)
-%sum(dataStruct.puffStill)
+sum(dataStruct.puffRun)
+sum(dataStruct.puffStill)
 dataStruct.image = readtiff(pathName);
 %% mean image field things
 dataStruct.avgF = squeeze(mean(mean(dataStruct.image,1),2))';
@@ -28,7 +28,7 @@ end
 dataStruct.stimOnClips = frames;
 dataStruct.stimPlot=mean(dataStruct.stimOnClips,1);
 %creates a df/f movie to later average
-Fn = squeeze(mean(dataStruct.image(:,:,[600:700]),3));     %HARDCODED  enter in an identified quiescent period into the 3rd dim of dataStruct.image
+Fn = squeeze(mean(dataStruct.image(:,:,[400:500]),3));     %HARDCODED  enter in an identified quiescent period into the 3rd dim of dataStruct.image
 dFoverF = NaN(size(dataStruct.image));
 %for i = 45:size(dFoverF,3)
 for i = 1:size(dFoverF,3);
