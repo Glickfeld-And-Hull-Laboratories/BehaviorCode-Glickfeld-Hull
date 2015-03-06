@@ -635,7 +635,7 @@
           <action type="if" condition="tTrialLaserPowerMw > 0">
               <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
 
-              <action type="assignment" variable="FIO2" value="0"></action> 
+              <action type="assignment" variable="FIO2" value="1"></action> 
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -713,6 +713,7 @@
         </task_system_state>
 
         <task_system_state tag="Reward" interruptible="YES">
+          <action type="assignment" variable="FIO2" value="0"></action> 
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
@@ -781,6 +782,7 @@
         <task_system_state tag="Incorrect" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+          <action type="assignment" variable="FIO2" value="0"></action> 
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 
           <action type="if" condition="doBlackAndWhite==1">
@@ -819,6 +821,7 @@
 
         <task_system_state tag="Ignore" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" variable="FIO2" value="0"></action> 
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 
