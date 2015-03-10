@@ -111,10 +111,14 @@ elseif input.doBlock2==0,
   block2Str = 'Block2: off \n';
 end
 
-if input.doMatchToTarget==1,
-  MTTstr = 'On';
+if isfield(input, 'doMatchToTarget')
+  if input.doMatchToTarget==1,
+    MTTstr = 'On';
+  else
+    MTTstr = 'Off';
+  end
 else
-  MTTstr = 'Off';
+    MTTstr = 'Off';
 end
 
 if input.doConsecCorrectReward==1,
@@ -411,7 +415,7 @@ if nCorr>0 && input.doTestRobot==0,
     contDiffV = cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast);
   end
     corrDiffV = contDiffV(correctIx);
-    uqDiff = unique(corrDiffV);
+    uqDiff = chop(unique(corrDiffV),2);
     nLevels = length(uqDiff);
     corrDiffCell = cell(1,nLevels);
     decTimes = cell2mat_padded(input.tDecisionTimeMs);
@@ -481,7 +485,7 @@ hold on;
 
 if nCorr>0 && input.doTestRobot==0,
     plotTrs = contDiffV(correctIx|incorrectIx);
-    uqDiff = unique(plotTrs);
+    uqDiff = chop(unique(plotTrs),2);
     nLevels = length(uqDiff);
     percentCell = cell(1,nLevels);
     for jj=1:nLevels
@@ -561,7 +565,7 @@ else
 end
 
 plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
-nLevelsB1 = unique(plotTrsB1);
+nLevelsB1 = chop(unique(plotTrsB1),2);
 percentContCellB1 = cell(1,length(nLevelsB1));
 for kk=1:length(nLevelsB1)
     valB1 = nLevelsB1(kk);
@@ -660,7 +664,7 @@ hold on;
 if nCorr>0 && input.doTestRobot==0,
     contTargetV = cell2mat_padded(input.tGratingContrast).*100;
     plotTrsB1 = contTargetV((correctIx|incorrectIx)&~block2Ix);
-    uqTargetB1 = unique(plotTrsB1);
+    uqTargetB1 = chop(unique(plotTrsB1),2);
     nLevelsB1 = length(uqTargetB1);
     percentCellB1 = cell(1,nLevelsB1);
     for jj=1:nLevelsB1
