@@ -73,7 +73,7 @@
 
 	  <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>    
-      <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Visual Stimuli"/>
       <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
       <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Visual Stimuli"/>
@@ -650,7 +650,7 @@
           <action type="assignment" variable="stimTimestampMs" value="now()/1000"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" timer="stimOffTimerMs" target="StimOff"></transition>
+          <transition type="timer_expired" timer="stimOnTimerMs" target="StimOff"></transition>
           <transition type="timer_expired" timer="tooFastTimerMs" target="ZeroQuad"></transition>
         </task_system_state>
 		
@@ -676,7 +676,6 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="tag tooFast" variable="isNotTooFast" value="1"/>
           <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
-	      <action type="assignment" tag="tag quadZeroed" variable="quadZeroed" value="1"/>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="Reaction"></transition>
         </task_system_state>
