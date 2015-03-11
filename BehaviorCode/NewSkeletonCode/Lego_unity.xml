@@ -286,6 +286,7 @@
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
           <action type="assignment" variable="stimulusOn" value="0"/>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
+          <action type="assignment" tag="set isNotTooFast to 0" variable="isNotTooFast" value="0"/>
 
           <action type="if" condition="doBiasStaircase == 1 ">
             <action type="assignment" variable="tStimProbAvgLeft" value="1 - tLeftBias"/>
@@ -637,6 +638,7 @@
           </action>
           <action type="report" message="*****-=STIMULI ON=-*****"></action>
           <action type="assignment" variable="stimulusOn" value="1"/>
+          <action type="assignment" tag="set stimIsOff to 0" variable="stimIsOff" value="0"/>
           <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
           <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
           <action type="start_timer" timer="stimOnTimerMs" timebase="" duration="stimOnTimeMs" duration_units="ms"/>
@@ -662,20 +664,15 @@
             <action tag="Update Display" type="update_stimulus_display"></action>
             <action type="assignment" variable="FIO2" value="0"></action> 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" condition="isNotTooFast==1" target="Reaction"></transition>
-          <transition type="conditional" condition="isNotTooFast==0" target="WaitForTooFast"></transition>
-        </task_system_state>
-        
-        <task_system_state tag="WaitForTooFast" interruptible="YES">
-          <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" timer="tooFastTimerMs" target="ZeroQuad"></transition>
+          <transition type="conditional" condition="isNotTooFast" target="Reaction"></transition>
+          <transition type="conditional" condition="!isNotTooFast &amp;&amp; timerExpired(tooFastTimerMs)" target="ZeroQuad"></transition>
         </task_system_state>
         
         <task_system_state tag="ZeroQuad" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="tag tooFast" variable="isNotTooFast" value="1"/>
           <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+          <action type="report" message="**** Quad zeroed *****"></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="Reaction"></transition>
         </task_system_state>
