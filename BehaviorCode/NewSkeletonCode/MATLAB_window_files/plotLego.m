@@ -410,12 +410,12 @@ hold on;
 
 if nCorr>0 && input.doTestRobot==0,
   if isfield(input, 'dGratingContrastDiff')
-    contDiffV = cell2mat_padded(input.tGratingContrast) ./ cell2mat_padded(input.dGratingContrast);
+    contDiffV = round(cell2mat_padded(input.tGratingContrast) ./ cell2mat_padded(input.dGratingContrast),2);
   else
-    contDiffV = cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast);
+    contDiffV = round(cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast),2);
   end
     corrDiffV = contDiffV(correctIx);
-    uqDiff = chop(unique(corrDiffV),2);
+    uqDiff = unique(corrDiffV);
     nLevels = length(uqDiff);
     corrDiffCell = cell(1,nLevels);
     decTimes = cell2mat_padded(input.tDecisionTimeMs);
@@ -485,7 +485,7 @@ hold on;
 
 if nCorr>0 && input.doTestRobot==0,
     plotTrs = contDiffV(correctIx|incorrectIx);
-    uqDiff = chop(unique(plotTrs),2);
+    uqDiff = unique(plotTrs);
     nLevels = length(uqDiff);
     percentCell = cell(1,nLevels);
     for jj=1:nLevels
@@ -559,13 +559,13 @@ axH  = subplot(spSz{:},10);
 hold on
 
 if isfield(input, 'dGratingContrastDiff'),
-  contrastDifferenceRight = cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast);
+  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
 else
-  contrastDifferenceRight = cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast);
+  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 end
 
 plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
-nLevelsB1 = chop(unique(plotTrsB1),2);
+nLevelsB1 = unique(plotTrsB1);
 percentContCellB1 = cell(1,length(nLevelsB1));
 for kk=1:length(nLevelsB1)
     valB1 = nLevelsB1(kk);
@@ -664,7 +664,7 @@ hold on;
 if nCorr>0 && input.doTestRobot==0,
     contTargetV = cell2mat_padded(input.tGratingContrast).*100;
     plotTrsB1 = contTargetV((correctIx|incorrectIx)&~block2Ix);
-    uqTargetB1 = chop(unique(plotTrsB1),2);
+    uqTargetB1 = unique(plotTrsB1);
     nLevelsB1 = length(uqTargetB1);
     percentCellB1 = cell(1,nLevelsB1);
     for jj=1:nLevelsB1
