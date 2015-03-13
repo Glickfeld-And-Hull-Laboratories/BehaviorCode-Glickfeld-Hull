@@ -23,7 +23,8 @@
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="150" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="invertDirection" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
-      <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
+      <variable tag="doOnlyMaxDiff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+      <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/> 
 
       <variable tag="doFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Feedback Motion"/>
       <variable tag="gratingTargetEccentricity" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Feedback Motion"/>      
@@ -467,7 +468,12 @@
           <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
 
           <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff / (pow(2, 1.0*tStimulusNumber2/gratingContrastDiffSPO)) + 1"></action>
+          <action type="if" condition="doOnlyMaxDiff">
+          	<action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff"></action>
+          </action>
           <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
+          
+          
           <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
 
           <!-- if not doing blocks, choose left/right state based on left, switch, and last trial state. -->
