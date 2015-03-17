@@ -1,16 +1,42 @@
 % function [dataStruct] = puffNRun(folder)
-pathName = 'Z:\Data\WidefieldImaging\GCaMP\150218_img15_1';
-imgName = [pathName '\150218_img15_1_MMStack.ome'];
-input = load([pathName '\data-img15-150218-1556']);
+pathName = 'Z:\Data\WidefieldImaging\GCaMP\150219_img21_6';
+imgName = [pathName '\150219_img21_6_MMStack.ome'];
+input = load([pathName '\data-img21-150219-1704']);
 if isfield(input,'input'),
     input = input.input;
 end
 info = imfinfo(imgName, 'TIF');
+
+
+%%Fill any empty sp/itiCounters with a NaN
+for i = 1:input.stopAfterNTrials
+     if isempty(cell2mat(input.spCounter10(i)))==1
+        input.spCounter10(i) = input.spCounter9(i);
+        sprintf('filled an empty spCounter10')
+    end
+    if isempty(cell2mat(input.itiCounter10(i)))==1
+        input.itiCounter10(i) = input.itiCounter9(i);
+        sprintf('filled an empty itiCounter10')
+    end
+end
+
+%Fill in any missing iti/spCounterTimes
+for i = 1:input.stopAfterNTrials
+    if isempty(cell2mat(input.spCounter10TimesUs(i)))
+        input.spCounter10TimesUs(i) =  mat2cell(cell2mat(input.spCounter9TimesUs(i))+500000);
+        sprintf('filled an empty spCounterTime')
+    end
+    if isempty(cell2mat(input.itiCounter10TimesUs(i)))
+        input.itiCounter10TimesUs(i) =  mat2cell(cell2mat(input.itiCounter9TimesUs(i))+500000);
+        sprintf('filled an empty itiCounterTime')
+    end
+end
+%%
 cerebellarFrameAnalyzer;
 %dataStruct.cameraFrameTimes = get_frame_time_by_movie_info(ds)
 %%
-%sum(dataStruct.puffRun)
-%sum(dataStruct.puffStill)
+sum(dataStruct.puffRun)
+sum(dataStruct.puffStill)
 dataStruct.image = readtiff(pathName);
 %% mean image field things
 dataStruct.avgF = squeeze(mean(mean(dataStruct.image,1),2))';
@@ -28,7 +54,7 @@ end
 dataStruct.stimOnClips = frames;
 dataStruct.stimPlot=mean(dataStruct.stimOnClips,1);
 %creates a df/f movie to later average
-Fn = squeeze(mean(dataStruct.image(:,:,[600:700]),3));     %HARDCODED  enter in an identified quiescent period into the 3rd dim of dataStruct.image
+Fn = squeeze(mean(dataStruct.image(:,:,[400:500]),3));     %HARDCODED  enter in an identified quiescent period into the 3rd dim of dataStruct.image
 dFoverF = NaN(size(dataStruct.image));
 %for i = 45:size(dFoverF,3)
 for i = 1:size(dFoverF,3);
@@ -86,3 +112,8 @@ writetiff(avgPuffStill, [pathName '\avgPuffStill']);
 stillMinusRun = avgPuffStill - avgPuffRun;
 writetiff(stillMinusRun, [pathName '\stillMinusRun']);
 
+%%plotting running vs F
+B = [1:length(dataStruct.goodFramesIx)-2];
+figure; plotyy(B,4*dataStruct.locomotionMatFrames(3:end),B,dataStruct.avgF(3:length(B)+2))
+sum(puffRun)
+sum(puffStill)

@@ -46,6 +46,32 @@ howManyMissed = problematic./(2*avgFrame);
 % alert if data has a hole greater than 1 second
 assert(sum(howManyMissed>imagingRate)<1, '*** Do not use data: there is a skip of %3d second skip between frames. ****', problematic(howManyMissed>15)/1000000);
 hold on
+
+%%Fill any empty sp/itiCounters with a NaN
+for i = 1:nTrs
+     if isempty(cell2mat(input.spCounter10(i)))==1
+        input.spCounter10(i) = input.spCounter9(i);
+        sprintf('filled an empty spCounter10')
+    end
+    if isempty(cell2mat(input.itiCounter10(i)))==1
+        input.itiCounter10(i) = input.itiCounter9(i);
+        sprintf('filled an empty itiCounter10')
+    end
+end
+
+%Fill in any missing iti/spCounterTimes
+for i = 1:nTrs
+    if isempty(cell2mat(input.spCounter10TimesUs(i)))
+        input.spCounter10TimesUs(i) =  mat2cell(cell2mat(input.spCounter9TimesUs(i))+500000);
+        sprintf('filled an empty spCounterTime')
+    end
+    if isempty(cell2mat(input.itiCounter10TimesUs(i)))
+        input.itiCounter10TimesUs(i) =  mat2cell(cell2mat(input.itiCounter9TimesUs(i))+500000);
+        sprintf('filled an empty itiCounterTime')
+    end
+end
+    
+
 %% Extracting locomotion data
 emptyMat = [];
 emptyTimes = [];
@@ -135,9 +161,9 @@ for i=1:nTrs,
     sp9Time = input.spCounter9TimesUs{trN}(end);
     sp10Time = input.spCounter10TimesUs{trN}(end);
 
-    stimMat = stimMat*double(input.tISIWheelCounter{trN}/preInt+postInt);
+    stimMat = stimMat*double(input.tISIWheelCounter{trN}/(preInt+postInt));   
     stimTime = input.postSoundWheelCounterTimesUs{trN}(end);
-    stimVal = input.tISIWheelCounter{trN}
+    stimVal = input.tISIWheelCounter{trN};
 
     locoMatFrame = [iti1Mat iti2Mat iti3Mat iti4Mat iti5Mat iti6Mat iti7Mat iti8Mat iti9Mat iti10Mat stimMat sp1Mat sp2Mat sp3Mat sp4Mat sp5Mat sp6Mat sp7Mat sp8Mat sp9Mat sp10Mat];
     emptyMat = [emptyMat locoMatFrame];
@@ -196,16 +222,17 @@ figure; plot(dataStruct.locomotionMatFrames(3:end));   %May need to recrop
 %% CREATING RUN NOTRUN MATRICES AS WELL AS SUSTAINED RUN NOT RUN MATRICES
 stillMat = zeros(size(dataStruct.goodFramesIx));
 runMat = zeros(size(dataStruct.goodFramesIx));
-runThresh = 2;
-stillThresh = 1.5;
+runThresh = 1.1;
+stillThresh =0.9;
 for i = 1:size(runMat,2)
     if dataStruct.locomotionMatFrames(i) >= runThresh;
         runMat(i) = 1;
     end
-    if dataStruct.locomotionMatFrames(i) <= stillThresh;
+    if dataStruct.locomotionMatFrames(i) < stillThresh;
         stillMat(i) = 1;
     end
 end 
+
  
 %% creating matrices for puffs while running and puffs while still
 puffRun = and(runMat,dataStruct.stimOnIx);
