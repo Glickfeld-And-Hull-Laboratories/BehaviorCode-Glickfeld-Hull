@@ -60,6 +60,8 @@ tGratingDurationMsV = celleqel2mat_padded(input.tGratingDurationMs);
 tGratingDirectionDeg = celleqel2mat_padded(input.tGratingDirectionDeg);
 tGratingContrast = celleqel2mat_padded(input.tGratingContrast, NaN, 'double');
 tBaseGratingContrast = celleqel2mat_padded(input.tBaseGratingContrast, NaN, 'double');
+tGratingSpeedDPS = celleqel2mat_padded(input.tGratingSpeedDPS, NaN, 'double');
+tBaseGratingSpeedDPS = celleqel2mat_padded(input.tBaseGratingSpeedDPS, NaN, 'double');
 tLaserPowerMw = celleqel2mat_padded(input.tLaserPowerMw);
 tLaserRampLengthMsV = celleqel2mat_padded(input.tLaserRampLengthMs);
 tLaserDoLinearRampV = celleqel2mat_padded(input.tLaserDoLinearRamp);
@@ -87,6 +89,8 @@ if input.doContrastDetect
     vPowerV = abs(tGratingContrast-tBaseGratingContrast)*100;
 elseif input.doOriDetect
     vPowerV = tGratingDirectionDeg;
+elseif input.doSpeedDetect
+    vPowerV = abs(tGratingSpeedDPS-tBaseGratingSpeedDPS);
 end
 
 if all(vPowerV) == 0
@@ -863,6 +867,9 @@ if nStims >= 1
   elseif input.doOriDetect
     xlabel('direction (deg)');
     title(sprintf('base direction %g', input.baseGratingDirectionDeg));
+  elseif input.doSpeedDetect
+    xlabel('speed (dps)');
+    title(sprintf('base speed %g', input.baseGratingSpeedDPS));
   end
 
   % manually compute limits and tick positions
@@ -968,6 +975,8 @@ if nStims > 1
     xlabel('contrast change (%)');
   elseif input.doOriDetect
     xlabel('direction (deg)')
+  elseif input.doSpeedDetect
+    xlabel('speed (dps)')  
   end
   
   ylabel('rt (ms) on corrects');
