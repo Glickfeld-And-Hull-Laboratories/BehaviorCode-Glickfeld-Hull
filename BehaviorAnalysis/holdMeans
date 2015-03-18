@@ -1,10 +1,10 @@
-function [dataStru outR] = doAllReqXHolds(subjMat)
+function [dataStru outR] = holdMeans(subjMat)
 global dataStru
-addpath('C:\Users\andrew\Documents\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis');
+addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
 % Data Path Formatting
 global dataStru
 disp('Loading data from MWorks Data folder...')
-dataPath = 'C:\Users\andrew\Desktop\behavData';
+dataPath = 'B:\andrew\Behavior\Data';
 dirListing = dir(dataPath);
 fileNames= {dirListing.name};
 nSubjs= length(subjMat);
@@ -24,14 +24,12 @@ dataStru=struct;
 %% This section searches dataPath for files specific to each animal for the specified days, then loads specified parts of data into struData.
 for j = subjMat;
     subjIx = subjNumList == j;
-    %dateIx = ismember(dateStrList, dateMat);
-    subjDateIx = subjIx; %& dateIx;
-%    dataStru(j).dates= dateMat;
+    subjDateIx = subjIx;
+    dataStru(j).dates= dateMat;
     desNames = fileNames(subjDateIx);
     nNames = length(desNames);
     for iN = 1:nNames;
         tName = fullfile(dataPath, desNames{iN});
-        disp(tName)
         dataStru(j).check.downloadedname{1,iN}= tName; 
         ds=mwLoadData(tName, 'max');
         plotReqXHolds(ds)
