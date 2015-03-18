@@ -1203,7 +1203,6 @@ if doPpBlock2Grating
   tV.gratingElevationDeg = input.block2GratingElevationDeg;
   tV.gratingSpatialFreqCPD = input.block2GratingSpatialFreqCPD;
   tV.gratingDurationMs = input.block2GratingDurationMs;
-  tV.gratingSpeedDPS = input.block2GratingSpeedDPS;
 else
   tV.gratingWidthDeg = input.gratingWidthDeg;
   tV.gratingHeightDeg = input.gratingHeightDeg;
@@ -1211,7 +1210,6 @@ else
   tV.gratingElevationDeg = input.gratingElevationDeg;
   tV.gratingSpatialFreqCPD = input.gratingSpatialFreqCPD;
   tV.gratingDurationMs = input.gratingDurationMs;
-  tV.gratingSpeedDPS = input.gratingSpeedDPS;
 end
 
 outStr = sprintf('%gx%gdeg, at (%g,%g), %gcpd, %dms', ...
@@ -1222,10 +1220,6 @@ outStr = sprintf('%gx%gdeg, at (%g,%g), %gcpd, %dms', ...
                  tV.gratingSpatialFreqCPD, ...
                  tV.gratingDurationMs);
 
-
-if tV.gratingSpeedDPS ~= 0 
-  outStr = strcat(outStr, sprintf(' %d deg/s', tV.gratingSpeedDPS));
-end
 
 %%%%%%%%%%%%%%%%
 
