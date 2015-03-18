@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" lever2="" 
+              lever1_solenoid="FIO2"
+              lever2_solenoid=""
+              counter="counter"
+              counter2="counter2"
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Behavioral Control">
+      <!-- New Variables at the Top -->      
+      <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="runningThreshold" scope="global" logging="when_changed" default_value="32" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="amountRun" scope="global" logging="when_changed" default_value="32" type="integer" persistant="1" groups="Variables"/>
+
+      <variable tag="nCycles" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="requiredCycles" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+
+      <variable tag="tRunningWheel" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+
+      <variable tag="nRewarded" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="nFailed" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="trials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="aboveThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+      <variable tag="requiredAboveThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Variables"/>
+    </folder>
+  </variables>
+  <sounds tag="Sounds">
+  </sounds>
+  <stimuli tag="Stimuli">
+  </stimuli>    
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
+       <task_system tag="TS" full_name="TS" description="" interruptible="YES" 
+                     _error="Task Systems must contain >=1 transition that yields to parent">
+
+          <task_system_state tag="TrialStart" interruptible="YES">
+            <action type="assignment" variable="tRunningWheel" value="0"/>
+            <action type="assignment" variable="nCycles" value="0"/>
+            <action type="assignment" variable="amountRun" value="0"/>
+            <action type="assignment" variable="aboveThreshold" value="0"/>
+
+
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" tag="" target="TimerOn"></transition>
+          </task_system_state>
+
+          <task_system_state tag="TimerOn" interruptible="YES">
+            <action type="start_timer" timer="runTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
+            <action type="assignment" variable="tRunningWheel" value="counter2" />
+            <action type="report" message="*** Timer Started --  waiting %timerDurationMs ms ***"/>
+            <action type="assignment" variable="nCycles" value="nCycles+1" />
+
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Move to TimerOff evaluation" target="TimerOff" timer="runTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="TimerOff" interruptible="YES">
+
+            <action type="assignment" variable="amountRun" value="counter2 - tRunningWheel" />
+
+            <action type="if" condition="amountRun &gt;= runningThreshold">
+              <action type="assignment" variable="aboveThreshold" value="aboveThreshold+1" />
+            </action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" condition="nCycles &lt; requiredCycles" tag="" target="TimerOn"></transition>
+            <transition type="conditional" condition="nCycles &gt;= requiredCycles" tag="" target="EndTrial"></transition>
+          </task_system_state>
+
+          <task_system_state tag="EndTrial" interruptible="YES">
+            <action type="report" message="Trial Ended --  waiting 5000ms"/>
+            <action type="if" condition="aboveThreshold &gt;= requiredAboveThreshold">
+              <action type="assignment" variable="nRewarded" value="nRewarded+1"/>
+              <!-- Give reward here!!! -->
+              <action type="report" message=" GIVING REWARD NOW "/>
+            </action>
+            <action type="if" condition="aboveThreshold &lt; requiredAboveThreshold">
+              <action type="assignment" variable="nFailed" value="nFailed+1"/>
+              <!-- Give reward here!!! -->
+            </action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="yield" tag="return to parent task system"></transition>
+            <action type="assignment" variable="trials" value="trials+1"/>
+          </task_system_state>
+
+        </task_system>
+      </trial>
+    </protocol>
+  </experiment>
+</monkeyml>
