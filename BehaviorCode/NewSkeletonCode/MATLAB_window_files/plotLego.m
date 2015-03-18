@@ -107,6 +107,9 @@ end
 
 if input.doBlock2==1,
   block2Str = 'Block2: on \n';
+  if input.block2DoTrialLaser==1,
+    block2Str = sprintf('Block2: on, Trial Laser Power:%5.2fmW \n', double(input.block2TrialLaserPowerMw));
+  end
 elseif input.doBlock2==0,
   block2Str = 'Block2: off \n';
 end
