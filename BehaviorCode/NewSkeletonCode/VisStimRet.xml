@@ -34,7 +34,8 @@
       <variable tag="doDirStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doSFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doTFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>      
-      <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
+      <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
+      <variable tag="doPhaseStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
       <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>     
 
 	  <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
@@ -72,7 +73,9 @@
       <variable tag="gratingDiameterStepN" scope="global" logging="when_changed" default_value="6" type="float" persistant="1" groups="GratingSpecs"/>
       
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
-
+	  <variable tag="gratingStartingPhaseStepDeg" scope="global" logging="when_changed" default_value="45" type="float" persistant="1" groups="GratingSpecs"/>
+      <variable tag="gratingStartingPhaseStepN" scope="global" logging="when_changed" default_value="8" type="float" persistant="1" groups="GratingSpecs"/>
+       
       <variable tag="doMovingDots" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="MovingDots"/>
       <variable tag="baseDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="baseDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
@@ -152,6 +155,7 @@
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       
       <variable tag="tBaseDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -186,7 +190,7 @@
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tBaseGratingDirectionDeg" 
               alpha_multiplier="tBaseGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+    <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="tGratingStartingPhaseDeg"
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -398,6 +402,16 @@
           <action type="if" condition="doConStim = 0">
 			  <action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
           </action>
+          
+          <!-- do Phase -->
+           <action type="if" condition="doPhaseStim = 1">  
+            <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingStartingPhaseStepN"/>
+            <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))"/>
+            <action type="report" message="Starting phase is $tGratingStartingPhaseDeg"/>
+          </action>   
+          <action type="if" condition="doPhaseStim = 0">
+        <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg"/>
+          </action> 
 
           <!--Select speed- for moving dots only -->
           <action type="if" condition="doDotsSpeedStim = 1">  
@@ -453,6 +467,32 @@
               		<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
               		<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
 	      		</action>
+	      		
+	      		<!-- Make Dir X SFPhase--> 
+            <action type="if" condition="(doDirStim == 1) &amp;&amp; (doPhaseStim == 1)">
+              <action type="if" condition="tStimulusNumber &lt; (gratingDirectionStepN * gratingStartingPhaseStepN)">    
+                <action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+              </action>
+              <action type="if" condition="tStimulusNumber &gt;= (gratingDirectionStepN * gratingStartingPhaseStepN)">
+                <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingDirectionStepN * gratingStartingPhaseStepN)"/>
+              </action>
+              <action type="if" condition="tTempStim &lt; gratingStartingPhaseStepN">
+                <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))"/> 
+                <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>   
+                <action type="report" message="SP is $tGratingStartingPhaseDeg ; Direction is $tGratingDirectionDeg"/>
+              </action>
+              <action type="if" condition="tTempStim >= gratingStartingPhaseStepN">
+                <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * ((tTempStim % gratingStartingPhaseStepN)))"/> 
+                <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / gratingStartingPhaseStepN)))"/>
+                <action type="report" message="SP is $tGratingStartingPhaseDeg; Direction is $tGratingDirectionDeg"/>
+              </action>
+                <action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
+                <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
+                <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
+                <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
+                <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+                <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"/>
+            </action>
 	      	
 	      	<!-- check for errors in feature combos 
 	      		<action type="if" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2)) &gt; 2">
