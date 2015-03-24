@@ -58,7 +58,7 @@ elif thisHostname == "hullglick4":
     PORT = 50007
     doTransmitCodesToBlackrock = False
 elif thisHostname == "test-rig":
-    PORT = 9991
+    PORT = 50007
     doTransmitCodesToBlackrock = False
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
@@ -410,9 +410,12 @@ def sendObjectToLaser(tO, portNum):
     """Returns: number of bytes sent"""
     # Create a socket (SOCK_STREAM means a TCP socket)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((HOST, portNum))
+    sock.connect((HOST, PORT))
     sock.settimeout(10) 
-    data = tO
+    inD = state.variableCurrValues
+    data = inD['tTrialLaserPowerMw']
+    print('%d mW Requested') %data
+    data = p.dumps(data)
     #data = p.dumps(tO)
     sock.sendall(data)
     time.sleep(1)
@@ -431,7 +434,7 @@ def sendLaserParams(sendDict):
     d = sendDict
 
     
-    print ("Sent")
+    print ("Sent LED Parameters to Pi")
     sys.stdout.flush()
 
 
