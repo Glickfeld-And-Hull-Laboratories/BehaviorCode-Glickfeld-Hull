@@ -169,6 +169,8 @@
       <variable tag="setDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="setDotDirectionDeg" scope="global" logging="when_changed" default_value="90" type="float" persistant="0"/>
       <variable tag="setDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+      <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="frameCountN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -319,25 +321,25 @@
       		    </action>
             </action>
           </action>
-          <action type="if" condition="doRetStim = 0">
+          <action type="if" condition="doRetStim == 0">
 			        <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
           </action>
           
 <!--Select features if not in matrix mode -->
-          <action type="if" condition="doMatrix = 0">	
+          <action type="if" condition="doMatrix == 0">	
                     <!--Select size -->
           <action type="if" condition="doSizeStim = 1">	
           	<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDiameterStepN"/>
             <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))"/>
           	<action type="report" message="Direction is $tGratingDiameterDeg"/>
           </action>		
-          <action type="if" condition="doSizeStim = 0">
+          <action type="if" condition="doSizeStim == 0">
 			  <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
           </action>          
           
           <!--Select spatial frequency -->
-          <action type="if" condition="doSFStim = 1">	
+          <action type="if" condition="doSFStim == 1">	
     		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingSpatialFreqStepN"/>          	
           	
           	<action type="if" condition="doRetStim = 1">
@@ -346,7 +348,7 @@
 	      	<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim))))"/>
           	<action type="report" message="Spatial Frequency is $tGratingSpatialFreqCPD"/>
           </action>		
-          <action type="if" condition="doSFStim = 0">
+          <action type="if" condition="doSFStim == 0">
 			  <action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
           </action>
           
@@ -360,7 +362,7 @@
             <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog,(gratingTemporalFreqStepDir*(tTempStim))))"/>
             <action type="report" message="Temporal Frequency is $tGratingTemporalFreqCPS"/>
           </action>		
-          <action type="if" condition="doTFStim = 0">
+          <action type="if" condition="doTFStim == 0">
 			  <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
           </action> 
           
@@ -377,19 +379,19 @@
               <action type="report" message="Direction is $tDotDirectionDeg"/>
             </action> 
           </action>		
-          <action type="if" condition="doDirStim = 0">
+          <action type="if" condition="doDirStim == 0">
 			       <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
              <action type="assignment" variable="tDotDirectionDeg" value= "dotDirectionDeg"/>
           </action>
           
           
           <!--Select contrast -->
-          <action type="if" condition="doConStim = 1">	
+          <action type="if" condition="doConStim == 1">	
           		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingContrastStepN"/>
               	<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (pow(gratingContrastStepLog,(gratingContrastStepDir*(tTempStim))))"/>
               	<action type="report" message="Contrast is $tGratingContrast"/>
           </action>		
-          <action type="if" condition="doConStim = 0">
+          <action type="if" condition="doConStim == 0">
 			  <action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
           </action>
           
@@ -399,17 +401,17 @@
             <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))"/>
             <action type="report" message="Starting phase is $tGratingStartingPhaseDeg"/>
           </action>   
-          <action type="if" condition="doPhaseStim = 0">
+          <action type="if" condition="doPhaseStim == 0">
         <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg"/>
           </action> 
 
           <!--Select speed- for moving dots only -->
-          <action type="if" condition="doDotsSpeedStim = 1">  
+          <action type="if" condition="doDotsSpeedStim == 1">  
               <action type="assignment" variable="tTempStim" value= "tStimulusNumber % dotSpeedStepN"/>
                 <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS * (pow(dotSpeedStepLog,(dotSpeedStepDir*(tTempStim))))"/>
                 <action type="report" message="Speed is $tDotSpeedDPS"/>
           </action>   
-          <action type="if" condition="doDotsSpeedStim = 0">
+          <action type="if" condition="doDotsSpeedStim == 0">
         <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS"/>
           </action>
           </action>
