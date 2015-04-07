@@ -53,6 +53,7 @@
       <variable tag="catchTrPerB2Level8" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
  
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>soundb
       <variable tag="soundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundIncorrectAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
@@ -242,6 +243,7 @@
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
+      <variable tag="tSoundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
@@ -314,6 +316,7 @@
   </variables>
   <sounds tag="Sounds">
     <sound tag="pressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
+    <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBasePressAmplitude"></sound>
     <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBaseAmplitude"></sound>
     <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundTargetAmplitude"></sound>
     <sound tag="incorrectSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="soundIncorrectAmplitude"></sound>
@@ -921,6 +924,7 @@
             <!-- choose auditory stim -->  
             <action type="if" condition="tDoAuditoryStim">
               <action type="assignment" variable="tSoundBaseAmplitude" value="soundBaseAmplitude"/> 
+              <action type="assignment" variable="tSoundBasePressAmplitude" value="soundBasePressAmplitude"/> 
               <action type="if" condition="tDoAuditoryDetect">     
                 <action type="assignment" variable="tSoundTargetAmplitude" value="soundTargetAmplitude"/>
               </action>
@@ -930,6 +934,7 @@
             </action>
 
             <action type="if" condition="!tDoAuditoryStim"> 
+              <action type="assignment" variable="tSoundBasePressAmplitude" value="0"/> 
               <action type="assignment" variable="tSoundBaseAmplitude" value="0"/> 
               <action type="assignment" variable="tSoundTargetAmplitude" value="0"/> 
             </action>
@@ -1071,6 +1076,7 @@
               <action type="assignment" variable="cFirstStim" value="counter" />
               <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>  
               <action type="play_sound" sound="pressSound"/>
+              <action type="play_sound" sound="basePressSound"/>
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             </action>
             
