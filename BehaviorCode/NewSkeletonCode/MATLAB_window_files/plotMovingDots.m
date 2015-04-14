@@ -506,7 +506,7 @@ end
 if showBlock2       
   b2T1Ns = find(block2Tr1Ix);
   b2T2Ns = find(block2Tr2Ix);
-  if ~or(doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
+  if ~or(input.doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
   	plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
     lH = plot(smooth(double(successIx), nTrial, smoothType));
     set(lH, 'Color', 'r', ...
@@ -544,7 +544,7 @@ if showBlock2
       set(lH4, 'Color', 0.8*[0 1 1]);
       if input.block2DoAuditoryDetect
         title('Visual stim responses')
-      elseif doOriAndContrastInterleaved
+      elseif input.doOriAndContrastInterleaved
         if input.doOriDetect
           title('Ori responses')
         elseif input.doContrastDetect
@@ -651,7 +651,7 @@ title(sprintf('Last 6 (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
 axH = subplot(spSz{:},5);
 hold on;
 if showBlock2
-if ~or(doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
+if ~or(input.doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
     hSDiffsRealSec = diff(holdStarts)/1000;
     xs = 1:length(hSDiffsRealSec);
     pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
@@ -686,7 +686,7 @@ else
       set(lH4, 'Color', 0.8*[0 1 1]);
       if input.block2DoAuditoryDetect
         title('Auditory stim responses')
-      elseif doOriAndContrastInterleaved
+      elseif input.doOriAndContrastInterleaved
         if input.block2DoContrastDetect
           title('Contrast responses')
         elseif input.block2DoOriDetect
