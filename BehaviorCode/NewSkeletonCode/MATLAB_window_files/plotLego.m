@@ -538,18 +538,33 @@ else
     decMax = 10000;
 end
 
-pH = cdfplot([input.tDecisionTimeMs{:}]);
+if sum(block2Ix)== 0
+  pH = cdfplot([input.tDecisionTimeMs{:}]);
     set(pH, 'Color', 'g');
-if nLeft>0,
-  pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
-    set(pH1, 'Color', 'b');
-end
-if nRight>0,
-  pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
-    set(pH2, 'Color', [0.8 0.8 0]);
-set(gca, 'XLim', [0 decMax], ...
-         'YLim', [0 1], ...
-         'XTick', [0:decisionInterval:decMax]);
+  if nLeft>0,
+    pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
+      set(pH1, 'Color', 'b');
+  end
+  if nRight>0,
+    pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
+      set(pH2, 'Color', [0.8 0.8 0]);
+  set(gca, 'XLim', [0 decMax], ...
+          'YLim', [0 1], ...
+          'XTick', [0:decisionInterval:decMax]);
+  end
+elseif sum(block2Ix)>0
+  pH1 = cdfplot([input.tDecisionTimeMs{block2Ix == 0 & leftTrialIx == 1}]);
+    set(pH1, 'LineWidth', 2);
+  hold on
+  pH2 = cdfplot([input.tDecisionTimeMs{block2Ix == 0 & leftTrialIx == 0}]);
+    set(pH2, 'LineStyle', '--', 'LineWidth', 2);
+  pH3 = cdfplot([input.tDecisionTimeMs{block2Ix == 1 & leftTrialIx == 1}]);
+    set(pH3, 'Color', yColor, 'LineWidth', 2);
+  pH4 = cdfplot([input.tDecisionTimeMs{block2Ix == 1 & leftTrialIx == 0}]);
+    set(pH4, 'Color', yColor, 'LineStyle', '--', 'LineWidth', 2);
+    set(gca, 'XLim', [0 decMax], ...
+          'YLim', [0 1], ...
+          'XTick', [0:decisionInterval:decMax]);
 end
 grid on;
 hold on;
