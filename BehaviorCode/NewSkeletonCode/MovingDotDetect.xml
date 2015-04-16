@@ -5,7 +5,7 @@
               pulse_duration="juice" pulse_on="juice" 
               lever1="FIO1" lever2="" 
               lever1_solenoid="FIO2"
-              lever2_solenoid=""
+              lever2_solenoid="FIO3"
               laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -74,6 +74,10 @@
       
       <variable tag="dotMaxCoherenceStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="dotCoherenceStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Stimulus Parameters"/>
+
+
+      <variable tag="doOriAndContrastInterleaved" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="block2DoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
 
       <variable tag="dotMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="dotSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Stimulus Parameters"/>
@@ -184,6 +188,7 @@
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
       <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="FIO3" full_name="FIO3" default_value="0" scope="global" type="boolean" logging="when_changed"/>
       <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
@@ -297,6 +302,7 @@
           <task_system_state tag="Initialization" interruptible="YES">
             <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+            <action type="assignment" variable="FIO3" value="0"></action>  
             <action type="queue_stimulus" stimulus="background"></action>
             <action type="update_stimulus_display" tag="-"></action> 
             <action type="if" condition="doVisualStim">
@@ -926,7 +932,8 @@
 
             <!-- turn on trial laser if requested -->
             <action type="if" condition="tTrialLaserPowerMw > 0">
-              <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
+              <action type="assignment" variable="laserTriggerFIO" value="1"></action>
+              <action type="assignment" variable="FIO3" value="1"></action>  
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -982,6 +989,7 @@
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
+            <action type="assignment" tag="Turn off LED" variable="FIO3" value="0"></action>
 
             <action type="if" condition="doITIStim == 0">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
@@ -1025,6 +1033,7 @@
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
             <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
+            <action type="assignment" tag="Turn off LED" variable="FIO3" value="0"></action>
             
             <action type="if" condition="doITIStim == 0">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
@@ -1065,6 +1074,8 @@
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
+            <action type="assignment" tag="Turn off LED" variable="FIO3" value="0"></action>
+
             
             <action type="if" condition="doITIStim == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
@@ -1186,6 +1197,7 @@
           <task_system_state tag="EndTrial" interruptble="YES">
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action type="assignment" variable="laserTriggerFIO" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" tag="Turn off LED" variable="FIO3" value="0"></action>
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
