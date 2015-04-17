@@ -46,16 +46,20 @@ thisHostname = socket.gethostname()
 thisHostname = string.replace(thisHostname, '.dhe.duke.edu', '')
 if thisHostname == "hullglick1":
     PORT = 9990
+    HOST = "neuroPi1.local"
     doTransmitCodesToBlackrock = True
 elif thisHostname == "hullglick2":
     PORT = 9991
+    HOST = "neuroPi2.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick3":
     PORT = 9992
-    PORT2 = 9993  # use same as rig 4
+    PORT2 = 1  # use same as rig 4
+    HOST = "neuroPi3.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick4":
-    PORT = 50007
+    PORT = 9993
+    HOST = "neuroPi4.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "test-rig":
     PORT = 50007
@@ -63,7 +67,6 @@ elif thisHostname == "test-rig":
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
     
-HOST = "mckPI.local"
 laserParamCode = 'sendLaserParams'
 lastSendTime = 0
 nCodesSent = 0
