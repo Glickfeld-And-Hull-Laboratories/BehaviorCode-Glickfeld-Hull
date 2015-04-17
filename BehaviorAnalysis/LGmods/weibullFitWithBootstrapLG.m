@@ -32,7 +32,7 @@ uo = stropt2struct(stropt_defaults(userDefs, varargin));
 haveBs = false;
 if  ~isempty(uo.Filename)
     % get data from mat file
-    bs = getBehavDataForDay(...
+    bs = getBehavDataForDayLG(...
         'Filename', uo.Filename, ...
         'WhichTrials', uo.WhichTrials, ...
         'DoCorrectEarlies', uo.DoCorrectEarlies, ...
@@ -46,21 +46,14 @@ elseif ~isempty(uo.BehavDataStruct)
     assert(isempty(uo.Filename), 'specify a single data source: filename or bds');
 end
 
-rep = bs.rep;
-iB = bs.iB;
-x1d = bs.x1d;
-ds = bs.ds;
-for iS = 1:bs.nsides;
-nblocks = bs.nBlock2Indices;
-bsOneBlock = behavDataExtractOneBlock(bs, iB, iS);
 if haveBs
-    if bsOneBlock.nBlock2Indices > 1
+    if bs.nBlock2Indices > 1
         error('Only one type of trials should be included in fit');
     end
     
-    intensV = bsOneBlock.intensitiesC{1};
-    pctCorr = bsOneBlock.percentsCorrect;
-    nTrialsPerLevel = bsOneBlock.nCorrPlusMiss;
+    intensV = bs.intensitiesC{1};
+    pctCorr = bs.percentsCorrect;
+    nTrialsPerLevel = bs.nCorrPlusMiss;
     
     dropIx = nTrialsPerLevel == 0;
     if any(dropIx)
@@ -85,27 +78,24 @@ end
     
 
 %% run fit
-uo.DoClampAtZero = bs.doClampAtZero;
-spSz = {nblocks,bs.nsides};
-rep = bs.rep;
-axH(rep) = subplot(spSz{:,:}, rep); cla; hold on;   
-fitS = weibullFitLG(intensV, pctCorr(:,:,iS), uo.DoClampAtZero, false, ...
-    { 'nTrials', squeeze(nTrialsPerLevel(:,:,iS))'}, iS); % weight by # trials
 
-outDs.thresh(:,iS) = fitS.thresh;
-outDs.threshY(:,iS) = fitS.threshY;
-outDs.slope(:,iS) = fitS.slope;
-outDs.coefEsts(:,iS) = fitS.coefEsts;
-outDs.modelFun = fitS.modelFun;
-outDs.fitWeights(:,iS) = fitS.fitWeights;
-outDs.nTrials(:,iS) = fitS.nTrials;
-outDs.intensityX(:,iS) = fitS.intensityX;
-outDs.fractCorrY(:,iS) = fitS.fractCorrY;
-if bs.doClampAtZero == 0.5
-    if iS == 3
-        outDs.category = strvcat('right', 'left', 'both');
-    end
+if bs.is2AFC
+    uo.DoClampAtZero = false;
+    use50Thresh = true;
+else
+    use50Thresh = false;
 end
+
+fitS = weibullFitLG(intensV, pctCorr, uo.DoClampAtZero, use50Thresh, ...
+    { 'nTrials', nTrialsPerLevel'}); % weight by # trials
+
+slope = fitS.coefEsts(2);
+
+outDs.slope = fitS.slope;
+outDs.coefEsts = fitS.coefEsts;
+outDs.modelFun = fitS.modelFun;
+outDs.fitWeigths = fitS.fitWeights;
+
 
 %% fig
 if uo.DoPlot
@@ -120,6 +110,11 @@ if uo.DoPlot
             unitStr = 'mW';
             labelStr = 'power (mW)';
             intensScaleF = 1;
+        elseif bs.is2AFC
+            unitStr = '';
+            labelStr = 'Right Contrast/Left Contrast';
+            intensScaleF = 1;
+            isContrast = true;
         elseif bs.doContrast
             unitStr = '%';
             labelStr = 'contrast (%)';
@@ -142,7 +137,7 @@ if uo.DoPlot
     xgrid = logspace(log10(minI*0.5),log10(maxI*1.5),100);
     line(xgrid*intensScaleF, fitS.modelFun(fitS.coefEsts, xgrid), 'Color','k');
     hold on;
-    plot(intensV*intensScaleF, squeeze(pctCorr(:,:,iS)), 'o');
+    plot(intensV*intensScaleF, squeeze(pctCorr), 'o');
     %thresh = coefEsts(1)*[1 1];
     plot(fitS.thresh*[1 1]*intensScaleF, [0 fitS.threshY], '--');
     
@@ -173,6 +168,9 @@ if uo.DoPlot
     set(gca, 'XTickLabel', xTL);
     xlabel(labelStr);
     ylabel('fraction correct');
+    if bs.is2AFC
+        ylabel('fraction right choice')
+    end
 
 end
 
@@ -193,9 +191,9 @@ if uo.DoBootstrap
     end
     
     % first pull out nCorr and nTot for all
-    nTotB = squeeze(nTrialsPerLevel(:,:,iS));
+    nTotB = squeeze(nTrialsPerLevel);
 
-    pctCorrB = pctCorr(:,:,iS);
+    pctCorrB = pctCorr;
     pctCorrB(pctCorrB>=1) = 1-10*eps;
     pctCorrB(pctCorrB<=0) = 0+10*eps;
     
@@ -212,14 +210,14 @@ if uo.DoBootstrap
         
         % do the fit
         bootFitS = weibullFitLG(intensV, tPctCorr, uo.DoClampAtZero, false, ...
-            {'nTrials', nTotB }, iS);  
+            {'nTrials', nTotB });  
         % 120710 - I choose to allow the weights to be recalculated from the
         % pctCorr on each bootstrap trial.  It probably yields tighter
         % intervals to fix the weights based on the actual data sample.
 
-        threshB(iR,iS) = bootFitS.thresh;
-        coefEstsB(iR,:,iS) = bootFitS.coefEsts;
-        weightsB(iR,:,iS) = bootFitS.fitWeights';
+        threshB(iR) = bootFitS.thresh;
+        coefEstsB(iR,:) = bootFitS.coefEsts;
+        weightsB(iR,:) = bootFitS.fitWeights';
         
         if mod(iR, 25) == 0
             statusbar(0, '%s done %4g%%: %d of %d bootstrap reps', ...
@@ -232,7 +230,7 @@ if uo.DoBootstrap
         disp(sprintf('** Errors/Reps: %d/%d ', nNaN, uo.NBootstrapReps));
     end
     
-    slopeB(:,iS) = coefEstsB(:,2,iS);
+    slopeB = coefEstsB(:,2);
 
     if nargout > 1
         bootDs.coefEstsMat = coefEstsB;
@@ -240,18 +238,18 @@ if uo.DoBootstrap
     end
     %keyboard
 
-    bootStats.threshMean(iS) = nanmean(threshB(:,iS));  % should be near the true value
-    bootStats.threshStd(iS) = nanstd(threshB(:,iS));  % should be near the true value
-    bootStats.ci95(:,iS) = prctile(threshB(:,iS), [0 100] + 5*[1 -1]/2);
-    bootStats.ci99(:,iS) = prctile(threshB(:,iS), [0 100] + 1*[1 -1]/2);
+    bootStats.threshMean = nanmean(threshB);  % should be near the true value
+    bootStats.threshStd = nanstd(threshB);  % should be near the true value
+    bootStats.ci95 = prctile(threshB, [0 100] + 5*[1 -1]/2);
+    bootStats.ci99 = prctile(threshB, [0 100] + 1*[1 -1]/2);
 
-    bootStats.slopeMean(iS) = nanmean(slopeB(:,iS));
-    bootStats.slopeStd(iS) = std(slopeB(:,iS));
-    bootStats.slopeCi95(:,iS) = prctile(slopeB(:,iS), [0 100] + 5*[1 -1]/2);
-    bootStats.slopeCi99(:,iS) = prctile(slopeB(:,iS), [0 100] + 1*[1 -1]/2);
+    bootStats.slopeMean = nanmean(slopeB);
+    bootStats.slopeStd = std(slopeB);
+    bootStats.slopeCi95 = prctile(slopeB, [0 100] + 5*[1 -1]/2);
+    bootStats.slopeCi99 = prctile(slopeB, [0 100] + 1*[1 -1]/2);
     
     if uo.DoPlot
-        plot(bootStats.ci95(:,iS)*intensScaleF, fitS.threshY*[1 1], 'k-');
+        plot(bootStats.ci95*intensScaleF, fitS.threshY*[1 1], 'k-');
         if nNaN > 0
             text(xLim(2), 0.5, ...
                 sprintf('Num bootstrap fit errors: %d/%d', nNaN, uo.NBootstrapReps), ...
@@ -261,10 +259,10 @@ if uo.DoBootstrap
         
         if uo.DoPlotAnnotations
             tStr = sprintf('95%% CI, thresh: %3g-%3g\n95%% CI, slope: %3g-%3g', ...
-                chop(bootStats.ci95(1,iS), 2)*intensScaleF, ...
-                chop(bootStats.ci95(2,iS), 2)*intensScaleF, ...
-                chop(bootStats.slopeCi95(1,iS),2), ...
-                chop(bootStats.slopeCi95(2,iS),2));
+                chop(bootStats.ci95(1), 2)*intensScaleF, ...
+                chop(bootStats.ci95(2), 2)*intensScaleF, ...
+                chop(bootStats.slopeCi95(1),2), ...
+                chop(bootStats.slopeCi95(2),2));
             text(xLim(2), 0.05, tStr, ...
                 'VerticalAlignment', 'bottom', ...
                 'HorizontalAlignment', 'right');
@@ -276,26 +274,15 @@ if uo.DoBootstrap
     if uo.DoExtraBootDistPlots
         figH = figure;
         subplot(1,2,1);
-        cdfplot(threshB(iS));
+        cdfplot(threshB);
         xlabel('threshold')
         subplot(1,2,2);
-        cdfplot(slopeB(iS));
+        cdfplot(slopeB);
         xlabel('slope');
         keyboard
     end
 end
-    if x1d.MergeBlock1And2 == true
-        title('merged block 1 and 2');
-    elseif x1d.SplitBlock1 == true
-        title('split block 1 by timing');
-    elseif bs.intensityIsChr2 && x1d.DoTakeParamsFromMatFile ~= 1
-        % for now, format from the index - at some point I should pull this
-        % from the datafile and verify it all works
-        title(formatBlock2ParamsFromIndex(x1d, iB, iS));
-    else
-        title(formatBlock2ParamsFromConstsInStruct(ds, iB, iS));
-    end
-    bs.rep = bs.rep+1;
+
 end
 
 

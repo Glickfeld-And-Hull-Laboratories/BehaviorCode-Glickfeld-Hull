@@ -61,7 +61,7 @@ if (~isfield(ds, 'doBlock2') ... % backward compat
             return
         end
     end
-    if isfield(ds,'tQuadrature')
+    if isfield(ds,'tLeftDecisionThreshold')
         sides = strvcat('right', 'left', 'both');
         str = [' ' sides(side,:) ' side'];
         return

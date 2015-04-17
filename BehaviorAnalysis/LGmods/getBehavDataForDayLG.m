@@ -92,7 +92,7 @@ if isfield(ds, 'stimOnTimeMs')
     ds.gratingDurationMs = ds.stimOnTimeMs;
 end
 
-ds.is2AFC = isfield(ds, 'leftDecisionThreshold');
+outS.is2AFC = isfield(ds, 'leftDecisionThreshold');
 
 if nargout > 1
     ds0 = ds;
@@ -103,7 +103,7 @@ end
 %% process vectors in input
 nTrTemp = size(ds.trialOutcomeCell);
 
-if ds.is2AFC == 0
+if outS.is2AFC == 0
     vFields = { 'tLaserPowerMw', 'tGratingContrast', 'tBaseGratingContrast', 'tTotalReqHoldTimeMs', ...
         'tGratingDirectionDeg', 'holdTimesMs' };
     for iV=1:length(vFields)
@@ -165,7 +165,7 @@ if ds.is2AFC == 0
     end
 end
 
-if ds.is2AFC
+if outS.is2AFC
     %works for now but will need changes as conditions are added
     vFields = {'tGratingContrast', 'dGratingContrast', 'rightGratingContrast', 'leftGratingContrast', 'tTotalReqHoldTimeMs', 'holdTimesMs' };
     for iV=1:length(vFields)
@@ -177,7 +177,7 @@ if ds.is2AFC
     end
 
     reqHoldTimesMs = tTotalReqHoldTimeMs;
-    gratingContrast = tGratingContrast-dGratingContrast;
+    gratingContrast = rightGratingContrast./leftGratingContrast;
     rightTrials = rightGratingContrast>leftGratingContrast;
     leftTrials = leftGratingContrast>rightGratingContrast;
     %this is hard coded for now:
@@ -200,7 +200,7 @@ elseif nContrastTrials>0
     intensityV = gratingContrast;
 end
 
-if ~ds.is2AFC
+if ~outS.is2AFC
     reactTimesMs = double(cellvect2mat_padded(ds.reactTimesMs));
 else 
     reactTimesMs = double(cellvect2mat_padded(ds.tDecisionTimeMs));
@@ -248,7 +248,9 @@ if ~isempty(uo.WhichTrials)
     desIx(whichTrials) = true;
 
     try  % use direct indexing to figure out if any indices are invalid
-        trialOutcomeCell = trialOutcomeCell(desIx);  
+        trialOutcomeCell = trialOutcomeCell(desIx);
+        leftTrials = leftTrials(desIx);
+        rightTrials = rightTrials(desIx);
     catch
         nTrials = length(trialOutcomeCell);
         if max(uo.WhichTrials) > nTrials
@@ -262,25 +264,15 @@ if ~isempty(uo.WhichTrials)
         error('No trials remaining after selection');
     end
 
-    if ds.is2AFC
+    if outS.is2AFC
          gratingContrast = gratingContrast(desIx);
          intensityV = intensityV(desIx);
-         nsides = 3;
-         doClampAtZero = 0.5;
-         trialsBySide = zeros(nsides,length(whichTrials));
-         trialsBySide(1,:) = rightTrials(desIx);
-         trialsBySide(2,:) = leftTrials(desIx);
-         trialsBySide(3,:) = ones(size(trialOutcomeCell));
     else
         laserPowerMw = laserPowerMw(desIx);
         gratingContrast = gratingContrast(desIx);
         gratingDirectionDeg = gratingDirectionDeg(desIx);
         intensityV = intensityV(desIx);
-        trialsBySide = ones(size(intensityV));
-        nsides = 1;
-        doClampAtZero = true;
     end
-    ds.nsides = nsides;
     block2V = block2V(desIx);
     reactTimesMs = reactTimesMs(desIx);
     
@@ -293,21 +285,7 @@ if ~isempty(uo.WhichTrials)
 else
     desIx = true(size(trialOutcomeCell));
     whichTrials = find(desIx);
-    if ds.is2AFC
-        nsides = 3;
-        trialsBySide = zeros(nsides,length(whichTrials));
-        trialsBySide(1,:) = rightTrials(desIx);
-        trialsBySide(2,:) = leftTrials(desIx);
-        trialsBySide(3,:) = ones(size(trialOutcomeCell));
-        doClampAtZero = 0.5;
-    else
-        nsides = 1;
-        trialsBySide = ones(size(trialOutcomeCell));
-        doClampAtZero = true;
-    end
 end
-outS.nsides = nsides;
-outS.doClampAtZero = doClampAtZero;
 
 %% process vectors post-trim
 if all(isnan(block2V))
@@ -323,17 +301,19 @@ end
 assert(nBlock2Indices > 0 && nBlock2Indices <= 2);
 
 intensityV = chop(intensityV,2);  % if you change the top value during session each power only accurate to 2 sig figs
-successIx = strcmp(trialOutcomeCell, 'success');
-if ~ds.is2AFC
+
+if ~outS.is2AFC
     earlyIx = strcmp(trialOutcomeCell, 'failure');
     missedIx = strcmp(trialOutcomeCell, 'ignore');
-elseif ds.is2AFC
-    missedIx = strcmp(trialOutcomeCell, 'incorrect');
+    successIx = strcmp(trialOutcomeCell, 'success');
+elseif outS.is2AFC
+    %using same names, but this successIx == wentRight, and missedIx == went left
+    correctIx = strcmp(trialOutcomeCell, 'success');
+    incorrectIx = strcmp(trialOutcomeCell, 'incorrect');
     earlyIx = strcmp(trialOutcomeCell, 'ignore'); %not right, but can figure out a different solution later
+    successIx = and(correctIx,rightTrials) + and(incorrectIx, leftTrials);
+    missedIx = and(incorrectIx,rightTrials) + and(correctIx, leftTrials);
 end
-    
-
-
 
 %% consts 
 for iB = 1:nBlock2Indices
@@ -345,32 +325,30 @@ for iB = 1:nBlock2Indices
     
     intensityNums = block2V*NaN;
     %% compute number of corrects and rts
-    for iS = 1:nsides
-        for iI = 1:nIntensities(iB)
-            tI = intensitiesC{iB}(iI);
-            iIx = intensityV == tI;
+    for iI = 1:nIntensities(iB)
+        tI = intensitiesC{iB}(iI);
+        iIx = intensityV == tI;
 
-            nCorr(iB, iI, iS) = sum(iIx & successIx & b2Ix & trialsBySide(iS,:));
-            nEarly(iB, iI, iS) = sum(iIx & earlyIx & b2Ix & trialsBySide(iS,:));
-            nMiss(iB, iI, iS) = sum(iIx & missedIx & b2Ix & trialsBySide(iS,:));
-            nRawTot(iB, iI, iS) = sum(iIx & b2Ix & trialsBySide(iS,:));
+        nCorr(iB, iI) = sum(iIx & successIx & b2Ix);
+        nEarly(iB, iI) = sum(iIx & earlyIx & b2Ix);
+        nMiss(iB, iI) = sum(iIx & missedIx & b2Ix);
+        nRawTot(iB, iI) = sum(iIx & b2Ix);
 
-            tV = reactTimesMs(iIx & successIx & b2Ix & trialsBySide(iS,:));
-            if length(tV) == 0, 
-                assert( sum(iIx & b2Ix & trialsBySide(iS,:)) > 0 );
-                assert( sum(iIx & b2Ix & successIx & trialsBySide(iS,:)) == 0);
-                tV = NaN; 
-            end 
-            outS.reactTimesByPower{iI,iB,iS} = tV;
-            outS.reactTimeMean(iI,iB,iS) = mean(tV);
-            outS.reactTimeStd(iI,iB,iS) = std(tV);
-            outS.reactTimeSEM(iI,iB,iS) = std(tV) ./ sqrt(length(tV));
+        tV = reactTimesMs(iIx & successIx & b2Ix);
+        if length(tV) == 0, 
+            assert( sum(iIx & b2Ix) > 0 );
+            assert( sum(iIx & b2Ix & successIx) == 0);
+            tV = NaN; 
+        end 
+        outS.reactTimesByPower{iI,iB} = tV;
+        outS.reactTimeMean(iI,iB) = mean(tV);
+        outS.reactTimeStd(iI,iB) = std(tV);
+        outS.reactTimeSEM(iI,iB) = std(tV) ./ sqrt(length(tV));
 
-            outS.intensityNums(iIx) = iI;
+        outS.intensityNums(iIx) = iI;
 
-        end
-        nCorrPlusMissC{iB,iS} = nCorr(iB,1:nIntensities(iB),iS) + nMiss(iB,1:nIntensities(iB),iS);
     end
+    nCorrPlusMissC{iB} = nCorr(iB,1:nIntensities(iB)) + nMiss(iB,1:nIntensities(iB));
 end
 nCorrPlusMiss = nCorr+nMiss;
 
@@ -466,7 +444,7 @@ pctCorr(pctCorr==1) = pctCorr(pctCorr==1)-10*eps;
 
 percentsCorrect = pctCorr;
 %% correct intensities
-if doContrast & ~ds.is2AFC
+if doContrast & ~outS.is2AFC
     if max(baseGratingContrast,[],2)>0
         if ds.gratingMaxContrastStep<0
             for iB = 1:nBlock2Indices
