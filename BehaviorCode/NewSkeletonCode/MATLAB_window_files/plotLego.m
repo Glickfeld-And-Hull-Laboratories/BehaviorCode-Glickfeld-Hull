@@ -578,8 +578,10 @@ xlabel('Time');
 axH  = subplot(spSz{:},10);
 hold on
 
-if isfield(input, 'dGratingContrastDiff'),
+if isfield(input, 'dGratingContrastDiff')
   contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
+if input.gratingContrastDiffSPO > 10
+  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 else
   contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 end
@@ -638,19 +640,23 @@ if sum(block2Ix)>0
 end
 end
 
-
-minX = min(contrastDifferenceRight,[],2);
-maxX = max(contrastDifferenceRight,[],2);
-xLimm = [minX maxX];
-    if ~(xLimm(1)==0),
-      xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
-    else
-      xL1 = [0 ceil(log10(xLimm(2)))];
-    end
-xTickL = 10.^(xL1(1):1:xL1(2));
-xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
-xTLabelL = cellstr(num2str(xTickL(:)));
-
+if min(contrastDifferenceRight) < 0
+    minX = min(contrastDifferenceRight);
+    maxX = max(contrastDifferenceRight);
+    xLimm = [minX maxX];
+else
+    minX = min(contrastDifferenceRight,[],2);
+    maxX = max(contrastDifferenceRight,[],2);
+    xLimm = [minX maxX];
+        if ~(xLimm(1)==0),
+            xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
+        else
+            xL1 = [0 ceil(log10(xLimm(2)))];
+        end
+    xTickL = 10.^(xL1(1):1:xL1(2));
+    xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
+    xTLabelL = cellstr(num2str(xTickL(:)));
+end
 
 pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 if sum(block2Ix)>= 1
@@ -660,16 +666,17 @@ vH = vert_lines(0);
 set(vH, 'Color', 'g');
 set(gca, 'XLim', [minX maxX], ...
          'YLim', [0 1]);
-if isfield(input, 'dGratingContrastDiff')
-  xlabel('Contrast Difference (R/L)')
-  set(gca,'XScale', 'log', ...
-         'XGrid', 'on',...
-         'XTick', xTickL,...
-         'XTickLabel', xTLabelL);
+if min(contrastDifferenceRight) < 0
+      xlabel('Contrast Difference (R-L)')
+      set(gca, 'XTick', [-1:0.5:1], ...
+               'YTick', [0:0.25:1],...
+               'XGrid', 'on');
 else
-  xlabel('Contrast Difference (R-L)')
-  set(gca, 'XTick', [-1:0.5:1], ...
-         'YTick', [0:0.25:1]);
+    xlabel('Contrast Difference (R/L)')
+    set(gca,'XScale', 'log', ...
+            'XGrid', 'on',...
+            'XTick', xTickL,...
+            'XTickLabel', xTLabelL);
 end
 ylabel('% Right')
 grid on
