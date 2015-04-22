@@ -593,15 +593,7 @@ for kk=1:length(nLevelsB1)
     valB1 = nLevelsB1(kk);
     valIxB1 = contrastDifferenceRight==valB1;
     totalNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
-    if isfield(input, 'dGratingContrastDiff')
-      if valB1>=1,
-          rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&correctIx&~block2Ix));
-          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
-      elseif valB1<1,
-          rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&incorrectIx&~block2Ix));
-          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
-      end
-    else
+    if min(contrastDifferenceRight) < 0
       if valB1>=0,
           rightNTrialsValB1 = sum(contrastDifferenceRight((valIxB1&correctIx)&~block2Ix));
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
@@ -609,6 +601,14 @@ for kk=1:length(nLevelsB1)
           rightNTrialsValB1 = sum(contrastDifferenceRight((valIxB1&incorrectIx)&~block2Ix));
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
       end
+    else
+        if valB1>=1,
+            rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&correctIx&~block2Ix));
+            percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+        elseif valB1<1,
+            rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&incorrectIx&~block2Ix));
+            percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+        end
     end
 end
 
@@ -620,15 +620,7 @@ if sum(block2Ix)>0
     valB2 = nLevelsB2(kk);
     valIxB2 = contrastDifferenceRight==valB2;
     totalNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&(correctIx|incorrectIx)&block2Ix));
-    if isfield(input, 'dGratingContrastDiff')
-      if valB2>=1,
-          rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&correctIx&block2Ix));
-          percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
-      elseif valB2<1,
-          rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&incorrectIx&block2Ix));
-          percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
-      end
-    else
+    if min(contrastDifferenceRight) < 0
       if valB2>=0,
           rightNTrialsValB2 = sum(contrastDifferenceRight((valIxB2&correctIx)&block2Ix));
           percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
@@ -636,9 +628,18 @@ if sum(block2Ix)>0
           rightNTrialsValB2 = sum(contrastDifferenceRight((valIxB2&incorrectIx)&block2Ix));
           percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
       end
+    else
+        if valB2>=1,
+            rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&correctIx&block2Ix));
+            percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
+        elseif valB2<1,
+            rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&incorrectIx&block2Ix));
+            percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
+        end
     end
 end
 end
+
 
 if min(contrastDifferenceRight) < 0
     minX = min(contrastDifferenceRight);
