@@ -102,8 +102,8 @@ try
     input.quadratureTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
     input.quadratureValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1) ;
 catch
-    input.counterTimesUs{trN} = NaN;
-    input.counterValues{trN} = NaN;
+    input.quadratureTimesUs{trN} = NaN;
+    input.quadratureValues{trN} = NaN;
 end
 
 
