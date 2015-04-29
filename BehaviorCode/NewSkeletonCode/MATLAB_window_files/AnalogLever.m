@@ -98,6 +98,14 @@ input.gratingContrast = input.tGratingContrast;
 input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
 
+try
+    input.quadratureTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
+    input.quadratureValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1) ;
+catch
+    input.counterTimesUs{trN} = NaN;
+    input.counterValues{trN} = NaN;
+end
+
 
 %% disp status
 juiceAmtsMs = input.juiceTimesMsCell{trN};
