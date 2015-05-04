@@ -183,6 +183,7 @@
     <folder tag="Fake Mouse">
       <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
       <variable tag="doFakeMouseSuccessOnly" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
+      <variable tag="sendElectrophysSync" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
       <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Fake Mouse"/>
     </folder>
     <folder tag="Task Status">
@@ -1077,7 +1078,10 @@
 
             <action type="if" condition="tTrialLaserPowerMw > 0">
               <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
-              <action type="assignment" tag="" variable="FIO3" value="1"/> 
+              <action type="assignment" tag="" variable="FIO3" value="1"/>
+              <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="1"/>
+              </action> 
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -1114,7 +1118,7 @@
             		<action type="assignment" variable="tCatchTimeMs" value="now()/1000"/>
             	</action>
             </action>
-            
+        
             <action type="play_sound" sound="baseSound"/>
 
             <action type="if" tag="if fakeMouse and first stim on" condition="!doLever &amp;&amp; tCyclesOn == 1">
@@ -1132,6 +1136,9 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
               <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
               <action type="start_timer" timer="targetTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+              <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="0"/>
+              </action> 
             <action type="assignment" variable="stimTag" value= "0"/>
             <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
             
@@ -1154,6 +1161,9 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
             <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
+            <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="1"/>
+              </action> 
             <action type="if" condition="doCustomTargetTime==0">
               <action type="start_timer" tag="" timer="targetOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             </action>
@@ -1230,6 +1240,7 @@
            <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="FIO2" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
@@ -1276,6 +1287,7 @@
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="FIO2" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
@@ -1325,6 +1337,7 @@
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="FIO2" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
@@ -1432,6 +1445,9 @@
 
           <task_system_state tag="EndTrialStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="1"/>
+              </action> 
             <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             <action type="if" condition="tDoDeviantAfterMissing==0 || (tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==1)">
               <action type="play_sound" sound="baseSound"/>
@@ -1469,7 +1485,10 @@
 
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/> 
+            <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+            <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="0"/>
+              </action>  
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
