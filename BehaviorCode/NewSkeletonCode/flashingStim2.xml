@@ -1075,13 +1075,13 @@
             <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             <action type="assignment" variable="stimTag" value= "1"/>
             <action type="assignment" variable="tStimOnMs" value="now()/1000" />
+            <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="1"/>
+              </action> 
 
             <action type="if" condition="tTrialLaserPowerMw > 0">
               <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
               <action type="assignment" tag="" variable="FIO3" value="1"/>
-              <action type="if" condition="sendElectrophysSync">
-                <action type="assignment" variable="FIO2" value="1"/>
-              </action> 
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -1136,7 +1136,7 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
               <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
               <action type="start_timer" timer="targetTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
-              <action type="if" condition="sendElectrophysSync">
+              <action type="if" condition="sendElectrophysSync==1">
                 <action type="assignment" variable="FIO2" value="0"/>
               </action> 
             <action type="assignment" variable="stimTag" value= "0"/>
