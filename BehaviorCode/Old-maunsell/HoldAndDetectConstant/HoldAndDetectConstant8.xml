@@ -774,8 +774,7 @@
 
               <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
 
-              <action type="assert" condition="tTrialLaserPowerMw == 0" stop_on_failure="1" 
-                      message="bug: tLaserPowerMw and tTrialLaserPowerMw != 0"/>
+
             </action>
             <action type="if" condition="!doLaserStim">
               <action type="assignment" variable="tLaserPowerMw" value="0"/>
@@ -879,8 +878,8 @@
             <action type="if" condition="tTrialLaserPowerMw > 0">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
-              <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
-                      message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/>
+              <!--<action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/> -->
               <action type="assert" stop_on_failure="1"
                       condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
                       message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
