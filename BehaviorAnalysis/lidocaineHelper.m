@@ -16,6 +16,7 @@ timingROR1 = tROR(logical(timingIx314));
 cueStarts1 = tStarts(cueIx314);
 timingStarts1 = tStarts(logical(timingIx314));
 
+%% andrew was here
 
 dateIx315 = [42 45 47 50];
 files315 = dataStru(315).check.downloadedname'
