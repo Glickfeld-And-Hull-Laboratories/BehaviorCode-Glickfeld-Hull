@@ -9,6 +9,8 @@ outRM = cat(1, outRV{:});
 subjNumList = str2double(outRM(:,1));
 dateStrList = str2double(outRM(:,2));
 
+%% he was here too
+
 lidoStruct = struct;
 
 lidocaineBook = '~/Desktop/LidocaineBook.xlsx';
