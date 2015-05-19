@@ -179,6 +179,13 @@
       <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+
+      <variable tag="doPhotodiode" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusAzimuth" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusElevation" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusWidth" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusHeight" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
     </folder>  
     <folder tag="Fake Mouse">
       <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
@@ -340,7 +347,15 @@
               x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tCatchGratingDirectionDeg" 
-              alpha_multiplier="tCatchGratingContrast"></stimulus>             
+              alpha_multiplier="tCatchGratingContrast"></stimulus>
+    <stimulus type="drifting_grating" tag="photoDiodeGrating"  direction="0" starting_phase="0"
+              spatial_frequency=".000000000001" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="photoStimulusWidth" y_size="photoStimulusHeight" 
+              x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" 
+              rotation="0" 
+              alpha_multiplier="photoStimulusContrast"></stimulus>             
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -1118,6 +1133,12 @@
             		<action type="assignment" variable="tCatchTimeMs" value="now()/1000"/>
             	</action>
             </action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
         
             <action type="play_sound" sound="baseSound"/>
 
@@ -1148,6 +1169,11 @@
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
 
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action> 
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
             <action type="report" message="Lever Down - Trial Started - Stim Off"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -1163,7 +1189,7 @@
             <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
             <action type="if" condition="sendElectrophysSync">
                 <action type="assignment" variable="FIO2" value="1"/>
-              </action> 
+            </action> 
             <action type="if" condition="doCustomTargetTime==0">
               <action type="start_timer" tag="" timer="targetOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             </action>
@@ -1205,6 +1231,12 @@
                 <action type="if" condition="!tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                   <action type="play_sound" sound="baseSound"/>
                 </action> 
+            </action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
             </action>
              
 
@@ -1498,6 +1530,12 @@
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="Return to base"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action> 
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action> 
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="End of Trial - Stim Off"/>
