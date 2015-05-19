@@ -186,6 +186,7 @@
       <variable tag="photoStimulusElevation" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
       <variable tag="photoStimulusWidth" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
       <variable tag="photoStimulusHeight" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoMaskSpatialFreq" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Photodiode Variables"/>
     </folder>  
     <folder tag="Fake Mouse">
       <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
@@ -355,7 +356,15 @@
               x_size="photoStimulusWidth" y_size="photoStimulusHeight" 
               x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" 
               rotation="0" 
-              alpha_multiplier="photoStimulusContrast"></stimulus>             
+              alpha_multiplier="photoStimulusContrast"></stimulus>
+    <stimulus type="drifting_grating" tag="photoDiodeMask"  direction="0" starting_phase="1"
+              spatial_frequency="photoMaskSpatialFreq" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="photoStimulusWidth" y_size="photoStimulusHeight" 
+              x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" 
+              rotation="0" 
+              alpha_multiplier="1"></stimulus>             
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -404,6 +413,12 @@
             <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(minCyclesOn-1, nCyclesOn)"/>
             <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == maxCyclesOn">
 					<action type="assignment" variable="isCatchTrial" value="1"/> 
+            </action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action> 
+              <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             <action type="assignment" tag="Reset tDidDeviantAfterMissing" variable="tDidDeviantAfterMissing" value="0"/>
 
@@ -1135,7 +1150,8 @@
             </action>
 
             <action type="if" condition="doPhotodiode">
-              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action> 
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
               <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
@@ -1170,7 +1186,9 @@
             </action>
 
             <action type="if" condition="doPhotodiode">
-              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action> 
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
 
@@ -1234,7 +1252,8 @@
             </action>
 
             <action type="if" condition="doPhotodiode">
-              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action> 
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
               <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
@@ -1279,6 +1298,13 @@
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             
             <action type="if" condition="tShortCatchTrial &amp;&amp; (now()/1000) - tCatchTimeMs &gt;= tooFastTimeMs &amp;&amp; (now()/1000) - tCatchTimeMs &lt;= reactTimeMs">
             	<action type="assignment" variable="tFalseAlarm" value="1"></action>
@@ -1330,6 +1356,13 @@
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
             <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
@@ -1373,6 +1406,13 @@
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
@@ -1488,6 +1528,13 @@
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
 
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
             <action type="if" condition="tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==0">
               <action type="assignment" variable="tBaseGratingContrast" value="1"/>
               <action type="assignment" variable="tBaseGratingDirectionDeg" value="90"/>
@@ -1532,10 +1579,12 @@
             </action> 
 
             <action type="if" condition="doPhotodiode">
-              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action> 
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
-            
+
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="report" message="End of Trial - Stim Off"/>
@@ -1575,6 +1624,10 @@
           
           <task_system_state tag="EndTrial" interruptble="YES">
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+            <action type="if" condition="doPhotodiode">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>
