@@ -798,7 +798,6 @@
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractorGrating"></action>
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="targetGrating"></action>
             <action tag="Update Display" type="update_stimulus_display"></action>
-            <action type="assignment" variable="FIO2" value="0"></action> 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" condition="isNotTooFast" target="Reaction"></transition>
           <transition type="conditional" condition="!isNotTooFast &amp;&amp; timerExpired(tooFastTimerMs)" target="ZeroQuad"></transition>
@@ -809,6 +808,7 @@
           <action type="assignment" tag="tag tooFast" variable="isNotTooFast" value="1"/>
           <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
           <action type="report" message="**** Quad zeroed *****"></action>
+          <action type="assignment" variable="FIO2" value="0"></action> 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="Reaction"></transition>
         </task_system_state>
