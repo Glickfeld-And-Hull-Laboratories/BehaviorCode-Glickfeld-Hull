@@ -720,7 +720,7 @@ if nCorr>0 && input.doTestRobot==0,
     if sum(block2Ix)>0
       ph2 = plot(uqTargetB2, cell2mat(percentCellB2),'Color', yColor);
     end
-    minX = 10;
+    minX = 0;
     maxX = 100;
     xLimm = [minX maxX];
     if ~(xLimm(1)==0),
