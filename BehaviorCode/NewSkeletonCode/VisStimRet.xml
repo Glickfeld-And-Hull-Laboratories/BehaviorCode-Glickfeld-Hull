@@ -5,6 +5,7 @@
               pulse_duration="juice" pulse_on="juice" 
               lever1="FIO1" lever2=""
               lever1_solenoid="FIO2"
+              lever2_solenoid="FIO3"
               counter2="counter2"
               laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"
@@ -23,6 +24,10 @@
       <variable tag="nScansOff" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="ExptStruct"/>
       <variable tag="doMatrix" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
       <variable tag="doRand" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
+
+      <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="probLED" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Block2"/>
+      <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
 
  	  <variable tag="nTotalImagingFrames" scope="global" logging="when_changed" default_value="3600" type="integer" persistant="1" groups="ImagingVars"/>
       <variable tag="frameImagingRateMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="ImagingVars"/>
@@ -110,6 +115,7 @@
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
       <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="FIO3" full_name="FIO3" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
       <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
@@ -505,6 +511,24 @@
             <action type="assignment" variable="tGratingSpeedDPS" value="tGratingTemporalFreqCPS / tGratingSpatialFreqCPD"></action> 
       	    <action type="report" message="Speed is $tGratingSpeedDPS"/>
           </action>
+
+          <!-- Make LED probability assignments and automatically zero the LED port-->
+          <action type="assignment" variable="FIO3" value="0"/>
+          <action type="if" condition="doBlock2==1">
+            <action type="assignment" variable="probLED" value="rand(0,1)"/>
+            <action type="if" condition="probLED &gt; 0.5">
+              <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              <action type="report" message="*****LED TRIAL*****"/>
+            </action>
+            <action type="if" condition="probLED &lt;= 0.5">
+              <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
+              <action type="report" message="***** NON-LED TRIAL*****"/>
+            </action>
+          </action>
+
+
+
+
       	
           <!-- initialize trial start/end times -->
           <action type="if" condition="tThisTrialStartTimeMs == -1">  
@@ -537,6 +561,10 @@
               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
     	    </action>
+
+          <action type="if" condition="doBlock2==1 &amp;&amp; tBlock2TrialNumber==1">
+            <action type="assignment" variable="FIO3" value="1"/>
+          </action>
 
             <action type="if" condition="doMovingDots == 1">
               <action type="if" condition="doDotsSpeedStim == 1">
@@ -749,6 +777,8 @@
         		<action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
         	</action>
+          <action type="assignment" variable="FIO3" value="0"/>
+
             
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             
