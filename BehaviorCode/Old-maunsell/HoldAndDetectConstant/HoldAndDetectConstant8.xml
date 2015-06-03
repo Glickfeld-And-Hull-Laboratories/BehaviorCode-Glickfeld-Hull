@@ -81,6 +81,9 @@
       <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
       
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
+      <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
 
       <!-- block 2 control -->
@@ -259,6 +262,9 @@
     <sound tag="correctSound" type="wav_file" path="../wavs/shortCorrect.wav"></sound>
     <sound tag="incorrectSound" type="wav_file" path="../wavs/incorrectMouse.wav"></sound>
     <sound tag="rewardSound" type="wav_file" path="../wavs/shortCorrect.wav"></sound>
+    <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="soundBasePressAmplitude"></sound>
+    <sound tag="cueSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="soundCueAmplitude"></sound>
+    <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="soundTargetAmplitude"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -918,6 +924,8 @@
           <task_system_state tag="HoldLever" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action tag="p" type="play_sound" sound="louderPressSound"></action>
+            <action type="play_sound" sound="basePressSound"/>
+            <action type="play_sound" sound="cueSound"/>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
 
@@ -979,6 +987,7 @@
 
                 <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
               </action>
+              <action type="play_sound" sound="targetSound"/>
 
               <!-- laser stim on -->
               <action type="if" condition="doLaserStim">
