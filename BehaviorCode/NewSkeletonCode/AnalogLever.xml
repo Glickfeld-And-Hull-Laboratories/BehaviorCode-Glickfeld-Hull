@@ -910,7 +910,7 @@
               <action type="assignment" variable="tFakeMousePressMs" value="rand(0, fakeMouseMaxPressMs)"></action>
             </action>
 
-            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; (quadrature &gt; leverThreshold) &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
             <transition type="conditional" tag="If fakeMouse elapsed, go to HoldLever" 
                         condition="!doLever &amp;&amp; doAllCorrects==0 &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tFakeMousePressMs" target="HoldLever"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
@@ -958,7 +958,7 @@
             <action type="start_timer" tag="Start LeverHold Timer" timer="leverHoldTimer" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
             <action tag="Report LeverDown" full_name="ReportDigital" type="report" message="LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="quadrature &lt; leverThreshold &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="quadrature &gt; leverThreshold &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
             <transition type="timer_expired" tag="If leverHoldTimer Expired, Go To StimOn" target="StimOn" timer="leverHoldTimer"></transition>
           </task_system_state>
@@ -1015,7 +1015,7 @@
             </action>
 
             <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-            <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="(quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="(quadrature &gt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
             <transition type="direct" target="CheckTooFastTime"></transition>
           </task_system_state>
@@ -1038,7 +1038,7 @@
 
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="(quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 " target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="(quadrature &gt; leverThreshold) &amp;&amp; doLever == 1 " target="Reward"></transition>
             <transition type="conditional" tag="If DoAllCorrects, Go To Reward" condition="doAllCorrects==1" target="Reward"></transition>
             <transition type="timer_expired" tag="If fakeMouse expired, Transition to Reward" target="Reward" timer="fakeMouseTimer"></transition>
             <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
