@@ -265,11 +265,13 @@
       <variable tag="tSoundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tSoundCatchAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 	  
 	  <variable tag="tCatchGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tCatchGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDoCatchContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoCatchOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoCatchAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       
       <variable tag="tDoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -320,6 +322,7 @@
     <sound tag="cueSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundCueAmplitude"></sound>
     <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBaseAmplitude"></sound>
     <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundTargetAmplitude"></sound>
+    <sound tag="catchSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundCatchAmplitude"></sound>
     <sound tag="incorrectSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="soundIncorrectAmplitude"></sound>
     <sound tag="rewardSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/shortCorrect.wav" amplitude="soundRewardAmplitude"></sound>
   </sounds>
@@ -825,6 +828,7 @@
                   <action type="if" condition="tShortCatchTrial == 1">
                   	<action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
                   	<action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
+                  	<action type="assignment" variable="tDoCatchAuditoryDetect" value="doAuditoryDetect"/>
                   	<action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
                   	<action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   	<action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
@@ -951,12 +955,19 @@
 					<action type="assignment" variable="tCatchGratingDirectionDeg" 
                         value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action>
                     <action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
+                    <action type="assignment" variable="tSoundCatchAmplitude" value="0"/>
               	</action>
 				<action type="if" condition="tDoCatchContrastDetect">
               		<action type="assignment" variable="tCatchGratingContrast" 
                     	value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> 
                 	<action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                	<action type="assignment" variable="tSoundCatchAmplitude" value="0"/>
               	</action>
+              	<action type="if" condition="tDoCatchAuditoryDetect">
+              		<action type="assignment" variable="tSoundCatchAmplitude" value="soundTargetAmplitude"/>
+              		<action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
+              		<action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+              	</action> 	
             </action>
 
             <action type="if" condition="tDoVisualStim == 0">
@@ -1144,6 +1155,7 @@
             		<action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="catch_grating"></action> 
             		<action type="play_dynamic_stimulus" stimulus="catch_grating" tag="StimOn"></action>
             		<action type="update_stimulus_display" tag="justincase"></action>
+            		<action type="play_sound" sound="catchSound"/>
             		<action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
             		<action type="assignment" variable="tCatchTimeMs" value="now()/1000"/>
             	</action>
