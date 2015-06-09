@@ -72,6 +72,7 @@ if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial,
 	nCR = sum(correctRejectIx);
 	tCatchGratingDirectionDeg = celleqel2mat_padded(input.tCatchGratingDirectionDeg);
 	tCatchGratingContrast = celleqel2mat_padded(input.tCatchGratingContrast, NaN, 'double');
+  tSoundCatchAmplitude = celleqel2mat_padded(input.tSoundCatchAmplitude, NaN, 'double');
 end
 
 
@@ -118,6 +119,7 @@ else
   doContrast = 0;
 end
 
+
 if or(and(input.doOriDetect,input.doContrastDetect),and(input.block2DoOriDetect,input.block2DoContrastDetect))
 	doOriAndContrastTogether = 1;
 	doOriAndContrastInterleaved = 0;
@@ -155,10 +157,12 @@ if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial
 		if doOriAndContrastInterleaved
     		cPowerV = (double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
      		double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
-		elseif doContrast
+		elseif input.doContrastDetect
     		cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
-		elseif doOri
+		elseif input.doOriDetect
     		cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+    elseif input.doAuditoryDetect
+        cPowerV = double(abs(double(cell2mat_padded(input.tSoundCatchAmplitude)))*100);
 		end
 		cPowerV(find(cPowerV==0)) = NaN;
 		if all(cPowerV) == 0
