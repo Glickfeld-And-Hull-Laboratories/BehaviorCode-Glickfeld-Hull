@@ -178,13 +178,9 @@ else
 	nCP  = 0;
 	cPowerV = NaN;
 end
-
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
-    aPowerV = zeros(size(vPowerV));
-    aPowerV(find(tDoAuditoryDetect)) = 100;
-    %future auditory steps
-    %aPowerV = double(input.tTonePitchMHz{trN})- double(input.tBaseTonePitchMHz{trN})
-    %nAP = length(chop(unique(aPowerV(~isnan(aPowerV))),4));
+    aPowerV = double(celleqel2mat_padded(input.tSoundTargetAmplitude))*100;
+    nAP = length(chop(unique(aPowerV(~isnan(aPowerV))),4));
 else
 	nAP = 0;
   aPowerV = [];
