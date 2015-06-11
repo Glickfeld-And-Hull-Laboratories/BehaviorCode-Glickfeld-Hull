@@ -1047,14 +1047,6 @@ if nStims >= 1
       if sum(des2Ix)>0
         pH(2) = plot(powerLevels(des2Ix), pctCorr2Block2(des2Ix), '.-');
         set(pH(2), 'Color', yColor, 'LineWidth', 2);
-        if ~input.block2DoTrialLaser
-        	pH(2).Parent = axes('XAxisLocation','top',...
-    			'YAxisLocation','right',...
-    			'Color','none');
-    		pH(2).Parent.XColor = yColor;
-    		pH(2).Parent.YTickLabel = [];
-    		pH(2).Parent.YTick = [];
-    	end
       end
     end
     if isfield(input,'doShortCatchTrial') & input.doShortCatchTrial
@@ -1062,14 +1054,7 @@ if nStims >= 1
     	des2FAIx = ~isnan(pctFABlock2);
     	if sum(des2FAIx)>0
       		pH(3) = plot(powerLevels(des2FAIx), pctFABlock2(des2FAIx), '.-m');
-          	set(pH(3), 'LineWidth', 2)
-          	pH(3).Parent = axes('XAxisLocation','bottom',...
-    		'YAxisLocation','left',...
-    		'Color','none');
-    		pH(3).Parent.YTickLabel = [];
-    		pH(3).Parent.YTick = [];
-    		pH(3).Parent.XTickLabel = [];
-    		pH(3).Parent.XTick = [];
+          set(pH(3), 'LineWidth', 2)
     	end
     end    	
   else
@@ -1126,30 +1111,17 @@ if nStims >= 1
   %end
 
   if showLaserStim
-    pH(1).Parent.XLabel.String = 'power (mW)';
+    xlabel('power (mW)')
+  elseif or(doOriAndContrastInterleaved,doOriAndContrastTogether)
+    xlabel('contrast change (%) and direction (deg)');
   elseif input.doContrastDetect 
-    pH(1).Parent.XLabel.String = 'contrast change (%)';
-  elseif input.doOriDetect
-    pH(1).Parent.XLabel.String = 'direction (deg)';
-  elseif input.doAuditoryDetect
-    pH(1).Parent.XLabel.String = 'volume (%)';
-  end
-  
-  if showBlock2
-  	if ~input.block2DoTrialLaser
-  		if input.block2DoContrastDetect 
-    		pH(2).Parent.XLabel.String = 'contrast change (%)';
-  		elseif input.block2DoOriDetect
-    		pH(2).Parent.XLabel.String = 'direction (deg)';
-  		elseif input.block2DoAuditoryDetect
-    		pH(2).Parent.XLabel.String = 'volume (%)';
-  		end
-  	end
-  end
+    xlabel('contrast change (%)');
+ elseif input.doOriDetect
+    xlabel('direction (deg)');
+ end
 
   % manually compute limits and tick positions
-  powerLev1 = powerLevels(des1Ix);
-  xLimL = [min(powerLev1(~powerLev1==0))*0.5, max(powerLev1)*1.5];
+  xLimL = [min(powerLevels(~powerLevels==0))*0.5, max(powerLevels)*1.5];
   if length(xLimL)==1, xLimL = get(gca, 'XLim'); end
   xL1 = [floor(log10(xLimL(1))) ceil(log10(xLimL(2)))];
   xTickL = 10.^(xL1(1):1:xL1(2));
@@ -1161,43 +1133,16 @@ if nStims >= 1
   end
   xTLabelL = cellstr(num2str(xTickL(:)));
   
-  pH(1).Parent.YLim = [0 100];
-  pH(1).Parent.XLim = xLimL;
-  pH(1).Parent.XScale = 'log';
-  pH(1).Parent.XTick = xTickL;
-  pH(1).Parent.XTickLabel = xTLabelL;
+  set(gca, 'YLim', [0 100], ...
+           'XLim', xLimL, ...
+           'XScale', 'log', ...
+           'XGrid', 'on');
   
-	if showBlock2
-		if ~input.block2DoTrialLaser
-			powerLev2 = powerLevels(des2Ix);
-  			xLimL = [min(powerLev1(~powerLev2==0))*0.5, max(powerLev2)*1.5];
-  			if length(xLimL)==1, xLimL = pH(2).Parent.XLim ; end
-  			xL1 = [floor(log10(xLimL(1))) ceil(log10(xLimL(2)))];
-  			xTickL = 10.^(xL1(1):1:xL1(2));
-  			xTickL = xTickL(xTickL>=xLimL(1) & xTickL<=xLimL(2));
-  			if length(xTickL) == 0, 
-    			% no log10 ticks in range, create two and set them
-    			xTickL = [xLimL(1) xLimL(2)]; %[xTL(1)/10 xTL(1) xTL(1)]
-    			xTickL = chop(xTickL,2);
-  			end
-  			xTLabelL = cellstr(num2str(xTickL(:)));
+  set(gca, 'XTick', xTickL);
+  %xTL = chop(get(gca, 'XTick'),2);
   
-  			pH(2).Parent.YLim = [0 100];
-  			pH(2).Parent.XLim = xLimL;
-  			pH(2).Parent.XScale = 'log';
-  			pH(2).Parent.XTick = xTickL;
-  			pH(2).Parent.XTickLabel = xTLabelL;
-  			
-  			if isfield(input,'doShortCatchTrial') & input.doShortCatchTrial
-  				powerLev3 = powerLevels(des2FAIx);
-  				xLimL = [min(powerLev1(~powerLev2==0))*0.5, max(powerLev2)*1.5];
-  				if length(xLimL)==1, xLimL = pH(2).Parent.XLim ; end
-  				pH(3).Parent.YLim = [0 100];
-  				pH(3).Parent.XLim = xLimL;
-  				pH(3).Parent.XScale = 'log';
-  			end
-		end
-	end
+  set(gca, 'XTickLabel', xTLabelL);
+end
 
 %%%%%%%%%%%%%%%%
 
