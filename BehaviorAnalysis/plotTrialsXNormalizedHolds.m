@@ -3,11 +3,12 @@ addpath('C:\Users\andrew\Documents\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis'
 global dataStru
 dataStru = struct;
 holds = {};
-starts = {};
+trs = {};
 tooFasts = {};
 
 disp('Loading data from MWorks Data folder...')
 dataPath = 'C:\Users\andrew\Desktop\fixedData\500';
+%% 
 dirListing = dir(dataPath);
 fileNames= {dirListing.name};
     
@@ -21,63 +22,66 @@ desNames = fileNames;
 nNames = length(desNames);
 for iN = 1:nNames;
         tName = fullfile(dataPath, desNames{iN});
-        disp(tName)
+        disp(tName) 
         ds=mwLoadData(tName, 'max');
         
         hts = double(cell2mat(ds.holdTimesMs));
+        shortIx = hts<200;
+        %comment to ignore holds less than 200ms
         hts(hts<200) = NaN;
-        req = double(cell2mat(ds.tTotalReqHoldTimeMs));
-        normalizedHolds = (ds.reactTimesMs);%hts./req;
-        tooFasts = ((ds.tooFastTimeMs));%+req)./req;
         
-    
-        htStarts = ds.holdStartsMs;
-        holdStarts = (cell2mat(htStarts) - htStarts{1})/60000;
+        req = double(cell2mat(ds.tTotalReqHoldTimeMs));
+        %normalizedHolds = hts./req
+        normalizedHolds = (ds.reactTimesMs);
+        tooFast = (ds.tooFastTimeMs);%+req)./req;        
+        
+        trialNumbers = 1:length(hts);
         
         corrIx = strcmp(ds.trialOutcomeCell, 'success');
         normalizedHolds = normalizedHolds(corrIx);
-        holdStarts = holdStarts(corrIx);
+        trialNumbers = trialNumbers(corrIx);
         %tooFast = tooFast(corrIx);
     
         holds = [holds normalizedHolds];
-        starts = [starts holdStarts];
+        trs = [trs trialNumbers];
         %tooFasts = [tooFasts tooFast];
+        tooFasts = double(ds.tooFastTimeMs);
         
        disp('Daily Data Loaded')  
 end
-%%
+
 beep
 disp('Loading complete!')
 
 holds = cell2mat(holds);
-starts = cell2mat(starts);
+trs = cell2mat(trs);
 %tooFasts = cell2mat(tooFasts);
-
-[sortedStarts, ix] = sort(starts);
+[sortedTrs, ix] = sort(trs);
 sortedHolds = holds(ix);
 %sortedTooFasts = tooFasts(ix);
 
 %%
 holdMeans = {};
 holdSTDs = {};
-x = 0:2:118;
-y = 2:2:120;
+x = 0:10:1990;
+y = 10:10:2000;
+i=1;
 for i = 1:length(x),
     
-    iX = x(i)<sortedStarts & sortedStarts<y(i);
-    trs = sortedHolds(iX);
-    holdSTDs{i} = nanstd(double(trs));
-    holdMeans{i} = nanmean(double(trs));
+    iX = x(i)<sortedTrs & sortedTrs<y(i);
+    trIx = sortedHolds(iX);
+    holdSTDs{i} = nanstd(double(trIx));
+    holdMeans{i} = nanmean(double(trIx));
 end
 hold on
 %plot(sortedTooFasts, 'r')
-%plot([0 120],[1 1], 'k')
 plot([0 1200], [tooFasts tooFasts], 'r');
 errorbar(y, cell2mat(holdMeans), cell2mat(holdSTDs), 'k-x')
 grid on
-ylabel('Mean Hold Time (Actual Hold Time / Required Hold Time)');
-%ylabel('Mean Reaction Time (ms)')
-ylim([0 500])
-xlim([1 100])
-title('Fixed Time Summary (Corrects Only) -- 500 ms ')
-xlabel('Minutes in Training')
+%plot([0 1200],[1 1], 'k')
+xlim([0 1200])
+%ylabel('Normalized Hold Time (Actual Hold Time / Required Hold Time)')
+ylabel('Mean Reaction Time (ms)')
+ylim([0 750])
+title('Fixed Time Summary (Corrects Only) -- 500 ms')
+xlabel('Trials')

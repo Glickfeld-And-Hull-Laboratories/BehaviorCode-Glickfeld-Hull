@@ -5,6 +5,7 @@
               pulse_duration="juice" pulse_on="juice" 
               lever1="FIO1" lever2=""
               lever1_solenoid="FIO2"
+              lever2_solenoid="FIO3"
               counter2="counter2"
               laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"
@@ -36,7 +37,8 @@
       <variable tag="doTFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>      
       <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doPhaseStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
-      <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>     
+      <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
+      <variable tag="doLEDStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>     
 
 	  <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 	  <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
@@ -75,6 +77,10 @@
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 	  <variable tag="gratingStartingPhaseStepDeg" scope="global" logging="when_changed" default_value="45" type="float" persistant="1" groups="GratingSpecs"/>
       <variable tag="gratingStartingPhaseStepN" scope="global" logging="when_changed" default_value="8" type="float" persistant="1" groups="GratingSpecs"/>
+      
+      <variable tag="LEDPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="LEDSpecs"/>
+	  <variable tag="LEDPowerStepMw" scope="global" logging="when_changed" default_value="0.01" type="float" persistant="1" groups="LEDSpecs"/>
+      <variable tag="LEDPowerStepN" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="LEDSpecs"/>
        
       <variable tag="doMovingDots" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="MovingDots"/>
       <variable tag="baseDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
@@ -110,6 +116,7 @@
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
       <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="FIO3" full_name="FIO3" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
       <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
@@ -156,6 +163,7 @@
       <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       
       <variable tag="tDotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -416,6 +424,15 @@
           </action>
           </action>
 
+          <!--Select LED power -->
+          <action type="if" condition="doLEDStim == 1">	
+          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % LEDPowerStepN"/>
+              	<action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw + (LEDPowerStepMw * (tTempStim))"/>
+              	<action type="report" message="LED Power is $tTrialLaserPowerMw"/>
+          </action>		
+          <action type="if" condition="doLEDStim == 0">
+			  <action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw"/>
+          </action>
           
           <!--Select features if IN matrix mode -->
           <action type="if" condition="doMatrix = 1">
@@ -459,7 +476,7 @@
               		<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
 	      		</action>
 	      		
-	      		<!-- Make Dir X SFPhase--> 
+	      		<!-- Make Dir X Phase--> 
             <action type="if" condition="(doDirStim == 1) &amp;&amp; (doPhaseStim == 1)">
               <action type="if" condition="tStimulusNumber &lt; (gratingDirectionStepN * gratingStartingPhaseStepN)">    
                 <action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
@@ -484,7 +501,27 @@
                 <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
                 <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"/>
             </action>
-	      	  
+	      	
+	      	<!-- Make LEDpower x Dir Matrix -->
+	      		<action type="if" condition="(doDirStim == 1) &amp;&amp; (doLEDPower) == 1">
+          			<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (LEDPowerStepN * gratingDirectionStepN)"/>
+          			<action type="if" condition="tTempStim &lt; LEDPowerStepN">
+              			<action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw + (LEDPowerStepMw * (tTempStim))"/>
+              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
+              			<action type="report" message="LED Power is $tTrialLaserPowerMw ; Direction is $tGratingDirectionDeg"/>
+          			</action>
+          			<action type="if" condition="tTempStim &gt;= LEDPowerStepN">
+              			<action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw + (LEDPowerStepMw * ((tTempStim) % LEDPowerStepN))"/>
+              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / LEDPowerStepN)))"/>
+              			<action type="report" message="LED Power is $tTrialLaserPowerMw ; Direction is $tGratingDirectionDeg"/>
+          			</action>
+          			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
+			  		<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
+              		<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
+              		<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
+              		<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+	      		</action>
+	      		  
 	      	<!-- check for errors in feature combos 
 	      		<action type="if" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2)) &gt; 2">
 	      			<action type="assert" condition= "1 = 1" message="Too many stim features selected for matrix mode"
@@ -505,6 +542,9 @@
             <action type="assignment" variable="tGratingSpeedDPS" value="tGratingTemporalFreqCPS / tGratingSpatialFreqCPD"></action> 
       	    <action type="report" message="Speed is $tGratingSpeedDPS"/>
           </action>
+
+          <!-- Zero the LED port-->
+          <action type="assignment" variable="FIO3" value="0"/>
       	
           <!-- initialize trial start/end times -->
           <action type="if" condition="tThisTrialStartTimeMs == -1">  
@@ -537,6 +577,10 @@
               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
     	    </action>
+
+          <action type="if" condition="tTrialLaserPowerMw &gt; 0">
+            <action type="assignment" variable="FIO3" value="1"/>
+          </action>
 
             <action type="if" condition="doMovingDots == 1">
               <action type="if" condition="doDotsSpeedStim == 1">
@@ -749,6 +793,8 @@
         		<action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
         	</action>
+          <action type="assignment" variable="FIO3" value="0"/>
+
             
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             
