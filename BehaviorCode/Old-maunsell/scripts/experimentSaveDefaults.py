@@ -19,7 +19,11 @@ import re
 
 domainName = "org.mworks-project.MWClient"
 
+<<<<<<< HEAD
 outFile = os.path.expanduser(os.path.join('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/Scripts/Plists', 'org.Behavior.VisStimRet.plist'))
+=======
+outFile = os.path.expanduser(os.path.join('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/Scripts/Plists', 'org.Behavior.AnalogLever.plist'))
+>>>>>>> WIP/AnalogLever
 keyNames = [ 
   'MATLAB client window - selected variables',
   'MATLAB client window - MATLAB .m file',
