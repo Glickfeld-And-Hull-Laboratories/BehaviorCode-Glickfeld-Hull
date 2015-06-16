@@ -47,7 +47,7 @@ thisHostname = string.replace(thisHostname, '.dhe.duke.edu', '')
 if thisHostname == "hullglick1":
     PORT = 9990
     HOST = "neuroPi1.local"
-    doTransmitCodesToBlackrock = True
+    doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick2":
     PORT = 9991
     HOST = "neuroPi2.local"
