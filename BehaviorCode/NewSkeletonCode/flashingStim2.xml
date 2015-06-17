@@ -848,12 +848,18 @@
                   	<action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
                   	<action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
                   	<action type="assignment" variable="tDoCatchAuditoryDetect" value="doAuditoryDetect"/>
-                  	<action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
-                  	<action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
-                  	<action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
-                  	<action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
-                    <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
-                    <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>  
+                    <action type="if" condition="tDoCatchOriDetect == 1">
+                      <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                      <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                    </action>
+                    <action type="if" condition="tDoCatchContrastDetect == 1">  
+                  	  <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                      <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                    </action>
+                  	<action type="if" condition="tDoCatchAuditoryDetect == 1">
+                      <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
+                      <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                        
+                  	</action>
                   </action>
                 </action>
 
