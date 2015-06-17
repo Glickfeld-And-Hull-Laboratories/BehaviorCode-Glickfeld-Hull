@@ -5,7 +5,7 @@ function pv = behavParamsPVContrast
     pv.chr2_mat = [1 1];
     pv.arch_mat = [0 0];
     pv.power_mat = [0.25 0.5];
-    pv.basecon_mat = [0 0.5 1];
+    pv.basecon_mat = [0 0.67 1];
     pv.mark_str = strvcat('o', 's');
     pv.col_str = strvcat('b', 'r');
 end

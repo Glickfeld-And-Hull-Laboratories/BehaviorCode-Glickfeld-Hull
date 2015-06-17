@@ -1,9 +1,9 @@
-function input = plotOnlineHist(data_struct, input)
+function input = plotMovingDots(data_struct, input)
 
 % essential consts
 figNum = 4;
-name = 'HoldAndDetectConstant';
-cs = holdanddetect_constants;
+name = 'MovingDots';
+cs = flashingStim_constants;
 spSz = {4,3};
 
 smoothType = 'lowess';
@@ -27,6 +27,7 @@ end
 set(figH, 'Position', figPos);
 
 %% set up arrays
+
 if ~isfield(input, 'changedStr')
   input.changedStr = {};
 end
@@ -47,21 +48,14 @@ nFail = sum(failureIx);
 nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
-if isfield(input, 'tDoNoStimulusChange'),
-    dnscIx = boolean(celleqel2mat_padded(input.tDoNoStimulusChange));
-    dnscTrs = find(dnscIx);
-    dnscCorrIx = dnscIx & successIx;
-    dnscCorrTrs = find(dnscCorrIx);
-    dnscCorrIx = dnscCorrIx(dnscIx);
-end
+
 
 %  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
-tGratingDurationMsV = celleqel2mat_padded(input.tGratingDurationMs);
-tGratingDirectionDeg = celleqel2mat_padded(input.tGratingDirectionDeg);
-tGratingContrast = celleqel2mat_padded(input.tGratingContrast, NaN, 'double');
-tBaseGratingContrast = celleqel2mat_padded(input.tBaseGratingContrast, NaN, 'double');
-tGratingSpeedDPS = celleqel2mat_padded(input.tGratingSpeedDPS, NaN, 'double');
-tBaseGratingSpeedDPS = celleqel2mat_padded(input.tBaseGratingSpeedDPS, NaN, 'double');
+tDotDirectionDeg = celleqel2mat_padded(input.tDotDirectionDeg);
+tDotCoherence = celleqel2mat_padded(input.tDotCoherence);
+tBaseDotCoherence = celleqel2mat_padded(input.tBaseDotCoherence);
+tDotSpeedDPS = celleqel2mat_padded(input.tDotSpeedDPS, NaN, 'double');
+tBaseDotSpeedDPS = celleqel2mat_padded(input.tBaseDotSpeedDPS, NaN, 'double');
 tLaserPowerMw = celleqel2mat_padded(input.tLaserPowerMw);
 tLaserRampLengthMsV = celleqel2mat_padded(input.tLaserRampLengthMs);
 tLaserDoLinearRampV = celleqel2mat_padded(input.tLaserDoLinearRamp);
@@ -76,6 +70,31 @@ holdV = celleqel2mat_padded(input.holdTimesMs);  % sometimes on client restart h
 juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
 
+if (input.doDirDetect+input.doSpeedDetect)>1
+    doVisDetect = 1;
+else
+    doVisDetect = 0;
+end
+
+if and((input.block2DoDirDetect+input.block2DoSpeedDetect)>0, input.doBlock2)
+    block2DoVisDetect = 1;
+else
+    block2DoVisDetect = 0;
+end
+
+if or(input.doDirDetect, and(input.doBlock2,input.block2DoDirDetect))
+  doDir = 1;
+else
+  doDir = 0;
+end
+
+if or(input.doSpeedDetect, and(input.doBlock2,input.block2DoSpeedDetect))
+  doSpeed = 1;
+else
+  doSpeed = 0;
+end
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% figure out the number of stimuli
@@ -85,19 +104,23 @@ if all(lPowerV) == 0
 else
   nLP = length(chop(unique(lPowerV(~isnan(lPowerV))),4));
 end
-if input.doContrastDetect
-    vPowerV = abs(tGratingContrast-tBaseGratingContrast)*100;
-elseif input.doOriDetect
-    vPowerV = tGratingDirectionDeg;
-elseif input.doSpeedDetect
-    vPowerV = abs(tGratingSpeedDPS-tBaseGratingSpeedDPS);
+if doSpeed
+    vPowerV = double(tDotSpeedDPS)-double(tBaseDotSpeedDPS);
+elseif doDir
+    vPowerV = double(tDotCoherence)-double(tBaseDotCoherence);
+elseif ~(doVisDetect | block2DoVisDetect);
+	vPowerV = zeros(size(lPowerV));
 end
+
+
+vPowerV(find(vPowerV==0)) = NaN;
 
 if all(vPowerV) == 0
   nVP = 0;
 else
   nVP = length(chop(unique(vPowerV(~isnan(vPowerV))),4));
 end
+
 
 if nVP >= 1
   showLaserStim = false;
@@ -118,7 +141,7 @@ else
     nStims = 1;
   else
     disp(sprintf('nLaser %d, nVis %d', nLP, nVP));
-    error('confused on number of laser and vis levels: contrast/dir base and step set?');
+    error('confused on number of laser and vis levels');
   end
 end
 
@@ -130,12 +153,13 @@ assert(~input.doLaserStim || all(tLaserDoLinearRampV | tLaserDoPulseTrainV));
 
 % figure out block2 stim levels
 showBlock2 = input.doBlock2;
+
 if showBlock2
   %assert(all(tBlock2TrialNumberV == 0 | tBlock2TrialNumberV == 1), 'xml bug?');
 
   if input.block2DoGratingAppearance
-    block2Name = 'Grating appearance';
-    block2LevelNames = sprintf_vector('grating %d', [1 2]);  % should improve this
+    block2Name = 'Stimulus appearance';
+    block2LevelNames = sprintf_vector('stimulus %d', [1 2]);  % should improve this
 
     block2Tr1Ix = tBlock2TrialNumberV == 0;
     block2Tr2Ix = tBlock2TrialNumberV == 1;
@@ -182,19 +206,19 @@ tTrialN = input.trialSinceReset;
 % Performance Values
 
 if length(holdStarts) > 2
-	holdTimeMS = input.holdTimesMs{end};
-	switch input.trialOutcomeCell{end}
-	case 'success'
-		outcomeString = 'correct';
-	case 'failure'
-		outcomeString = 'early';
-	case 'ignore'
-		outcomeString = 'failed';
-	end
+  holdTimeMS = input.holdTimesMs{end};
+  switch input.trialOutcomeCell{end}
+  case 'success'
+    outcomeString = 'correct';
+  case 'failure'
+    outcomeString = 'early';
+  case 'ignore'
+    outcomeString = 'failed';
+  end
 
-        axH = subplot(spSz{:}, 1);						% default axes are 0 to 1
+        axH = subplot(spSz{:}, 1);            % default axes are 0 to 1
         
-	set(axH, 'Visible', 'off');
+  set(axH, 'Visible', 'off');
         set(axH, 'OuterPosition', [0.02 0.75, 0.25, 0.2])
 
         numTrials = nTrial;
@@ -207,7 +231,7 @@ if length(holdStarts) > 2
         elMin = round((now - datenum(input.startDateVec)) * 24*60);
         startStr = datestr(input.startDateVec, 'HH:MM');
         text(0.00, 1.05, {'Subject:', 'Start time + elapsed:', 'Reward vol (m\pm std):'});
-	text(0.60, 1.05, ...
+  text(0.60, 1.05, ...
              { sprintf('%2d', input.subjectNum), ...
                sprintf('%s + %2dm', ...
                        startStr, elMin), ...
@@ -216,12 +240,12 @@ if length(holdStarts) > 2
                        chop(nanmean(juiceTimesMsV),2), ...
                        chop(nanstd(juiceTimesMsV),2)), ...
              });
-	t2H(1) = text(0.00, 0.9, {'Trials:', 'Correct:', 'Early:', 'Failed:'});
-	t2H(2) = text(0.35, 0.9, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
-				sprintf('%d', nFail), sprintf('%d', nIg)});
-	t2H(3) = text(0.54, 0.9, {' ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
-				sprintf('%.0f%%', nFail / numTrials * 100.0), ...
-				sprintf('%.0f%%', nIg / numTrials * ...
+  t2H(1) = text(0.00, 0.9, {'Trials:', 'Correct:', 'Early:', 'Failed:'});
+  t2H(2) = text(0.35, 0.9, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
+        sprintf('%d', nFail), sprintf('%d', nIg)});
+  t2H(3) = text(0.54, 0.9, {' ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
+        sprintf('%.0f%%', nFail / numTrials * 100.0), ...
+        sprintf('%.0f%%', nIg / numTrials * ...
                                         100.0)});
         set(t2H, 'VerticalAlignment', 'top', ...
                  'HorizontalAlignment', 'left');
@@ -255,7 +279,7 @@ if length(holdStarts) > 2
           if input.block2DoRampLength
             block2Str = sprintf('ramp length: %d %d ms', input.laserRampLengthMs, input.block2RampLengthMs2);
           elseif input.block2DoGratingAppearance
-            block2Str = sprintf('grating 1: %s\n          grating 2: %s', subPpGrating(input), subPpGrating(input,true));
+            block2Str = sprintf('stimulus 1: %s\n          stimulus 2: %s', subPpGrating(input), subPpGrating(input,true));
           elseif input.block2DoRampVTrain
             block2Str = sprintf('ramp v train: ramp %d (%s)+%d ms, bl %g mW\n  train, pulse %d period %d dur %d, bl %g mW', ...
                                 input.laserRampLengthMs, ...
@@ -316,7 +340,7 @@ if length(holdStarts) > 2
         tStr = sprintf( ['Hold (f+r/%s, tf): \t%3d+%3d,%3d ms %s\n', ...
                          'Timeouts (e,m):\t%4.1f, %4.1f s\n', ...
                          'React:\t%5.2f s;   ITI %d ms\n', ...
-                         'Reward min, max: %3.0f, %3.0f ms   %s\n', ...
+                         'Reward: %3.0f ms   %s\n', ...
                          '\n', ...
                          'trPer80: %s\n', ...
                          'block2TrPer80: %s\n', ...
@@ -331,8 +355,7 @@ if length(holdStarts) > 2
                         input.missedTimeoutMs/1000, ...
                         input.reactTimeMs/1000, ...
                         input.itiTimeMs, ...
-                        input.minRewardUs/1000, ...
-                        input.maxRewardUs/1000, ...
+                        input.rewardUs/1000, ...
                         b2RewardStr, ...
                         trPer80Str, ... 
                         block2TrPer80Str, ...
@@ -345,7 +368,7 @@ if length(holdStarts) > 2
 
         set(gcf, 'Visible', 'on');
 
-end			
+end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Specific plots for specific tasks in this section
@@ -404,18 +427,10 @@ end
 
 %% 2 - react time CDF
 axH = subplot(spSz{:},4);
-reacts = [input.reactTimesMs{:}];
-cdfplot(reacts);
+cdfplot([input.reactTimesMs{:}]);
 set(gca, 'XLim', [-1000 1000], ...
          'YLim', [0 1]);
 hold on;
-if isfield(input, 'tDoNoStimulusChange'),
-    if sum(dnscIx)>0,
-        dnscP = cdfplot(reacts(dnscIx));
-        set(dnscP,'Color', [0 0.6 0]);
-        set(gca, 'XLim', [-1000 1000], 'YLim', [0 1]);
-    end
-end
 vH = vert_lines(0:200:1000);
 set(vH, 'LineStyle', ':', 'Color', 0.5*[1 1 1]);
 title('');
@@ -440,7 +455,9 @@ edges = linspace(-1000, 1000, nBins);
 binSize = edges(2)-edges(1);
 
 emptyIx = cellfun(@isempty, input.reactTimesMs);   % see above holdTimesM
-if sum(emptyIx) > 0, input.reactTimesMs{emptyIx} = NaN; end
+if sum(emptyIx) > 0 
+  input.reactTimesMs{emptyIx} = NaN; 
+end
 
 Ns = histc(reactV(successIx), edges);
 Nf = histc(reactV(failureIx), edges);
@@ -465,42 +482,78 @@ title('reaction times');
 %% 4 - smoothed perf curve
 axH = subplot(spSz{:},2);
 hold on;
-plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
-lH = plot(smooth(double(successIx), nTrial, smoothType));
-set(lH, 'Color', 'r', ...
-        'LineWidth', 3);
-lH2 = plot(smooth(double(successIx), 100, smoothType));
-set(lH2, 'Color', 'k', ...
-        'LineWidth', 2);
+if ~showBlock2
+    plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
+    lH = plot(smooth(double(successIx), nTrial, smoothType));
+    set(lH, 'Color', 'r', ...
+            'LineWidth', 3);
+    lH2 = plot(smooth(double(successIx), 100, smoothType));
+    set(lH2, 'Color', 'k', ...
+            'LineWidth', 2);
 
-lH3 = plot(smooth(double(ignoreIx), 100, smoothType));
-set(lH3, 'Color', 'm', ...
-         'LineWidth', 2, ...
-         'LineStyle', '-.');
-     
-if isfield(input, 'tDoNoStimulusChange') & sum(dnscIx)>0,
-    lH5 = plot(dnscTrs, smooth(dnscCorrIx, 100, smoothType));
-    set(lH5, 'Color',[0 0.6 0], ...
-           'LineWidth', 2);
+    lH3 = plot(smooth(double(ignoreIx), 100, smoothType));
+    set(lH3, 'Color', 'm', ...
+             'LineWidth', 2, ...
+             'LineStyle', '-.');
+    anystack(lH3, 'bottom');
+    lH4 = plot(smooth(double(failureIx), 100, smoothType));
+    set(lH4, 'Color', 0.8*[0 1 1], ...
+        'LineWidth', 2, ...
+        'LineStyle', '-.');
+    anystack(lH4, 'bottom');
 end
-if showBlock2
+
+if showBlock2       
   b2T1Ns = find(block2Tr1Ix);
   b2T2Ns = find(block2Tr2Ix);
-  lH4a = plot(b2T1Ns, smooth(double(failureIx(block2Tr1Ix)), 75, smoothType));
-  lH4b = plot(b2T2Ns, smooth(double(failureIx(block2Tr2Ix)), 75, smoothType));
-  set([lH4a lH4b], 'LineWidth', 2, 'LineStyle', '-.');
-  set(lH4a, 'Color', 0.8*[0 1 1]);
-  set(lH4b, 'Color', 0.8*[1 1 0]);
-  anystack([lH4a lH4b], 'bottom');
-else
-  lH4 = plot(smooth(double(failureIx), 100, smoothType));
-  set(lH4, 'Color', 0.8*[0 1 1], ...
-           'LineWidth', 2, ...
-           'LineStyle', '-.');
-  anystack(lH4, 'bottom');
+  if ~or(input.doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
+  	plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
+    lH = plot(smooth(double(successIx), nTrial, smoothType));
+    set(lH, 'Color', 'r', ...
+            'LineWidth', 3);
+    lH2 = plot(smooth(double(successIx), 100, smoothType));
+    set(lH2, 'Color', 'k', ...
+            'LineWidth', 2);
+
+    lH3 = plot(smooth(double(ignoreIx), 100, smoothType));
+    set(lH3, 'Color', 'm', ...
+             'LineWidth', 2, ...
+             'LineStyle', '-.');
+    anystack(lH3, 'bottom');     
+      lH4a = plot(b2T1Ns, smooth(double(failureIx(block2Tr1Ix)), 75, smoothType));
+      lH4b = plot(b2T2Ns, smooth(double(failureIx(block2Tr2Ix)), 75, smoothType));
+      set([lH4a lH4b], 'LineWidth', 2, 'LineStyle', '-.');
+      set(lH4a, 'Color', 0.8*[0 1 1]);
+      set(lH4b, 'Color', 0.8*[1 1 0]);
+      anystack([lH4a lH4b], 'bottom');
+  else 
+    plot(b2T1Ns, smooth(double(successIx(block2Tr1Ix)), ceil(nTrial/10), smoothType));
+    lH = plot(b2T1Ns, smooth(double(successIx(block2Tr1Ix)), nTrial, smoothType));
+    set(lH, 'Color', 'r', ...
+            'LineWidth', 3);
+    lH2 = plot(b2T1Ns, smooth(double(successIx(block2Tr1Ix)), 100, smoothType));
+    set(lH2, 'Color', 'k', ...
+            'LineWidth', 2);
+
+    lH3 = plot(b2T1Ns,smooth(double(ignoreIx(block2Tr1Ix)), 100, smoothType));
+    set(lH3, 'Color', 'm', ...
+             'LineWidth', 2, ...
+             'LineStyle', '-.');
+      lH4 = plot(b2T1Ns, smooth(double(failureIx(block2Tr1Ix)), 75, smoothType));
+      set([lH4], 'LineWidth', 2, 'LineStyle', '-.');
+      set(lH4, 'Color', 0.8*[0 1 1]);
+      if input.block2DoAuditoryDetect
+        title('Visual stim responses')
+      elseif input.doOriAndContrastInterleaved
+        if input.doOriDetect
+          title('Ori responses')
+        elseif input.doContrastDetect
+          title('Contrast responses')
+        end
+      end
+  end
 end
 
-anystack(lH3, 'bottom');
 
 
 ylabel('pct correct');
@@ -566,12 +619,12 @@ if ~isempty(hSDiffsSec) && sum(~isnan(hSDiffsSec)) > 1
   
 else
   axesH(1) = gca;
-  axesH(2) = NaN;
+  axesH(2) = [];
 end
 
 ylabel('trial start time diff (s)');
 xLim = trXLim;
-set(axesH, 'XLim', xLim);
+set(axesH(~isempty(axesH)), 'XLim', xLim);
 lH = plot(xLim, 20*[1 1], '--k');
 
 set(axesH(1),'YLim', [0 121], ...
@@ -597,21 +650,69 @@ title(sprintf('Last 6 (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
 %% 5 cumulative time elapsed
 axH = subplot(spSz{:},5);
 hold on;
+if showBlock2
+if ~or(input.doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
+    hSDiffsRealSec = diff(holdStarts)/1000;
+    xs = 1:length(hSDiffsRealSec);
+    pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
+    maxMin = sum(hSDiffsRealSec)./60;
 
-hSDiffsRealSec = diff(holdStarts)/1000;
-xs = 1:length(hSDiffsRealSec);
-pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
-maxMin = sum(hSDiffsRealSec)./60;
+    ylabel('Time working (min)');
+    %set(gca, 'DataAspectRatio', [100 10 1]);
+    xLim = trXLim;
+    set(gca, 'XLim', xLim);
+    % compute data aspect ratio manually: matlab will keep y dim of
+    % plot box fixed and change x and we want the reverse
+    yLim = [0 max(xLim(2)/10, maxMin*1.1)];   
+    set(gca, 'YLim', yLim);
+    pH2 = plot(xLim, xLim/10, 'k--');
+    axis tight
+else
+    b2T2Ns = find(block2Tr2Ix);
+    plot(b2T2Ns, smooth(double(successIx(block2Tr2Ix)), ceil(nTrial/10), smoothType));
+    lH = plot(b2T2Ns, smooth(double(successIx(block2Tr2Ix)), nTrial, smoothType));
+    set(lH, 'Color', 'r', ...
+            'LineWidth', 3);
+    lH2 = plot(b2T2Ns, smooth(double(successIx(block2Tr2Ix)), 100, smoothType));
+    set(lH2, 'Color', 'k', ...
+            'LineWidth', 2);
 
-ylabel('Time working (min)');
-%set(gca, 'DataAspectRatio', [100 10 1]);
-xLim = trXLim;
-set(gca, 'XLim', xLim);
-% compute data aspect ratio manually: matlab will keep y dim of
-% plot box fixed and change x and we want the reverse
-yLim = [0 max(xLim(2)/10, maxMin*1.1)];   
-set(gca, 'YLim', yLim);
-pH2 = plot(xLim, xLim/10, 'k--');
+    lH3 = plot(b2T2Ns,smooth(double(ignoreIx(block2Tr2Ix)), 100, smoothType));
+    set(lH3, 'Color', 'm', ...
+             'LineWidth', 2, ...
+             'LineStyle', '-.');
+      lH4 = plot(b2T2Ns, smooth(double(failureIx(block2Tr2Ix)), 75, smoothType));
+      set([lH4], 'LineWidth', 2, 'LineStyle', '-.');
+      set(lH4, 'Color', 0.8*[0 1 1]);
+      if input.block2DoAuditoryDetect
+        title('Auditory stim responses')
+      elseif input.doOriAndContrastInterleaved
+        if input.block2DoContrastDetect
+          title('Contrast responses')
+        elseif input.block2DoOriDetect
+          title('Ori responses')
+        end
+      end     
+end
+      ylabel('pct correct');
+      set(gca, 'YLim', [0 1]);
+else
+  hSDiffsRealSec = diff(holdStarts)/1000;
+    xs = 1:length(hSDiffsRealSec);
+    pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
+    maxMin = sum(hSDiffsRealSec)./60;
+
+    ylabel('Time working (min)');
+    %set(gca, 'DataAspectRatio', [100 10 1]);
+    xLim = trXLim;
+    set(gca, 'XLim', xLim);
+    % compute data aspect ratio manually: matlab will keep y dim of
+    % plot box fixed and change x and we want the reverse
+    yLim = [0 max(xLim(2)/10, maxMin*1.1)];   
+    set(gca, 'YLim', yLim);
+    pH2 = plot(xLim, xLim/10, 'k--');
+    axis tight
+end
 
 %%%%%%%%%%%%%%%
 
@@ -628,8 +729,19 @@ v1 = smooth(holdV(desIx), 25, 'rloess');
 v2 = smooth(holdV(desIx), 250, 'rlowess');
 desYIx = successIx;
 xYVals = find(desYIx);
-vy1 = smooth(reactV(successIx), 25, 'rloess');
-vy2 = smooth(reactV(successIx), 250, 'rlowess');
+
+
+if ~input.doBlock2
+    vy1 = smooth(reactV(successIx), 25, 'rloess');
+    vy2 = smooth(reactV(successIx), 250, 'rlowess');
+elseif input.doBlock2
+	vy1 = reactV(intersect(find(successIx), find(block2Tr1Ix)));
+  	vy2 = reactV(intersect(find(successIx), find(block2Tr2Ix)));
+  	xB1Vals = intersect(find(successIx), find(block2Tr1Ix));
+	xB2Vals = intersect(find(successIx), find(block2Tr2Ix));
+end
+	
+
 [axH pH1 pH2] = plotyy(1,1,1,1);
 set(axH, 'NextPlot', 'add');
 
@@ -658,19 +770,20 @@ end
 
 % 2nd axes
 if ~isempty(vy1) && ~isempty(vy2)
+  c2 = 'b';
+    if ~input.doBlock2
     hyH(1) = plot(axH(2), xYVals, vy1);
     hyH(2) = plot(axH(2), xYVals, vy2);
-    if isfield(input, 'tDoNoStimulusChange') && sum(dnscIx)>0,
-        dnscCorrIx = dnscIx & successIx;
-        dnscCorrIx = dnscCorrIx(dnscIx);
-        dnscVals = smooth(reactV(dnscCorrIx), 25, 'rloess');
-        plot(axH(2), dnscCorrTrs, dnscVals, 'Color', [0 0.6 0]);
-    end
-    hyH(2) = plot(axH(2), xYVals, vy2);
-    
-    c2 = 'b';
     set(hyH, 'Color', c2);
     set(hyH(2), 'LineWidth', 2);
+    else
+    hyH(1) = plot(axH(2), xB1Vals, vy1);
+    hyH(2) = plot(axH(2), xB2Vals, vy2);
+    set(hyH(1), 'Color', 0.8*[0 1 1]);
+    set(hyH(2), 'Color', 0.8*[1 1 0]);
+    set(hyH(1), 'LineWidth', 1.5);
+    set(hyH(2), 'LineWidth', 1.5);
+    end
     
     set(axH(2), 'YLim', [0 max(reactV)], ...
                 'YTickMode', 'auto', ...
@@ -757,7 +870,7 @@ if nStims >= 1
 
   for iP=1:nL
     tP = powerLevels(iP);
-    trIx = stimPowerV == tP;
+    trIx = sum(stimPowerV == tP,1);
     
     powerP(1).correct(iP) = sum(trIx & successIx);
     powerP.early(iP) = sum(trIx & earlyIx);
@@ -798,19 +911,22 @@ if nStims >= 1
     pctCorr2Block2 = powerP.block2Correct2 ./ (powerP.block2Total2-powerP.block2Early2) * 100;
     des1Ix = ~isnan(pctCorr1Block2);
     des2Ix = ~isnan(pctCorr2Block2);
-    pH=[NaN NaN];
+    pH=[];
     if sum(des1Ix)>0
       pH(1) = plot(powerLevels(des1Ix), pctCorr1Block2(des1Ix), '.-b');
+      set(pH(1), 'LineWidth', 2)
     end
-    if sum(des2Ix)>0
-      pH(2) = plot(powerLevels(des2Ix), pctCorr2Block2(des2Ix), '.-');
-      set(pH(2), 'Color', yColor);
-    end
+    if or(input.block2DoSpeedDetect, input.block2DoDirDetect)
+      if sum(des2Ix)>0
+        pH(2) = plot(powerLevels(des2Ix), pctCorr2Block2(des2Ix), '.-');
+        set(pH(2), 'Color', yColor, 'LineWidth', 2);
+      end
+    end  	
   else
     pH = plot(powerLevels, pctCorr, '.-b');
-  end
-  if all(~isempty(pH))
-    set(pH, 'LineWidth', 2)
+    if all(~isempty(pH))
+      set(pH, 'LineWidth', 2)
+    end
   end
 
   pH1 = plot(powerLevels, pctCorr1, '-g');
@@ -855,22 +971,17 @@ if nStims >= 1
   end
 
   anystack([pH1;pH2], 'bottom');
-  if all(~isempty(pH))
-    anystack(pH, 'top');
-  end
+  %if all(~isempty(pH()))
+  %  anystack(pH, 'top');
+  %end
 
   if showLaserStim
     xlabel('power (mW)')
-  elseif input.doContrastDetect 
-    xlabel('contrast change (%)');
-    title(sprintf('base contrast %g', input.baseGratingContrast));
-  elseif input.doOriDetect
-    xlabel('direction (deg)');
-    title(sprintf('base direction %g', input.baseGratingDirectionDeg));
-  elseif input.doSpeedDetect
-    xlabel('speed (dps)');
-    title(sprintf('base speed %g', input.baseGratingSpeedDPS));
-  end
+  elseif input.doSpeedDetect 
+    xlabel('speed change (dps)');
+ elseif input.doDirDetect
+    xlabel('coherence (%)');
+ end
 
   % manually compute limits and tick positions
   xLimL = [min(powerLevels(~powerLevels==0))*0.5, max(powerLevels)*1.5];
@@ -908,7 +1019,7 @@ if nStims > 1
 
   for iP=1:nL
     tP = powerLevels(iP);
-    trIx = stimPowerV == tP;
+    trIx = sum(stimPowerV == tP,1);
     
     powerP.rtMean(iP) = mean(reactV(trIx & successIx));
     powerP.rtStd(iP) = std(reactV(trIx & successIx));
@@ -971,12 +1082,10 @@ if nStims > 1
   
   if showLaserStim
     xlabel('power (mW)');
-  elseif input.doContrastDetect 
-    xlabel('contrast change (%)');
-  elseif input.doOriDetect
-    xlabel('direction (deg)')
-  elseif input.doSpeedDetect
-    xlabel('speed (dps)')  
+  elseif input.doSpeedDetect 
+    xlabel('speed change (dps)');
+  elseif input.doDirDetect
+    xlabel('coherence (%))')
   end
   
   ylabel('rt (ms) on corrects');
@@ -1146,7 +1255,7 @@ if ~exist(cs.behavPdfPath, 'file')
 end
 outName = sprintf('%s/%s-behav-i%03d.pdf', ...
                   cs.behavPdfPath, ...
-                  datestr(now, 'yymmdd'), input.subjectNum);
+                  datestr(now, 'yymmdd-HHMM'), input.subjectNum);
 epParams = { figNum, outName, ...
              'FileFormat', 'pdf', ...
              'Size', [12 12], ...
@@ -1195,31 +1304,24 @@ function outStr = subPpGrating(input, doPpBlock2Grating)
 if nargin < 2, doPpBlock2Grating = false; end
 
 % assemble vars- block2 or not
-tV = struct('gratingWidthDeg', []);
+tV = struct('dotFieldSizeDeg', []);
 if doPpBlock2Grating
-  tV.gratingWidthDeg = input.block2GratingWidthDeg;
-  tV.gratingHeightDeg = input.block2GratingHeightDeg;
-  tV.gratingAzimuthDeg = input.block2GratingAzimuthDeg;
-  tV.gratingElevationDeg = input.block2GratingElevationDeg;
-  tV.gratingSpatialFreqCPD = input.block2GratingSpatialFreqCPD;
-  tV.gratingDurationMs = input.block2GratingDurationMs;
+  tV.dotFieldSizeDeg = input.block2DotFieldSizeDeg;
+  tV.dotSizeDeg = input.block2DotSizeDeg;
+  tV.dotAzimuthDeg = input.block2DotAzimuthDeg;
+  tV.dotElevationDeg = input.block2DotElevationDeg;
 else
-  tV.gratingWidthDeg = input.gratingWidthDeg;
-  tV.gratingHeightDeg = input.gratingHeightDeg;
-  tV.gratingAzimuthDeg = input.gratingAzimuthDeg;
-  tV.gratingElevationDeg = input.gratingElevationDeg;
-  tV.gratingSpatialFreqCPD = input.gratingSpatialFreqCPD;
-  tV.gratingDurationMs = input.gratingDurationMs;
+  tV.dotFieldSizeDeg = input.dotFieldSizeDeg;
+  tV.dotSizeDeg = input.dotSizeDeg;
+  tV.dotAzimuthDeg = input.dotAzimuthDeg;
+  tV.dotElevationDeg = input.dotElevationDeg;
 end
 
-outStr = sprintf('%gx%gdeg, at (%g,%g), %gcpd, %dms', ...
-                 roundn(double(tV.gratingWidthDeg),-2), ...
-                 roundn(double(tV.gratingHeightDeg),-2), ...
-                 tV.gratingAzimuthDeg, ...
-                 tV.gratingElevationDeg, ...
-                 tV.gratingSpatialFreqCPD, ...
-                 tV.gratingDurationMs);
-
+outStr = sprintf('field: %gdeg, dot: %gdeg, at (%g,%g)', ...
+                 roundn(double(tV.dotFieldSizeDeg),-2), ...
+                 roundn(double(tV.dotSizeDeg),-2), ...
+                 tV.dotAzimuthDeg, ...
+                 tV.dotElevationDeg);
 
 %%%%%%%%%%%%%%%%
 

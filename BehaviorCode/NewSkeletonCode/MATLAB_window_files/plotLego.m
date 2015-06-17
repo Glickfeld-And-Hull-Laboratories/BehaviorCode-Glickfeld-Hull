@@ -107,14 +107,21 @@ end
 
 if input.doBlock2==1,
   block2Str = 'Block2: on \n';
+  if input.block2DoTrialLaser==1,
+    block2Str = sprintf('Block2: on, Trial Laser Power:%5.2fmW \n', double(input.block2TrialLaserPowerMw));
+  end
 elseif input.doBlock2==0,
   block2Str = 'Block2: off \n';
 end
 
-if input.doMatchToTarget==1,
-  MTTstr = 'On';
+if isfield(input, 'doMatchToTarget')
+  if input.doMatchToTarget==1,
+    MTTstr = 'On';
+  else
+    MTTstr = 'Off';
+  end
 else
-  MTTstr = 'Off';
+    MTTstr = 'Off';
 end
 
 if input.doConsecCorrectReward==1,
@@ -186,6 +193,7 @@ end
 
 
         tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
+                         'Stim On Time: \t%5d ms \n', ...
                          'Thresholds (L,R):\t%4.0f, %4.0f pulses\n', ...
                          'Too-Fast Time: %d ms;  Reward: %s ms \n', ...
                          'Timeouts (ign,inc):\t%4.1f, %4.1f s\n', ...
@@ -196,6 +204,7 @@ end
                          'Match To Target: %s \n'], ...
                         input.reactionTimeMs/1000, ...
                         input.itiTimeMs, ...
+                        input.stimOnTimeMs, ...
                         input.leftDecisionThreshold, ...
                         input.rightDecisionThreshold, ...
                         input.tooFastTimeMs, ...
@@ -406,9 +415,9 @@ hold on;
 
 if nCorr>0 && input.doTestRobot==0,
   if isfield(input, 'dGratingContrastDiff')
-    contDiffV = cell2mat_padded(input.tGratingContrast) ./ cell2mat_padded(input.dGratingContrast);
+    contDiffV = round(cell2mat_padded(input.tGratingContrast) ./ cell2mat_padded(input.dGratingContrast),2);
   else
-    contDiffV = cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast);
+    contDiffV = round(cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast),2);
   end
     corrDiffV = contDiffV(correctIx);
     uqDiff = unique(corrDiffV);
@@ -529,18 +538,33 @@ else
     decMax = 10000;
 end
 
-pH = cdfplot([input.tDecisionTimeMs{:}]);
+if sum(block2Ix)== 0
+  pH = cdfplot([input.tDecisionTimeMs{:}]);
     set(pH, 'Color', 'g');
-if nLeft>0,
-  pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
-    set(pH1, 'Color', 'b');
-end
-if nRight>0,
-  pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
-    set(pH2, 'Color', [0.8 0.8 0]);
-set(gca, 'XLim', [0 decMax], ...
-         'YLim', [0 1], ...
-         'XTick', [0:decisionInterval:decMax]);
+  if nLeft>0,
+    pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
+      set(pH1, 'Color', 'b');
+  end
+  if nRight>0,
+    pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
+      set(pH2, 'Color', [0.8 0.8 0]);
+  set(gca, 'XLim', [0 decMax], ...
+          'YLim', [0 1], ...
+          'XTick', [0:decisionInterval:decMax]);
+  end
+elseif sum(block2Ix)>0
+  pH1 = cdfplot([input.tDecisionTimeMs{block2Ix == 0 & leftTrialIx == 1}]);
+    set(pH1, 'LineWidth', 2);
+  hold on
+  pH2 = cdfplot([input.tDecisionTimeMs{block2Ix == 0 & leftTrialIx == 0}]);
+    set(pH2, 'LineStyle', '--', 'LineWidth', 2);
+  pH3 = cdfplot([input.tDecisionTimeMs{block2Ix == 1 & leftTrialIx == 1}]);
+    set(pH3, 'Color', yColor, 'LineWidth', 2);
+  pH4 = cdfplot([input.tDecisionTimeMs{block2Ix == 1 & leftTrialIx == 0}]);
+    set(pH4, 'Color', yColor, 'LineStyle', '--', 'LineWidth', 2);
+    set(gca, 'XLim', [0 decMax], ...
+          'YLim', [0 1], ...
+          'XTick', [0:decisionInterval:decMax]);
 end
 grid on;
 hold on;
@@ -554,10 +578,13 @@ xlabel('Time');
 axH  = subplot(spSz{:},10);
 hold on
 
-if isfield(input, 'dGratingContrastDiff'),
-  contrastDifferenceRight = cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast);
+if isfield(input, 'dGratingContrastDiff')
+  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
+end
+if input.gratingContrastDiffSPO > 10
+  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 else
-  contrastDifferenceRight = cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast);
+  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 end
 
 plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
@@ -567,15 +594,7 @@ for kk=1:length(nLevelsB1)
     valB1 = nLevelsB1(kk);
     valIxB1 = contrastDifferenceRight==valB1;
     totalNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
-    if isfield(input, 'dGratingContrastDiff')
-      if valB1>=1,
-          rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&correctIx&~block2Ix));
-          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
-      elseif valB1<1,
-          rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&incorrectIx&~block2Ix));
-          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
-      end
-    else
+    if min(contrastDifferenceRight) < 0
       if valB1>=0,
           rightNTrialsValB1 = sum(contrastDifferenceRight((valIxB1&correctIx)&~block2Ix));
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
@@ -583,6 +602,14 @@ for kk=1:length(nLevelsB1)
           rightNTrialsValB1 = sum(contrastDifferenceRight((valIxB1&incorrectIx)&~block2Ix));
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
       end
+    else
+        if valB1>=1,
+            rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&correctIx&~block2Ix));
+            percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+        elseif valB1<1,
+            rightNTrialsValB1 = sum(contrastDifferenceRight(valIxB1&incorrectIx&~block2Ix));
+            percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+        end
     end
 end
 
@@ -594,15 +621,7 @@ if sum(block2Ix)>0
     valB2 = nLevelsB2(kk);
     valIxB2 = contrastDifferenceRight==valB2;
     totalNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&(correctIx|incorrectIx)&block2Ix));
-    if isfield(input, 'dGratingContrastDiff')
-      if valB2>=1,
-          rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&correctIx&block2Ix));
-          percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
-      elseif valB2<1,
-          rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&incorrectIx&block2Ix));
-          percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
-      end
-    else
+    if min(contrastDifferenceRight) < 0
       if valB2>=0,
           rightNTrialsValB2 = sum(contrastDifferenceRight((valIxB2&correctIx)&block2Ix));
           percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
@@ -610,23 +629,36 @@ if sum(block2Ix)>0
           rightNTrialsValB2 = sum(contrastDifferenceRight((valIxB2&incorrectIx)&block2Ix));
           percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
       end
-    end
-end
-end
-
-
-minX = min(contrastDifferenceRight,[],2);
-maxX = max(contrastDifferenceRight,[],2);
-xLimm = [minX maxX];
-    if ~(xLimm(1)==0),
-      xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
     else
-      xL1 = [0 ceil(log10(xLimm(2)))];
+        if valB2>=1,
+            rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&correctIx&block2Ix));
+            percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
+        elseif valB2<1,
+            rightNTrialsValB2 = sum(contrastDifferenceRight(valIxB2&incorrectIx&block2Ix));
+            percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
+        end
     end
-xTickL = 10.^(xL1(1):1:xL1(2));
-xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
-xTLabelL = cellstr(num2str(xTickL(:)));
+end
+end
 
+
+if min(contrastDifferenceRight) < 0
+    minX = min(contrastDifferenceRight);
+    maxX = max(contrastDifferenceRight);
+    xLimm = [minX maxX];
+else
+    minX = min(contrastDifferenceRight,[],2);
+    maxX = max(contrastDifferenceRight,[],2);
+    xLimm = [minX maxX];
+        if ~(xLimm(1)==0),
+            xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
+        else
+            xL1 = [0 ceil(log10(xLimm(2)))];
+        end
+    xTickL = 10.^(xL1(1):1:xL1(2));
+    xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
+    xTLabelL = cellstr(num2str(xTickL(:)));
+end
 
 pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 if sum(block2Ix)>= 1
@@ -636,16 +668,17 @@ vH = vert_lines(0);
 set(vH, 'Color', 'g');
 set(gca, 'XLim', [minX maxX], ...
          'YLim', [0 1]);
-if isfield(input, 'dGratingContrastDiff')
-  xlabel('Contrast Difference (R/L)')
-  set(gca,'XScale', 'log', ...
-         'XGrid', 'on',...
-         'XTick', xTickL,...
-         'XTickLabel', xTLabelL);
+if min(contrastDifferenceRight) < 0
+      xlabel('Contrast Difference (R-L)')
+      set(gca, 'XTick', [-1:0.5:1], ...
+               'YTick', [0:0.25:1],...
+               'XGrid', 'on');
 else
-  xlabel('Contrast Difference (R-L)')
-  set(gca, 'XTick', [-1:0.5:1], ...
-         'YTick', [0:0.25:1]);
+    xlabel('Contrast Difference (R/L)')
+    set(gca,'XScale', 'log', ...
+            'XGrid', 'on',...
+            'XTick', xTickL,...
+            'XTickLabel', xTLabelL);
 end
 ylabel('% Right')
 grid on
@@ -687,7 +720,7 @@ if nCorr>0 && input.doTestRobot==0,
     if sum(block2Ix)>0
       ph2 = plot(uqTargetB2, cell2mat(percentCellB2),'Color', yColor);
     end
-    minX = 10;
+    minX = 0;
     maxX = 100;
     xLimm = [minX maxX];
     if ~(xLimm(1)==0),

@@ -1,4 +1,4 @@
-function outS = weibullFit(intensityV, fractCorr, clampAtZero, use50Thresh, inputWeightsIn, iS);
+function outS = weibullFit(intensityV, fractCorr, clampAtZero, use50Thresh, inputWeightsIn);
 % fit a weibull; definition below and returned in modelFun.
 % extract 50% threshold if use50Thresh == true, else (default) use 63%, p(1)
 %

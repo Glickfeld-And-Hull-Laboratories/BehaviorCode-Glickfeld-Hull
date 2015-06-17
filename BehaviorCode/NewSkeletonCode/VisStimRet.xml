@@ -5,6 +5,7 @@
               pulse_duration="juice" pulse_on="juice" 
               lever1="FIO1" lever2=""
               lever1_solenoid="FIO2"
+              lever2_solenoid="FIO3"
               counter2="counter2"
               laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"
@@ -34,8 +35,10 @@
       <variable tag="doDirStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doSFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doTFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>      
-      <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
-      <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>     
+      <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
+      <variable tag="doPhaseStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
+      <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
+      <variable tag="doLEDStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>     
 
 	  <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 	  <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
@@ -72,11 +75,17 @@
       <variable tag="gratingDiameterStepN" scope="global" logging="when_changed" default_value="6" type="float" persistant="1" groups="GratingSpecs"/>
       
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
-
+	  <variable tag="gratingStartingPhaseStepDeg" scope="global" logging="when_changed" default_value="45" type="float" persistant="1" groups="GratingSpecs"/>
+      <variable tag="gratingStartingPhaseStepN" scope="global" logging="when_changed" default_value="8" type="float" persistant="1" groups="GratingSpecs"/>
+      
+      <variable tag="LEDPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="LEDSpecs"/>
+	  <variable tag="LEDPowerStepMw" scope="global" logging="when_changed" default_value="0.01" type="float" persistant="1" groups="LEDSpecs"/>
+      <variable tag="LEDPowerStepN" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="LEDSpecs"/>
+       
       <variable tag="doMovingDots" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="MovingDots"/>
-      <variable tag="baseDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="baseDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="baseDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="baseDotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       
       <variable tag="dotElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
@@ -84,7 +93,7 @@
       <variable tag="dotFieldSizeDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotSizeDeg" scope="global" logging="when_changed" default_value=".2" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotDensity" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="MovingDots"/>
-      <variable tag="dotCoherence" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       
       <variable tag="dotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotDirectionStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="MovingDots"/>
@@ -107,6 +116,7 @@
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
       <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="FIO3" full_name="FIO3" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
       <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
@@ -152,10 +162,9 @@
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       
-      <variable tag="tBaseDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tBaseDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tBaseDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -165,6 +174,11 @@
       <variable tag="tDotDensity" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
       <variable tag="tDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotCoherence" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+      <variable tag="setDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="setDotDirectionDeg" scope="global" logging="when_changed" default_value="90" type="float" persistant="0"/>
+      <variable tag="setDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+      <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="frameCountN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -186,7 +200,7 @@
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tBaseGratingDirectionDeg" 
               alpha_multiplier="tBaseGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+    <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="tGratingStartingPhaseDeg"
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -194,18 +208,11 @@
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tGratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
-    <stimulus type="moving_dots" tag="base_moving_dots"  direction="tDotDirectionDeg"
-              dot_density="tDotDensity" dot_size="tDotSizeDeg" coherence="tBaseDotCoherence"
-              speed="tBaseDotSpeedDPS" 
-              field_radius="tDotFieldSizeDeg/2" 
+    <stimulus type="moving_dots" tag="moving_dots"  direction="setDotDirectionDeg"
+              dot_density="tDotDensity" dot_size="tDotSizeDeg" coherence="tDotCoherence" 
+              speed="setDotSpeedDPS" field_radius="tDotFieldSizeDeg/2" 
               field_center_x="tDotAzimuthDeg" field_center_y="tDotElevationDeg" 
-              alpha_multiplier="tBaseDotContrast"></stimulus>
-    <stimulus type="moving_dots" tag="target_moving_dots"  direction="tDotDirectionDeg"
-              dot_density="tDotDensity" dot_size="tDotSizeDeg" coherence="tDotCoherence"
-              speed="tDotSpeedDPS" 
-              field_radius="tDotFieldSizeDeg/2" 
-              field_center_x="tDotAzimuthDeg" field_center_y="tDotElevationDeg" 
-              alpha_multiplier="tDotContrast"></stimulus>         
+              alpha_multiplier="setDotContrast"></stimulus>         
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -220,6 +227,7 @@
       <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"></action>
       <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"></action>
       <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"></action>
+      <action type="assignment" tag="set coherence" variable="tDotCoherence" value="dotCoherence"></action>
         
       <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
       <trial tag="New List" nsamples="9999" sampling_method="samples" selection="random_without_replacement">
@@ -228,20 +236,25 @@
       <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="set tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-          <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
-          <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
-          <action type="assignment" variable="tBaseDotCoherence" value="baseDotCoherence"></action>
-          <action type="assignment" variable="tBaseDotContrast" value="baseDotContrast"></action>
-          <action type="assignment" variable="tBaseDotSpeedDPS" value="baseDotSpeedDPS"></action>
-          
+          <action type="assignment" variable="setDotSpeedDPS" value="baseDotSpeedDPS"></action>
+          <action type="assignment" variable="setDotDirectionDeg" value="baseDotDirectionDeg"></action>
+          <action type="assignment" variable="setDotContrast" value="baseDotContrast"></action>
+          <action type="assignment" variable="tDotContrast" value="dotContrast"></action>
+          <action type="assignment" variable="tDotDensity" value="dotDensity"></action>
+          <action type="assignment" variable="tDotSizeDeg" value="dotSizeDeg"></action>
+          <action type="assignment" variable="tDotFieldSizeDeg" value="dotFieldSizeDeg"></action>
+          <action type="assignment" variable="tDotAzimuthDeg" value="dotAzimuthDeg"></action>
+          <action type="assignment" variable="tDotElevationDeg" value="dotElevationDeg"></action>
+
           <action type="if" condition="doMovingDots != 1">
           	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
       	  	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
       	  </action>
       	   <action type="if" condition="doMovingDots == 1">
-          	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_moving_dots"></action>    
-      	  	<action type="play_dynamic_stimulus" stimulus="base_moving_dots" tag="start"></action>
-      	  </action>
+          	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots"></action>    
+      	  	<action type="play_dynamic_stimulus" stimulus="moving_dots" tag="start"></action>
+          </action>
+
           <action type="update_stimulus_display" tag="-"></action>        
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
@@ -274,15 +287,6 @@
           <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
           <action type="assignment" tag="-" variable="laserTriggerFIO" value="0"></action>
           
-      
-          <!-- set unchanging stimulus parameters-->
-          <action type="assignment" variable="tDotAzimuthDeg" value= "dotAzimuthDeg"/>
-          <action type="assignment" variable="tDotElevationDeg" value= "dotElevationDeg"/>
-          <action type="assignment" variable="tDotDensity" value= "dotDensity"/>
-          <action type="assignment" variable="tDotSizeDeg" value= "dotSizeDeg"/>
-          <action type="assignment" variable="tDotFieldSizeDeg" value= "dotFieldSizeDeg"/>
-          <action type="assignment" variable="tDotContrast" value= "dotContrast"/>
-          <action type="assignment" variable="tDotCoherence" value= "dotCoherence"/>
 
           <!-- choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 -->
           <action type="if" condition="doRand == 1">
@@ -325,25 +329,25 @@
       		    </action>
             </action>
           </action>
-          <action type="if" condition="doRetStim = 0">
+          <action type="if" condition="doRetStim == 0">
 			        <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
           </action>
           
 <!--Select features if not in matrix mode -->
-          <action type="if" condition="doMatrix = 0">	
+          <action type="if" condition="doMatrix == 0">	
                     <!--Select size -->
           <action type="if" condition="doSizeStim = 1">	
           	<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDiameterStepN"/>
             <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))"/>
           	<action type="report" message="Direction is $tGratingDiameterDeg"/>
           </action>		
-          <action type="if" condition="doSizeStim = 0">
+          <action type="if" condition="doSizeStim == 0">
 			  <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
           </action>          
           
           <!--Select spatial frequency -->
-          <action type="if" condition="doSFStim = 1">	
+          <action type="if" condition="doSFStim == 1">	
     		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingSpatialFreqStepN"/>          	
           	
           	<action type="if" condition="doRetStim = 1">
@@ -352,7 +356,7 @@
 	      	<action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim))))"/>
           	<action type="report" message="Spatial Frequency is $tGratingSpatialFreqCPD"/>
           </action>		
-          <action type="if" condition="doSFStim = 0">
+          <action type="if" condition="doSFStim == 0">
 			  <action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
           </action>
           
@@ -366,7 +370,7 @@
             <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog,(gratingTemporalFreqStepDir*(tTempStim))))"/>
             <action type="report" message="Temporal Frequency is $tGratingTemporalFreqCPS"/>
           </action>		
-          <action type="if" condition="doTFStim = 0">
+          <action type="if" condition="doTFStim == 0">
 			  <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
           </action> 
           
@@ -383,34 +387,52 @@
               <action type="report" message="Direction is $tDotDirectionDeg"/>
             </action> 
           </action>		
-          <action type="if" condition="doDirStim = 0">
+          <action type="if" condition="doDirStim == 0">
 			       <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
              <action type="assignment" variable="tDotDirectionDeg" value= "dotDirectionDeg"/>
           </action>
           
           
           <!--Select contrast -->
-          <action type="if" condition="doConStim = 1">	
+          <action type="if" condition="doConStim == 1">	
           		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingContrastStepN"/>
               	<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (pow(gratingContrastStepLog,(gratingContrastStepDir*(tTempStim))))"/>
               	<action type="report" message="Contrast is $tGratingContrast"/>
           </action>		
-          <action type="if" condition="doConStim = 0">
+          <action type="if" condition="doConStim == 0">
 			  <action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
           </action>
+          
+          <!-- do Phase -->
+           <action type="if" condition="doPhaseStim = 1">  
+            <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingStartingPhaseStepN"/>
+            <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))"/>
+            <action type="report" message="Starting phase is $tGratingStartingPhaseDeg"/>
+          </action>   
+          <action type="if" condition="doPhaseStim == 0">
+        <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg"/>
+          </action> 
 
           <!--Select speed- for moving dots only -->
-          <action type="if" condition="doDotsSpeedStim = 1">  
+          <action type="if" condition="doDotsSpeedStim == 1">  
               <action type="assignment" variable="tTempStim" value= "tStimulusNumber % dotSpeedStepN"/>
                 <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS * (pow(dotSpeedStepLog,(dotSpeedStepDir*(tTempStim))))"/>
                 <action type="report" message="Speed is $tDotSpeedDPS"/>
           </action>   
-          <action type="if" condition="doDotsSpeedStim = 0">
+          <action type="if" condition="doDotsSpeedStim == 0">
         <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS"/>
           </action>
           </action>
-          
 
+          <!--Select LED power -->
+          <action type="if" condition="doLEDStim == 1">	
+          		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % LEDPowerStepN"/>
+              	<action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw + (LEDPowerStepMw * (tTempStim))"/>
+              	<action type="report" message="LED Power is $tTrialLaserPowerMw"/>
+          </action>		
+          <action type="if" condition="doLEDStim == 0">
+			  <action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw"/>
+          </action>
           
           <!--Select features if IN matrix mode -->
           <action type="if" condition="doMatrix = 1">
@@ -453,7 +475,53 @@
               		<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
               		<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
 	      		</action>
+	      		
+	      		<!-- Make Dir X Phase--> 
+            <action type="if" condition="(doDirStim == 1) &amp;&amp; (doPhaseStim == 1)">
+              <action type="if" condition="tStimulusNumber &lt; (gratingDirectionStepN * gratingStartingPhaseStepN)">    
+                <action type="assignment" variable="tTempStim" value= "tStimulusNumber"/>
+              </action>
+              <action type="if" condition="tStimulusNumber &gt;= (gratingDirectionStepN * gratingStartingPhaseStepN)">
+                <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingDirectionStepN * gratingStartingPhaseStepN)"/>
+              </action>
+              <action type="if" condition="tTempStim &lt; gratingStartingPhaseStepN">
+                <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))"/> 
+                <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>   
+                <action type="report" message="SP is $tGratingStartingPhaseDeg ; Direction is $tGratingDirectionDeg"/>
+              </action>
+              <action type="if" condition="tTempStim >= gratingStartingPhaseStepN">
+                <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * ((tTempStim % gratingStartingPhaseStepN)))"/> 
+                <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / gratingStartingPhaseStepN)))"/>
+                <action type="report" message="SP is $tGratingStartingPhaseDeg; Direction is $tGratingDirectionDeg"/>
+              </action>
+                <action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
+                <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
+                <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
+                <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
+                <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+                <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"/>
+            </action>
 	      	
+	      	<!-- Make LEDpower x Dir Matrix -->
+	      		<action type="if" condition="(doDirStim == 1) &amp;&amp; (doLEDStim) == 1">
+          			<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (LEDPowerStepN * gratingDirectionStepN)"/>
+          			<action type="if" condition="tTempStim &lt; LEDPowerStepN">
+              			<action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw + (LEDPowerStepMw * (tTempStim))"/>
+              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
+              			<action type="report" message="LED Power is $tTrialLaserPowerMw ; Direction is $tGratingDirectionDeg"/>
+          			</action>
+          			<action type="if" condition="tTempStim &gt;= LEDPowerStepN">
+              			<action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw + (LEDPowerStepMw * ((tTempStim) % LEDPowerStepN))"/>
+              			<action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / LEDPowerStepN)))"/>
+              			<action type="report" message="LED Power is $tTrialLaserPowerMw ; Direction is $tGratingDirectionDeg"/>
+          			</action>
+          			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
+			  		<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
+              		<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
+              		<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
+              		<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+	      		</action>
+	      		  
 	      	<!-- check for errors in feature combos 
 	      		<action type="if" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2)) &gt; 2">
 	      			<action type="assert" condition= "1 = 1" message="Too many stim features selected for matrix mode"
@@ -474,6 +542,9 @@
             <action type="assignment" variable="tGratingSpeedDPS" value="tGratingTemporalFreqCPS / tGratingSpatialFreqCPD"></action> 
       	    <action type="report" message="Speed is $tGratingSpeedDPS"/>
           </action>
+
+          <!-- Zero the LED port-->
+          <action type="assignment" variable="FIO3" value="0"/>
       	
           <!-- initialize trial start/end times -->
           <action type="if" condition="tThisTrialStartTimeMs == -1">  
@@ -503,20 +574,23 @@
 			<action type="if" condition="doMovingDots != 1">
 				<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
     	        <action tag="Update Stimulus" type="update_stimulus_display"></action>
-    	    </action>
-    	    <action type="if" condition="doMovingDots == 1">
-    	    	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_moving_dots"></action>
-    	        <action tag="Update Stimulus" type="update_stimulus_display"></action>
-    	    </action>    
-
-            <action type="if" condition="doMovingDots != 1">
               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
-            </action>
+    	    </action>
+
+          <action type="if" condition="tTrialLaserPowerMw &gt; 0">
+            <action type="assignment" variable="FIO3" value="1"/>
+          </action>
+
             <action type="if" condition="doMovingDots == 1">
-              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_moving_dots"></action>
-              <action type="play_dynamic_stimulus" stimulus="target_moving_dots" tag="start"></action>
-            </action>
+              <action type="if" condition="doDotsSpeedStim == 1">
+                <action type="assignment" tag="reset speed" variable="setDotSpeedDPS" value="tDotSpeedDPS"></action>
+              </action>
+              <action type="if" condition="doDirStim == 1">
+                <action type="assignment" tag="reset direction" variable="setDotDirectionDeg" value="tDotDirectionDeg"></action>
+              </action>
+              <action type="assignment" tag="reset contrast" variable="setDotContrast" value="tDotContrast"></action>
+            </action>  
             <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
             
             <!-- update display, finalize variables -->
@@ -717,16 +791,10 @@
             	<action tag="Update Stimulus" type="update_stimulus_display"></action>
 				<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
         		<action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
-        	</action>
-        	
-        	<action type="if" condition="doMovingDots == 1">
-            	<action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_moving_dots"></action>
-            	<action tag="Update Stimulus" type="update_stimulus_display"></action>
-				<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_moving_dots"></action>    
-        		<action type="play_dynamic_stimulus" stimulus="base_moving_dots" tag="start"></action>
-        	</action>
-        	
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
+        	</action>
+          <action type="assignment" variable="FIO3" value="0"/>
+
             
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             

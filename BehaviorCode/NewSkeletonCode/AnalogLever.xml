@@ -6,6 +6,7 @@
               lever1="FIO1" lever2="" 
               lever1_solenoid="FIO2"
               lever2_solenoid="FIO3"
+              quadrature="quadrature"
               laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -81,9 +82,6 @@
       <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
       
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
-      <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
-      <variable tag="soundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
-      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
 
       <!-- block 2 control -->
@@ -186,6 +184,8 @@
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
       <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
       <variable tag="FIO3" full_name="FIO3" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Lever"/>
+      <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
       <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
@@ -257,14 +257,11 @@
     </folder>
   </variables>
   <sounds tag="Sounds">
-    <sound tag="louderPressSound" type="wav_file" path="../wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
-    <sound tag="waitingForLeverSound" type="wav_file" path="../wavs/trialStart-F10e-short.wav" amplitude="soundTrialStartAmplitude"></sound>
-    <sound tag="correctSound" type="wav_file" path="../wavs/shortCorrect.wav"></sound>
-    <sound tag="incorrectSound" type="wav_file" path="../wavs/incorrectMouse.wav"></sound>
-    <sound tag="rewardSound" type="wav_file" path="../wavs/shortCorrect.wav"></sound>
-    <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="soundBasePressAmplitude"></sound>
-    <sound tag="cueSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="soundCueAmplitude"></sound>
-    <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="soundTargetAmplitude"></sound>
+    <sound tag="louderPressSound" type="wav_file" path="wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
+    <sound tag="waitingForLeverSound" type="wav_file" path="wavs/trialStart-F10e-short.wav" amplitude="soundTrialStartAmplitude"></sound>
+    <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
+    <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
+    <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -301,6 +298,7 @@
       <action type="assignment" tag="tempNCorrect = 0" variable="tempNCorrect" value="0"></action>
       <action type="assignment" variable="tConsecErrors" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+      <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
 
       <!-- init actions run only on first trial after loading experiment -->
       <action type="if" condition="success+ignore+failure == 0">
@@ -320,8 +318,6 @@
                      _error="Task Systems must contain >=1 transition that yields to parent">
           <task_system_state tag="Intertrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            
-            <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -780,7 +776,8 @@
 
               <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
 
-
+              <action type="assert" condition="tTrialLaserPowerMw == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw != 0"/>
             </action>
             <action type="if" condition="!doLaserStim">
               <action type="assignment" variable="tLaserPowerMw" value="0"/>
@@ -884,8 +881,8 @@
             <action type="if" condition="tTrialLaserPowerMw > 0">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
-              <!--<action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
-                      message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/> -->
+              <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/>
               <action type="assert" stop_on_failure="1"
                       condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
                       message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
@@ -912,7 +909,7 @@
               <action type="assignment" variable="tFakeMousePressMs" value="rand(0, fakeMouseMaxPressMs)"></action>
             </action>
 
-            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; FIO1 == 1 &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
             <transition type="conditional" tag="If fakeMouse elapsed, go to HoldLever" 
                         condition="!doLever &amp;&amp; doAllCorrects==0 &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tFakeMousePressMs" target="HoldLever"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
@@ -924,8 +921,6 @@
           <task_system_state tag="HoldLever" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action tag="p" type="play_sound" sound="louderPressSound"></action>
-            <action type="play_sound" sound="basePressSound"/>
-            <action type="play_sound" sound="cueSound"/>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
 
@@ -962,7 +957,7 @@
             <action type="start_timer" tag="Start LeverHold Timer" timer="leverHoldTimer" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
             <action tag="Report LeverDown" full_name="ReportDigital" type="report" message="LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="quadrature &gt; leverThreshold &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
             <transition type="timer_expired" tag="If leverHoldTimer Expired, Go To StimOn" target="StimOn" timer="leverHoldTimer"></transition>
           </task_system_state>
@@ -987,7 +982,6 @@
 
                 <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
               </action>
-              <action type="play_sound" sound="targetSound"/>
 
               <!-- laser stim on -->
               <action type="if" condition="doLaserStim">
@@ -1020,7 +1014,7 @@
             </action>
 
             <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-            <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="(quadrature &gt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
             <transition type="direct" target="CheckTooFastTime"></transition>
           </task_system_state>
@@ -1043,7 +1037,7 @@
 
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1 " target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="(quadrature &gt; leverThreshold) &amp;&amp; doLever == 1 " target="Reward"></transition>
             <transition type="conditional" tag="If DoAllCorrects, Go To Reward" condition="doAllCorrects==1" target="Reward"></transition>
             <transition type="timer_expired" tag="If fakeMouse expired, Transition to Reward" target="Reward" timer="fakeMouseTimer"></transition>
             <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
@@ -1269,7 +1263,7 @@
 
             <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
 
-            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+            
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
             <action type="if" condition="doITIStim == 0">

@@ -1,9 +1,7 @@
-function [retval] = HoldAndDetectConstant(data_struct, input)
+function [retval] = AnalogLever(data_struct, input)
 % Main matlab online function for HADC8
 %
-%  MH 100115: created
-%  MH 130107: refactored into new expt* functions.
-% call: exptSetupBridge, exptProcessBridgeInput, do your own thing, then exptRunSubfunctions
+%  HADC8 Rewrite for compatibility with new quadrature lever
 
 if nargin < 2,
     input = [];
@@ -11,7 +9,7 @@ if nargin < 2,
 end
 
 ds = data_struct;
-addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/MatlabSharedCode');
+addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/MatlabSharedCode');
 
 varsOneValEachTrial = { ...
     ...%'holdStartsMs', ...
@@ -100,6 +98,14 @@ input.gratingContrast = input.tGratingContrast;
 input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
 
+try
+    input.quadratureTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
+    input.quadratureValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1) ;
+catch
+    input.quadratureTimesUs{trN} = NaN;
+    input.quadratureValues{trN} = NaN;
+end
+
 
 %% disp status
 juiceAmtsMs = input.juiceTimesMsCell{trN};
@@ -132,7 +138,7 @@ fprintf(1,'Hold %d, req %d, react %d, %s%s %s- %d rew %dms\n', ...
         nJ, round(juiceD));
 
 %% run subfunctions
-input = exptRunSubfunctions(ds, input, { @plotOnlineHist });
+input = exptRunSubfunctions(ds, input, { @plotAnalogLever });
 
 
 

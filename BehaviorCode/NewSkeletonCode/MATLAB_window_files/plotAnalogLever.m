@@ -1,8 +1,8 @@
-function input = plotOnlineHist(data_struct, input)
+function input = plotAnalogLever(data_struct, input)
 
 % essential consts
 figNum = 4;
-name = 'HoldAndDetectConstant';
+name = 'AnalogLever';
 cs = holdanddetect_constants;
 spSz = {4,3};
 
@@ -344,9 +344,7 @@ if length(holdStarts) > 2
              'VerticalAlignment', 'top');
 
         set(gcf, 'Visible', 'on');
-
 end			
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Specific plots for specific tasks in this section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

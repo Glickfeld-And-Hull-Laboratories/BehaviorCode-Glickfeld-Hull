@@ -46,24 +46,27 @@ thisHostname = socket.gethostname()
 thisHostname = string.replace(thisHostname, '.dhe.duke.edu', '')
 if thisHostname == "hullglick1":
     PORT = 9990
-    doTransmitCodesToBlackrock = True
+    HOST = "neuroPi1.local"
+    doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick2":
     PORT = 9991
+    HOST = "neuroPi2.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick3":
     PORT = 9992
-    PORT2 = 9993  # use same as rig 4
+    PORT2 = 1  # use same as rig 4
+    HOST = "neuroPi3.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick4":
     PORT = 9993
+    HOST = "neuroPi4.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "test-rig":
-    PORT = 9991
+    PORT = 50007
     doTransmitCodesToBlackrock = False
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
     
-HOST = "192.168.1.28"
 laserParamCode = 'sendLaserParams'
 lastSendTime = 0
 nCodesSent = 0
@@ -199,18 +202,7 @@ def computeLaserPowerTrialLaser(doDirTuningMapping=False):
         pulsePeriod = inD['tTrialLaserOnTimeMs'] + inD['tTrialLaserOffTimeMs']
 
     outD = {
-        'pulsePowerMw': float(inD['tTrialLaserPowerMw']),
-        'offPowerMw': float(inD['laserOffPowerMw']),
-        'doLinearRamp': int(0),
-        'doPulseTrain': int(1),
-        'pulseLengthMs': float(pulseLen), 
-        'pulsePeriodMs': float(pulsePeriod),
-        'trainRandomType': None, # not supported unless random
-        'trainNPulses': None,  # not supported unless random
-        'trainLengthMs': float(thisTrLen), 
-        'trainRampUpMs' : float(inD['laserTransitionRampUpDownMs']),
-        'trainRampDownMs' : float(inD['laserTransitionRampUpDownMs']),
-        'trainRampUpDownDoExp': float(inD['laserTransitionDoExpRamp']),
+        float(inD['tTrialLaserPowerMw'])
         }
     return outD
         
@@ -421,17 +413,17 @@ def sendObjectToLaser(tO, portNum):
     """Returns: number of bytes sent"""
     # Create a socket (SOCK_STREAM means a TCP socket)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(10) # no more than 100ms slop
-    
+    sock.connect((HOST, PORT))
+    sock.settimeout(10) 
+    inD = state.variableCurrValues
+    data = inD['tTrialLaserPowerMw']
+    print('%d mW Requested') %data
+    data = p.dumps(data)
+    #data = p.dumps(tO)
+    sock.sendall(data)
+    time.sleep(1)
     # compute length etc
-    data = p.dumps(tO)
-    pLen = struct.pack('>L', len(data))
-
-    # Connect to server and send data
-    sock.connect((HOST, portNum))
-    sock.send(pLen)  # first 4-byte length 
-    sock.send(data)  # then pickled data
-
+    #pLen = struct.pack('>L', len(data))
     # Receive data from the server and shut down
     #received = sock.recv(1024)
     sock.close()
@@ -440,38 +432,12 @@ def sendObjectToLaser(tO, portNum):
 
 def sendLaserParams(sendDict):
     inD = state.variableCurrValues
-
-    if inD['doBlock2SecondLaser']==1 and inD['doBlock2']==1 and inD['tBlock2TrialNumber'] == 1:
-        # block2 on and this is a block2 trial, use the second laser
-        tPortNum = PORT2  # global
-    else:
-        tPortNum = PORT  # global, default value
-
+    tPortNum = PORT  # global, default value
     tLen = sendObjectToLaser(sendDict, tPortNum)
-
     d = sendDict
-    if d['doLinearRamp']:
-        shapeStr = ('ramp %d + %d const ms long'
-                    % (d['rampLengthMs'], d['rampExtraConstantLengthMs']) )
-        udStr = d['rampRampDownMs']
-    elif d['doPulseTrain']:
-        if type(d['pulsePeriodMs']) == str:
-            periodStr = 'period %s' % d['pulsePeriodMs']
-        else:
-             periodStr = 'period %d ms' % d['pulsePeriodMs']   
-        shapeStr = ('train len %d, pulse %d, %s'
-                    % (d['trainLengthMs'], d['pulseLengthMs'], periodStr))
-        udStr = d['trainRampUpMs']  # same as down for now
-    else:
-        raise RuntimeError, 'Neither ramp nor train set'
 
     
-    print ("Sent %db: power %7g (off %6g)mW, up/down %dms, %s"
-           % (tLen, 
-              chop(sendDict['pulsePowerMw'],2),
-              chop(sendDict['offPowerMw'],2),
-              chop(udStr,2), # same as others now
-              shapeStr))
+    print ("Sent LED Parameters to Pi")
     sys.stdout.flush()
 
 

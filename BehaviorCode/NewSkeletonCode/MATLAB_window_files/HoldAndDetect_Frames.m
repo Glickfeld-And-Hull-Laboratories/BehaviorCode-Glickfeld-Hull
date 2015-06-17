@@ -147,6 +147,15 @@ catch
     input.leverValues{trN} = NaN;
 end
 
+%% Adds lickometer tracking for counter2
+try
+    input.lickometerTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'counter2', 'all', [], 1);
+    input.lickometerValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'counter2', 'all', 1) ;
+catch
+    input.lickometerTimesUs{trN} = NaN;
+    input.lickometerValues{trN} = NaN;
+end
+
 if input.doLED==1
     input.LEDTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'laserTriggerFIO', 'all', [], 1);
 else

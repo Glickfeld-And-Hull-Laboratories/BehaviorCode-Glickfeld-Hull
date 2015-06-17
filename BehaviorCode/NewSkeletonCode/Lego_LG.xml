@@ -21,6 +21,7 @@
       <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="150" type="integer" persistant="1" groups="Task Control"/>
+      <variable tag="doShortStimOn" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
       <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
 
       <variable tag="doFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Feedback Motion"/>
@@ -632,13 +633,6 @@
         <task_system_state tag="TrialStart" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="report" message="**** Trial Starting: playing tone and beginning delay"></action>
-          <action type="if" condition="tTrialLaserPowerMw > 0">
-              <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
-
-              <action type="assignment" variable="FIO2" value="0"></action> 
-              <action type="report" message="********* SENDING LASER TRIGGER *********"/>
-              <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
-            </action>
           <action type="play_sound" sound="startSound"/>
           <action type="start_timer" timer="delayTimerMs" timebase="" duration="delayTimeMs" duration_units="ms"/>
 
@@ -648,6 +642,12 @@
 
         <task_system_state tag="StimOn" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="if" condition="tTrialLaserPowerMw > 0">
+              <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
+              <action type="assignment" variable="FIO2" value="1"></action> 
+              <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+              <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+          </action>
           <action type="report" message="*****-=STIMULI ON=-*****"></action>
           <action type="assignment" variable="stimulusOn" value="1"/>
           <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
@@ -674,7 +674,12 @@
         <task_system_state tag="SetReact" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs-tooFastTimeMs" duration_units="ms"/>
-
+          <action type="if" condition="doShortStimOn==1">
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractorGrating"></action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="targetGrating"></action>
+            <action tag="Update Display" type="update_stimulus_display"></action>
+            <action type="assignment" variable="FIO2" value="0"></action> 
+          </action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="direct" target="ZeroQuad"></transition>
         </task_system_state>
@@ -713,6 +718,7 @@
         </task_system_state>
 
         <task_system_state tag="Reward" interruptible="YES">
+          <action type="assignment" variable="FIO2" value="0"></action> 
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
@@ -781,6 +787,7 @@
         <task_system_state tag="Incorrect" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+          <action type="assignment" variable="FIO2" value="0"></action> 
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 
           <action type="if" condition="doBlackAndWhite==1">
@@ -819,6 +826,7 @@
 
         <task_system_state tag="Ignore" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" variable="FIO2" value="0"></action> 
           <action type="dequeue_stimulus" stimulus="targetGrating"></action>
           <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 
