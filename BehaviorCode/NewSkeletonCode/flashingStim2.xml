@@ -394,6 +394,7 @@
 
           <!-- reset selection var -->
           <action type="reset_selection" selection="svStimNumber"></action>
+          <action type="reset_selection" selection="svCatchNumber"></action>
           <action type="assignment" variable="tNStimAccepted" value="0"></action> 
         </action>
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
@@ -1065,7 +1066,7 @@
             <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
 
             <!-- debug -->
-            <action type="report" message="tNStimAccepted == $tNStimAccepted, svStimN is $svStimNumber, tb2TrN is $tBlock2TrialNumber "/>
+            <action type="report" message="tNStimAccepted == $tNStimAccepted, svStimN is $svStimNumber, tb2TrN is $tBlock2TrialNumber, svCatchN is $svCatchNumber "/>
 
             <!-- compute ITI time -->
             <!-- initialize with a const value -->
@@ -1378,6 +1379,7 @@
             <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
             <!-- reject stim selection -->
             <action type="reject_selections" selection="svStimNumber"></action>
+            <action type="reject_selections" selection="svCatchNumber"></action>
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
@@ -1427,15 +1429,19 @@
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="accept_selections" selection="svCatchNumber"></action>
             <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
             <!-- update selection variable -->
             <action type="if" condition="tNStimAccepted >= 80">
               <action type="reset_selection" selection="svStimNumber"/>
+              <action type="reset_selection" selection="svCatchNumber"/>
               <action type="assignment" variable="tNStimAccepted" value="0"></action>
             </action>
             <action type="if" condition="tNStimAccepted &lt; 80">
               <action type="next_selection" selection="svStimNumber"/>
+              <action type="next_selection" selection="svCatchNumber"/>
             </action>
+
 
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
@@ -1476,14 +1482,17 @@
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="accept_selections" selection="svCatchNumber"></action>
             <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
             <!-- update selection variable -->
             <action type="if" condition="tNStimAccepted >= 80">
               <action type="reset_selection" selection="svStimNumber"/>
+              <action type="reset_selection" selection="svCatchNumber"/>
               <action type="assignment" variable="tNStimAccepted" value="0"></action>
             </action>
             <action type="if" condition="tNStimAccepted &lt; 80">
               <action type="next_selection" selection="svStimNumber"/>
+              <action type="next_selection" selection="svCatchNumber"/>
             </action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
