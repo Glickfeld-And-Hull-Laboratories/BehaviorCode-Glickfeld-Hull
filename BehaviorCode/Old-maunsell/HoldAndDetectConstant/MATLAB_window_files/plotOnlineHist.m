@@ -126,7 +126,7 @@ end
 %stimFrames = cellfun(@length,input.announceStimulusTimes.driftStimulus)
 
 % misc error checking
-assert(~input.doLaserStim || all(tLaserDoLinearRampV | tLaserDoPulseTrainV));
+%assert(~input.doLaserStim || all(tLaserDoLinearRampV | tLaserDoPulseTrainV));
 
 % figure out block2 stim levels
 showBlock2 = input.doBlock2;
