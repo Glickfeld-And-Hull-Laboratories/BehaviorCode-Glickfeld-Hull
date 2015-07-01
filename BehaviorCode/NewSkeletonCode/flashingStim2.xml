@@ -1377,9 +1377,22 @@
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
-            <!-- reject stim selection -->
-            <action type="reject_selections" selection="svStimNumber"></action>
-            <action type="reject_selections" selection="svCatchNumber"></action>
+            
+            <!-- accept stim selection -->
+            <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="accept_selections" selection="svCatchNumber"></action>
+            <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+            <!-- update selection variable -->
+            <action type="if" condition="tNStimAccepted >= 80">
+              <action type="reset_selection" selection="svStimNumber"/>
+              <action type="reset_selection" selection="svCatchNumber"/>
+              <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            </action>
+            <action type="if" condition="tNStimAccepted &lt; 80">
+              <action type="next_selection" selection="svStimNumber"/>
+              <action type="next_selection" selection="svCatchNumber"/>
+            </action>
+
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
