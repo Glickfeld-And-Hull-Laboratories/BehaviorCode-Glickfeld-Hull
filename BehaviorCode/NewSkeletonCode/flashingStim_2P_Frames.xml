@@ -45,6 +45,7 @@
       <variable tag="doLongCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
 
       <variable tag="doShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
+      <variable tag="doShortCatchReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
       <variable tag="catchTrPerB2Level1" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
       <variable tag="catchTrPerB2Level2" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
       <variable tag="catchTrPerB2Level3" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
@@ -1238,6 +1239,7 @@
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If rewarding catch trials" condition="doShortCatchReward &amp;&amp; tFalseAlarm" target="SingleReward"></transition>
             <transition type="conditional" tag="Early timeout elapsed" condition="counter &gt;= (cLeverUp + nFramesEarlyTimeout)" target="EndTrial"></transition>
           </task_system_state>
 
