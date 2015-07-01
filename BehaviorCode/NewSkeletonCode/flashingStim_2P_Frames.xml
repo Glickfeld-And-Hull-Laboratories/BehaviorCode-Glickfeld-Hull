@@ -1000,10 +1000,24 @@
                       message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
             </action>
 			<action type="report" message="cLeverUp is $cLeverUp, counter is $counter, First trial is $isFirstTrial"></action>
+            
+            <action type="assignment" tag="Log counter" variable="cItiStart" value="counter"></action>
+            <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
+            <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
+            <action type="if" condition="doLeverSolenoidAllTrials">
+                <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
+                <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+                <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+            </action>
+            <action type="if" condition="!doLeverSolenoidAllTrials">
+                <action type="assignment" variable="FIO2" value="0"></action>
+                <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
+            </action>
+            <action type="report" message="In ITI, waiting $tItiWaitFrames, then wait for press"></action>
 			
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="if first trial and counter = 20" condition="isFirstTrial &amp;&amp; counter > 19" target="InterTrialInterval"></transition>
-            <transition type="conditional" tag="if not first trial, counter still going" condition="!isFirstTrial &amp;&amp; counter > cLeverUp" target="InterTrialInterval"></transition>
+            <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="WaitForLeverPress"></transition>
+            <transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; !isFirstTrial &amp;&amp; counter > cLeverUp" target="WaitForLeverPress"></transition>
             <transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cLeverUp" target="ExitTask"></transition>
           </task_system_state>
           
@@ -1013,30 +1027,9 @@
                     message="Not receiving triggers from microscope"/>
           </task_system_state>
                     
-          <task_system_state tag="InterTrialInterval" interruptible="YES">
-            <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
-             <action type="assignment" tag="Log counter" variable="cItiStart" value="counter"></action>
-             <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
-            <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
-            <action type="if" condition="doLeverSolenoidAllTrials">
-              <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
-              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
-              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
-            </action>
-            <action type="if" condition="!doLeverSolenoidAllTrials">
-              <action type="assignment" variable="FIO2" value="0"></action>
-              <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
-            </action>
-            <action type="report" message="In ITI, waiting $tItiWaitFrames, then wait for press"></action>                                    
-
-            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="WaitForLeverPress" condition="counter &gt;= (cItiStart + tItiWaitFrames)" target="WaitForLeverPress"></transition>
-          </task_system_state>
-
           <task_system_state tag="WaitForLeverPress" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="report" message="ITI done, waiting for press"></action> 
+
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
               <!-- Lower solenoid at beginning of trial for any solenoid -->
               <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
