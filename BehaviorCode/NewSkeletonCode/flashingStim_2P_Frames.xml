@@ -63,6 +63,9 @@
       <variable tag="soundIncorrectAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundRewardAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
 
+      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
@@ -163,6 +166,9 @@
       <variable tag="block2GratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
 
+      <variable tag="block2SoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Sounds"/>
+      <variable tag="block2SoundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Sounds"/>
+
       <variable tag="block2DoRampVTrain" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2RvtTrainPowerMaxMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2RvtTrainStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
@@ -222,8 +228,11 @@
       <variable tag="lastActualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tempMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tTempStimOddsCatch" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tSvStimNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tSvCatchNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tCatchNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tLaserDoLinearRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tLaserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -236,6 +245,8 @@
       <variable tag="tGratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tSoundMaxTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tSoundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -251,9 +262,13 @@
       <variable tag="tSoundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tSoundCatchAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
-	  <variable tag="tCatchGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+	    <variable tag="tCatchGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tCatchGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tDoCatchContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoCatchOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoCatchAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       
       <variable tag="tDoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -261,8 +276,6 @@
       <variable tag="tDoAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-      <variable tag="tDoCatchContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-      <variable tag="tDoCatchOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
       <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
 
@@ -317,6 +330,8 @@
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
                 selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
+      <variable type="selection" tag="svCatchNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
+                selection="random_without_replacement" nsamples="80" sampling_method="samples"/>          
     </folder>
 
   </variables>
@@ -325,6 +340,7 @@
     <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBasePressAmplitude"></sound>
     <sound tag="cueSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundCueAmplitude"></sound>
     <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBaseAmplitude"></sound>
+    <sound tag="catchSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundCatchAmplitude"></sound>
     <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundTargetAmplitude"></sound>
     <sound tag="incorrectSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="soundIncorrectAmplitude"></sound>
     <sound tag="rewardSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/shortCorrect.wav" amplitude="soundRewardAmplitude"></sound>
@@ -373,6 +389,7 @@
 		      <action type="assignment" variable="isFirstTrial" value="1"></action>
           <!-- reset selection var -->
           <action type="reset_selection" selection="svStimNumber"></action>
+          <action type="reset_selection" selection="svCatchNumber"></action>
           <action type="assignment" variable="tNStimAccepted" value="0"></action> 
         </action>
 
@@ -400,8 +417,14 @@
             <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>  
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
             <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(minCyclesOn-1, nCyclesOn)"/>
+            
+            <action type="if" condition="doShortCatchTrial">
+              <action type="assert" condition="minCyclesOn &gt; 2" stop_on_failure="1"
+                      message="When doShortCatchTrial, minCyclesOn must be greater than 2"/>
+            </action>
+
             <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == maxCyclesOn">
-					<action type="assignment" variable="isCatchTrial" value="1"/> 
+					   <action type="assignment" variable="isCatchTrial" value="1"/> 
             </action>
 
             <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
@@ -450,30 +473,25 @@
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))"> 
               <action type="assignment" variable="tStimulusNumber" value="0"/> 
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level1-1)/2))"/>
-              	<action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level1)"/>
-        		</action>
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level1-1)/2))"/>  
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>
               <action type="if" condition="!doBlock2">
-                <action type="assignment" variable="tBlock2TrialNumber" value="0"/> 
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>
             </action>
-            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>        
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
             <!-- level 1b: b2 sep odds on -->                         
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level1))"> 
                 <action type="assignment" variable="tStimulusNumber" value="0"/> 
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level1)"/>
-        		</action>         
+                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>        
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level1"/>
             </action>
+
 
 
             <!-- level 2 -->                         
@@ -481,9 +499,6 @@
               <action type="assignment" variable="tStimulusNumber" value="1"/> 
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level2-1)/2))"/>
-              	<action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level2)"/>
-        		</action>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -497,10 +512,7 @@
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level2))"> 
                 <action type="assignment" variable="tStimulusNumber" value="1"/> 
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level2)"/>
-        		</action>         
+                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level2"/>
             </action>
@@ -511,9 +523,6 @@
               <action type="assignment" variable="tStimulusNumber" value="2"/> 
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level3-1)/2))"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level3)"/>
-        		</action>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -528,9 +537,6 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level3))"> 
                 <action type="assignment" variable="tStimulusNumber" value="2"/> 
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level3)"/>
-        		</action>         
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level3"/>
             </action>
@@ -541,9 +547,6 @@
               <action type="assignment" variable="tStimulusNumber" value="3"/> 
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level4-1)/2))"/>
-              	<action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level4)"/>
-        		</action>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -557,10 +560,7 @@
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level4))"> 
                 <action type="assignment" variable="tStimulusNumber" value="3"/> 
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level4)"/>
-        		</action>         
+                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>        
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level4"/>
             </action>
@@ -571,9 +571,6 @@
               <action type="assignment" variable="tStimulusNumber" value="4"/> 
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level5-1)/2))"/>
-              	<action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level5)"/>
-        		</action>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -587,10 +584,7 @@
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level5))"> 
                 <action type="assignment" variable="tStimulusNumber" value="4"/> 
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level5)"/>
-        		</action>         
+                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>        
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level5"/>
             </action>
@@ -601,9 +595,6 @@
               <action type="assignment" variable="tStimulusNumber" value="5"/> 
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level6-1)/2))"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level6)"/>
-        		</action>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -617,10 +608,7 @@
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level6))"> 
                 <action type="assignment" variable="tStimulusNumber" value="5"/> 
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level6)"/>
-        		</action>         
+                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>        
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level6"/>
             </action>
@@ -631,9 +619,6 @@
               <action type="assignment" variable="tStimulusNumber" value="6"/> 
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level7-1)/2))"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level7)"/>
-        		</action>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -647,10 +632,7 @@
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level7))"> 
                 <action type="assignment" variable="tStimulusNumber" value="6"/> 
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level7)"/>
-        		</action>         
+                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>        
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level7"/>
             </action>
@@ -661,9 +643,6 @@
               <action type="assignment" variable="tStimulusNumber" value="7"/> 
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level8-1)/2))"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level8)"/>
-        		</action>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -677,17 +656,58 @@
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level8))"> 
                 <action type="assignment" variable="tStimulusNumber" value="7"/> 
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-                <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-              		<action type="assignment" variable="tShortCatchTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt; (int)catchTrPerB2Level8)"/>
-        		</action>         
+                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>        
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level8"/>
             </action>
 
+            <!-- short catch -->
+            <action type="assignment" variable="tSvCatchNumber" value="svCatchNumber"/>  <!-- choose a value from selection var, 0-origin -->
+            <action type="assignment" variable="tTempStimOddsCatch" value="0"/>  <!-- this variable exists only for code clarity below -->
 
-
-
+            <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
+              <action type="assignment" variable="tShortCatchTrial" value="(int)(tSvCatchNumber &lt; (catchTrPerB2Level1 + catchTrPerB2Level2 + catchTrPerB2Level3 + catchTrPerB2Level4 + catchTrPerB2Level5 + catchTrPerB2Level6 + catchTrPerB2Level7 + catchTrPerB2Level8))"/>
+              <!-- level1 -->  
+              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level1))"> 
+                <action type="assignment" variable="tCatchNumber" value="0"/>
+              </action>
+              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level1"/>
+              <!-- level2 -->  
+              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level2))"> 
+                <action type="assignment" variable="tCatchNumber" value="1"/>
+              </action>
+              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level2"/>
+              <!-- level3 -->  
+              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level3))"> 
+                <action type="assignment" variable="tCatchNumber" value="2"/>
+              </action>
+              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level3"/>
+              <!-- level4 -->  
+              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level4))"> 
+                <action type="assignment" variable="tCatchNumber" value="3"/>
+              </action>
+              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level4"/>
+              <!-- level5 -->  
+              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level5))"> 
+                <action type="assignment" variable="tCatchNumber" value="4"/>
+              </action>
+              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level5"/>
+              <!-- level6 -->  
+              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level6))"> 
+                <action type="assignment" variable="tCatchNumber" value="5"/>
+              </action>
+              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level6"/>
+              <!-- level7 -->  
+              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level7))"> 
+                <action type="assignment" variable="tCatchNumber" value="6"/>
+              </action>
+              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level7"/>
+              <!-- level8 -->  
+              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level8))"> 
+                <action type="assignment" variable="tCatchNumber" value="7"/>
+              </action>
+              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level8"/>
+            </action>
 
             <!-- error checking                -->
             <action type="assert" stop_on_failure="1"  
@@ -721,7 +741,9 @@
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
-                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>                       
+                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                         
                   <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                         
                   <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                             
                   <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                       
@@ -765,7 +787,9 @@
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
-                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>                       
+                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action> 
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                        
                   <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                         
                   <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                             
                   <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                       
@@ -786,7 +810,9 @@
                   <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="block2GratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="block2GratingMaxDirectionStepDeg"></action>
-                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>                        
+                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="block2SoundTargetAmplitude"></action>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>                        
                   <action type="assignment" variable="tGratingElevationDeg" value="block2GratingElevationDeg"></action>                           
                   <action type="assignment" variable="tGratingAzimuthDeg" value="block2GratingAzimuthDeg"></action>                       
                   <action type="assignment" variable="tGratingHeightDeg" value="block2GratingHeightDeg"></action>                         
@@ -800,12 +826,21 @@
                   <action type="assignment" variable="tDoAuditoryStim" value="block2DoAuditoryStim"/>
                   <action type="assignment" variable="tDoAuditoryCue" value="block2DoAuditoryCue"/>
                   <action type="if" condition="tShortCatchTrial == 1">
-                  	<action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
-                  	<action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
-                  	<action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
-                  	<action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
-                  	<action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
-                  	<action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                    <action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
+                    <action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
+                    <action type="assignment" variable="tDoCatchAuditoryDetect" value="doAuditoryDetect"/>
+                    <action type="if" condition="tDoCatchOriDetect == 1">
+                      <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                      <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                    </action>
+                    <action type="if" condition="tDoCatchContrastDetect == 1">  
+                      <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                      <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                    </action>
+                    <action type="if" condition="tDoCatchAuditoryDetect == 1">
+                      <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
+                      <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                        
+                    </action>
                   </action>
                 </action>
 
@@ -827,6 +862,8 @@
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
                   <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
+                    <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>
                   <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
                   <action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
@@ -840,6 +877,8 @@
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="block2GratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="block2GratingMaxDirectionStepDeg"></action>
                   <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="block2SoundTargetAmplitude"></action>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>
                 </action>
 
                 <!-- in both cases -->                        
@@ -902,17 +941,24 @@
               </action>
             </action>
 			
-			<action type="if" condition="tShortCatchTrial">
-				<action type="if" condition="tDoCatchOriDetect">
-					<action type="assignment" variable="tCatchGratingDirectionDeg" 
-                        value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action>
-                    <action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
-              	</action>
-				<action type="if" condition="tDoCatchContrastDetect">
-              		<action type="assignment" variable="tCatchGratingContrast" 
-                    	value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> 
-                	<action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
-              	</action>
+			      <action type="if" condition="tShortCatchTrial">
+              <action type="if" condition="tDoCatchOriDetect">
+                <action type="assignment" variable="tCatchGratingDirectionDeg" 
+                        value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tCatchNumber/tGratingDirectionStepsPerOctave)))"></action>
+                <action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
+                <action type="assignment" variable="tSoundCatchAmplitude" value="0"/>
+              </action>
+              <action type="if" condition="tDoCatchContrastDetect">
+                <action type="assignment" variable="tCatchGratingContrast" 
+                      value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tCatchNumber/tGratingContrastStepsPerOctave)))"></action> 
+                <action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                <action type="assignment" variable="tSoundCatchAmplitude" value="0"/>
+              </action>
+              <action type="if" condition="tDoCatchAuditoryDetect">
+                <action type="assignment" variable="tSoundCatchAmplitude" value="tSoundMaxTargetAmplitude / (pow(2, tCatchNumber/tSoundTargetStepsPerOctave))"></action>
+                <action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
+                <action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+              </action>   
             </action>
               	
             <action type="if" condition="tDoVisualStim == 0">
@@ -929,7 +975,8 @@
               <action type="assignment" variable="tSoundBaseAmplitude" value="soundBaseAmplitude"/> 
               <action type="assignment" variable="tSoundBasePressAmplitude" value="soundBasePressAmplitude"/> 
               <action type="if" condition="tDoAuditoryDetect">     
-                <action type="assignment" variable="tSoundTargetAmplitude" value="soundTargetAmplitude"/>
+                <action type="assignment" variable="tSoundTargetAmplitude" 
+                  value="tSoundMaxTargetAmplitude / (pow(2, tStimulusNumber/tSoundTargetStepsPerOctave))"></action>
               </action>
               <action type="if" condition="!tDoAuditoryDetect">      
                 <action type="assignment" variable="tSoundTargetAmplitude" value="0"/>
@@ -969,7 +1016,7 @@
             <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
 
             <!-- debug -->
-            <action type="report" message="tNStimAccepted == $tNStimAccepted, svStimN is $svStimNumber, tb2TrN is $tBlock2TrialNumber "/>
+            <action type="report" message="tNStimAccepted == $tNStimAccepted, svStimN is $svStimNumber, tb2TrN is $tBlock2TrialNumber, svCatchN is $svCatchNumber "/>
 
             <!-- compute ITI time -->
             <!-- initialize with a const value -->
@@ -1231,8 +1278,22 @@
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
-            <!-- reject stim selection -->
-            <action type="reject_selections" selection="svStimNumber"></action>
+            
+            <!-- accept stim selection -->
+            <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="accept_selections" selection="svCatchNumber"></action>
+            <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+            <!-- update selection variable -->
+            <action type="if" condition="tNStimAccepted >= 80">
+              <action type="reset_selection" selection="svStimNumber"/>
+              <action type="reset_selection" selection="svCatchNumber"/>
+              <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            </action>
+            <action type="if" condition="tNStimAccepted &lt; 80">
+              <action type="next_selection" selection="svStimNumber"/>
+              <action type="next_selection" selection="svCatchNumber"/>
+            </action>
+            
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
               <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
@@ -1264,14 +1325,17 @@
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="accept_selections" selection="svCatchNumber"></action>
             <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
             <!-- update selection variable -->
             <action type="if" condition="tNStimAccepted >= 80">
               <action type="reset_selection" selection="svStimNumber"/>
+              <action type="reset_selection" selection="svCatchNumber"/>
               <action type="assignment" variable="tNStimAccepted" value="0"></action>
             </action>
             <action type="if" condition="tNStimAccepted &lt; 80">
               <action type="next_selection" selection="svStimNumber"/>
+              <action type="next_selection" selection="svCatchNumber"/>
             </action>
 
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
@@ -1297,15 +1361,19 @@
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="accept_selections" selection="svCatchNumber"></action>
             <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
             <!-- update selection variable -->
             <action type="if" condition="tNStimAccepted >= 80">
               <action type="reset_selection" selection="svStimNumber"/>
+              <action type="reset_selection" selection="svCatchNumber"/>
               <action type="assignment" variable="tNStimAccepted" value="0"></action>
             </action>
             <action type="if" condition="tNStimAccepted &lt; 80">
               <action type="next_selection" selection="svStimNumber"/>
+              <action type="next_selection" selection="svCatchNumber"/>
             </action>
+
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success"></action>
