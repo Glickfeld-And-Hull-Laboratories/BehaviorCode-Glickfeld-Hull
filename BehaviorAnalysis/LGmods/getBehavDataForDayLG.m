@@ -249,8 +249,10 @@ if ~isempty(uo.WhichTrials)
 
     try  % use direct indexing to figure out if any indices are invalid
         trialOutcomeCell = trialOutcomeCell(desIx);
-        leftTrials = leftTrials(desIx);
-        rightTrials = rightTrials(desIx);
+        if outS.is2AFC
+            leftTrials = leftTrials(desIx);
+            rightTrials = rightTrials(desIx);
+        end
     catch
         nTrials = length(trialOutcomeCell);
         if max(uo.WhichTrials) > nTrials
