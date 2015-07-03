@@ -77,7 +77,6 @@ exptSetupBridge;
 trN = input.trialSinceReset;
 
 %% process reaction times for this trial
-stimOnUs = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
 
 %trialStartUs = mwGetEventTime(eventsTrial, ds.event_codec, 'trialStart', 1);
 leverDownUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 1, 1);
@@ -145,6 +144,13 @@ try
 catch
     input.leverTimesUs{trN} = NaN;
     input.leverValues{trN} = NaN;
+end
+
+%% LG adds to keep track of stimulus change time
+try
+    input.stimOnUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'stimulusOn', 1);
+catch
+    input.stimOnUs{trN} = NaN;
 end
 
 %% Adds lickometer tracking for counter2
