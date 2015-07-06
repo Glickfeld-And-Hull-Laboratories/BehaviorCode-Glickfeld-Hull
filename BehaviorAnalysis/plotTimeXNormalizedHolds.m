@@ -1,4 +1,10 @@
-addpath('C:\Users\andrew\Documents\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis');
+if ispc,
+    disp('I AM A PC')
+    addpath('C:\Users\jake\Documents\Repositories\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis\');
+elseif isunix,
+    disp('I AM A MAC OR LINUX COMPUTER')
+    addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
+end
 % Data Path Formatting
 global dataStru
 dataStru = struct;
@@ -7,7 +13,7 @@ starts = {};
 tooFasts = {};
 
 disp('Loading data from MWorks Data folder...')
-dataPath = 'C:\Users\andrew\Desktop\fixedData\500';
+dataPath = 'C:\Users\jake\Desktop\AnalysisFolder\temp';
 dirListing = dir(dataPath);
 fileNames= {dirListing.name};
     

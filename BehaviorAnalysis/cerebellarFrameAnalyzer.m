@@ -235,6 +235,7 @@ end
 
  
 %% creating matrices for puffs while running and puffs while still
+
 puffRun = and(runMat,dataStruct.stimOnIx);
 puffStill = and(stillMat, dataStruct.stimOnIx);
 dataStruct.puffRun = puffRun;

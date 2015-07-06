@@ -2,10 +2,16 @@ function [x] = plotGlickfeldPerformance(subjMat)
 % Rewritten Starting Dec 2014 to automatically detect experiment type and load all dates in
 % the Data folder for a given mouse.
 global dataStruct
-addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
+if ispc,
+    disp('I AM A PC')
+    addpath('C:\Users\jake\Documents\Repositories\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis\');
+elseif isunix,
+    disp('I AM A MAC OR LINUX COMPUTER')
+    addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
+end
 % Data Path Formatting
 disp('Loading data from MWorks Data folder...')
-dataPath = '~/Desktop/Data/';
+dataPath = 'C:\Users\jake\TempData\BxDatabase';
 dirListing = dir(dataPath);
 fileNames= {dirListing.name};
 nSubjs= length(subjMat);
@@ -116,7 +122,7 @@ for i=subjMat,
     set(gcf, 'Name', fName);
     
     
-    sName = strcat('~/Desktop/', num2str(i),'-', datestr(now, 'yymmdd'), '.pdf');
+    sName = strcat('C:\Users\jake\TempData\', num2str(i),'-', datestr(now, 'yymmdd'), '.pdf');
     epParams = { gcf, sName, ...
              'FileFormat', 'pdf', ...
              'Size', [12 12], ...

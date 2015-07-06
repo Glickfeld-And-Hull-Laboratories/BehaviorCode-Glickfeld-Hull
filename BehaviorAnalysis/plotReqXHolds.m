@@ -1,6 +1,13 @@
 %function [ds] = plotReqXHolds( ds )
 % Used to plot x = hold times y = required hold time when input is a
 % behavior structure for HADC8.xml
+if ispc,
+    disp('I AM A PC')
+    addpath('C:\Users\jake\Documents\Repositories\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis\');
+elseif isunix,
+    disp('I AM A MAC OR LINUX COMPUTER')
+    addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
+end
 disp(isfield(ds, 'randReqHoldMaxMs'))
 if isfield(ds, 'randReqHoldMaxMs'),
     hts = cell2mat_padded(ds.holdTimesMs);
@@ -43,7 +50,7 @@ if isfield(ds, 'randReqHoldMaxMs'),
     xlabel('Required Hold Time (ms)');
     grid on
     title(ds.savedDataName(40:end));
-    outPath = 'C:\Users\andrew\Desktop\HoldXReq\';
+    outPath = 'C:\Users\jake\TempData\';
     fName = strcat('reqXholds2-', ds.savedDataName(40:55), '.pdf')
     fileName = strcat(outPath, fName);
     exportfig_print(gcf, fileName, 'FileFormat', 'pdf', ...

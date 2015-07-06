@@ -1,7 +1,7 @@
 % function [dataStruct] = puffNRun(folder)
-pathName = 'Z:\Data\WidefieldImaging\GCaMP\150219_img21_6';
-imgName = [pathName '\150219_img21_6_MMStack.ome'];
-input = load([pathName '\data-img21-150219-1704']);
+pathName = 'Z:\Data\WidefieldImaging\GCaMP\150409_img22_1';
+imgName = [pathName '\150409_img22_1_MMStack.ome'];
+input = load([pathName '\data-img22-150409-1621']);
 if isfield(input,'input'),
     input = input.input;
 end
@@ -33,6 +33,7 @@ for i = 1:input.stopAfterNTrials
 end
 %%
 cerebellarFrameAnalyzer;
+
 %dataStruct.cameraFrameTimes = get_frame_time_by_movie_info(ds)
 %%
 sum(dataStruct.puffRun)
@@ -47,7 +48,7 @@ stimOns = find(dataStruct.stimOnIx);
 %plot average fluoresence of each timepoint in a trial
 for i = 1:length(stimOns);
     stim = stimOns(i);
-    frameBeg = stim-frameWindow;
+    frameBeg = stim-frameWindow;   
     frameEnd = stim+frameWindow;
     frames(i,:) = dataStruct.avgF(frameBeg:frameEnd);
 end
