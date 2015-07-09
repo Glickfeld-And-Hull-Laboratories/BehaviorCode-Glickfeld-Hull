@@ -23,7 +23,8 @@ experimentXmlTrialIds = {
     'ChRMappingTwelve' :  12, 
     'ChRMappingTen' :  13, 
     'DualPress' :  14,
-    'Lego' : 15 }
+    'Lego' : 15, 
+    'VisStimRet' : 90}
 
 trialOutcomes = [ 
     'success', 

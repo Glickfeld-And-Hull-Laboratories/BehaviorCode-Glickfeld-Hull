@@ -7,7 +7,7 @@ def main():
     global sp
     global client
     global state  # ini
-    exptIdStr = 'HoldAndDetectConstant8'
+    exptIdStr = 'VisStimRet'
 
     try:
         state = ExptBase.initializeState(exptIdStr)

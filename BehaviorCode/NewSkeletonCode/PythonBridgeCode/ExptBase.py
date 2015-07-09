@@ -64,6 +64,10 @@ elif thisHostname == "hullglick4":
 elif thisHostname == "test-rig":
     PORT = 50007
     doTransmitCodesToBlackrock = False
+elif thisHostname == "test-rig-2":
+    PORT = 9994
+    HOST = "neuroPi5.local"
+    doTransmitCodesToBlackrock = False
 else:
     raise RuntimeError, 'Found unknown hostname: %s' % thisHostname
     
@@ -183,24 +187,6 @@ def computeLaserPowerHADC8():
 def computeLaserPowerTrialLaser(doDirTuningMapping=False):
     """as above"""
     inD = state.variableCurrValues
-
-    if not doDirTuningMapping:  # normal HandDC8 - use time of trial
-        if 'tTotalReqHoldTimeMs' not in inD:
-            thisTrLen = inD['delayTimeMs']+inD['reactionTimeMs']
-        else:
-            #totalTrLen = inD['fixedReqHoldTimeMs']+inD['randReqHoldMaxMs']+inD['reactTimeMs']
-            thisTrLen = inD['tTotalReqHoldTimeMs']+inD['reactTimeMs']  # minimize the time laser is on
-    else:  # dir tuning - use stimulus on time
-        thisTrLen = (inD['stimulusOnTimeMs'] + inD['postStimulusTimeMs'] \
-                     + (inD['itiTimeMs']-inD['laserOnTimeFromStartOfItiMs']))
-        
-    if inD['tTrialLaserOnTimeMs'] == 0 and inD['tTrialLaserOffTimeMs'] == 0:
-        pulseLen = thisTrLen
-        pulsePeriod = 0
-    else:
-        pulseLen = inD['tTrialLaserOnTimeMs']
-        pulsePeriod = inD['tTrialLaserOnTimeMs'] + inD['tTrialLaserOffTimeMs']
-
     outD = {
         float(inD['tTrialLaserPowerMw'])
         }
@@ -261,6 +247,7 @@ def cbSendDigitalWordSerial(evt):
 
 def cbSendLaserParams(evts):
     #print evts.data; sys.stdout.flush()
+    print('Received events')
     if evts.data == 1:
         # do only on true
         if (state.experimentXmlTrialId == cs.experimentXmlTrialIds['HoldAndDetectConstant5']
@@ -271,13 +258,19 @@ def cbSendLaserParams(evts):
                 or (state.variableCurrValues['trialLaserPowerMw'] > 0)):
                 laserOutDict = computeLaserPowerTrialLaser()
             else:
-                laserOutDict = computeLaserPowerHADC8()
+                laserOutDict = computeLaserPowerTrialLaser()
             sendLaserParams(laserOutDict)
 
         elif (state.experimentXmlTrialId == cs.experimentXmlTrialIds['DirTuningMapping']):
               if state.variableCurrValues['tTrialLaserPowerMw'] > 0:
                 # else: if power is zero, means no laser this trial, just skip
                 laserOutDict = computeLaserPowerTrialLaser(doDirTuningMapping=True)
+                sendLaserParams(laserOutDict)
+
+        elif (state.experimentXmlTrialId == cs.experimentXmlTrialIds['VisStimRet']):
+              #if state.variableCurrValues['tTrialLaserPowerMw'] > 0:
+                # else: if power is zero, means no laser this trial, just skip
+                laserOutDict = computeLaserPowerTrialLaser()
                 sendLaserParams(laserOutDict)
 
         elif (state.experimentXmlTrialId == cs.experimentXmlTrialIds['ChRMappingTwelve'])\
