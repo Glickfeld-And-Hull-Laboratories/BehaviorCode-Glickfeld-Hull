@@ -342,7 +342,7 @@
                 <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg + (gratingElevationStepDeg * (floor(tTempStim / (gratingAzimuthStepN * gratingDirectionStepN))))"/>
                 <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(((tTempStim) % (gratingAzimuthStepN * gratingDirectionStepN))/gratingDirectionStepN))"/>
                 <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim % gratingDirectionStepN))"/>
-                <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Direction is $tGratingDirectionDeg"/>
+                <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ;  $tGratingDirectionDeg"/>
               </action>
             </action> 
             <action type="if" condition="!doDirStim">
@@ -370,7 +370,7 @@
           <action type="if" condition="doSizeStim = 1">	
           	<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDiameterStepN"/>
             <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))"/>
-          	<action type="report" message="Direction is $tGratingDiameterDeg"/>
+          	<action type="report" message="Diameter is $tGratingDiameterDeg"/>
           </action>		
           <action type="if" condition="doSizeStim == 0">
 			  <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
@@ -405,7 +405,7 @@
           </action> 
           
           <!--Select direction -->
-          <action type="if" condition="doDirStim &amp;&amp; !doRetStim">
+          <action type="if" condition="(doDirStim == 1) &amp;&amp; !doMatrix">
           	<action type="if" condition="doMovingDots != 1">
             	<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDirectionStepN"/>
               <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim))"/>
@@ -424,7 +424,7 @@
           
           
           <!--Select contrast -->
-          <action type="if" condition="doConStim == 1">	
+          <action type="if" condition="!doMatrix &amp;&amp; doConStim == 1">	
           		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingContrastStepN"/>
               	<action type="assignment" variable="tGratingContrast" value= "gratingContrast * (pow(gratingContrastStepLog,(gratingContrastStepDir*(tTempStim))))"/>
               	<action type="report" message="Contrast is $tGratingContrast"/>
@@ -434,7 +434,7 @@
           </action>
           
           <!-- do Phase -->
-           <action type="if" condition="doPhaseStim = 1">  
+           <action type="if" condition="!doMatrix &amp;&amp; doPhaseStim = 1">  
             <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingStartingPhaseStepN"/>
             <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))"/>
             <action type="report" message="Starting phase is $tGratingStartingPhaseDeg"/>
@@ -444,7 +444,7 @@
           </action> 
 
           <!--Select speed- for moving dots only -->
-          <action type="if" condition="doDotsSpeedStim == 1">  
+          <action type="if" condition="!doMatrix &amp;&amp; doDotsSpeedStim == 1">  
               <action type="assignment" variable="tTempStim" value= "tStimulusNumber % dotSpeedStepN"/>
                 <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS * (pow(dotSpeedStepLog,(dotSpeedStepDir*(tTempStim))))"/>
                 <action type="report" message="Speed is $tDotSpeedDPS"/>
@@ -455,7 +455,7 @@
           </action>
 
           <!--Select LED power -->
-          <action type="if" condition="doLEDStim == 1">	
+          <action type="if" condition="!doMatrix &amp;&amp; doLEDStim == 1">	
           		<action type="assignment" variable="tTempStim" value= "tStimulusNumber % LEDPowerStepN"/>
               	<action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw + (LEDPowerStepMw * (tTempStim))"/>
               	<action type="report" message="LED Power is $tTrialLaserPowerMw"/>
@@ -533,7 +533,7 @@
             </action>
 	      	
 	      	<!-- Make LEDpower x Dir Matrix -->
-	      		<action type="if" condition="(doDirStim == 1) &amp;&amp; (doLEDStim) == 1">
+	      		<action type="if" condition="(doDirStim == 1) &amp;&amp; (doLEDStim == 1)">
           			<action type="assignment" variable="tTempStim" value= "tStimulusNumber % (LEDPowerStepN * gratingDirectionStepN)"/>
           			<action type="if" condition="tTempStim &lt; LEDPowerStepN">
               			<action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw + (LEDPowerStepMw * (tTempStim))"/>
@@ -547,6 +547,7 @@
           			</action>
           			<action type="assignment" variable="tGratingContrast" value= "gratingContrast"/>
 			  		<action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
+            <action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
               		<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
               		<action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
               		<action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
@@ -575,6 +576,10 @@
 
           <!-- Zero the LED port-->
           <action type="assignment" variable="FIO3" value="0"/>
+          <action type="if" condition="tTrialLaserPowerMw > 0">
+              <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
+              <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
+          </action>
       	
           <!-- initialize trial start/end times -->
           <action type="if" condition="tThisTrialStartTimeMs == -1">  
@@ -617,6 +622,7 @@
 
           <action type="if" condition="tTrialLaserPowerMw &gt; 0">
             <action type="assignment" variable="FIO3" value="1"/>
+            <action type="report" message="FIO3 is $FIO3"/>
           </action>
 
             <action type="if" condition="doMovingDots == 1">
