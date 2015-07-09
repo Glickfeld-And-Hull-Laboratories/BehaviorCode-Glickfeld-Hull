@@ -609,10 +609,13 @@ if ~showBlock2
     anystack(lH4, 'bottom');
 end
 
-if showBlock2       
+if showBlock2
+  if or(or(and(input.doOriDetect,input.block2DoOriDetect),and(input.doContrastDetect,input.block2DoContrastDetect)),and(input.doAuditoryDetect,input.block2DoAuditoryDetect))
+      block2Controlled = 1;
+  end
   b2T1Ns = find(block2Tr1Ix);
   b2T2Ns = find(block2Tr2Ix);
-  if ~or(doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
+  if block2Controlled
   	plot(smooth(double(successIx), ceil(nTrial/10), smoothType));
     lH = plot(smooth(double(successIx), nTrial, smoothType));
     set(lH, 'Color', 'r', ...
@@ -648,9 +651,12 @@ if showBlock2
       lH4 = plot(b2T1Ns, smooth(double(failureIx(block2Tr1Ix)), 75, smoothType));
       set([lH4], 'LineWidth', 2, 'LineStyle', '-.');
       set(lH4, 'Color', 0.8*[0 1 1]);
-      if input.block2DoAuditoryDetect
-        title('Visual stim responses')
-      elseif doOriAndContrastInterleaved
+      if input.doVisualStim
+          title('Visual stim responses')
+      elseif input.doAuditoryDetect
+        title('Auditory stim responses')
+      end
+      if doOriAndContrastInterleaved
         if input.doOriDetect
           title('Ori responses')
         elseif input.doContrastDetect
@@ -757,7 +763,7 @@ title(sprintf('Last 6 (sec): %s', mat2str(round(hSDiffsSec(fN:end)))));
 axH = subplot(spSz{:},5);
 hold on;
 if showBlock2
-if ~or(doOriAndContrastInterleaved,input.block2DoAuditoryDetect)
+if block2Controlled
     hSDiffsRealSec = diff(holdStarts)/1000;
     xs = 1:length(hSDiffsRealSec);
     pH1 = plot(xs, cumsum(hSDiffsRealSec)./60, '.-');
@@ -792,7 +798,10 @@ else
       set(lH4, 'Color', 0.8*[0 1 1]);
       if input.block2DoAuditoryDetect
         title('Auditory stim responses')
-      elseif doOriAndContrastInterleaved
+      elseif input.block2DoVisualStim
+        title('Visual stim responses')
+      end
+      if doOriAndContrastInterleaved
         if input.block2DoContrastDetect
           title('Contrast responses')
         elseif input.block2DoOriDetect
