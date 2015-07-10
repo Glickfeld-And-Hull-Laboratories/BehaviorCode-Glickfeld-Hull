@@ -434,7 +434,7 @@ if nCorr>0 && input.doTestRobot==0,
 
     lev = find(input.trPer80V>0)-1;
     if isfield(input, 'dGratingContrastDiff')
-      possDiffV = input.gratingMaxDiff ./ (2 .^ (lev./input.gratingContrastDiffSPO))+1;
+      possDiffV = double(input.gratingMaxDiff) ./ (2 .^ (lev./input.gratingContrastDiffSPO))+1;
       minX = min(possDiffV,[],2);
       maxX = max(possDiffV,[],2);
     else
@@ -583,7 +583,7 @@ if isfield(input, 'dGratingContrastDiff')
 end
 if input.gratingContrastDiffSPO > 10
   contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
-else
+elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
   contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 end
 
