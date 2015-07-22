@@ -38,6 +38,7 @@
       <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
       <variable tag="doPhaseStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
       <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
+      <variable tag="doDotsSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
       <variable tag="doLEDStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>     
 
 	  <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
@@ -91,13 +92,16 @@
       <variable tag="dotAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotContrast" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotFieldSizeDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="MovingDots"/>
-      <variable tag="dotSizeDeg" scope="global" logging="when_changed" default_value=".2" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotDensity" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       
       <variable tag="dotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotDirectionStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotDirectionStepN" scope="global" logging="when_changed" default_value="12" type="float" persistant="1" groups="MovingDots"/>
+
+      <variable tag="dotSizeDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotSizeStepDeg" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="MovingDots"/>
+      <variable tag="dotSizeStepN" scope="global" logging="when_changed" default_value="4" type="float" persistant="1" groups="MovingDots"/>
 
       <variable tag="dotSpeedDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="MovingDots"/>
       <variable tag="dotSpeedStepLog" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="MovingDots"/>
@@ -185,6 +189,7 @@
       <variable tag="setDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="setDotDirectionDeg" scope="global" logging="when_changed" default_value="90" type="float" persistant="0"/>
       <variable tag="setDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="setDotSizeDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
       <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         
@@ -217,7 +222,7 @@
               rotation="tGratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
     <stimulus type="moving_dots" tag="moving_dots"  direction="setDotDirectionDeg"
-              dot_density="tDotDensity" dot_size="tDotSizeDeg" coherence="tDotCoherence" 
+              dot_density="tDotDensity" dot_size="setDotSizeDeg" coherence="tDotCoherence" 
               speed="setDotSpeedDPS" field_radius="tDotFieldSizeDeg/2" 
               field_center_x="tDotAzimuthDeg" field_center_y="tDotElevationDeg" 
               alpha_multiplier="setDotContrast"></stimulus>
@@ -265,7 +270,7 @@
           <action type="assignment" variable="setDotContrast" value="baseDotContrast"></action>
           <action type="assignment" variable="tDotContrast" value="dotContrast"></action>
           <action type="assignment" variable="tDotDensity" value="dotDensity"></action>
-          <action type="assignment" variable="tDotSizeDeg" value="dotSizeDeg"></action>
+          <action type="assignment" variable="setDotSizeDeg" value="dotSizeDeg"></action>
           <action type="assignment" variable="tDotFieldSizeDeg" value="dotFieldSizeDeg"></action>
           <action type="assignment" variable="tDotAzimuthDeg" value="dotAzimuthDeg"></action>
           <action type="assignment" variable="tDotElevationDeg" value="dotElevationDeg"></action>
@@ -452,7 +457,18 @@
           <action type="if" condition="doDotsSpeedStim == 0">
         <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS"/>
           </action>
+          
+
+        <!--Select size- for moving dots only -->
+          <action type="if" condition="!doMatrix &amp;&amp; doDotsSizeStim == 1">  
+              <action type="assignment" variable="tTempStim" value= "tStimulusNumber % dotSizeStepN"/>
+                <action type="assignment" variable="tDotSizeDeg" value= "dotSizeDeg + (dotSizeStepDeg *(tTempStim))"/>
+                <action type="report" message="Size is $tDotSizeDeg"/>
+          </action>   
+          <action type="if" condition="doDotsSizeStim == 0">
+        <action type="assignment" variable="tDotSizeDeg" value= "dotSizeDeg"/>
           </action>
+
 
           <!--Select LED power -->
           <action type="if" condition="!doMatrix &amp;&amp; doLEDStim == 1">	
@@ -463,7 +479,8 @@
           <action type="if" condition="doLEDStim == 0">
 			  <action type="assignment" variable="tTrialLaserPowerMw" value= "LEDPowerMw"/>
           </action>
-          
+          </action>
+
           <!--Select features if IN matrix mode -->
           <action type="if" condition="doMatrix = 1">
           		<!-- Make SFxTF Matrix-->	
@@ -631,6 +648,9 @@
               </action>
               <action type="if" condition="doDirStim == 1">
                 <action type="assignment" tag="reset direction" variable="setDotDirectionDeg" value="tDotDirectionDeg"></action>
+              </action>
+              <action type="if" condition="doDotsSizeStim == 1">
+                <action type="assignment" tag="reset size" variable="setDotSizeDeg" value="tDotSizeDeg"></action>
               </action>
               <action type="assignment" tag="reset contrast" variable="setDotContrast" value="tDotContrast"></action>
             </action>  
