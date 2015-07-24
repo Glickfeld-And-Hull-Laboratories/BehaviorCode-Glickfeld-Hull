@@ -612,6 +612,8 @@ end
 if showBlock2
   if or(or(and(input.doOriDetect,input.block2DoOriDetect),and(input.doContrastDetect,input.block2DoContrastDetect)),and(input.doAuditoryDetect,input.block2DoAuditoryDetect))
       block2Controlled = 1;
+    else
+      block2Controlled = 0;
   end
   b2T1Ns = find(block2Tr1Ix);
   b2T2Ns = find(block2Tr2Ix);
