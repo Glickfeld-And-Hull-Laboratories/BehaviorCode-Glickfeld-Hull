@@ -609,20 +609,27 @@
 
           <!-- if not doing blocks, choose left/right state based on left, switch, and last trial state. -->
           <action type="if" condition="(doBlocks==0) || ((doCorrectiveTrials == 1) &amp;&amp; (tConsecErrors == 0))">
-            <action type="assignment" variable="tMarkovOdds" value="(1-tStimProbAvgLeft)/tStimProbAvgLeft" />
-            <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
-            <action type="assignment" variable="a" value="tMarkovOdds * b"/>
+            <action type="if" condition="tStimProbAvgLeft &gt; 0 ">
+              <action type="assignment" variable="tMarkovOdds" value="(1-tStimProbAvgLeft)/tStimProbAvgLeft" />
+              <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
+              <action type="assignment" variable="a" value="tMarkovOdds * b"/>
 
-          <action type="if" condition="tLastTrialWasLeft == -1">  <!-- special case: no last trial / first trial -->
-            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; tStimProbAvgLeft"/> 
-          </action>
-          <action type="if" condition="tLastTrialWasLeft == 1">
-            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; (1-a)"/>
-          </action>
+               <action type="if" condition="tLastTrialWasLeft == -1">  <!-- special case: no last trial / first trial -->
+                <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; tStimProbAvgLeft"/> 
+               </action>
+              <action type="if" condition="tLastTrialWasLeft == 1">
+                <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; (1-a)"/>
+              </action>
 
-          <action type="if" condition="tLastTrialWasLeft == 0">
-            <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; b"/>
-          </action>
+              <action type="if" condition="tLastTrialWasLeft == 0">
+                <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; b"/>
+              </action>
+            </action>
+
+            <action type="if" condition="tStimProbAvgLeft == 0 ">
+              <action type="assignment" variable="tLeftTrial" value="0"/>
+            </action> 
+         
           </action>
 
           <action type="if" condition="doBlocks==1 &amp;&amp; doCorrectiveTrials == 0">
