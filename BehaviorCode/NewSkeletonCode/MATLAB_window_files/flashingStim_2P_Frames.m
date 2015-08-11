@@ -149,13 +149,34 @@ input.gratingContrast = input.tGratingContrast;
 input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
 
-%Andrew's Post-Hoc Reaction Time Method
-% if input.targetStimOnMs{trN} <= 1;
-%     tCyclesShort = input.nCyclesOn{trN} - input.tCyclesOn{trN};
-%     input.targetStimOnMs{trN} = input.tStimOnMs{trN} + (totalCycleTimeMs*tCyclesShort);
-% end
-% input.postHocReactMs{trN} = input.tLeverReleaseTimeMs{trN} - input.targetStimOnMs{trN};
+% short catch trial calculations
+for trN = 1:length(missIx)
+  if input.tShortCatchTrial{trN}
+    if input.tFalseAlarm{trN}
+        input.catchTrialOutcomeCell{trN} = 'FA';
+    end
+    if isempty(input.cCatchOn{trN})
+        input.cCatchOn{trN} = NaN;
+        input.catchTrialOutcomeCell{trN} = 'failure';
+    end
+    if (input.cLeverUp{trN}-input.cCatchOn{trN})>input.nFramesReact
+        input.catchTrialOutcomeCell{trN} = 'CR';
+    end
+    if (input.cLeverUp{trN}-input.cCatchOn{trN})<input.nFramesTooFast
+        input.catchTrialOutcomeCell{trN} = 'failure';
+    end
+else
+    input.catchTrialOutcomeCell{trN} = 'NaN';
+end
 
+%% Counter/Frames Synchronization Section
+try
+    input.counterTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'counter', 'all', [], 1);
+    input.counterValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'counter', 'all', 1) ;
+catch
+    input.counterTimesUs{trN} = NaN;
+    input.counterValues{trN} = NaN;
+end
 
 %% disp status
 juiceAmtsMs = input.juiceTimesMsCell{trN};
