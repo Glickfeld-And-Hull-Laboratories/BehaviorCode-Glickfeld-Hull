@@ -1,4 +1,4 @@
-function mouse = createExptStructAttn;
+function mouse = createExptStructAttn2015;
     rc = behavConstsAttn;
     xd = frm_xls2frm(rc.indexFilename, [], rc.indexTextCols);
     pv = behavParamsAttn;
@@ -16,10 +16,20 @@ function mouse = createExptStructAttn;
                     mouse(imouse).task(itask).pos(ipos).block(iblock).nCorrect = [];
                     mouse(imouse).task(itask).pos(ipos).block(iblock).nMissed = [];
                     mouse(imouse).task(itask).pos(ipos).block(iblock).testCon = [];
+                    mouse(imouse).task(itask).pos(ipos).block(iblock).b2RewardPct = [];
+                    mouse(imouse).task(itask).block(iblock).nCorrect = [];
+                    mouse(imouse).task(itask).block(iblock).nMissed = [];
+                    mouse(imouse).task(itask).block(iblock).testCon = [];
+                    mouse(imouse).task(itask).block(iblock).b2RewardPct = [];
                     for ihalf = 1:2
                         mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nCorrect = [];
                         mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nMissed = [];
                         mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).testCon = [];
+                        mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).b2RewardPct = [];
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).nCorrect = [];
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).nMissed = [];
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).testCon = [];
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).b2RewardPct = [];
                     end
                 end
             end
@@ -139,10 +149,20 @@ function mouse = createExptStructAttn;
                     mouse(imouse).task(itask).pos(ipos).block(iblock).nCorrect = [mouse(imouse).task(itask).pos(ipos).block(iblock).nCorrect mouse(imouse).expt(iexp).block(iblock).nCorrect(1)];
                     mouse(imouse).task(itask).pos(ipos).block(iblock).nMissed = [mouse(imouse).task(itask).pos(ipos).block(iblock).nMissed mouse(imouse).expt(iexp).block(iblock).nMissed(1)];
                     mouse(imouse).task(itask).pos(ipos).block(iblock).testCon = [mouse(imouse).task(itask).pos(ipos).block(iblock).testCon mouse(imouse).expt(iexp).block(2).intensities(1)];
+                    mouse(imouse).task(itask).pos(ipos).block(iblock).b2RewardPct = [mouse(imouse).task(itask).pos(ipos).block(iblock).b2RewardPct mouse(imouse).expt(iexp).b2RewardPct];
+                    mouse(imouse).task(itask).block(iblock).nCorrect = [mouse(imouse).task(itask).block(iblock).nCorrect mouse(imouse).expt(iexp).block(iblock).nCorrect(1)];
+                    mouse(imouse).task(itask).block(iblock).nMissed = [mouse(imouse).task(itask).block(iblock).nMissed mouse(imouse).expt(iexp).block(iblock).nMissed(1)];
+                    mouse(imouse).task(itask).block(iblock).testCon = [mouse(imouse).task(itask).block(iblock).testCon mouse(imouse).expt(iexp).block(2).intensities(1)];
+                    mouse(imouse).task(itask).block(iblock).b2RewardPct = [mouse(imouse).task(itask).block(iblock).b2RewardPct mouse(imouse).expt(iexp).b2RewardPct];
                     for ihalf = 1:2
                         mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nCorrect = [mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nCorrect mouse(imouse).expt(iexp).block(iblock).half(ihalf).nCorrect(1)];
                         mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nMissed = [mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nMissed mouse(imouse).expt(iexp).block(iblock).half(ihalf).nMissed(1)];
                         mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).testCon = [mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).testCon mouse(imouse).expt(iexp).block(2).intensities(1)];
+                        mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).b2RewardPct = [mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).b2RewardPct mouse(imouse).expt(iexp).b2RewardPct];
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).nCorrect = [mouse(imouse).task(itask).block(iblock).half(ihalf).nCorrect mouse(imouse).expt(iexp).block(iblock).half(ihalf).nCorrect(1)];
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).nMissed = [mouse(imouse).task(itask).block(iblock).half(ihalf).nMissed mouse(imouse).expt(iexp).block(iblock).half(ihalf).nMissed(1)];
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).testCon = [mouse(imouse).task(itask).block(iblock).half(ihalf).testCon mouse(imouse).expt(iexp).block(2).intensities(1)];
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).b2RewardPct = [mouse(imouse).task(itask).block(iblock).half(ihalf).b2RewardPct mouse(imouse).expt(iexp).b2RewardPct];
                     end
                 end
             end
@@ -153,10 +173,16 @@ function mouse = createExptStructAttn;
                     [x y] = binofit(sum(mouse(imouse).task(itask).pos(ipos).block(iblock).nCorrect,2),sum(mouse(imouse).task(itask).pos(ipos).block(iblock).nCorrect,2) + sum(mouse(imouse).task(itask).pos(ipos).block(iblock).nMissed,2));
                     mouse(imouse).task(itask).pos(ipos).block(iblock).pctCorrect = x;
                     mouse(imouse).task(itask).pos(ipos).block(iblock).ci95 = y;
+                    [x y] = binofit(sum(mouse(imouse).task(itask).block(iblock).nCorrect,2),sum(mouse(imouse).task(itask).block(iblock).nCorrect,2) + sum(mouse(imouse).task(itask).block(iblock).nMissed,2));
+                    mouse(imouse).task(itask).block(iblock).pctCorrect = x;
+                    mouse(imouse).task(itask).block(iblock).ci95 = y;
                     for ihalf = 1:2
                         [x y] = binofit(sum(mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nCorrect,2), sum(mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nCorrect,2) + sum(mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).nMissed,2));
                         mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).pctCorrect = x;
                         mouse(imouse).task(itask).pos(ipos).block(iblock).half(ihalf).ci95 = y;
+                        [x y] = binofit(sum(mouse(imouse).task(itask).block(iblock).half(ihalf).nCorrect,2), sum(mouse(imouse).task(itask).block(iblock).half(ihalf).nCorrect,2) + sum(mouse(imouse).task(itask).block(iblock).half(ihalf).nMissed,2));
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).pctCorrect = x;
+                        mouse(imouse).task(itask).block(iblock).half(ihalf).ci95 = y;
                     end
                 end
             end
