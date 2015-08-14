@@ -17,6 +17,7 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="15" type="integer" persistant="1"/>
+      <variable tag="stationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
       <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
@@ -288,7 +289,7 @@
         <task_system_state tag="InterTrialInterval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           
-          <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms"></action>
+          <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms ****"></action>
           <action type="start_timer" timer="itiTimerMs" timebase="" duration="itiTimeMs" duration_units="ms"/>
           <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
           <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"/>
@@ -759,7 +760,19 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" timer="itiTimerMs" target="TrialStart"></transition>
+          <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; stationaryPeriodMs == 0" target="TrialStart"></transition>
+          <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; stationaryPeriodMs &gt; 0" target="WaitForInitiate"></transition>
+        </task_system_state>
+
+		<task_system_state tag="WaitForInitiate" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="report" message="**** Waiting for no movement for $stationaryPeriodMs ms ****"></action>
+          <action type="start_timer" timer="stationaryTimerMs" timebase="" duration="stationaryPeriodMs" duration_units="ms"/>
+	      <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+	      
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="stationaryTimerMs" target="TrialStart"></transition>
+          <transition type="conditional" condition="quadrature &gt; tQuadrature" target="WaitForInitiate"></transition>
         </task_system_state>
 
         <task_system_state tag="TrialStart" interruptible="YES">
