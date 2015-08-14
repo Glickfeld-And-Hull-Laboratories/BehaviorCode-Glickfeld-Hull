@@ -766,13 +766,12 @@
 
 		<task_system_state tag="WaitForInitiate" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="report" message="**** Waiting for no movement for $stationaryPeriodMs ms ****"></action>
           <action type="start_timer" timer="stationaryTimerMs" timebase="" duration="stationaryPeriodMs" duration_units="ms"/>
 	      <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
 	      
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="timer_expired" timer="stationaryTimerMs" target="TrialStart"></transition>
-          <transition type="conditional" condition="quadrature &gt; tQuadrature" target="WaitForInitiate"></transition>
+          <transition type="conditional" condition="quadrature != tQuadrature" target="WaitForInitiate"></transition>
         </task_system_state>
 
         <task_system_state tag="TrialStart" interruptible="YES">
