@@ -195,7 +195,7 @@
       <variable tag="tQuadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDecisionTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tLastTrialWasLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-      <variable tag="tLeftTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Markov"/>
+      <variable tag="tLeftTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Markov/Bias"/>
       <variable tag="tStimProbAvgLeft" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
       
       <variable tag="leftDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -291,6 +291,7 @@
       <action type="assignment" variable="tLastTrialWasLeft" value="0"/>
       <action type="assignment" variable="tNStimAccepted" value="0" />
       <action type="assignment" variable="tNStimAccepted2" value="0" />
+      
 
         
       <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="10000" sampling_method="cycles">
@@ -311,6 +312,8 @@
           <action type="assignment" variable="stimulusOn" value="0"/>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
           <action type="assignment" tag="set isNotTooFast to 0" variable="isNotTooFast" value="0"/>
+          <action type="assignment" variable="tBlock2TrialNumber" value="0" />
+          <action type="assignment" variable="tLeftTrial" value="0" />
 
           <action type="if" condition="tLastTrialCorrect == 1">
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
@@ -355,9 +358,6 @@
           <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
           <action type="assignment" variable="tSvStimNumber2" value="svStimNumber2"/>
           <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
-          <action type="report" message="tNStimAccepted=$tNStimAccepted"/>
-          <action type="report" message="tNStimAccepted2=$tNStimAccepted2"/>
-          
           
           <!-- If choosing L/R by markov based on left, switch, and last trial state. -->
           <action type="if" condition="doMarkovLR">
@@ -416,7 +416,6 @@
             <action type="assignment" variable="tLeftTrial" value="tLastTrialWasLeft" />
           </action>
           
-
            <!-- level 1 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))"> 
               <action type="assignment" variable="tStimulusNumber" value="0"/>
@@ -445,7 +444,7 @@
             	</action>
             	<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level1"/>		 
             </action>
-            <!-- level 1: b2 sep odds on -->                         
+            <!-- level 1: b2 sep odds on -->
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level1))"> 
                 <action type="assignment" variable="tStimulusNumber" value="0"/> 
@@ -456,8 +455,6 @@
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level1"/>
             </action>
-
-
 
             <!-- level 2 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level2))"> 
@@ -516,7 +513,7 @@
             <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level3))"> 
               <action type="assignment" variable="tStimulusNumber2" value="2"/>
             </action>
-            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level3"/>
             <!-- level 3: left sep odds on --> 
             <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
               	<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level3))">
@@ -526,7 +523,7 @@
               	<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level3))"> 
               		<action type="assignment" variable="tStimulusNumber2" value="2"/>
             	</action>
-            	<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level1"/>		 
+            	<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level3"/>		 
             </action>
             <!-- level 3: b2 sep odds on -->                          
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -770,7 +767,7 @@
                       message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
             </action>
 
-
+            <action type="report" tag="" message="tBlock2TrialNumber is $tBlock2TrialNumber"/>
           <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))"/>
           <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
 
@@ -1029,6 +1026,7 @@
           <action type="accept_selections" selection="svStimNumber"></action>
           <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
 
+
           <!-- update selection variable -->
           <action type="if" condition="tNStimAccepted &gt;= 80">
             <action type="reset_selection" selection="svStimNumber"/>
@@ -1079,6 +1077,10 @@
           <action type="if" condition="doCorrectiveTrials==0">
             <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
           </action>
+          <action type="accept_selections" selection="svStimNumber2"></action>
+          <action type="if" condition="doCorrectiveTrials==0">
+            <action type="assignment" variable="tNStimAccepted2" value="tNStimAccepted2 + 1"></action>
+          </action>
 
           <!-- update selection variable -->
           <action type="if" condition="(tNStimAccepted &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
@@ -1089,6 +1091,15 @@
           <action type="if" condition="(tNStimAccepted &lt; 80) &amp;&amp; doCorrectiveTrials==0">
             <action type="next_selection" selection="svStimNumber"/>
             <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+          </action>
+          <action type="if" condition="(tNStimAccepted2 &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
+            <action type="reset_selection" selection="svStimNumber2"/>
+            <action type="assignment" variable="tNStimAccepted2" value="0"></action>
+            <action type="report" message="Should be resetting selections,tNStimAccepted2=$tNStimAccepted2"/>
+          </action>
+          <action type="if" condition="(tNStimAccepted2 &lt; 80) &amp;&amp; doCorrectiveTrials==0">
+            <action type="next_selection" selection="svStimNumber2"/>
+            <action type="report" message="Next selection,tNStimAccepted2=$tNStimAccepted2"/>
           </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -1116,6 +1127,10 @@
           <action type="if" condition="doCorrectiveTrials==0">
             <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
           </action>
+          <action type="accept_selections" selection="svStimNumber2"></action>
+          <action type="if" condition="doCorrectiveTrials==0">
+            <action type="assignment" variable="tNStimAccepted2" value="tNStimAccepted2 + 1"></action>
+          </action>
 
           <!-- update selection variable -->
           <action type="if" condition="(tNStimAccepted &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
@@ -1126,6 +1141,15 @@
           <action type="if" condition="(tNStimAccepted &lt; 80) &amp;&amp; doCorrectiveTrials==0">
             <action type="next_selection" selection="svStimNumber"/>
             <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+          </action>
+          <action type="if" condition="(tNStimAccepted2 &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
+            <action type="reset_selection" selection="svStimNumber2"/>
+            <action type="assignment" variable="tNStimAccepted2" value="0"></action>
+            <action type="report" message="Should be resetting selections,tNStimAccepted2=$tNStimAccepted2"/>
+          </action>
+          <action type="if" condition="(tNStimAccepted2 &lt; 80) &amp;&amp; doCorrectiveTrials==0">
+            <action type="next_selection" selection="svStimNumber2"/>
+            <action type="report" message="Next selection,tNStimAccepted2=$tNStimAccepted2"/>
           </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
