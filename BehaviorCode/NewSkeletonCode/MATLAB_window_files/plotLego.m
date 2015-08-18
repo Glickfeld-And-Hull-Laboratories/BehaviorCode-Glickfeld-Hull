@@ -683,6 +683,23 @@ end
 ylabel('% Right')
 grid on
 
+maxCell = length(nLevelsB1);
+lowMidCell = maxCell/2;
+highMidCell = lowMidCell + 1;
+A = cell2mat(percentContCellB1(maxCell));
+B = cell2mat(percentContCellB1(1));
+C = cell2mat(percentContCellB1(highMidCell));
+D = cell2mat(percentContCellB1(lowMidCell));
+M = (A + B)/2;
+M2 = (C + D)/2;
+Selectivity = A - B;
+rndSelectivity = roundn(Selectivity, -3);
+Bias = M - 0.5;
+rndBias = roundn(Bias, -2);
+InnerBias = M2 - 0.5;
+rndInnerBias = roundn(InnerBias, -2);
+
+title({['Selectivity = ' num2str(rndSelectivity)], ['Intrinsic/Challenged Bias = ' num2str(rndBias) '/' num2str(rndInnerBias)]});
 %%%%%%%%%%%%%%%%%
 
 %% 11 - Target Contrast x %Correct
