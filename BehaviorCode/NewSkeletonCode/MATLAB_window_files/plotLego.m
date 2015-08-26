@@ -432,9 +432,10 @@ if nCorr>0 && input.doTestRobot==0,
         corrDiffCell{ii} = nanmean(corrDecTimes(tix));
     end
 
-    lev = find(input.trPer80V>0)-1;
+    lev = double(find(input.trPer80V>0)-1);
     if isfield(input, 'dGratingContrastDiff')
-      possDiffV = double(input.gratingMaxDiff) ./ (2 .^ (lev./input.gratingContrastDiffSPO))+1;
+      possDiffV = double(input.gratingMaxDiff) ./ (2 .^ (lev./double(input.gratingContrastDiffSPO)))+1;
+
       minX = min(possDiffV,[],2);
       maxX = max(possDiffV,[],2);
     else
