@@ -37,6 +37,7 @@
       <variable tag="doTFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>      
       <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
       <variable tag="doPhaseStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
+      <variable tag="doLoomStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
       
       <variable tag="doMovingDots" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="DotsExptStruct"/> 
       <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="DotsExptStruct"/> 
@@ -85,6 +86,12 @@
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 	  <variable tag="gratingStartingPhaseStepDeg" scope="global" logging="when_changed" default_value="45" type="float" persistant="1" groups="GratingSpecs"/>
       <variable tag="gratingStartingPhaseStepN" scope="global" logging="when_changed" default_value="8" type="float" persistant="1" groups="GratingSpecs"/>
+
+      <variable tag="loomSpeedDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
+      <variable tag="maxLoomDiameterDeg" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
+      <variable tag="loomSpeedStepLog" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="GratingSpecs"/>
+      <variable tag="loomSpeedStepDir" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="GratingSpecs"/>
+      <variable tag="loomSpeedStepN" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
       
       <variable tag="LEDPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="LEDSpecs"/>
 	  <variable tag="LEDPowerStepMw" scope="global" logging="when_changed" default_value="0.01" type="float" persistant="1" groups="LEDSpecs"/>
@@ -185,6 +192,7 @@
       <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
+      <variable tag="tBaseGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -196,6 +204,7 @@
       <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tGratingLoomSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       
       <variable tag="tDotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -232,7 +241,7 @@
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
-              x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg" 
+              x_size="tBaseGratingDiameterDeg" y_size="tBaseGratingDiameterDeg" 
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tBaseGratingDirectionDeg" 
               alpha_multiplier="tBaseGratingContrast"></stimulus>
@@ -298,6 +307,10 @@
           	<action type="assignment" variable="tDotFieldSizeDeg" value="dotFieldSizeDeg"></action>
           	<action type="assignment" variable="tDotAzimuthDeg" value="dotAzimuthDeg"></action>
           	<action type="assignment" variable="tDotElevationDeg" value="dotElevationDeg"></action>
+            <action type="assignment" variable="tBaseGratingDiameterDeg" value="gratingDiameterDeg"></action>
+            <action type="assignment" variable="tGratingDiameterDeg" value="gratingDiameterDeg"></action>
+            <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
+            <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
 		  	
 		  
           <action type="if" condition="doMovingDots != 1">
@@ -472,6 +485,15 @@
           <action type="if" condition="doPhaseStim == 0">
         <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg"/>
           </action> 
+
+          <action type="if" condition="!doMatrix &amp;&amp; doLoomStim == 1">  
+              <action type="assignment" variable="tTempStim" value= "tStimulusNumber % loomSpeedStepN"/>
+                <action type="assignment" variable="tGratingLoomSpeedDPS" value= "loomSpeedDPS * (pow(loomSpeedStepLog,(loomSpeedStepDir*(tTempStim))))"/>
+                <action type="report" message="Speed is $tGratingLoomSpeedDPS"/>
+          </action>   
+          <action type="if" condition="doLoomStim == 0">
+        <action type="assignment" variable="tGratingLoomSpeedDPS" value= "loomSpeedDPS"/>
+          </action>
 
           <!--Select speed- for moving dots only -->
           <action type="if" condition="!doMatrix &amp;&amp; doDotsSpeedStim == 1">  
@@ -650,7 +672,7 @@
 	      	</action>
 			
           <!-- convert TF/SF to speed -->
-          <action type="if" condition="doMovingDots != 1">                                     
+          <action type="if" condition="doMovingDots != 1 &amp;&amp; doLoomStim != 1">                                     
             <action type="assignment" variable="tGratingSpeedDPS" value="tGratingTemporalFreqCPS / tGratingSpatialFreqCPD"></action> 
       	    <action type="report" message="Speed is $tGratingSpeedDPS"/>
           </action>
@@ -736,12 +758,27 @@
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
             </action>
 
+            <action type="start_timer" tag="Start refresh timer" timer="refreshTimer" timebase="" duration="30" duration_units="ms"></action>
+
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" timer="speedTimer1" target="speedCounter2"/> 
             <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+            <transition type="conditional" tag="If doLooming go to loom state" condition="timerExpired(refreshTimer) &amp;&amp; doLoomStim" target="LoomState" ></transition>
       </task_system_state>
       
+      <task_system_state tag="LoomState" interruptible="YES">
+        <action type="start_timer" tag="Start refresh timer" timer="refreshTimer" timebase="" duration="30" duration_units="ms"></action>
+        <action type="assignment" tag="set new stimulus size" variable="tGratingDiameterDeg" value="tGratingDiameterDeg + tGratingLoomSpeedDPS*.03"></action>
+        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
+        <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
+        <action tag="Update Display" type="update_stimulus_display"></action>
+        <!-- <action type="report" message="Diameter is $tGratingDiameterDeg"/> -->
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
+            <transition type="conditional" tag="If timer expired and not yet max size, recycle" condition="timerExpired(refreshTimer) &amp;&amp; tGratingDiameterDeg &lt; maxLoomDiameterDeg" target="LoomState" ></transition>
+      </task_system_state>
+
       <task_system_state tag="speedCounter2" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
       		<action type="start_timer" tag="Start speedTimer2" timer="speedTimer2" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
