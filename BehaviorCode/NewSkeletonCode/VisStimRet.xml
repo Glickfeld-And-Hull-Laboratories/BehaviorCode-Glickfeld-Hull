@@ -758,6 +758,7 @@
 
             <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
             <action type="assignment" tag="Log Speed of current Interval" variable="spCounter1" value="counter2 - tCounter2"></action>
+            
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
             </action>
 
@@ -786,9 +787,10 @@
       <task_system_state tag="RunFeedback" interruptible="YES">
         <action type="start_timer" tag="Start refresh timer" timer="refreshTimer" timebase="" duration="300" duration_units="ms"></action>
         <action type="assignment" tag="Log Speed of previous Interval" variable="runFeedbackCounter" value="counter2 - tCounter2"></action>
-        <action type="assignment" tag="set new stimulus speed" variable="tDotSpeedDPS" value="runFeedbackCounter * runFeedbackGain"></action>
+        <action type="assignment" tag="set new stimulus speed" variable="setDotSpeedDPS" value="runFeedbackCounter * runFeedbackGain"></action>
         <action tag="Update Display" type="update_stimulus_display"></action>
-        <!-- <action type="report" message="tDotSpeedDPS is $tDotSpeedDPS"/> -->
+        <action type="report" message="setDotSpeedDPS is $setDotSpeedDPS"/> 
+        <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
             <transition type="conditional" tag="If timer expired, recycle" condition="timerExpired(refreshTimer)" target="RunFeedback" ></transition>

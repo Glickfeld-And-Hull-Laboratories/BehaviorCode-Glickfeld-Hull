@@ -56,7 +56,10 @@ oneValEachTrialNames = { ...
 'spCounter8', ...
 'spCounter9', ...
 'spCounter10', ...
-'tTrialLaserPowerMw'};
+'tTrialLaserPowerMw', ...
+'setDotSpeedDPS', ...
+'counter2', ...
+'counter'};
 
 
 events = ds.events;
@@ -181,6 +184,35 @@ for iC = 1:nConsts
   end
 end
 input.constChangedOnTrial{input.trialSinceReset} = b;
+
+%% Counter/Frames Synchronization Section
+try
+    input.counterTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'counter', 'all', [], 1);
+    input.counterValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'counter', 'all', 1) ;
+catch
+    input.counterTimesUs{trN} = NaN;
+    input.counterValues{trN} = NaN;
+end
+
+%% Running events Section
+try
+    input.wheelTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'counter2', 'all', [], 1);
+    input.wheelValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'counter2', 'all', 1) ;
+catch
+    input.wheelTimesUs{trN} = NaN;
+    input.wheelValues{trN} = NaN;
+end
+
+%% Speed changes if feedback
+if doRunFeedback
+  try
+      input.dotSpeedTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'setDotSpeedDPS', 'all', [], 1);
+      input.dotSpeedValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'setDotSpeedDPS', 'all', 1) ;
+  catch
+      input.dotSpeedTimesUs{trN} = NaN;
+      input.dotSpeedValues{trN} = NaN;
+  end
+end
 
 
 input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
