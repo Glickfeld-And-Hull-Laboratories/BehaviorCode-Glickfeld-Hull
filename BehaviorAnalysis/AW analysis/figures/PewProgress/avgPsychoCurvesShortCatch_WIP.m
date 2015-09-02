@@ -97,23 +97,29 @@ catchTrial = cat(1,catchTrial,catchTrialcrop);
 for i = 1:length(dirs)-1
     trials = find(direction == dirs(i+1));
     visHitRate(i) = sum(hitInd(trials))/(sum(hitInd(trials))+sum(missInd(trials)));
+    [binoVisHitRate(i) binoVis(i,:)] = binofit(sum(hitInd(trials)),(sum(hitInd(trials))+sum(missInd(trials))));
 end
 
 for i = 1:length(catchDeg)-1
     trials = find(doCatch == catchDeg(i+1));
     catchHitRate(i) = sum(catchYesInd(trials))/(sum(catchTrial(trials)));
+    [binoCatchHitRate(i) binoCatch(i,:)] = binofit(sum(catchYesInd(trials)),(sum(catchTrial(trials))));
 end
+
+
 
 %auditory trials
 trials = find(block2 == 1);
 audHitRate = sum(hitInd(trials))/(sum(hitInd(trials))+sum(missInd(trials)));
+[binoAudHitRate binoAud] = binofit(sum(hitInd(trials)),(sum(hitInd(trials))+sum(missInd(trials))));
 
 
 %total number of trials
 nVisTrials = sum(hitInd(block2 ==0))+sum(missInd)
 nCatchTrials = sum(catchTrial)
 nAudTrials = sum(hitInd(block2 == 1))
-
+%%
+binoVis = binofit(visHitRate,
 
 %% calc bootstraps
 for i = 1:length(dirs)-1
@@ -144,6 +150,7 @@ for iboot = 1:1000
 end
 audHitRateCI = prctile(audHitRateBoots,[5 95],2);
 
+
 %% PLOT
 xLimL = [min(dirs(~dirs==0))*0.5, max(dirs)*1.5];
   if length(xLimL)==1, 
@@ -169,10 +176,53 @@ errorbar(dirs(2:end),visHitRate,visHitRate-visHitRateCI(:,1)',visHitRateCI(:,2)'
 hold on
 % plot(0,audHitRate,'.-','Linewidth',5);
 % hold on
-% errorbar(catchDeg(2:end),catchHitRate,catchHitRate-catchHitRateCI(:,1)',catchHitRateCI(:,2)'-catchHitRate,'ko','LineStyle','none');
+errorbar(catchDeg(2:end),catchHitRate,catchHitRate-catchHitRateCI(:,1)',catchHitRateCI(:,2)'-catchHitRate,'ko','LineStyle','none');
 % hold on
 errorbar(100,audHitRate,audHitRate-audHitRateCI(:,1)',audHitRateCI(:,2)'-audHitRate,'ko','LineStyle','none');
 % errorbar(catchDeg(2:end),catchHitRate,catchHitRate-catchHitRateCI(:,1)',catchHitRateCI(:,2)'-catchHitRate,'k','Linewidth',3);
+hold on
+ylim([0 1]);
+xlim([1 100]);
+set(gca,'xscale','log');
+ylabel('Hits/Hits+Miss')
+xlabel('Deg Ori Change')
+title(['AW13 - Catch Trials' num2str(date)]);
+hold on
+% set(gca, 'XGrid', 'on');
+% set(gca, 'XTick', xTickL); 
+set(gca, 'XTick', [1 10 100]); 
+% set(gca, 'XTickLabel', xTLabelL);
+% for i = catchDeg
+%     vline(i,'k');
+%     hold on
+% end
+
+%% PLOT with binomial confidence intervals
+xLimL = [min(dirs(~dirs==0))*0.5, max(dirs)*1.5];
+  if length(xLimL)==1, 
+      xLimL = get(gca, 'XLim'); 
+  end
+  xL1 = [floor(log10(xLimL(1))) ceil(log10(xLimL(2)))];
+  xTickL = 10.^(xL1(1):1:xL1(2));
+  xTickL = xTickL(xTickL>=xLimL(1) & xTickL<=xLimL(2));
+  if length(xTickL) == 0, 
+    % no log10 ticks in range, create two and set them
+    xTickL = [xLimL(1) xLimL(2)]; %[xTL(1)/10 xTL(1) xTL(1)]
+    xTickL = chop(xTickL,2);
+  end
+    xTickL = sort([xTickL dirs']);
+    xTLabelL = cellstr(num2str(xTickL(:)));
+  if xLimL(1) > -2
+      xLimL(1) = -2;
+  end
+    
+figure;
+errorbar(dirs(2:end),visHitRate,visHitRate-binoVis(:,1)',binoVis(:,2)'-visHitRate,'go','LineStyle', 'none');
+
+hold on
+errorbar(catchDeg(2:end),catchHitRate,catchHitRate-binoCatch(:,1)',binoCatch(:,2)'-catchHitRate,'ko','LineStyle','none');
+hold on
+errorbar(100,audHitRate,audHitRate-binoAud(:,1)',binoAud(:,2)'-audHitRate,'ko','LineStyle','none');
 hold on
 ylim([0 1]);
 xlim([1 100]);
