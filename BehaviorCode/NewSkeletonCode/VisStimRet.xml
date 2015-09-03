@@ -24,6 +24,12 @@
       <variable tag="nScansOff" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="ExptStruct"/>
       <variable tag="doMatrix" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
       <variable tag="doRand" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
+      <variable tag="doLEDStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>   
+      <variable tag="backgroundLuminance" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="ExptStruct"/> 
+      <variable tag="doBackgroundStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
+      <variable tag="backgroundLuminanceStepLog" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="GratingSpecs"/>
+      <variable tag="backgroundLuminanceStepDir" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="GratingSpecs"/>
+      <variable tag="backgroundLuminanceStepN" scope="global" logging="when_changed" default_value="6" type="float" persistant="1" groups="GratingSpecs"/>     
 
  	  <variable tag="nTotalImagingFrames" scope="global" logging="when_changed" default_value="3600" type="integer" persistant="1" groups="ImagingVars"/>
       <variable tag="frameImagingRateMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="ImagingVars"/>
@@ -49,7 +55,7 @@
       <variable tag="doRunFeedback" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="DotsExptStruct"/>
       <variable tag="runFeedbackGain" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="DotsExptStruct"/> 
        
-      <variable tag="doLEDStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>     
+        
 
 	  <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 	  <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
@@ -195,6 +201,7 @@
       <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
+      <variable tag="tBackgroundLuminance" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -239,7 +246,7 @@
   <sounds tag="Sounds">
   </sounds>
   <stimuli tag="Stimuli">
-    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="blank_screen" tag="background" color="tBackgroundLuminance,tBackgroundLuminance,tBackgroundLuminance"></stimulus>
     <stimulus type="drifting_grating" tag="base_grating"  direction="0" starting_phase="baseGratingStartingPhaseDeg"
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
@@ -372,6 +379,17 @@
               <action type="assignment" variable="tStimulusNumber" value="svSeqStimNumber"/>
           </action>
           
+          
+          <!--set background luminance -->
+          <!--Select luminance -->
+          <action type="if" condition="!doMatrix &amp;&amp; doBackgroundStim == 1">  
+              <action type="assignment" variable="tTempStim" value= "tStimulusNumber % backgroundLuminanceStepN"/>
+              <action type="assignment" variable="tBackgroundLuminance" value= "backgroundLuminance * (pow(backgroundLuminanceStepLog,(backgroundLuminanceStepDir*(tTempStim))))"/>
+              <action type="report" message="Luminance is $tBackgroundLuminance"/>
+              <action type="queue_stimulus" stimulus="background"></action>
+              <action tag="Update Stimulus" type="update_stimulus_display"></action>
+          </action>   
+
           
           <!--Select retinotopy position; choose a value from selection var, 0-origin -->
           <action type="if" condition="doRetStim">
