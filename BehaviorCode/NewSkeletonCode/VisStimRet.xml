@@ -287,6 +287,7 @@
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <action type="assignment" variable="tBackgroundLuminance" value= "backgroundLuminance"/>
       <action type="queue_stimulus" stimulus="background"></action>
       
     <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
@@ -382,13 +383,16 @@
           
           <!--set background luminance -->
           <!--Select luminance -->
-          <action type="if" condition="!doMatrix &amp;&amp; doBackgroundStim == 1">  
+          <action type="if" condition="doBackgroundStim == 1">  
               <action type="assignment" variable="tTempStim" value= "tStimulusNumber % backgroundLuminanceStepN"/>
               <action type="assignment" variable="tBackgroundLuminance" value= "backgroundLuminance * (pow(backgroundLuminanceStepLog,(backgroundLuminanceStepDir*(tTempStim))))"/>
               <action type="report" message="Luminance is $tBackgroundLuminance"/>
               <action type="queue_stimulus" stimulus="background"></action>
               <action tag="Send stimulus to back" type="send_stimulus_to_back" stimulus="background"/>
               <action tag="Update Stimulus" type="update_stimulus_display"></action>
+          </action>
+          <action type="if" condition="doBackgroundStim == 0">  
+             <action type="assignment" variable="tBackgroundLuminance" value= "backgroundLuminance"/>
           </action>   
 
           
@@ -471,20 +475,12 @@
           
           <!--Select direction -->
           <action type="if" condition="(doDirStim == 1) &amp;&amp; !doMatrix">
-          	<action type="if" condition="doMovingDots != 1">
             	<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDirectionStepN"/>
               <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim))"/>
               <action type="report" message="Direction is $tGratingDirectionDeg"/>
-            </action> 
-            <action type="if" condition="doMovingDots = 1">
-              <action type="assignment" variable="tTempStim" value= "tStimulusNumber % dotDirectionStepN"/>
-              <action type="assignment" variable="tDotDirectionDeg" value= "dotDirectionDeg + (dotDirectionStepDeg * (tTempStim))"/>
-              <action type="report" message="Direction is $tDotDirectionDeg"/>
-            </action> 
           </action>		
           <action type="if" condition="doDirStim == 0">
 			       <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
-             <action type="assignment" variable="tDotDirectionDeg" value= "dotDirectionDeg"/>
           </action>
           
           
@@ -517,7 +513,7 @@
         <action type="assignment" variable="tGratingLoomSpeedDPS" value= "loomSpeedDPS"/>
           </action>
 
-          <!--Select speed- for moving dots only -->
+          <!--Select speed- for moving dots only --> 
           <action type="if" condition="!doMatrix &amp;&amp; doDotsSpeedStim == 1">  
               <action type="assignment" variable="tTempStim" value= "tStimulusNumber % dotSpeedStepN"/>
                 <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS * (pow(dotSpeedStepLog,(dotSpeedStepDir*(tTempStim))))"/>
@@ -526,6 +522,15 @@
           <action type="if" condition="doDotsSpeedStim == 0">
         <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS"/>
           </action>
+
+          <action type="if" condition="doDotsDirectionStim = 1">
+            <action type="assignment" variable="tTempStim" value= "tStimulusNumber % dotDirectionStepN"/>
+            <action type="assignment" variable="tDotDirectionDeg" value= "dotDirectionDeg + (dotDirectionStepDeg * (tTempStim))"/>
+            <action type="report" message="Direction is $tDotDirectionDeg"/>
+          </action> 
+          <action type="if" condition="doDotsDirectionStim = 0">
+            <action type="assignment" variable="tDotDirectionDeg" value= "dotDirectionDeg"/>
+          </action>  
           
 		<!--Select contrast- for moving dots only -->
           <action type="if" condition="!doMatrix &amp;&amp; doDotsContrastStim == 1">  
