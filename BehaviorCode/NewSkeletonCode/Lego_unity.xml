@@ -59,7 +59,8 @@
       <variable tag="b" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
       
       <variable tag="doTestRobot" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Test Robot"/>
-      <variable tag="robotLeftProb" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Test Robot"/>
+      <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Test Robot"/>
+      <variable tag="robotLeftProb" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Test Robot"/>
 
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -866,10 +867,6 @@
           </action>
 
           <action type="assignment" variable="tGratingEccentricityStart" value="tGratingEccentricityDeg"/>
-		   		      
-          <action type="if" condition="doTestRobot==1">
-            <action type="assignment" variable="robotLeftProb" value="rand(0,1)"/>
-          </action>
 
           <action type="if" condition="doLaserStim">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
@@ -983,10 +980,11 @@
           <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
           <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
           <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Reward"></transition>
-          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &lt; 0.5) &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
-          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &gt; 0.5) &amp;&amp; tLeftTrial==1" target="Reward"></transition>
-          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &lt; 0.5) &amp;&amp; tLeftTrial==0" target="Reward"></transition>
-          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; (robotLeftProb &gt; 0.5) &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
+          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==1" target="Reward"></transition>
+          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; (robotLeftProb &lt; 0.5) &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
+          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; (robotLeftProb &gt; 0.5) &amp;&amp; tLeftTrial==1" target="Reward"></transition>
+          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; (robotLeftProb &lt; 0.5) &amp;&amp; tLeftTrial==0" target="Reward"></transition>
+          <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; (robotLeftProb &gt; 0.5) &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
           <transition type="direct" target="Reaction"></transition>
         </task_system_state>
 
