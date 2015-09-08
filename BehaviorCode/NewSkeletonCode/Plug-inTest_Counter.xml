@@ -1,0 +1,69 @@
+<?xml version="1.0" standalone="no"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices">
+        <iodevice type="labjacku6" tag="labjacku6" pulse_duration="pulse_duration" pulse_on="pulse_on" lever1="lever1" lever1_solenoid="lever1_solenoid" laser_trigger="laser_trigger" counter="counter" counter2="counter2"></iodevice>
+    </io_devices>
+    <variables tag="Variables">
+        <variable tag="pulse_duration" scope="global" logging="when_changed" default_value="0" type="integer">
+            <action type="if" tag="If non zero" condition="pulse_duration != 0">
+                <action type="assignment" tag="Set pulse_on" variable="pulse_on" value="1"></action>
+            </action>
+            <action type="if" tag="If zero" condition="pulse_duration == 0">
+                <action type="assignment" tag="Clear pulse_on" variable="pulse_on" value="0"></action>
+            </action>
+        </variable>
+        <variable tag="pulse_on" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="pulse_on_SINK" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="lever1" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="lever1_SOURCE" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="lever1_solenoid" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="lever1_solenoid_SINK" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="laser_trigger" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="laser_trigger_SINK" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"></variable>
+        <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"></variable>
+        <variable tag="tempCount1" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="tempCount2" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="nScans1" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
+        <variable tag="nScans2" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
+        <variable tag="nScans3" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
+    </variables>
+    <sounds tag="Sounds"></sounds>
+    <stimuli tag="Stimuli"></stimuli>
+    <filters tag="Filters"></filters>
+    <optimizers tag="Optimizers"></optimizers>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential" interruptible="YES">
+            <task_system tag="New Task System" interruptible="YES">
+                <task_system_state tag="Task State One" interruptable="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action tag="Start labjack" type="start_device_IO" device="labjacku6"></action>
+                    <action type="report" message="**** In First Task State"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="counter >= nScans1" target="Task State Two"></transition>
+                </task_system_state>
+                <task_system_state tag="Task State Two" interruptable="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="report" message="**** In Second Task State"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <action type="assignment" tag="Set tempCount1" variable="tempCount1" value="counter"></action>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="(counter - tempCount1) >= nScans2" target="Task State Three"></transition>
+                </task_system_state>
+                <task_system_state tag="Task State Three" interruptable="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="report" message="**** In Third Task State"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <action type="assignment" tag="Set tempCount2" variable="tempCount2" value="counter"></action>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="(counter - tempCount2) >= nScans3" target="Exit State System"></transition>
+                </task_system_state>
+                <task_system_state tag="Exit State System" interruptable="YES">
+                    <action type="report" message="**** Exiting Task State"></action>
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action tag="Stop labjack" type="stop_device_IO" device="labjacku6"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition tag="Return to parent task system" type="yield"></transition>
+                </task_system_state>
+            </task_system>
+        </protocol>
+    </experiment>
+</monkeyml>
