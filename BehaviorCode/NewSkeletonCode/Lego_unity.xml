@@ -977,14 +977,14 @@
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" condition="timerExpired(stimOnTimerMs) &amp;&amp; !stimIsOff" target="StimOff"></transition>
           <transition type="timer_expired" timer="reactionTimerMs" target="Ignore"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
-          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Reward"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Reward"></transition>
-          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; !invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Reward"></transition>
-          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
-          <transition type="conditional" condition="tLeftTrial==1 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
-          <transition type="conditional" condition="tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Reward"></transition>
+          <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
+          <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Reward"></transition>
+          <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Reward"></transition>
+          <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
+          <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; !invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Reward"></transition>
+          <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
+          <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
+          <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Reward"></transition>
           <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==1" target="Reward"></transition>
           <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
           <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Reward"></transition>
