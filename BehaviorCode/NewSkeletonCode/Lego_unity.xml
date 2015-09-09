@@ -925,10 +925,10 @@
           <action type="start_timer" timer="stimOnTimerMs" timebase="" duration="stimOnTimeMs" duration_units="ms"/>
           <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs" duration_units="ms"/>
 
-          <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
-          <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
           <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
           <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"></action>
+          <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
+          <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
           <action tag="Update Display" type="update_stimulus_display"></action>
           <action type="assignment" variable="stimTimestampMs" value="now()/1000"/>
 
@@ -961,8 +961,14 @@
         <task_system_state tag="Reaction" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           
-		  <action type="assignment" tag="track motion" variable="trackMotion" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))+tGratingEccentricityStart"/>
+          <action type="if" condition="doTestRobot==0">
+		        <action type="assignment" tag="track motion" variable="trackMotion" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))+tGratingEccentricityStart"/>
+          </action>
 			
+          <action type="if" condition="doTestRobot==1">
+            <action type="assignment" tag="track motion" variable="trackMotion" value="1000"/>
+          </action>
+
           <action type="if" condition="doFeedbackMotion==1">
             <action type="assignment" tag="Move stimulus" variable="tGratingEccentricityDeg" value="trackMotion"/>
             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
