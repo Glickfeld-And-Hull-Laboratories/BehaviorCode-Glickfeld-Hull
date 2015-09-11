@@ -62,7 +62,7 @@ if haveBs
         nTrialsPerLevel = nTrialsPerLevel(~dropIx);
     end
 end
-
+iblock = bs.block;
 
 %% supplant with x, y
 if ~isempty(uo.XPoints)
@@ -115,16 +115,21 @@ if uo.DoPlot
             labelStr = 'Right Contrast/Left Contrast';
             intensScaleF = 1;
             isContrast = true;
-        elseif bs.doContrast
+        elseif bs.doContrast(:,iblock)
             unitStr = '%';
             labelStr = 'contrast (%)';
             intensScaleF = 100;
             isContrast = true;
-        elseif bs.doOri
+        elseif bs.doOri(:,iblock)
             unitStr = 'deg';
             labelStr = 'Orientation (deg)';
             intensScaleF = 1;
             isOri = true;
+        elseif bs.doAuditory(:,iblock)
+            unitStr = 'dB';
+            labelStr = 'Volume (dB)';
+            intensScaleF = 1;
+            isAuditory = true;
         end
     else
         unitStr = '';
