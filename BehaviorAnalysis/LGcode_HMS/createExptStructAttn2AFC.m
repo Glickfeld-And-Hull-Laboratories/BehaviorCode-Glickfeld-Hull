@@ -10,6 +10,7 @@ function mouse = createExptStructAttn2AFC;
         for itest = 1:3
             mouse(imouse).test(itest).oddsRightPct = [];
             mouse(imouse).test(itest).testCon = [];
+            mouse(imouse).test(itest).intensities = [];
             for ipos = 1:2
                 mouse(imouse).test(itest).pos(ipos).nCorrect = [];
                 mouse(imouse).test(itest).pos(ipos).nIncorrect = [];
@@ -77,31 +78,30 @@ function mouse = createExptStructAttn2AFC;
             if mouse(imouse).expt(iexp).oddsRightPct > mouse(imouse).expt(iexp).oddsLeftPct
                 mouse(imouse).expt(iexp).side = 'R';
                 itest = 3;
-                mouse(imouse).test(itest).oddsRightPct = [mouse(imouse).test(itest).oddsRightPct mouse(imouse).expt(iexp).oddsRightPct];
-                mouse(imouse).test(itest).testCon = [mouse(imouse).test(itest).testCon mouse(imouse).expt(iexp).intensities(2)];
+                test_pos = 2;
             elseif mouse(imouse).expt(iexp).oddsRightPct < mouse(imouse).expt(iexp).oddsLeftPct
                 mouse(imouse).expt(iexp).side = 'L';
                 itest = 1;
-                mouse(imouse).test(itest).oddsRightPct = [mouse(imouse).test(itest).oddsRightPct mouse(imouse).expt(iexp).oddsRightPct];
-                mouse(imouse).test(itest).testCon = [mouse(imouse).test(itest).testCon mouse(imouse).expt(iexp).intensities(2)];
+                test_pos = 1;
             elseif mouse(imouse).expt(iexp).oddsRightPct == mouse(imouse).expt(iexp).oddsLeftPct
                 mouse(imouse).expt(iexp).side = 'B';
                 itest = 2;
-                mouse(imouse).test(itest).oddsRightPct = [mouse(imouse).test(itest).oddsRightPct mouse(imouse).expt(iexp).oddsRightPct];
-                mouse(imouse).test(itest).testCon = [mouse(imouse).test(itest).testCon mouse(imouse).expt(iexp).intensities(2)];
+                test_pos = 1;
             end
-
+            mouse(imouse).test(itest).oddsRightPct = [mouse(imouse).test(itest).oddsRightPct mouse(imouse).expt(iexp).oddsRightPct];
+            mouse(imouse).test(itest).testCon = [mouse(imouse).test(itest).testCon mouse(imouse).expt(iexp).pos(test_pos).intensities];
+            mouse(imouse).test(itest).intensities = [mouse(imouse).test(itest).intensities; mouse(imouse).expt(iexp).intensities];
             mouse(imouse).posN = [mouse(imouse).posN; mouse(imouse).expt(iexp).posN];
             mouse(imouse).oddsRightPctN = [mouse(imouse).oddsRightPctN, mouse(imouse).expt(iexp).oddsRightPct];
             for ipos = 1:2
-                mouse(imouse).test(itest).pos(ipos).nCorrect = [mouse(imouse).test(itest).pos(ipos).nCorrect mouse(imouse).expt(iexp).pos(ipos).nCorrect(2)];
-                mouse(imouse).test(itest).pos(ipos).nIncorrect = [mouse(imouse).test(itest).pos(ipos).nIncorrect mouse(imouse).expt(iexp).pos(ipos).nIncorrect(2)];
+                mouse(imouse).test(itest).pos(ipos).nCorrect = [mouse(imouse).test(itest).pos(ipos).nCorrect; mouse(imouse).expt(iexp).pos(ipos).nCorrect];
+                mouse(imouse).test(itest).pos(ipos).nIncorrect = [mouse(imouse).test(itest).pos(ipos).nIncorrect; mouse(imouse).expt(iexp).pos(ipos).nIncorrect];
             end
         end
         for itest = 1:3
             for ipos = 1:2
                 if length(mouse(imouse).test(itest).pos(ipos).nCorrect + mouse(imouse).test(itest).pos(ipos).nIncorrect)>1
-                    [x y] = binofit(sum(mouse(imouse).test(itest).pos(ipos).nCorrect,2),sum(mouse(imouse).test(itest).pos(ipos).nCorrect,2) + sum(mouse(imouse).test(itest).pos(ipos).nIncorrect,2));
+                    [x y] = binofit(sum(mouse(imouse).test(itest).pos(ipos).nCorrect,1),sum(mouse(imouse).test(itest).pos(ipos).nCorrect,1) + sum(mouse(imouse).test(itest).pos(ipos).nIncorrect,1));
                     mouse(imouse).test(itest).pos(ipos).pctCorrect = x;
                     mouse(imouse).test(itest).pos(ipos).ci95 = y;
                 end
