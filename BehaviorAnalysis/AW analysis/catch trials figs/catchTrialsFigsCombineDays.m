@@ -42,7 +42,6 @@ m = any(unique(cell2mat_padded(input.tCatchGratingDirectionDeg)));
         atCatchGratingDirectionDeg = eval(['input.tCatchGratingDirectionDeg(', trStr,')']);
         atGratingDirectionDeg = eval(['input.tGratingDirectionDeg(', trStr,')']);
         atGratingContrast = eval(['input.tGratingContrast(', trStr,')']);
-        acatchTrialOutcomeCell = eval(['input.catchTrialOutcomeCell(', trStr,')']);
         atCyclesOn = eval(['input.tCyclesOn(', trStr,')']);
         atSoundCatchAmplitude = eval(['input.tSoundCatchAmplitude(', trStr,')']);
         atSoundTargetAmplitude = eval(['input.tSoundTargetAmplitude(', trStr,')']);
@@ -52,7 +51,30 @@ m = any(unique(cell2mat_padded(input.tCatchGratingDirectionDeg)));
         tGratingDirectionDeg = [];
         tGratingContrast = [];
         catchTrialOutcomeCell = [];
-        tCyclesOn = [];
+        tCyclesOn = [];        
+        
+        try
+            acatchTrialOutcomeCell = eval(['input.catchTrialOutcomeCell(', trStr,')']);
+        catch
+            isCatchTrial = atCatchGratingDirectionDeg > 0;
+            catchIndex = find(isCatchTrial == 1);
+            isFA = cell2mat_padded(input.tFalseAlarm);
+            cCatchOn = cell2mat_padded(input.cCatchOn);
+            cLeverUp = cell2mat_padded(input.cLeverUp);
+            acatchTrialOutcomeCell = num2cell(NaN(length(input.tGratingDirectionDeg),1));
+                for i = 1:sum(isCatchTrial)
+                    if isFA(catchIndex(i)) == 1
+                        acatchTrialOutcomeCell{catchIndex(i),1} = 'FA';
+                    elseif cCatchOn(catchIndex(i)) == 0
+                        acatchTrialOutcomeCell{catchIndex(i),1} = 'failure';
+                    elseif (cLeverUp(catchIndex(i)) - cCatchOn(catchIndex(i))) < tooFastTime
+                        acatchTrialOutcomeCell{catchIndex(i),1} = 'failure';
+                    elseif (cLeverUp(catchIndex(i)) - cCatchOn(catchIndex(i))) > maxReactTime
+                        acatchTrialOutcomeCell{catchIndex(i),1} = 'CR';
+                    end
+                end 
+        end
+       
     else 
         %visual
         trialOutcomeCell = eval(['input.trialOutcomeCell(', trStr,')']);
@@ -60,7 +82,7 @@ m = any(unique(cell2mat_padded(input.tCatchGratingDirectionDeg)));
         tCatchGratingDirectionDeg = eval(['input.tCatchGratingDirectionDeg(', trStr,')']);
         tGratingDirectionDeg = eval(['input.tGratingDirectionDeg(', trStr,')']);
         tGratingContrast = eval(['input.tGratingContrast(', trStr,')']);
-        catchTrialOutcomeCell = eval(['input.catchTrialOutcomeCell(', trStr,')']);
+        
         tCyclesOn = eval(['input.tCyclesOn(', trStr,')']);
         atrialOutcomeCell = [];
         atBlock2TrialNumber = [];
@@ -72,26 +94,48 @@ m = any(unique(cell2mat_padded(input.tCatchGratingDirectionDeg)));
         atSoundCatchAmplitude = [];
         atSoundTargetAmplitude = [];
         acatchTrialOutcomeCell = [];
+        
+        try
+            catchTrialOutcomeCell = eval(['input.catchTrialOutcomeCell(', trStr,')']);
+        catch
+            isCatchTrial = atCatchGratingDirectionDeg > 0;
+            catchIndex = find(isCatchTrial == 1);
+            isFA = cell2mat_padded(input.tFalseAlarm);
+            cCatchOn = cell2mat_padded(input.cCatchOn);
+            cLeverUp = cell2mat_padded(input.cLeverUp);
+            catchTrialOutcomeCell = num2cell(NaN(length(input.tGratingDirectionDeg),1));
+                for i = 1:sum(isCatchTrial)
+                    if isFA(catchIndex(i)) == 1
+                        catchTrialOutcomeCell{catchIndex(i),1} = 'FA';
+                    elseif cCatchOn(catchIndex(i)) == 0
+                        catchTrialOutcomeCell{catchIndex(i),1} = 'failure';
+                    elseif (cLeverUp(catchIndex(i)) - cCatchOn(catchIndex(i))) < tooFastTime
+                        catchTrialOutcomeCell{catchIndex(i),1} = 'failure';
+                    elseif (cLeverUp(catchIndex(i)) - cCatchOn(catchIndex(i))) > maxReactTime
+                        catchTrialOutcomeCell{catchIndex(i),1} = 'CR';
+                    end
+                end 
+        end
 
     end
     
     if size(trialOutcomeCell,1) > size(trialOutcomeCell,2)
-        atrialOutcomeCell = eval(['input.trialOutcomeCell(', trStr,')'])';
-        atBlock2TrialNumber = eval(['input.tBlock2TrialNumber(', trStr,')'])';
-        atCatchGratingDirectionDeg = eval(['input.tCatchGratingDirectionDeg(', trStr,')'])';
-        atGratingDirectionDeg = eval(['input.tGratingDirectionDeg(', trStr,')'])';
-        atGratingContrast = eval(['input.tGratingContrast(', trStr,')'])';
-        acatchTrialOutcomeCell = eval(['input.catchTrialOutcomeCell(', trStr,')'])';
-        atCyclesOn = eval(['input.tCyclesOn(', trStr,')'])';
-        atSoundCatchAmplitude = eval(['input.tSoundCatchAmplitude(', trStr,')'])';
-        atSoundTargetAmplitude = eval(['input.tSoundTargetAmplitude(', trStr,')'])';
-        trialOutcomeCell = eval(['input.trialOutcomeCell(', trStr,')'])';
-        tBlock2TrialNumber = eval(['input.tBlock2TrialNumber(', trStr,')'])';
-        tCatchGratingDirectionDeg = eval(['input.tCatchGratingDirectionDeg(', trStr,')'])';
-        tGratingDirectionDeg = eval(['input.tGratingDirectionDeg(', trStr,')'])';
-        tGratingContrast = eval(['input.tGratingContrast(', trStr,')'])';
-        catchTrialOutcomeCell = eval(['input.catchTrialOutcomeCell(', trStr,')'])';
-        tCyclesOn = eval(['input.tCyclesOn(', trStr,')'])';
+        atrialOutcomeCell = atrialOutcomeCell';
+        atBlock2TrialNumber = atBlock2TrialNumber';
+        atCatchGratingDirectionDeg = atCatchGratingDirectionDeg';
+        atGratingDirectionDeg = atGratingDirectionDeg';
+        atGratingContrast = atGratingContrast';
+        acatchTrialOutcomeCell = acatchTrialOutcomeCell';
+        atCyclesOn = atCyclesOn';
+        atSoundCatchAmplitude = atSoundCatchAmplitude';
+        atSoundTargetAmplitude = atSoundTargetAmplitude';
+        trialOutcomeCell = trialOutcomeCell';
+        tBlock2TrialNumber = tBlock2TrialNumber';
+        tCatchGratingDirectionDeg = tCatchGratingDirectionDeg';
+        tGratingDirectionDeg = tGratingDirectionDeg';
+        tGratingContrast = tGratingContrast';
+        catchTrialOutcomeCell = catchTrialOutcomeCell';
+        tCyclesOn = tCyclesOn';
     end
         
     
@@ -122,28 +166,59 @@ for i = 2:nDays
     load(fitdataName);
     b = any(unique(cell2mat_padded(input.tCatchGratingDirectionDeg)));
     if b == 0
-        try
-        atrialOutcomeCell = [atrialOutcomeCell eval(['input.trialOutcomeCell(', trStr,')'])];
-        atBlock2TrialNumber = [atBlock2TrialNumber eval(['input.tBlock2TrialNumber(', trStr,')'])];
-        atCatchGratingDirectionDeg = [atCatchGratingDirectionDeg eval(['input.tCatchGratingDirectionDeg(', trStr,')'])];
-        atGratingDirectionDeg = [atGratingDirectionDeg eval(['input.tGratingDirectionDeg(', trStr,')'])];
-        atGratingContrast = [atGratingContrast eval(['input.tGratingContrast(', trStr,')'])];
-        acatchTrialOutcomeCell = [acatchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])];
-        atCyclesOn = [atCyclesOn eval(['input.tCyclesOn(', trStr,')'])];
-        atSoundCatchAmplitude = [atSoundCatchAmplitude eval(['input.tSoundCatchAmplitude(', trStr,')'])];
-        atSoundTargetAmplitude = [atSoundTargetAmplitude eval(['input.tSoundTargetAmplitude(', trStr,')'])];
-        catch
-        atrialOutcomeCell = [atrialOutcomeCell eval(['input.trialOutcomeCell(', trStr,')'])'];
-        atBlock2TrialNumber = [atBlock2TrialNumber eval(['input.tBlock2TrialNumber(', trStr,')'])'];
-        atCatchGratingDirectionDeg = [atCatchGratingDirectionDeg eval(['input.tCatchGratingDirectionDeg(', trStr,')'])'];
-        atGratingDirectionDeg = [atGratingDirectionDeg eval(['input.tGratingDirectionDeg(', trStr,')'])'];
-        atGratingContrast = [atGratingContrast eval(['input.tGratingContrast(', trStr,')'])'];
-        acatchTrialOutcomeCell = [acatchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])'];
-        atCyclesOn = [atCyclesOn eval(['input.tCyclesOn(', trStr,')'])'];
-        atSoundCatchAmplitude = [atSoundCatchAmplitude eval(['input.tSoundCatchAmplitude(', trStr,')'])'];
-        atSoundTargetAmplitude = [atSoundTargetAmplitude eval(['input.tSoundTargetAmplitude(', trStr,')'])'];
-        end
         
+        try
+            atrialOutcomeCell = [atrialOutcomeCell eval(['input.trialOutcomeCell(', trStr,')'])];
+            atBlock2TrialNumber = [atBlock2TrialNumber eval(['input.tBlock2TrialNumber(', trStr,')'])];
+            atCatchGratingDirectionDeg = [atCatchGratingDirectionDeg eval(['input.tCatchGratingDirectionDeg(', trStr,')'])];
+            atGratingDirectionDeg = [atGratingDirectionDeg eval(['input.tGratingDirectionDeg(', trStr,')'])];
+            atGratingContrast = [atGratingContrast eval(['input.tGratingContrast(', trStr,')'])];
+    %         acatchTrialOutcomeCell = [acatchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])];
+            atCyclesOn = [atCyclesOn eval(['input.tCyclesOn(', trStr,')'])];
+            atSoundCatchAmplitude = [atSoundCatchAmplitude eval(['input.tSoundCatchAmplitude(', trStr,')'])];
+            atSoundTargetAmplitude = [atSoundTargetAmplitude eval(['input.tSoundTargetAmplitude(', trStr,')'])];
+        catch
+            atrialOutcomeCell = [atrialOutcomeCell eval(['input.trialOutcomeCell(', trStr,')'])'];
+            atBlock2TrialNumber = [atBlock2TrialNumber eval(['input.tBlock2TrialNumber(', trStr,')'])'];
+            atCatchGratingDirectionDeg = [atCatchGratingDirectionDeg eval(['input.tCatchGratingDirectionDeg(', trStr,')'])'];
+            atGratingDirectionDeg = [atGratingDirectionDeg eval(['input.tGratingDirectionDeg(', trStr,')'])'];
+            atGratingContrast = [atGratingContrast eval(['input.tGratingContrast(', trStr,')'])'];
+    %         acatchTrialOutcomeCell = [acatchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])'];
+            atCyclesOn = [atCyclesOn eval(['input.tCyclesOn(', trStr,')'])'];
+            atSoundCatchAmplitude = [atSoundCatchAmplitude eval(['input.tSoundCatchAmplitude(', trStr,')'])'];
+            atSoundTargetAmplitude = [atSoundTargetAmplitude eval(['input.tSoundTargetAmplitude(', trStr,')'])'];
+        end
+        try
+            acatchTrialOutcomeCell = [acatchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])];
+            
+        catch
+            try
+                acatchTrialOutcomeCell = [acatchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])'];
+            catch
+                isCatchTrial = cell2mat_padded(input.tCatchGratingDirectionDeg) > 0;
+                catchIndex = find(isCatchTrial == 1);
+                isFA = cell2mat_padded(input.tFalseAlarm);
+                cCatchOn = cell2mat_padded(input.cCatchOn);
+                cLeverUp = cell2mat_padded(input.cLeverUp);
+                tempcatchoutcome = num2cell(NaN(length(input.tGratingDirectionDeg),1));
+                for i = 1:sum(isCatchTrial)
+                    if isFA(catchIndex(i)) == 1
+                        tempcatchoutcome{catchIndex(i),1} = 'FA';
+                    elseif cCatchOn(catchIndex(i)) == 0
+                        tempcatchoutcome{catchIndex(i),1} = 'failure';
+                    elseif (cLeverUp(catchIndex(i)) - cCatchOn(catchIndex(i))) < tooFastTime
+                        tempcatchoutcome{catchIndex(i),1} = 'failure';
+                    elseif (cLeverUp(catchIndex(i)) - cCatchOn(catchIndex(i))) > maxReactTime
+                        tempcatchoutcome{catchIndex(i),1} = 'CR';
+                    end
+                end
+                try
+                    acatchTrialOutcomeCell = [acatchTrialOutcomeCell tempcatchoutcome];
+                catch
+                    acatchTrialOutcomeCell = [acatchTrialOutcomeCell tempcatchoutcome'];
+                end
+            end
+        end
     else
         try
         trialOutcomeCell = [trialOutcomeCell eval(['input.trialOutcomeCell(', trStr,')'])];
@@ -151,7 +226,7 @@ for i = 2:nDays
         tCatchGratingDirectionDeg = [tCatchGratingDirectionDeg eval(['input.tCatchGratingDirectionDeg(', trStr,')'])];            
         tGratingDirectionDeg = [tGratingDirectionDeg eval(['input.tGratingDirectionDeg(', trStr,')'])];
         tGratingContrast = [tGratingContrast eval(['input.tGratingContrast(', trStr,')'])];
-        catchTrialOutcomeCell = [catchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])];
+%         catchTrialOutcomeCell = [catchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])];
         tCyclesOn = [tCyclesOn eval(['input.tCyclesOn(', trStr,')'])];
         catch
         trialOutcomeCell = [trialOutcomeCell eval(['input.trialOutcomeCell(', trStr,')'])'];
@@ -159,8 +234,38 @@ for i = 2:nDays
         tCatchGratingDirectionDeg = [tCatchGratingDirectionDeg eval(['input.tCatchGratingDirectionDeg(', trStr,')'])'];            
         tGratingDirectionDeg = [tGratingDirectionDeg eval(['input.tGratingDirectionDeg(', trStr,')'])'];
         tGratingContrast = [tGratingContrast eval(['input.tGratingContrast(', trStr,')'])'];
-        catchTrialOutcomeCell = [catchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])'];
+%         catchTrialOutcomeCell = [catchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])'];
         tCyclesOn = [tCyclesOn eval(['input.tCyclesOn(', trStr,')'])'];            
+        end
+        try
+            catchTrialOutcomeCell = [catchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])];
+        catch
+            try
+                catchTrialOutcomeCell = [catchTrialOutcomeCell eval(['input.catchTrialOutcomeCell(', trStr,')'])'];
+            catch
+                isCatchTrial = cell2mat_padded(input.tCatchGratingDirectionDeg) > 0;
+                catchIndex = find(isCatchTrial == 1);
+                isFA = cell2mat_padded(input.tFalseAlarm);
+                cCatchOn = cell2mat_padded(input.cCatchOn);
+                cLeverUp = cell2mat_padded(input.cLeverUp);
+                tempcatchoutcome = num2cell(NaN(length(input.tGratingDirectionDeg),1));
+                for i = 1:sum(isCatchTrial)
+                    if isFA(catchIndex(i)) == 1
+                        tempcatchoutcome{catchIndex(i),1} = 'FA';
+                    elseif cCatchOn(catchIndex(i)) == 0
+                        tempcatchoutcome{catchIndex(i),1} = 'failure';
+                    elseif (cLeverUp(catchIndex(i)) - cCatchOn(catchIndex(i))) < input.nFramesTooFast
+                        tempcatchoutcome{catchIndex(i),1} = 'failure';
+                    elseif (cLeverUp(catchIndex(i)) - cCatchOn(catchIndex(i))) > input.nFramesReact
+                        tempcatchoutcome{catchIndex(i),1} = 'CR';
+                    end
+                end
+                try
+                    catchTrialOutcomeCell = [catchTrialOutcomeCell tempcatchoutcome];
+                catch
+                    catchTrialOutcomeCell = [catchTrialOutcomeCell tempcatchoutcome'];
+                end
+            end
         end
     end
 end
@@ -179,12 +284,12 @@ set(0,'defaultfigurepaperposition',[.25 .25 [8.5 11]-0.5]);
     Allcycles = cell2mat_padded(atCyclesOn);
     Cycles = unique(Allcycles);
     A = find(Allcycles == 1);
-    atrialOutcomeCell(A)= [];
-    atSoundCatchAmplitude(A) = [];
-    atGratingDirectionDeg(A)=[];
-    atSoundTargetAmplitude(A) = [];
-    acatchTrialOutcomeCell(A) = [];
-    atBlock2TrialNumber(A)= [];
+    atrialOutcomeCell(A)= {[]};
+    atSoundCatchAmplitude(A) = {[]};
+    atGratingDirectionDeg(A)={[]};
+    atSoundTargetAmplitude(A) = {[]};
+    acatchTrialOutcomeCell(A) = {[]};
+    atBlock2TrialNumber(A)= {[]};
     hitInd = strcmp(atrialOutcomeCell,'success');
     falsealarmInd = strcmp(atrialOutcomeCell,'failure');
     missInd = strcmp(atrialOutcomeCell,'ignore');
@@ -192,6 +297,9 @@ set(0,'defaultfigurepaperposition',[.25 .25 [8.5 11]-0.5]);
     visInd = find(block2 == 1);
     audInd = find(block2 == 0);
     direction = celleqel2mat_padded(atSoundTargetAmplitude);
+    if sum(isnan(direction)) > 0
+        direction(find(isnan(direction))) = 0;
+    end
     dirs = unique(direction);
     doCatch = cell2mat_padded(atSoundCatchAmplitude);
     catchDeg = unique(doCatch);
@@ -294,11 +402,12 @@ print([fnout ['\' [num2str(ID) ' - Aud Catch Trials ' dayStrRange] '.pdf']], '-d
     Allcycles = cell2mat_padded(tCyclesOn);
     Cycles = unique(Allcycles);
     A = find(Allcycles == 1);
-    trialOutcomeCell(A)= [];
-    tCatchGratingDirectionDeg(A) = [];
-    tGratingDirectionDeg(A)=[];
-    catchTrialOutcomeCell(A) = [];
-    tBlock2TrialNumber(A)= [];
+    trialOutcomeCell(A)= {[]};
+    tCatchGratingDirectionDeg(A) = {[]};
+    tGratingDirectionDeg(A)={[]};
+    catchTrialOutcomeCell(A) ={[]};
+    tBlock2TrialNumber(A)= {[]};
+    tCyclesOn(A) = {[]};
     hitInd = strcmp(trialOutcomeCell,'success');
     falsealarmInd = strcmp(trialOutcomeCell,'failure');
     missInd = strcmp(trialOutcomeCell,'ignore');
