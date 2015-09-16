@@ -1,3 +1,6 @@
+rc = behavConstsAttn2AFC;
+xd = frm_xls2frm(rc.indexFilename, [], rc.indexTextCols);
+pv = behavParamsAttn2AFC;
 
 colmat = strvcat('g', 'k', 'b');
 for imouse = 1
