@@ -3,9 +3,9 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="lever1" 
-              lever1_solenoid="lever1_solenoid"
-              laser_trigger="laser_trigger"
+              lever1="FIO1" 
+              lever1_solenoid="MIO0"
+              laser_trigger="laserTrigger"
               trial_laser_powerMw="tTrialLaserPowerMw"
               strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -214,10 +214,9 @@
       <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
     </folder>
     <folder tag="Hardware variables">
-      <variable tag="lever1" full_name="lever1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
-      <variable tag="lever1_solenoid" full_name="lever1_solenoid" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
-      <variable tag="laser_trigger" full_name="laser_trigger" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
-      <variable tag="laser_trigger" full_name="laser_trigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
+      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="laserTrigger" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -297,6 +296,7 @@
       <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
 
       <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -425,7 +425,6 @@
             <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/>
             <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
             <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>
-            <action type="assignment" tag="Reset laser_trigger" variable="laser_trigger" value="0"/> 
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
             <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(minCyclesOn-1, nCyclesOn)"/>
             <action type="if" condition="doShortCatchTrial">
@@ -471,7 +470,7 @@
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laser_trigger" value="0"></action>
+            <action type="assignment" variable="laserTrigger" value="0"></action>
             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
 
@@ -775,12 +774,12 @@
                   <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>
                   
                   <action type="if" condition="doTrialLaser">
-                  	<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+                  	<action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>
                   	<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
                   	<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
                   </action>
                   <action type="if" condition="!doTrialLaser">
-                  	<action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserPowerMw_trigger" value="0"></action>
                   	<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
                   	<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
                   </action>  
@@ -799,9 +798,7 @@
               <action type="if" condition="block2DoVisualStim || block2DoAuditoryStim">
 
                 <!-- same for both types of block2 trials -->
-                <!--
-                <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>      
-                -->
+                <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>      
 
                 <action type="if" condition="tBlock2TrialNumber == 0">
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
@@ -876,14 +873,12 @@
               </action> 
 				<!-- using trial laser for block 1 -->
 				<action type="if" condition="doTrialLaser">
-          <!--
-					<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
-          -->
+					<action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>
                   	<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
                   	<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
                 </action>
                 <action type="if" condition="!doTrialLaser">
-                  	<action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserPowerMw_trigger" value="0"></action>
                   	<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
                   	<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
                   </action>  
@@ -901,23 +896,19 @@
                     <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
                     <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>  
                 	 <action type="if" condition="doTrialLaser">
-                    <!--
-                  		<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
-                    -->
+                  		<action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
                   		<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
                   		<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
                 	</action>
 					<action type="if" condition="doTrialLaser == 0">
-                  		<action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
+                  		<action type="assignment" variable="tTrialLaserPowerMw_trigger" value="0"/>
                   		<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
                   		<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
                 	</action>
                 </action>
                 	
                 <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
-                  <!--
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
-                   -->
+                  <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
                   <action type="assignment" variable="tTrialLaserOffTimeMs" value="block2TrialLaserOffTimeMs"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
@@ -964,8 +955,8 @@
 
               <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
 
-              <action type="assert" condition="tTrialLaserPowerMw == 0" stop_on_failure="1" 
-                      message="bug: tLaserPowerMw and tTrialLaserPowerMw != 0"/>
+              <action type="assert" condition="tTrialLaserPowerMw_trigger == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw_trigger != 0"/>
             </action>
             <action type="if" condition="!doLaserStim">
               <action type="assignment" variable="tLaserPowerMw" value="0"/>
@@ -1093,11 +1084,9 @@
             </action> 
 
             <!-- if trialLaser, send params to controller -->
-            <!--
-                    <action type="if" condition="tTrialLaserPowerMw > 0">
+                    <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
                       <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
               <action type="assignment" tag="Send laser paramsto controller" variable="sendLaserParams" value="0"></action>
-            -->
               <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
                       message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/>
               <action type="assert" stop_on_failure="1"
@@ -1117,11 +1106,11 @@
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
             <action type="if" condition="doLeverSolenoidAllTrials">
               <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
-              <action type="assignment" tag="lever Solenoid on" variable="lever1_solenoid" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action type="if" condition="!doLeverSolenoidAllTrials">
-              <action type="assignment" variable="lever1_solenoid" value="0"></action>
+              <action type="assignment" variable="MIO0" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>                        
@@ -1135,7 +1124,7 @@
 
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
               <!-- Lower solenoid at beginning of trial for any solenoid -->
-              <action type="assignment" tag="lever Solenoid off" variable="lever1_solenoid" value="0"></action>
+              <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
@@ -1150,7 +1139,7 @@
             </action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; lever1 == 1" target="TrialStimOn"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; FIO1 == 1" target="TrialStimOn"></transition>
             <transition type="conditional" tag="If fakeMouse elapsed, go to TrialStimOn" 
                         condition="!doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 100" target="TrialStimOn"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to TrialStimOn" 
@@ -1163,12 +1152,12 @@
             <action type="assignment" variable="stimTag" value= "1"/>
             <action type="assignment" variable="tStimOnMs" value="now()/1000" />
             <action type="if" condition="sendElectrophysSync">
-                <action type="assignment" variable="lever1_solenoid" value="1"/>
+                <action type="assignment" variable="MIO0" value="1"/>
               </action> 
 
-            <action type="if" condition="trialLaserPowerMw > 0">
-              <action type="assignment" variable="laser_trigger" value="1" /> 
-              <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw" />
+            <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
+              <action type="assignment" variable="laserTrigger" value="1"></action> 
+              <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action> 
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -1222,7 +1211,7 @@
             </action>
 
              <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="lever1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="TrialStimOff" timer="stimOnTimer"></transition>
           </task_system_state>
@@ -1232,7 +1221,7 @@
               <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
               <action type="start_timer" timer="targetTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
               <action type="if" condition="sendElectrophysSync==1">
-                <action type="assignment" variable="lever1_solenoid" value="0"/>
+                <action type="assignment" variable="MIO0" value="0"/>
               </action> 
             <action type="assignment" variable="stimTag" value= "0"/>
             <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
@@ -1253,7 +1242,7 @@
             <action type="report" message="Lever Down - Trial Started - Stim Off"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="lever1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; timerExpired(stimOffTimer)" target="TrialStimOn"></transition>
             <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; timerExpired(targetTimer)" target="TargetStimOn"></transition>
@@ -1264,7 +1253,7 @@
             <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
             <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
             <action type="if" condition="sendElectrophysSync">
-                <action type="assignment" variable="lever1_solenoid" value="1"/>
+                <action type="assignment" variable="MIO0" value="1"/>
             </action> 
             <action type="if" condition="doCustomTargetTime==0">
               <action type="start_timer" tag="" timer="targetOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
@@ -1324,7 +1313,7 @@
             <action type="assignment" variable="tStimTurnedOn" value="1"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="lever1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
             <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="targetOnTimer"></transition>
@@ -1334,9 +1323,9 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="set too fast time over" variable="isTooFast" value="0"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; lever1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; !doLever &amp;&amp; timerExpired(fakeMouseTimer)" target="Reward"></transition>
-            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; lever1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; !doLever &amp;&amp; timerExpired(fakeMouseTimer)" target="EarlyRelease"></transition>
             <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
             <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
@@ -1348,15 +1337,15 @@
 
            <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="laser_trigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
-            <action type="assignment" variable="lever1_solenoid" value="0"/>
+            <action type="assignment" variable="MIO0" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
-            <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (lever1 = $lever1 )"></action>
+            <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
 
             <action type="if" condition="doPhotodiode">
               <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
@@ -1367,7 +1356,7 @@
             
             <action type="if" condition="tShortCatchTrial &amp;&amp; (now()/1000) - tCatchTimeMs &gt;= tooFastTimeMs &amp;&amp; (now()/1000) - tCatchTimeMs &lt;= reactTimeMs">
             	<action type="assignment" variable="tFalseAlarm" value="1"></action>
-            	<action tag="ReportFalseAlarm" full_name="ReportDigital" type="report" message="** False Alarm (lever1 = $lever1 )"></action>
+            	<action tag="ReportFalseAlarm" full_name="ReportDigital" type="report" message="** False Alarm (FIO1 = $FIO1 )"></action>
             </action>
             
             <action type="if" condition="doITIStim == 0">
@@ -1405,7 +1394,7 @@
             </action>
 
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
-              <action type="assignment" tag="lever Solenoid on" variable="lever1_solenoid" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
 
@@ -1418,9 +1407,9 @@
 
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="laser_trigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
-            <action type="assignment" variable="lever1_solenoid" value="0"/>
+            <action type="assignment" variable="MIO0" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
@@ -1469,7 +1458,7 @@
 
 
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
-              <action type="assignment" tag="lever Solenoid on" variable="lever1_solenoid" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action type="start_timer" tag="Start missedTimeoutTimer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
@@ -1480,9 +1469,9 @@
 
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="laser_trigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
-            <action type="assignment" variable="lever1_solenoid" value="0"/>
+            <action type="assignment" variable="MIO0" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
@@ -1601,7 +1590,7 @@
           <task_system_state tag="EndTrialStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="if" condition="sendElectrophysSync">
-                <action type="assignment" variable="lever1_solenoid" value="1"/>
+                <action type="assignment" variable="MIO0" value="1"/>
               </action> 
             <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
             <action type="if" condition="tDoDeviantAfterMissing==0 || (tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==1)">
@@ -1632,11 +1621,11 @@
             <action type="assignment" variable="stimTag" value="1"></action>
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="lever1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and too fast Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; lever1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
-            <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; lever1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="endOnTimer"></transition>
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
@@ -1649,7 +1638,7 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
             <action type="if" condition="sendElectrophysSync">
-                <action type="assignment" variable="lever1_solenoid" value="0"/>
+                <action type="assignment" variable="MIO0" value="0"/>
               </action>  
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
@@ -1675,11 +1664,11 @@
             <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="lever1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and too fast Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; lever1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
-            <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; lever1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endOffTimer"></transition>
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
@@ -1696,7 +1685,7 @@
               <action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
               <action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
               <action type="if" condition="doSolenoidOnTimeout==1">
-              	<action type="assignment" tag="lever Solenoid on" variable="lever1_solenoid" value="1"></action>
+              	<action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               </action>
             </action>
 
@@ -1707,7 +1696,7 @@
           
           <task_system_state tag="EndTrial" interruptble="YES">
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
-            <action type="assignment" variable="laser_trigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>
@@ -1720,9 +1709,9 @@
       </trial>
       <action type="dequeue_stimulus" stimulus="base_grating"></action>
       <action tag="Update Stimulus" type="update_stimulus_display"></action>
-      <action type="assignment" tag="" variable="laser_trigger" value="0"/>
-      <action type="assignment" tag="" variable="tTrialLaserPowerMw" value="0"/>
-      <action type="assignment" tag="" variable="lever1_solenoid" value="0"/>
+      <action type="assignment" tag="" variable="laserTrigger" value="0"/>
+      <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
+      <action type="assignment" tag="" variable="MIO0" value="0"/>
       <action type="assignment" tag="" variable="juice" value="0"/>
     </protocol>
   </experiment>
