@@ -151,7 +151,7 @@ input.laserPowerMw = input.tLaserPowerMw;
 input.gratingDirectionDeg = input.tGratingDirectionDeg;
 
 % short catch trial calculations
-for trN = 1:length(missIx)
+
   if input.tShortCatchTrial{trN}
     if input.tFalseAlarm{trN}
         input.catchTrialOutcomeCell{trN} = 'FA';
@@ -165,10 +165,12 @@ for trN = 1:length(missIx)
     end
     if (input.cLeverUp{trN}-input.cCatchOn{trN})<input.nFramesTooFast
         input.catchTrialOutcomeCell{trN} = 'failure';
+    else
+        input.catchTrialOutcomeCell{trN} = 'NaN';
     end
-else
-    input.catchTrialOutcomeCell{trN} = 'NaN';
-end
+  end
+
+
 
 %% Counter/Frames Synchronization Section
 try
