@@ -19,6 +19,7 @@ function mouse = createExptStructAttn2AFC;
         for iexp = 1:length(mouse(imouse).ind)
             ind = mouse(imouse).ind(iexp);
             fbase = fullfile(rc.pathStr,['data-i' num2str(xd.Subject(ind)) '-' cell2mat(xd.DateStr(ind))]);
+            disp(['i' num2str(xd.Subject(ind)) ' ' cell2mat(xd.DateStr(ind))])
             if ~isnan(xd.ChooseMatFile(ind))
                 load([fbase '-' num2str(xd.ChooseMatFile) '.mat'])
             else
