@@ -665,7 +665,11 @@ pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '
 if sum(block2Ix)>= 1
   pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
-vH = vert_lines(0);
+if input.gratingContrastDiffSPO <= 100
+  vH = plot([1 1],[0 1]);
+else
+  vH = plot([0 0],[0 1]);
+end
 set(vH, 'Color', 'g');
 set(gca, 'XLim', [minX maxX], ...
          'YLim', [0 1]);
@@ -689,16 +693,23 @@ lowMidCell = maxCell/2;
 highMidCell = lowMidCell + 1;
 A = cell2mat(percentContCellB1(maxCell));
 B = cell2mat(percentContCellB1(1));
-C = cell2mat(percentContCellB1(highMidCell));
-D = cell2mat(percentContCellB1(lowMidCell));
 M = (A + B)/2;
-M2 = (C + D)/2;
 Selectivity = A - B;
 rndSelectivity = roundn(Selectivity, -3);
 Bias = M - 0.5;
 rndBias = roundn(Bias, -2);
-InnerBias = M2 - 0.5;
-rndInnerBias = roundn(InnerBias, -2);
+
+if mod(highMidCell,1) == 0
+  C = cell2mat(percentContCellB1(highMidCell));
+  D = cell2mat(percentContCellB1(lowMidCell));
+  M2 = (C + D)/2;
+  InnerBias = M2 - 0.5;
+  rndInnerBias = roundn(InnerBias, -2);
+else
+  InnerBias = NaN;
+  rndInnerBias = NaN;
+end
+
 
 title({['Selectivity = ' num2str(rndSelectivity)], ['Intrinsic/Challenged Bias = ' num2str(rndBias) '/' num2str(rndInnerBias)]});
 %%%%%%%%%%%%%%%%%
