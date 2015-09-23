@@ -19,6 +19,8 @@ switch tHostname
             rc.fitOutputMatDir = fullfile(rootDir, 'output\fitMatStats');
             rc.eyeOutputDir = fullfile(rootDir,'EyeTracking');
             rc.eyeInputDir = fullfile(rootDir,'EyeTracking');
+            rc.caOutputDir = fullfile(rootDir,'2P');
+            rc.ashleyAnalysis = '\\CRASH.dhe.duke.edu\data\home\ashley\analysis';
         elseif tUsername(1:6) == 'ashley'
             rc.name = 'ashley';
             rootDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis\Behavior';
