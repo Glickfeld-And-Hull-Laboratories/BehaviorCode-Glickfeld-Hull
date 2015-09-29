@@ -4,11 +4,9 @@
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
       pulse_duration="juice" pulse_on="juice" 
       lever1="FIO1" 
-      lever1_solenoid="MIO0"
       counter2="counter2"
       quadrature="quadrature"
       trial_laser_powerMw="tTrialLaserPowerMw"
-      laser_trigger="laserTrigger"
       strobed_digital_word="strobedDigitalWord"
       counter="counter"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -183,9 +181,7 @@
       </folder>
       <folder tag="Hardware variables">
         <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
-        <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
         <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Hardware"/>
-        <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
         <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
         <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
         <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
@@ -914,9 +910,7 @@
                       <task_system_state tag="StimOn" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
-                          <action type="assignment" variable="laserTrigger" value="1"></action>
-                          <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action> 
-                          <action type="assignment" variable="MIO0" value="1"></action> 
+                          <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>  
                           <action type="report" message="********* SENDING LASER TRIGGER *********"/>
                           <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
                         </action>
@@ -943,8 +937,6 @@
                       <task_system_state tag="StimOff" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="assignment" tag="tag stimOff" variable="stimIsOff" value="1"/>
-                        <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractorGrating"></action>
                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="targetGrating"></action>
                         <action tag="Update Display" type="update_stimulus_display"></action>
@@ -958,7 +950,7 @@
                         <action type="assignment" tag="tag tooFast" variable="isNotTooFast" value="1"/>
                         <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
                         <action type="report" message="**** Quad zeroed *****"></action>
-                        <action type="assignment" variable="MIO0" value="0"></action> 
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="direct" target="Reaction"></transition>
                       </task_system_state>
@@ -1005,7 +997,7 @@
                       </task_system_state>
 
                       <task_system_state tag="Reward" interruptible="YES">
-                        <action type="assignment" variable="MIO0" value="0"></action> 
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="dequeue_stimulus" stimulus="targetGrating"></action>
                         <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
@@ -1073,7 +1065,7 @@
                       <task_system_state tag="Incorrect" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="dequeue_stimulus" stimulus="targetGrating"></action>
-                        <action type="assignment" variable="MIO0" value="0"></action> 
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 
                         <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
@@ -1122,7 +1114,7 @@
 
                       <task_system_state tag="Ignore" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        <action type="assignment" variable="MIO0" value="0"></action> 
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action type="dequeue_stimulus" stimulus="targetGrating"></action>
                         <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 
@@ -1173,7 +1165,7 @@
                       <task_system_state tag="EndTrial" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>           
                         <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
-                        <action type="assignment" variable="MIO0" value="0"></action> 
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
                         <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
                         <action type="if" condition="doBlocks==1">
