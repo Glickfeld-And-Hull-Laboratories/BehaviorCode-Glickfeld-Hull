@@ -7,6 +7,7 @@
               lever1_solenoid="MIO0"
               trial_laser_powerMw="tTrialLaserPowerMw"
               laser_trigger="laserTrigger"
+              optic_device="optic_device"
               strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
@@ -138,6 +139,7 @@
 
       <!-- stimulus control parameters -->
 
+      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string" persistant="1" groups="Laser Variables"/>
       <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser Variables"/>
       <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" />
       <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" />
@@ -682,6 +684,10 @@
                         message="When using trialLaser, doLaserStim must be off"/>
 
                 <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
+                
+                <action type="if" condition="(success + ignore + failure &lt; 5) &amp; &amp; (optic_device=="laser")"> <!-- First 5 trials cannot be laser trials -->
+                  <action type="assignment" variable="tBlock2TrialNumber" value="0"></action>
+                </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
                   <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
