@@ -17,6 +17,8 @@
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       
+      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string" persistant="1" groups="Laser Variables"/>
+
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser Variables"/>
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
@@ -124,6 +126,7 @@
       
 	    <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2TrialLaserPowerMw_track" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2DoRampLength" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
@@ -138,8 +141,6 @@
 
 
       <!-- stimulus control parameters -->
-
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string" persistant="1" groups="Laser Variables"/>
       <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser Variables"/>
       <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" />
       <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" />
@@ -685,7 +686,7 @@
 
                 <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
                 
-                <action type="if" condition="(success + ignore + failure &lt; 5) &amp; &amp; (optic_device=="laser")"> <!-- First 5 trials cannot be laser trials -->
+                <action type="if" condition="(success + ignore + failure &lt; 5) &amp;&amp; (optic_device != 'led')"> <!-- First 5 trials cannot be laser trials -->
                   <action type="assignment" variable="tBlock2TrialNumber" value="0"></action>
                 </action>
 
@@ -862,6 +863,11 @@
                     variable="tItiWaitTimeMs" 
                     value="itiTimeMs"></action>
             
+            <!-- Increase ITI time by 15s if the laser power is changed -->
+            <action type="if" condition="(block2TrialLaserPowerMw_track != block2TrialLaserPowerMw) &amp;&amp; (optic_device != 'led')">
+              <action type="assignment" variable="tItiWaitTimeMs" value="tItiWaitTimeMs + 15000"></action>
+            </action>
+
             <!-- extend based on previous hold and max stim time, if asked for -->
             <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
               <action type="assignment" variable="tempMs"  
@@ -872,6 +878,8 @@
                         variable="tItiWaitTimeMs" value="tItiWaitTimeMs+tempMs"></action>
               </action>
             </action>
+
+            <action type="assignment" variable="block2TrialLaserPowerMw_track" value="block2TrialLaserPowerMw"></action>
 
             <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
                     timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
