@@ -7,6 +7,7 @@
       lever1_solenoid="MIO0"
       laser_trigger="laserTrigger"
       trial_laser_powerMw="tTrialLaserPowerMw"
+      optic_device="optic_device"
       strobed_digital_word="strobedDigitalWord"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
       <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
@@ -15,6 +16,7 @@
       <folder tag="Behavioral Control">
         <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
         <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
+        <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
         <variable tag="doConstantStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doITIStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
@@ -183,6 +185,7 @@
         <variable tag="block2RvtTrainBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
 
         <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2TrialLaserPowerMw_track" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
         <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
         <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
 
@@ -1072,6 +1075,11 @@
                             <action type="assignment" 
                               variable="tItiWaitTimeMs" 
                               value="itiTimeMs"></action>
+
+                              <action type="if" condition="(block2TrialLaserPowerMw_track != block2TrialLaserPowerMw)">
+                                <action type="report" message="Laser Power is Changed"></action>
+                                <action type="assignment" variable="block2TrialLaserPowerMw_track" value="block2TrialLaserPowerMw"></action>
+                              </action>
 
                               <!-- if asked for, extend ITI based on previous hold and max stim time, also takes TOs and extra cycles into account -->
                               <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
