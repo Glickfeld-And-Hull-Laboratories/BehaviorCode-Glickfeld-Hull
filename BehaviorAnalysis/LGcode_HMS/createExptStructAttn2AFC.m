@@ -14,6 +14,7 @@ function mouse = createExptStructAttn2AFC;
             for ipos = 1:2
                 mouse(imouse).test(itest).pos(ipos).nCorrect = [];
                 mouse(imouse).test(itest).pos(ipos).nIncorrect = [];
+                mouse(imouse).test(itest).pos(ipos).nIgnore = [];
             end
         end
         for iexp = 1:length(mouse(imouse).ind)
@@ -50,6 +51,7 @@ function mouse = createExptStructAttn2AFC;
                     mouse(imouse).expt(iexp).pos(ipos).nTrials(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind));                    
                     mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'success')))));
                     mouse(imouse).expt(iexp).pos(ipos).nIncorrect(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'incorrect')))));
+                    mouse(imouse).expt(iexp).pos(ipos).nIgnore(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'ignore')))));
                     [x y] = binofit(mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon),mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon)+mouse(imouse).expt(iexp).pos(ipos).nIncorrect(icon));
                     mouse(imouse).expt(iexp).pos(ipos).binofit(icon).pctCorrect = x;
                     mouse(imouse).expt(iexp).pos(ipos).binofit(icon).ci95 = y;
@@ -97,6 +99,7 @@ function mouse = createExptStructAttn2AFC;
             for ipos = 1:2
                 mouse(imouse).test(itest).pos(ipos).nCorrect = [mouse(imouse).test(itest).pos(ipos).nCorrect; mouse(imouse).expt(iexp).pos(ipos).nCorrect];
                 mouse(imouse).test(itest).pos(ipos).nIncorrect = [mouse(imouse).test(itest).pos(ipos).nIncorrect; mouse(imouse).expt(iexp).pos(ipos).nIncorrect];
+                mouse(imouse).test(itest).pos(ipos).nIgnore = [mouse(imouse).test(itest).pos(ipos).nIgnore; mouse(imouse).expt(iexp).pos(ipos).nIgnore];
             end
         end
         for itest = 1:3
