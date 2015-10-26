@@ -1,7 +1,7 @@
-function mouse = createExptStructAV;
-rc = behavConstsAV;
+function mouse = createExptStructAVAY; %create structure array
+rc = behavConstsAV; %the short file, doesn't change, just has AW13 and AW14
 xd = frm_xls2frm(rc.indexFilename, [], rc.indexTextCols);
-av = behavParamsAV;
+av = behavParamsAV;%compiling all the data
 
 for imouse = 1:size(av,2);
     mouse_name = av(imouse).mouse;
@@ -10,10 +10,10 @@ for imouse = 1:size(av,2);
     early_mat = [];
     HR_ori_mat = [];
     HR_amp_mat = [];
-    catch_mat = zeros(2, length(ind));
+    catch_mat = zeros(2, length(ind));%putting together the data
     for iexp = 1:length(ind)
         idate = xd.DateStr{ind(iexp)};
-        n  = dir(fullfile(rc.pathStr, ['data-i' num2str(mouse_name) '-' idate '-*']));
+        n  = dir(fullfile(rc.pathStr, ['data-i' num2str(mouse_name) '-' idate '-*']));%directory of file
         if ~isnan(str2num(xd.ChooseMatFile{ind(iexp)}))
             n = n(str2num(xd.ChooseMatFile{ind(iexp)}));
         end
@@ -25,9 +25,9 @@ for imouse = 1:size(av,2);
             end
         end
         if size(n,1)>1
-            input_temp = concatenateDataBlocks(input_temp);
+            input_temp = concatenateDataBlocks(input_temp);%concatenating
         end
-        range = str2num(xd.TrialRangeToUse{ind(iexp)});
+        range = str2num(xd.TrialRangeToUse{ind(iexp)});%figuring out the range of trials inputed 
         if ~isnan(range(1))
             input_temp = trialChopper(input_temp, [range(1) range(end)]);
         end
@@ -36,23 +36,26 @@ for imouse = 1:size(av,2);
         failureIx = strcmp(input_temp.trialOutcomeCell, 'failure');
         missedIx = strcmp(input_temp.trialOutcomeCell, 'ignore');
         successIx = strcmp(input_temp.trialOutcomeCell, 'success');
-        pctEarly = sum(failureIx,2)./length(failureIx);
+        pctEarly = sum(failureIx,2)./length(failureIx); %percentage earlys
         early_mat = [early_mat; pctEarly];
         
         gratingDirectionDeg = cell2mat_padded(input_temp.tGratingDirectionDeg);
         soundAmplitude = celleqel2mat_padded(input_temp.tSoundTargetAmplitude);
-
+        
+        reactTimes = celleqel2mat_padded(input.reactTimesMs);
+        
         oris = unique(gratingDirectionDeg);
         amps = unique(soundAmplitude);
         maxOriTrials = find(gratingDirectionDeg == max(oris,[],1));
         maxAmpTrials = find(soundAmplitude == max(amps,[],2));
         pctCorr_maxOri = sum(successIx(maxOriTrials),2)./(sum(successIx(maxOriTrials),2)+sum(missedIx(maxOriTrials),2));
         pctCorr_maxAmp = sum(successIx(maxAmpTrials),2)./(sum(successIx(maxAmpTrials),2)+sum(missedIx(maxAmpTrials),2));
-        HR_ori_mat = [HR_ori_mat; pctCorr_maxOri];
+       
+        HR_ori_mat = [HR_ori_mat; pctCorr_maxOri];%hit rates
         HR_amp_mat = [HR_amp_mat; pctCorr_maxAmp];
         
-        if ~isfield(input_temp, 'catchTrialOutcomeCell')
-            for trN = 1:length(input_temp.trialOutcomeCell)
+        if ~isfield(input_temp, 'catchTrialOutcomeCell')%true if field is in a structure array 
+            for trN = 1:length(input_temp.trialOutcomeCell)%identify what trial is what
                 if input_temp.tShortCatchTrial{trN}
                     if input_temp.tFalseAlarm{trN}
                         input_temp.catchTrialOutcomeCell{trN} = 'FA';
@@ -94,17 +97,11 @@ for imouse = 1:size(av,2);
         mouse(imouse).input(iexp).tCatchGratingDirectionDeg = input_temp.tCatchGratingDirectionDeg;
         mouse(imouse).input(iexp).tSoundCatchAmplitude = input_temp.tSoundCatchAmplitude;
         mouse(imouse).input(iexp).catchTrialOutcomeCell = input_temp.catchTrialOutcomeCell;
+        mouse(imouse).input(iexp).reactTimesMs = input_temp.reactTimesMs; 
         mouse(imouse).input(iexp).date = idate;
         mouse(imouse).input(iexp).pctEarly = pctEarly;
         mouse(imouse).input(iexp).pctCorr_maxOri = pctCorr_maxOri;
         mouse(imouse).input(iexp).pctCorr_maxAmp = pctCorr_maxAmp;
-        mouse(imouse).input(iexp).reactTimeMs = input_temp.reactTimesMs;
-        mouse(imouse).input(iexp).leverUpTimeMs = input_temp.tLeverReleaseTimeMs;
-        mouse(imouse).input(iexp).leverDownTimeMs = input_temp.tLeverPressTimeMs;
-        mouse(imouse).input(iexp).stimOnTimeMs = input_temp.stimOnTimeMs;
-        mouse(imouse).input(iexp).stimOffTimeMs = input_temp.stimOffTimeMs;
-        mouse(imouse).input(iexp).catchCyclesOn = input_temp.catchCyclesOn;
-      
         if length(unique(cell2mat_padded(input_temp.tCatchGratingDirectionDeg)))>1
             catch_mat(1,iexp) = 1;
         end

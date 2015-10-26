@@ -6,6 +6,7 @@ colmat = strvcat('g', 'k', 'b');
 for imouse = 1
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
+    ntest = zeros(3,3,2);
     for itest = 1:length(tests)
         num(itest) = length(mouse(imouse).test(itest).oddsRightPct);
         if size(mouse(imouse).test(itest).pos(1).pctCorrect,1) == 1
@@ -17,8 +18,11 @@ for imouse = 1
                 errU = [mouse(imouse).test(itest).pos(1).ci95(icon,2) - mouse(imouse).test(itest).pos(1).pctCorrect(icon) mouse(imouse).test(itest).pos(2).ci95(icon,2) - mouse(imouse).test(itest).pos(2).pctCorrect(icon)];
                 errorbar(x, y, errL, errU, ['-o' colmat(itest,:)]);
                 hold on
+                for ipos = 1:2
+                    ntest(:,itest,ipos) = sum(mouse(imouse).test(itest).pos(ipos).nCorrect,1)+sum(mouse(imouse).test(itest).pos(ipos).nIncorrect,1);
+                end
                 if itest == 3
-                    title([num2str(mouse(imouse).test(itest).intensities(1,icon)*100) '% contrast'])
+                    title({[num2str(mouse(imouse).test(itest).intensities(1,icon)*100) '% contrast'], ['Black (' num2str(ntest(icon,2,:)) '); Green (' num2str(ntest(icon,1,:)) '); Blue (' num2str(ntest(icon,3,:)) ')']})
                     ylim([0 1])
                     ylabel('Hit rate')
                     xlabel('Stimulus position (deg)')
@@ -26,7 +30,8 @@ for imouse = 1
             end
         end
     end
-    legend([num2str((tests*100)') repmat('% 30 deg- n = ', 3,1) num2str(num')])
+    %legend([num2str((tests*100)') repmat('% 30 deg- n = ', 3,1) num2str(num')])
+    suptitle(['Black- 50% - n = ' num2str(num(2)) '; Green- 10% - n = ' num2str(num(1)) '; Blue- 90% - n = ' num2str(num(1))])
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_avgHitRate_probeCon.pdf'], '-dpdf')
 end
 
@@ -69,17 +74,17 @@ for imouse = 1
     for itest = 1:length(tests)
         ind = find(mouse(imouse).oddsRightPctN == tests(:,itest));
         subplot(3,1,itest)
-        mouse(imouse).test(itest).intensities = [];
-        mouse(imouse).test(itest).nCorrect = 0;
-        mouse(imouse).test(itest).nIncorrect = 0;
+        mouse(imouse).test(itest).ExpIntensities = [];
+        mouse(imouse).test(itest).ExpNCorrect = 0;
+        mouse(imouse).test(itest).ExpNIncorrect = 0;
         for iexp = 1:length(ind)
             i = ind(iexp);
-            mouse(imouse).test(itest).intensities = [mouse(imouse).test(itest).intensities ; [fliplr(mouse(imouse).expt(i).intensities)*-1 mouse(imouse).expt(i).intensities]];
-            mouse(imouse).test(itest).nCorrect = [mouse(imouse).test(itest).nCorrect + [fliplr(mouse(imouse).expt(i).pos(1).nCorrect) mouse(imouse).expt(i).pos(2).nCorrect]];
-            mouse(imouse).test(itest).nIncorrect = [mouse(imouse).test(itest).nIncorrect + [fliplr(mouse(imouse).expt(i).pos(1).nIncorrect) mouse(imouse).expt(i).pos(2).nIncorrect]];
+            mouse(imouse).test(itest).ExpIntensities = [mouse(imouse).test(itest).ExpIntensities ; [fliplr(mouse(imouse).expt(i).intensities)*-1 mouse(imouse).expt(i).intensities]];
+            mouse(imouse).test(itest).ExpNCorrect = [mouse(imouse).test(itest).ExpNCorrect + [fliplr(mouse(imouse).expt(i).pos(1).nCorrect) mouse(imouse).expt(i).pos(2).nCorrect]];
+            mouse(imouse).test(itest).ExpNIncorrect = [mouse(imouse).test(itest).ExpNIncorrect + [fliplr(mouse(imouse).expt(i).pos(1).nIncorrect) mouse(imouse).expt(i).pos(2).nIncorrect]];
         end
-        [mouse(imouse).test(itest).pctCorr mouse(imouse).test(itest).ci95] = binofit(mouse(imouse).test(itest).nCorrect,mouse(imouse).test(itest).nCorrect + mouse(imouse).test(itest).nIncorrect);
-        xval = mean(mouse(imouse).test(itest).intensities,1);
+        [mouse(imouse).test(itest).pctCorr mouse(imouse).test(itest).ci95] = binofit(mouse(imouse).test(itest).ExpNCorrect,mouse(imouse).test(itest).ExpNCorrect + mouse(imouse).test(itest).ExpNIncorrect);
+        xval = mean(mouse(imouse).test(itest).ExpIntensities,1);
         mouse(imouse).test(itest).pctCorr(:,1:3) = 1-mouse(imouse).test(itest).pctCorr(:,1:3);
         mouse(imouse).test(itest).ci95(1:3,:) = fliplr(1-mouse(imouse).test(itest).ci95(1:3,:));
         errorbar(xval, mouse(imouse).test(itest).pctCorr, mouse(imouse).test(itest).pctCorr-mouse(imouse).test(itest).ci95(:,1)', mouse(imouse).test(itest).ci95(:,2)' - mouse(imouse).test(itest).pctCorr, ['o' colmat(itest,:)]);
@@ -92,6 +97,24 @@ for imouse = 1
     end
     suptitle([num2str(pv.mouse_mat(:,imouse)) ' Summary Fraction Right Choice'])
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_fractRightSummary.pdf'], '-dpdf')
+end
+
+for imouse = 1
+    figure;
+    tests = unique(mouse(imouse).oddsRightPctN);
+    for itest = 1:length(tests)
+        subplot(3,1,itest)
+        mouse(imouse).test(itest).ExpNIgnore = [fliplr(sum(mouse(imouse).test(itest).pos(1).nIgnore,1)) sum(mouse(imouse).test(itest).pos(2).nIgnore,1)];
+        xval = mouse(imouse).test(itest).ExpIntensities(1,:);
+        plot(xval, mouse(imouse).test(itest).ExpNIgnore, ['o' colmat(itest,:)]);
+        hold on
+        xlabel('R-L contrast')
+        ylabel('Ignored trials')
+        xlim([-1.1 1.1])
+        title([num2str(tests(itest)*100) ' % right trials - n = ' num2str(length(ind)) 'sessions'])
+    end
+    suptitle([num2str(pv.mouse_mat(:,imouse)) ' Summary Ignores by Target Contrast'])
+    print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_IgnoreSummary.pdf'], '-dpdf')
 end
             
 itest = 2;

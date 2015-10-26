@@ -8,7 +8,7 @@
               lever2_solenoid=""
               laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"
-              counter2="counter"/>
+              counter="counter"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -16,6 +16,7 @@
     <folder tag="Behavioral Control">
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
+      <variable tag="doITIStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doConstantStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
@@ -400,7 +401,13 @@
               <action type="assignment" variable="isFirstTrial" value="0"></action>
             </action>
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
-            
+            <action type="if" condition="doVisualStim">
+              <action type="if" condition="doITIStim">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+                <action type="update_stimulus_display" tag="justincase"></action>
+              </action>
+            </action> 
             <!-- In this state, do all stimulus selection/tValue setting -->
             <action type="report" message="Initializing Trial"/>
             <!-- Reset t_____RemainingOn/Off to 0ms -->      
@@ -1268,10 +1275,19 @@
             	<action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
             </action>
             
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="doITIStim == 0">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action> 
+
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
+            
+            <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             
             <!-- update running variables -->
             <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
@@ -1317,11 +1333,21 @@
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
             <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
-            
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+
+            <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action> 
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>  
+
+            <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>    
+
+            
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1353,11 +1379,20 @@
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
             <action type="assignment" variable="cLeverUp" value="counter"></action>
-            
-            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+
+
+            <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action> 
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1480,6 +1515,10 @@
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="cEndOff" value="counter"></action> 
+            <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action> 
             <action type="if" condition="!doConstantStimulus">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>

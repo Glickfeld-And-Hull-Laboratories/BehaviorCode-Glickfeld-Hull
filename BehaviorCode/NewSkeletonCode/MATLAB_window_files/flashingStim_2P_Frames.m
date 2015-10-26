@@ -108,7 +108,7 @@ leverDownUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 1, 1);
 leverUpUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 2, 0);
 
 %calculate cycle duration
-totalCycleTimeMs = ((input.nFramesOn + input.nFramesOff)./input.frameRateHz).*1000;
+totalCycleTimeMs = ((input.nFramesOn + input.nFramesOff)./double(input.frameRateHz)).*1000;
 numberCyclesOn = input.nCyclesOn{trN};
 
 reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);

@@ -87,7 +87,6 @@
       <variable tag="dotContrastStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
 
       <variable tag="doOriAndContrastInterleaved" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="block2DoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
 
       <variable tag="dotMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="dotSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Stimulus Parameters"/>
@@ -857,7 +856,6 @@
 
             <!-- choose auditory stim -->  
             <action type="if" condition="tDoAuditoryStim">
-              <action type="assignment" variable="tSoundBaseAmplitude" value="soundBaseAmplitude"/>
               <action type="assignment" variable="tSoundBasePressAmplitude" value="soundBasePressAmplitude"/>  
               <action type="if" condition="tDoAuditoryDetect">     
                 <action type="assignment" variable="tSoundTargetAmplitude" 
@@ -870,7 +868,6 @@
 
             <action type="if" condition="!tDoAuditoryStim"> 
               <action type="assignment" variable="tSoundBasePressAmplitude" value="0"/> 
-              <action type="assignment" variable="tSoundBaseAmplitude" value="0"/> 
               <action type="assignment" variable="tSoundTargetAmplitude" value="0"/> 
             </action>
 
@@ -993,7 +990,7 @@
               </action>
 
             <action type="if" condition="tDoAuditoryDetect">
-              <action type="play_sound" sound="baseSound"/>
+              <action type="play_sound" sound="basePressSound"/>
             </action> 
 
             </action>
