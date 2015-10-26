@@ -39,12 +39,12 @@ for imouse = 1:size(av,2);
         pctEarly = sum(failureIx,2)./length(failureIx);
         early_mat = [early_mat; pctEarly];
         
-        gratingDirectionDeg = cell2mat_padded(input_temp.tGratingDirectionDeg);
+        gratingDirectionDeg = celleqel2mat_padded(input_temp.tGratingDirectionDeg);
         soundAmplitude = celleqel2mat_padded(input_temp.tSoundTargetAmplitude);
 
         oris = unique(gratingDirectionDeg);
         amps = unique(soundAmplitude);
-        maxOriTrials = find(gratingDirectionDeg == max(oris,[],1));
+        maxOriTrials = find(gratingDirectionDeg == max(oris,[],2));
         maxAmpTrials = find(soundAmplitude == max(amps,[],2));
         pctCorr_maxOri = sum(successIx(maxOriTrials),2)./(sum(successIx(maxOriTrials),2)+sum(missedIx(maxOriTrials),2));
         pctCorr_maxAmp = sum(successIx(maxAmpTrials),2)./(sum(successIx(maxAmpTrials),2)+sum(missedIx(maxAmpTrials),2));
