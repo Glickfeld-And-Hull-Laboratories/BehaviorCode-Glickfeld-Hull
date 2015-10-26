@@ -7,7 +7,8 @@ rc = behavConstsAV;
 xd = frm_xls2frm(rc.indexFilename, [], rc.indexTextCols);
 av = behavParamsAV;
 
-fn = fullfile(rc.fitOutputSummary, [date '_i613_i614_CatchSummary.mat']);
+% fn = fullfile(rc.fitOutputSummary, [date '_i613_i614_CatchSummary.mat']);
+fn = fullfile(rc.fitOutputSummary, ['11-Oct-2015_i613_i614_CatchSummary.mat']);
 load(fn)
 
 close all
@@ -150,6 +151,7 @@ for imouse = 1:size(av,2);
        FAsA(ibin) = sum(FAIx(indC),2);
        CRsA(ibin) = sum(CRIx(indC),2); 
     end
+    try
     [HR_A, HR_ci95_A] = binofit(HitsA, HitsA+MissesA);
     [FR_A, FR_ci95_A] = binofit(FAsA, FAsA+CRsA);
     errorbarxy(HR_A, FR_A, HR_A-HR_ci95_A(:,1)', HR_ci95_A(:,2)'-HR_A, FR_A-FR_ci95_A(:,1)', FR_ci95_A(:,2)'-FR_A, {['o' av(imouse).col_str], av(imouse).col_str, av(imouse).col_str})
@@ -163,6 +165,9 @@ for imouse = 1:size(av,2);
     xlabel('Hit rate- valid cue')
     ylabel('Hit rate- invalid cue')
     title('Auditory trials')
+    catch
+        disp('no aud trials to plot')
+    end
     
     figure(VFig);
     ind_catch = find(n_ori(2,:)>5);
@@ -193,7 +198,7 @@ for imouse = 1:size(av,2);
 end
 
 figure(VFig);
-print(fullfile(rc.fitOutputSummary, [date '_i613_i614_VisualCatchSummary.pdf']),'-dpdf')
+print(fullfile(rc.fitOutputSummary, [date '_i613_i614_i616_VisualCatchSummary.pdf']),'-dpdf')
 figure(AFig);
-print(fullfile(rc.fitOutputSummary, [date '_i613_i614_AuditoryCatchSummary.pdf']),'-dpdf')
+print(fullfile(rc.fitOutputSummary, [date '_i613_i614_i616_AuditoryCatchSummary.pdf']),'-dpdf')
 
