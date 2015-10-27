@@ -22,6 +22,7 @@
       <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doSpeedDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
+      <variable tag="itiContrast" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Task Type"/>
       <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       
@@ -292,6 +293,7 @@
       <action type="queue_stimulus" stimulus="background"></action>
       <action type="if" condition="doVisualStim">
         <action type="if" condition="doITIStim">
+          <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>	
           <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
           <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
       </action>
@@ -1011,6 +1013,7 @@
                 <action type="dequeue_stimulus" stimulus="target_grating"></action>
                 <action type="update_stimulus_display"></action>
                 <action type="if" condition="doITIStim==1">
+                <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>	
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
                   <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
                 </action>  
@@ -1033,6 +1036,7 @@
               <action type="if" condition="(((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs">
                 <action type="dequeue_stimulus" stimulus="target_grating"></action>
                 <action type="if" condition="doITIStim">
+                  <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>	
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
                   <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>                            
                 </action>
@@ -1077,6 +1081,7 @@
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Update Display" type="update_stimulus_display"></action>
             <action type="if" condition="doITIStim==1">
+              <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>	
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
               <action tag="Update Display" type="update_stimulus_display"></action>
@@ -1163,6 +1168,7 @@
 
             <action tag="Dequeue Stimulus 2" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="if" condition="doITIStim==1">
+              <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>	
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
             </action>  
@@ -1238,6 +1244,7 @@
             </action>
             <action tag="Dequeue Stimulus 1" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="if" condition="doITIStim==1">
+              <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>	
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
             </action>
