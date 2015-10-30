@@ -461,10 +461,7 @@
                             <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
                             <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
                             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
-                            <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
-                            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
-                            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
-                            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
+                           
                             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
                             <action type="assignment" variable="block2DoGratingAppearance" value="block2DoVisualStim"/>

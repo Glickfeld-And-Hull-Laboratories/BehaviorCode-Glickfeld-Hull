@@ -6,7 +6,8 @@
               lever1="lever1" 
               lever1_solenoid="lever1_solenoid"
               quadrature="quadrature"
-              laser_trigger="laser_trigger"
+              laserTrigger="laserTrigger"
+              optic_device="optic_device"
               strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
@@ -15,7 +16,7 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      
+      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
@@ -184,7 +185,7 @@
       <variable tag="lever1_solenoid" full_name="lever1_solenoid" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
       <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Lever"/>
       <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
-      <variable tag="laser_trigger" full_name="laser_trigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -330,10 +331,7 @@
             <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
             <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
-            <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
-            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
-            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
-            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
+            
             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
 
@@ -343,7 +341,7 @@
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laser_trigger" value="0"></action>
+            <action type="assignment" variable="laserTrigger" value="0"></action>
             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
             <action type="assignment" variable="tStimTurnedOn" value="0"></action>
@@ -934,7 +932,7 @@
 
             <!-- turn on trial laser if requested -->
             <action type="if" condition="tTrialLaserPowerMw > 0">
-              <action type="assignment" variable="laser_trigger" value="1"></action> 
+              <action type="assignment" variable="laserTrigger" value="1"></action> 
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -983,7 +981,7 @@
 
               <!-- laser stim on -->
               <action type="if" condition="doLaserStim">
-                <action type="assignment" variable="laser_trigger" value="1"></action> 
+                <action type="assignment" variable="laserTrigger" value="1"></action> 
                 <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
               </action>
 
@@ -1045,7 +1043,7 @@
           <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laser_trigger" value="0"></action>
+            <action type="assignment" variable="laserTrigger" value="0"></action>
 
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
 
@@ -1086,7 +1084,7 @@
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laser_trigger" value="0"></action>
+            <action type="assignment" variable="laserTrigger" value="0"></action>
 
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
 
@@ -1199,7 +1197,7 @@
 
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="laser_trigger" value="0"></action>
+            <action type="assignment" variable="laserTrigger" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
@@ -1259,7 +1257,7 @@
           <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
-            <action type="assignment" variable="laser_trigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
 
             
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
