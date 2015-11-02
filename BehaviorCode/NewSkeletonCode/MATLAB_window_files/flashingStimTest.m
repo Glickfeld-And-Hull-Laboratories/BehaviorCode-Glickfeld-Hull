@@ -112,7 +112,7 @@ numberCyclesOn = input.nCyclesOn{trN};
 reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
 
 holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
-reactTimeMs = (holdTimeMs - reqHoldTimeMs);
+reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
 
 % add to array
 input.holdStartsMs{trN} = leverDownUs/1000;
