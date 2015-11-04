@@ -425,18 +425,38 @@ if nCorr>0 && input.doTestRobot==0,
     corrDiffCell = cell(1,nLevels);
     decTimes = cell2mat_padded(input.tDecisionTimeMs);
     corrDecTimes = decTimes(correctIx);
-    
+
     for ii = 1:length(uqDiff),
-        val = uqDiff(ii);
-        tix = corrDiffV==val;
-        corrDiffCell{ii} = nanmean(corrDecTimes(tix));
-        if nLeft>0,
-          corrDiffCellL{ii} = nanmean(corrDecTimes(tix & leftTrialIx));
-        end
-        if nRight>0,
-          corrDiffCellR{ii} = nanmean(corrDecTimes(tix & ~leftTrialIx));
-        end
+      val = uqDiff(ii);
+      tix = corrDiffV==val;
+      corrDiffCell{ii} = nanmean(corrDecTimes(tix));
     end
+    
+    if nLeft>0,
+      corrDiffVL = contDiffV(correctIx & leftTrialIx);
+      uqDiffL = unique(corrDiffVL);
+      nLevelsL = length(uqDiffL);
+      corrDiffCellL = cell(1,nLevelsL);
+      corrDecTimesL = decTimes(correctIx & leftTrialIx);
+      for ii = 1:length(uqDiffL),
+        val = uqDiffL(ii);
+        tix = corrDiffVL==val;
+        corrDiffCellL{ii} = nanmean(corrDecTimesL(tix));
+      end
+    end
+    if nRight>0,
+      corrDiffVR = contDiffV(correctIx & ~leftTrialIx);
+      uqDiffR = unique(corrDiffVR);
+      nLevelsR = length(uqDiffR);
+      corrDiffCellR = cell(1,nLevelsR);
+      corrDecTimesR = decTimes(correctIx & ~leftTrialIx);
+      for ii = 1:length(uqDiffR),
+        val = uqDiffR(ii);
+        tix = corrDiffVR==val;
+        corrDiffCellR{ii} = nanmean(corrDecTimesR(tix));
+      end
+    end
+
 
     lev = double(find(input.trPer80V>0)-1);
     if isfield(input, 'dGratingContrastDiff')
@@ -453,13 +473,14 @@ if nCorr>0 && input.doTestRobot==0,
     minD = min(cell2mat(corrDiffCell));
     maxD = max(cell2mat(corrDiffCell));
     
+    hold on
     xLimm = [minX maxX];
     pH = plot(uqDiff, cell2mat(corrDiffCell));
     if nLeft>0,
-      pH1 = plot(uqDiff, cell2mat(corrDiffCellL));
+      pH1 = plot(uqDiffL, cell2mat(corrDiffCellL))
     end
     if nRight>0,
-      pH2 = plot(uqDiff, cell2mat(corrDiffCellR));
+      pH2 = plot(uqDiffR, cell2mat(corrDiffCellR));
     end
     if ~(xLimm(1)==0),
       xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
@@ -470,18 +491,18 @@ if nCorr>0 && input.doTestRobot==0,
     xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
     xTLabelL = cellstr(num2str(xTickL(:)));
     set(pH, ...
-        'LineWidth', 1.5, ...
+       'LineWidth', 1.5, ...
         'Marker', '.', ...
         'MarkerSize', 9, ...
         'Color', 'g');
-    if nLeft>0;
+    if nLeft>0,
       set(pH1, ...
           'LineWidth', 1.5, ...
           'Marker', '.', ...
           'MarkerSize', 9, ...
-          'Color', 'b');
+          'Color', 'b')
     end
-    if nRight>0
+    if nRight>0,
       set(pH2, ...
           'LineWidth', 1.5, ...
           'Marker', '.', ...
@@ -491,7 +512,7 @@ if nCorr>0 && input.doTestRobot==0,
     if isnan(minD)|isnan(maxD)
       axis tight
     else
-      ylim([minD-100 maxD+100])
+     % ylim([minD-100 maxD+100])
     end
     if isnan(minX)|isnan(maxX)
       axis tight
