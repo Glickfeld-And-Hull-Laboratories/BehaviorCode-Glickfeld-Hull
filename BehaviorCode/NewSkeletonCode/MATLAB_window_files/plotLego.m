@@ -430,6 +430,12 @@ if nCorr>0 && input.doTestRobot==0,
         val = uqDiff(ii);
         tix = corrDiffV==val;
         corrDiffCell{ii} = nanmean(corrDecTimes(tix));
+        if nLeft>0,
+          corrDiffCellL{ii} = nanmean(corrDecTimes(tix & leftTrialIx));
+        end
+        if nRight>0,
+          corrDiffCellR{ii} = nanmean(corrDecTimes(tix & ~leftTrialIx));
+        end
     end
 
     lev = double(find(input.trPer80V>0)-1);
@@ -449,6 +455,12 @@ if nCorr>0 && input.doTestRobot==0,
     
     xLimm = [minX maxX];
     pH = plot(uqDiff, cell2mat(corrDiffCell));
+    if nLeft>0,
+      pH1 = plot(uqDiff, cell2mat(corrDiffCellL));
+    end
+    if nRight>0,
+      pH2 = plot(uqDiff, cell2mat(corrDiffCellR));
+    end
     if ~(xLimm(1)==0),
       xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
     else
@@ -460,7 +472,22 @@ if nCorr>0 && input.doTestRobot==0,
     set(pH, ...
         'LineWidth', 1.5, ...
         'Marker', '.', ...
-        'MarkerSize', 9);
+        'MarkerSize', 9, ...
+        'Color', 'g');
+    if nLeft>0;
+      set(pH1, ...
+          'LineWidth', 1.5, ...
+          'Marker', '.', ...
+          'MarkerSize', 9, ...
+          'Color', 'b');
+    end
+    if nRight>0
+      set(pH2, ...
+          'LineWidth', 1.5, ...
+          'Marker', '.', ...
+          'MarkerSize', 9, ...
+          'Color', [0.8 0.8 0]);
+    end
     if isnan(minD)|isnan(maxD)
       axis tight
     else
