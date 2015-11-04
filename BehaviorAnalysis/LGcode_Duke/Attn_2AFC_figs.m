@@ -116,16 +116,63 @@ for imouse = 1
     suptitle([num2str(pv.mouse_mat(:,imouse)) ' Summary Ignores by Target Contrast'])
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_IgnoreSummary.pdf'], '-dpdf')
 end
+
+for imouse = 1
+    figure;
+    tests = unique(mouse(imouse).oddsRightPctN);
+    for itest = 1:length(tests)
+        xval = mouse(imouse).test(itest).ExpIntensities(1,:);
+        for i = 1:3
+            subplot(3,3,3*(itest-1)+i)
+            start = 1;
+            for ipos = 1:2
+                if ipos == 1
+                    cons = [3 2 1];
+                else
+                    cons = 1:3;
+                end
+                for ii = 1:length(cons)
+                    icon = cons(ii);
+                    if i<3
+                        reactTimes = mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes{icon};
+                    else
+                        reactTimes = [mouse(imouse).test(itest).pos(ipos).outcome(1).reactTimes{icon} mouse(imouse).test(itest).pos(ipos).outcome(1).reactTimes{icon}];
+                    end
+                    if length(reactTimes)<1
+                        reactTimes = NaN;
+                    end
+                    errorbar(xval(start), mean(reactTimes,2), std(reactTimes,[],2)./sqrt(size(reactTimes,2)), ['o' colmat(itest,:)]);
+                    hold on
+                    start = start+1;
+                end
+            end
+            xlabel('R-L contrast')
+            ylabel('React times (ms)')
+            xlim([-1.1 1.1])
+            ylim([0 7000])
+            if i == 1
+                str_out = 'correct';
+            elseif i == 2
+                str_out = 'incorrect';
+            elseif i == 3
+                str_out = 'all';
+            end
+            title([num2str(tests(itest)*100) ' % right - ' str_out ' trials'])
+        end
+    end
+    suptitle([num2str(pv.mouse_mat(:,imouse)) ' Summary React Times by Target Contrast'])
+    print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_ReactTimeSummary.pdf'], '-dpdf')
+end
             
 itest = 2;
 figure;
-ind = find(mouse(imouse).oddsRightPctN == tests(:,itest));
+ind2 = find(mouse(imouse).oddsRightPctN == tests(:,itest));
 mouse(imouse).test(itest).intensities = [];
 mouse(imouse).test(itest).nCorrect = 0;
 mouse(imouse).test(itest).nIncorrect = 0;
 for ipos = 1:2
-    for iexp = 1:length(ind)
-        i = ind(iexp);
+    for iexp = 1:length(ind2)
+        i = ind2(iexp);
         mouse(imouse).test(itest).intensities = [mouse(imouse).test(itest).intensities ; mouse(imouse).expt(i).intensities];
         mouse(imouse).test(itest).nCorrect = [mouse(imouse).test(itest).nCorrect + mouse(imouse).expt(i).pos(ipos).nCorrect];
         mouse(imouse).test(itest).nIncorrect = [mouse(imouse).test(itest).nIncorrect + mouse(imouse).expt(i).pos(ipos).nIncorrect];
@@ -143,7 +190,7 @@ for ipos = 1:2
     ylabel('Fract. right choice')
     ylim([0 1])
     xlim([0.01 2])
-    title([num2str(mouse(imouse).posN(1,ipos)) 'deg - n = ' num2str(length(ind)) 'sessions'])
+    title([num2str(mouse(imouse).posN(1,ipos)) 'deg - n = ' num2str(length(ind2)) 'sessions'])
     set(gca, 'xscale', 'log')
 end
 

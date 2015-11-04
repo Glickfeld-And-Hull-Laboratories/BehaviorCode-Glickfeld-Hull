@@ -15,6 +15,9 @@ function mouse = createExptStructAttn2AFC;
                 mouse(imouse).test(itest).pos(ipos).nCorrect = [];
                 mouse(imouse).test(itest).pos(ipos).nIncorrect = [];
                 mouse(imouse).test(itest).pos(ipos).nIgnore = [];
+                for i = 1:2
+                    mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes = cell(1,3);
+                end
             end
         end
         for iexp = 1:length(mouse(imouse).ind)
@@ -41,6 +44,7 @@ function mouse = createExptStructAttn2AFC;
             end
             mouse(imouse).expt(iexp).posN = unique(cell2mat(input.tGratingEccentricityDeg));
             mouse(imouse).expt(iexp).intensities = unique(chop(cell2mat(input.tGratingContrast),3));
+            reactTimes = cell2mat(input.tDecisionTimeMs);
             for ipos = 1:length(mouse(imouse).expt(iexp).posN)
                 mouse(imouse).expt(iexp).pos(ipos).trial_ind = intersect(find(cell2mat(input.tGratingEccentricityDeg) == mouse(imouse).expt(iexp).posN(ipos)), range);
                 mouse(imouse).expt(iexp).pos(ipos).intensities = unique(chop(unique(cell2mat(input.tGratingContrast(mouse(imouse).expt(iexp).pos(ipos).trial_ind))),3));
@@ -48,10 +52,14 @@ function mouse = createExptStructAttn2AFC;
             for ipos = 1:2
                 for icon = 1:length(mouse(imouse).expt(iexp).intensities)
                     con_ind = find(chop(cell2mat(input.tGratingContrast),3)==mouse(imouse).expt(iexp).intensities(icon));
+                    S_ind = intersect(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind), find(strcmp(input.trialOutcomeCell, 'success')));
+                    I_ind = intersect(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind), find(strcmp(input.trialOutcomeCell, 'incorrect')));
                     mouse(imouse).expt(iexp).pos(ipos).nTrials(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind));                    
                     mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'success')))));
                     mouse(imouse).expt(iexp).pos(ipos).nIncorrect(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'incorrect')))));
                     mouse(imouse).expt(iexp).pos(ipos).nIgnore(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'ignore')))));
+                    mouse(imouse).expt(iexp).pos(ipos).outcome(1).reactTimes{icon} = reactTimes(1,S_ind);
+                    mouse(imouse).expt(iexp).pos(ipos).outcome(2).reactTimes{icon} = reactTimes(1,I_ind);
                     [x y] = binofit(mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon),mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon)+mouse(imouse).expt(iexp).pos(ipos).nIncorrect(icon));
                     mouse(imouse).expt(iexp).pos(ipos).binofit(icon).pctCorrect = x;
                     mouse(imouse).expt(iexp).pos(ipos).binofit(icon).ci95 = y;
@@ -100,6 +108,11 @@ function mouse = createExptStructAttn2AFC;
                 mouse(imouse).test(itest).pos(ipos).nCorrect = [mouse(imouse).test(itest).pos(ipos).nCorrect; mouse(imouse).expt(iexp).pos(ipos).nCorrect];
                 mouse(imouse).test(itest).pos(ipos).nIncorrect = [mouse(imouse).test(itest).pos(ipos).nIncorrect; mouse(imouse).expt(iexp).pos(ipos).nIncorrect];
                 mouse(imouse).test(itest).pos(ipos).nIgnore = [mouse(imouse).test(itest).pos(ipos).nIgnore; mouse(imouse).expt(iexp).pos(ipos).nIgnore];
+                for icon = 1:length(mouse(imouse).expt(iexp).intensities)
+                    for i = 1:2
+                        mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes{icon} = [mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes{icon} mouse(imouse).expt(iexp).pos(ipos).outcome(i).reactTimes{icon}];
+                    end
+                end
             end
         end
         for itest = 1:3
