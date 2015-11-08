@@ -260,7 +260,7 @@ set(gca, 'XLim', trXLim);
 axH = subplot(spSz{:}, 4);
 hold on;
 set(axH, 'Visible', 'off');
-    set(axH, 'OuterPosition', [0.02 0.49, 0.25, 0.2])
+    set(axH, 'OuterPosition', [0.02 0.47, 0.25, 0.2])
 if nTrial > 1 
   % recompute text list from all changes
   desIx = ~cellfun(@isempty, input.constChangedOnTrial);
@@ -479,7 +479,7 @@ if nCorr>0 && input.doTestRobot==0,
     xLimm = [minX maxX];
     pH = plot(uqDiff, cell2mat(corrDiffCell));
     if nLeft>0,
-      pH1 = plot(uqDiffL, cell2mat(corrDiffCellL))
+      pH1 = plot(uqDiffL, cell2mat(corrDiffCellL));
     end
     if nRight>0,
       pH2 = plot(uqDiffR, cell2mat(corrDiffCellR));
