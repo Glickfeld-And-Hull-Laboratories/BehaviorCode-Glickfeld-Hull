@@ -895,7 +895,7 @@
                 <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"></action>
             </action>
 
-              <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
+            <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
                 timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
                 <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
                 <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
@@ -965,102 +965,101 @@
                   <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="tBaseGratingContrast"></action>  
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
                   <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
-                </action>
-            </action>
-            <action type="update_stimulus_display" tag="-"></action>
+              </action>
+              <action type="update_stimulus_display" tag="-"></action>
 
-            <!-- turn on trial laser if requested -->
-            <action type="if" condition="tTrialLaserPowerMw_trigger > 0 &amp;&amp; (optic_device == 'led')">
+              <!-- turn on trial laser if requested -->
+              <action type="if" condition="tTrialLaserPowerMw_trigger > 0 &amp;&amp; (optic_device == 'led')">
+                  <action type="assignment" variable="laserTrigger" value="1"></action> 
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+                  <action type="report" message="********* SENDING LED TRIGGER *********"/>
+                  <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+              </action>
+
+              <action type="if" condition="tBlock2TrialNumber == 1 &amp;&amp; (optic_device != 'led')">
+                  <action type="assignment" variable="laserTrigger" value="1"></action> 
+                  <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                  <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+              </action>
+
+              <action type="if" tag="if fakeMouse" condition="!doLever &amp;&amp; doAllCorrects==0">
+                  <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="rand(0, fakeMouseMaxReactMs)"></action>
+                  <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tFakeMouseReactMs" duration_units="ms"></action>
+                  <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="fake mouse to react in $tFakeMouseReactMs ms"></action>
+              </action>
+              <action type="if" tag="fakeMouse workaround for doAllCorrects" condition="doAllCorrects==1">
+                  <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="100000" duration_units="ms"></action>
+                  <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="**DoAllCorrects starting lever press**"></action>
+              </action>
+
+              <action type="if" tag="if ! fakeMouse" condition="doLever">
+                  <action type="start_timer" tag="Start fakeMouseTimer infinite" timer="fakeMouseTimer" timebase="" duration="100000" duration_units="ms"></action>
+              </action>
+              <action type="start_timer" tag="Start LeverHold Timer" timer="leverHoldTimer" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
+              <action tag="Report LeverDown" full_name="ReportDigital" type="report" message="LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)"></action>
+              <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+              <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+              <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
+              <transition type="timer_expired" tag="If leverHoldTimer Expired, Go To StimOn" target="StimOn" timer="leverHoldTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="StimOn" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+            <action type="start_timer" tag="Start Too Fast Timer" timer="tooFastTimer" timebase="" duration="tooFastTimeMs" duration_units="ms"></action>
+            <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="reactTimeMs" duration_units="ms"></action>
+
+
+
+            <action type="assignment" tag="Set StimulusOn" variable="stimulusOn" value="1"></action>
+            <action tag="Report StimOn" full_name="ReportDigital" type="report" message="StimOn (still holding; signaling release ok)"></action>
+
+            <!-- vis stim on -->
+            <action type="if" condition="doVisualStim &amp;&amp; doNoStimulusChange==0">
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+
+              <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
+          </action>
+          <action type="play_sound" sound="targetSound"/>
+
+          <!-- laser stim on -->
+          <action type="if" condition="doLaserStim">
               <action type="assignment" variable="laserTrigger" value="1"></action> 
-              <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
-              <action type="report" message="********* SENDING LED TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
           </action>
 
-          <action type="if" condition="tBlock2TrialNumber == 1 &amp;&amp; (optic_device != 'led')">
-              <action type="assignment" variable="laserTrigger" value="1"></action> 
-              <action type="report" message="********* SENDING LASER TRIGGER *********"/>
-              <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
-          </action>
+          <!-- update display, finalize variables -->
+          <action type="assignment" variable="tStimTurnedOn" value="1"></action>
 
-          <action type="if" tag="if fakeMouse" condition="!doLever &amp;&amp; doAllCorrects==0">
-              <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="rand(0, fakeMouseMaxReactMs)"></action>
-              <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tFakeMouseReactMs" duration_units="ms"></action>
-              <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="fake mouse to react in $tFakeMouseReactMs ms"></action>
-          </action>
-          <action type="if" tag="fakeMouse workaround for doAllCorrects" condition="doAllCorrects==1">
-              <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="100000" duration_units="ms"></action>
-              <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="**DoAllCorrects starting lever press**"></action>
-          </action>
 
-          <action type="if" tag="if ! fakeMouse" condition="doLever">
-              <action type="start_timer" tag="Start fakeMouseTimer infinite" timer="fakeMouseTimer" timebase="" duration="100000" duration_units="ms"></action>
-          </action>
-          <action type="start_timer" tag="Start LeverHold Timer" timer="leverHoldTimer" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
-          <action tag="Report LeverDown" full_name="ReportDigital" type="report" message="LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)"></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
-          <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
-          <transition type="timer_expired" tag="If leverHoldTimer Expired, Go To StimOn" target="StimOn" timer="leverHoldTimer"></transition>
+          <transition type="direct" tag="Always Go to CheckTooFastTime" target="CheckTooFastTime"></transition>
       </task_system_state>
 
-      <task_system_state tag="StimOn" interruptible="YES">
-        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+      <task_system_state tag="CheckTooFastTime" interruptible="YES">
 
-        <action type="start_timer" tag="Start Too Fast Timer" timer="tooFastTimer" timebase="" duration="tooFastTimeMs" duration_units="ms"></action>
-        <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="reactTimeMs" duration_units="ms"></action>
-
-
-
-        <action type="assignment" tag="Set StimulusOn" variable="stimulusOn" value="1"></action>
-        <action tag="Report StimOn" full_name="ReportDigital" type="report" message="StimOn (still holding; signaling release ok)"></action>
-
-        <!-- vis stim on -->
-        <action type="if" condition="doVisualStim &amp;&amp; doNoStimulusChange==0">
-          <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-          <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
-          <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
-          <action tag="Update Display" type="update_stimulus_display"></action>
-
-          <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
+        <!-- turn off stimulus if longer than gratingDurationMs -->                     
+        <action type="if" condition="tStimTurnedOn == 1">  <!-- so we only turn it off once here -->
+          <action type="if" condition="(((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs">
+            <action type="dequeue_stimulus" stimulus="target_grating"></action>
+            <action type="update_stimulus_display"></action>
+            <action type="if" condition="doITIStim==1">
+              <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>    
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+          </action>  
+          <action type="update_stimulus_display"></action>
+          <action type="assignment" variable="tStimTurnedOn" value="0"></action>
       </action>
-      <action type="play_sound" sound="targetSound"/>
-
-      <!-- laser stim on -->
-      <action type="if" condition="doLaserStim">
-          <action type="assignment" variable="laserTrigger" value="1"></action> 
-          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
-      </action>
-
-      <!-- update display, finalize variables -->
-      <action type="assignment" variable="tStimTurnedOn" value="1"></action>
-
-
-      <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      <transition type="direct" tag="Always Go to CheckTooFastTime" target="CheckTooFastTime"></transition>
-  </task_system_state>
-
-  <task_system_state tag="CheckTooFastTime" interruptible="YES">
-
-    <!-- turn off stimulus if longer than gratingDurationMs -->                     
-    <action type="if" condition="tStimTurnedOn == 1">  <!-- so we only turn it off once here -->
-      <action type="if" condition="(((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs">
-        <action type="dequeue_stimulus" stimulus="target_grating"></action>
-        <action type="update_stimulus_display"></action>
-        <action type="if" condition="doITIStim==1">
-          <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>    
-          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
-          <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
-      </action>  
-      <action type="update_stimulus_display"></action>
-      <action type="assignment" variable="tStimTurnedOn" value="0"></action>
   </action>
-</action>
 
-<transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-<transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
-<transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
-<transition type="direct" target="CheckTooFastTime"></transition>
+  <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
+  <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+  <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
+  <transition type="direct" target="CheckTooFastTime"></transition>
 </task_system_state>
 
 <task_system_state tag="React" interruptible="YES">
