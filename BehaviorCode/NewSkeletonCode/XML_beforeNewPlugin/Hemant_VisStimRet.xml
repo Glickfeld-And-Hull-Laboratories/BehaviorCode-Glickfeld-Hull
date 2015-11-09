@@ -3,11 +3,10 @@
    <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" 
-              lever1_solenoid="MIO0"
+              lever1="FIO1" lever2=""
+              lever1_solenoid="FIO2"
               counter2="counter2"
-              laser_trigger="laserTrigger"
-              optic_device="optic_device"
+              laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"
               counter="counter"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -17,7 +16,6 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
     </folder>
     <folder tag="Stimuli">
       <variable tag="stopAfterNTrials" scope="local" logging="when_changed" default_value="90" type="integer" persistant="1" groups="ExptStruct"/>      
@@ -111,8 +109,8 @@
     </folder>
      <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
-      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
-      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/> 
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
       <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"></variable>
@@ -271,13 +269,16 @@
           <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
           <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
           <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
-        
+          <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
+          <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
+          <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
+          <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
           <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
           <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
-          <action type="assignment" tag="-" variable="laserTrigger" value="0"></action>
+          <action type="assignment" tag="-" variable="laserTriggerFIO" value="0"></action>
           
       
           <!-- set unchanging stimulus parameters-->
@@ -758,7 +759,7 @@
           </action>
           
           
-            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action> <!-- disable trigger no matter if it went high or not -->
 
             <action type="if" condition="doMovingDots != 1">
             	<action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>

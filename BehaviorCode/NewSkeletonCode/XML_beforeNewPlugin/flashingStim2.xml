@@ -3,12 +3,11 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" 
-              lever1_solenoid="MIO0"
-              laser_trigger="laserTrigger"
-              optic_device="optic_device"
-              strobed_digital_word="strobedDigitalWord"
-              counter="counter"/>
+              lever1="FIO1" lever2="" 
+              lever1_solenoid="FIO2"
+              lever2_solenoid="FIO3"
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -16,9 +15,8 @@
     <folder tag="Behavioral Control">
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
-      <variable tag="doITIStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doConstantStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doITIStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
@@ -27,6 +25,10 @@
       <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doCustomTargetTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
@@ -34,18 +36,21 @@
       <variable tag="block2DoAuditoryStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoAuditoryDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoAuditoryCue" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
-
-      <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Trial Structure"/>
-      <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="float" persistant="1" groups="Trial Structure"/>
-      <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Trial Structure"/>
-      <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Trial Structure"/>
+      <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="block2DoMissAsCorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="block2DoNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+	
+      <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="targetOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Trial Structure"/>
-      <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Trial Structure"/>
-      <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="float" persistant="1" groups="Trial Structure"/>
+      <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="doLongCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
-
+      
       <variable tag="doShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
       <variable tag="doShortCatchReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
       <variable tag="catchTrPerB2Level1" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
@@ -56,7 +61,7 @@
       <variable tag="catchTrPerB2Level6" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
       <variable tag="catchTrPerB2Level7" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
       <variable tag="catchTrPerB2Level8" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
- 
+        
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
@@ -65,12 +70,12 @@
       <variable tag="soundRewardAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
 
       <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
-
       <variable tag="soundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
 
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
+      <variable tag="doSolenoidOnTimeout" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
 
       <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Timeouts"/>
       <variable tag="missedTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1" groups="Timeouts"/>
@@ -149,7 +154,7 @@
       <variable tag="doBlock2SeparateReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Reward"/>
       <variable tag="block2RewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Block2 Reward"/>
 
-      <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/> 
+      <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/>
 
       <variable tag="block2DoRampLength" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"  groups="Block2 Laser"/>
       <variable tag="block2RampLengthMs2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
@@ -177,16 +182,23 @@
       <variable tag="block2RvtRampBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser" />
       <variable tag="block2RvtTrainBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
 
-      <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+
+      <variable tag="doPhotodiode" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusAzimuth" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusElevation" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusWidth" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusHeight" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoMaskSpatialFreq" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Photodiode Variables"/>
     </folder>  
     <folder tag="Fake Mouse">
       <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
       <variable tag="doFakeMouseSuccessOnly" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
+      <variable tag="sendElectrophysSync" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
       <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Fake Mouse"/>
-
     </folder>
     <folder tag="Task Status">
       <variable tag="failure" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -203,19 +215,19 @@
     </folder>
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
-      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
-      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="FIO3" full_name="FIO3" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
-      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tFakeMouseReactFrames" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tFakeMouseReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="consecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
@@ -260,17 +272,18 @@
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
+	  <variable tag="tSoundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/> 
       <variable tag="tSoundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tSoundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundCatchAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-
-	    <variable tag="tCatchGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+	  
+	  <variable tag="tCatchGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tCatchGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDoCatchContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoCatchOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoCatchAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       
       <variable tag="tDoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -278,6 +291,8 @@
       <variable tag="tDoAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDidDeviantAfterMissing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
       <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
 
@@ -296,39 +311,16 @@
       <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="startReactState" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="isTooFast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
-      <variable tag="isEndState" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="isCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-	  <variable tag="isFirstTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
+      <variable tag="startReactState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
+      <variable tag="isTooFast" scope="global" logging="when_changed" default_value="1" persistent="0" type="integer" persistant="0"/>
+      <variable tag="isEndState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
+      <variable tag="isCatchTrial" scope="global" logging="when_changed" default_value="0" persistent="0" type="boolean" persistant="0"/>
       <variable tag="tShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="catchCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tFalseAlarm" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      
-      <!-- frame conversion -->
-      <variable tag="tItiWaitFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tTotalReqHoldFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="nFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="nFramesOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="nFramesTooFast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="nFramesReact" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="nFramesEarlyTimeout" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="nFramesMissedTimeout" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="tCatchTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
-<!-- counter variables -->
-	  <variable tag="cItiStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="cStimOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="cStimOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="cLeverDown" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="cFirstStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-	  <variable tag="cTargetOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-	  <variable tag="cLeverUp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="cEndOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="cEndOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="cAuditoryStimOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="cCatchOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-	  
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
                 selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
@@ -342,8 +334,8 @@
     <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBasePressAmplitude"></sound>
     <sound tag="cueSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundCueAmplitude"></sound>
     <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBaseAmplitude"></sound>
-    <sound tag="catchSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundCatchAmplitude"></sound>
     <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundTargetAmplitude"></sound>
+    <sound tag="catchSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundCatchAmplitude"></sound>
     <sound tag="incorrectSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="soundIncorrectAmplitude"></sound>
     <sound tag="rewardSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/shortCorrect.wav" amplitude="soundRewardAmplitude"></sound>
   </sounds>
@@ -372,43 +364,53 @@
               x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tCatchGratingDirectionDeg" 
-              alpha_multiplier="tCatchGratingContrast"></stimulus>          
+              alpha_multiplier="tCatchGratingContrast"></stimulus>
+    <stimulus type="drifting_grating" tag="photoDiodeGrating"  direction="0" starting_phase="0"
+              spatial_frequency=".000000000001" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="photoStimulusWidth" y_size="photoStimulusHeight" 
+              x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" 
+              rotation="0" 
+              alpha_multiplier="photoStimulusContrast"></stimulus>
+    <stimulus type="drifting_grating" tag="photoDiodeMask"  direction="0" starting_phase="1"
+              spatial_frequency="photoMaskSpatialFreq" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="photoStimulusWidth" y_size="photoStimulusHeight" 
+              x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" 
+              rotation="0" 
+              alpha_multiplier="1"></stimulus>             
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
              <!-- init actions run only on first trial after loading experiment -->
-        <action type="queue_stimulus" stimulus="background"></action>
-        <action type="update_stimulus_display" tag="-"></action>
-        <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
-        <action type="assignment" tag="reset counter" variable="counter" value="0"></action>
-        <action type="assignment" tag="reset cLeverUp" variable="cLeverUp" value="0"></action>
-
         <action type="if" condition="success+ignore+failure == 0">
           <action type="report" message="**** First trial since experiment load - initializing"></action>
+
           <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
           <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
           <action type="assignment" variable="lastActualHoldTimeMs" value="0"></action>
-		      <action type="assignment" variable="isFirstTrial" value="1"></action>
+
           <!-- reset selection var -->
           <action type="reset_selection" selection="svStimNumber"></action>
           <action type="reset_selection" selection="svCatchNumber"></action>
           <action type="assignment" variable="tNStimAccepted" value="0"></action> 
         </action>
-
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
         <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
           <task_system_state tag="Initialization" interruptible="YES">
-            <action type="if" condition="success+ignore+failure > 0">
-              <action type="assignment" variable="isFirstTrial" value="0"></action>
-            </action>
+            <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+            <action type="queue_stimulus" stimulus="background"></action>
+            <action type="update_stimulus_display" tag="-"></action> 
             <action type="if" condition="doVisualStim">
               <action type="if" condition="doITIStim">
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
                 <action type="update_stimulus_display" tag="justincase"></action>
               </action>
-            </action> 
+            </action>          
             <!-- In this state, do all stimulus selection/tValue setting -->
             <action type="report" message="Initializing Trial"/>
             <!-- Reset t_____RemainingOn/Off to 0ms -->      
@@ -420,29 +422,29 @@
             <action type="assignment" tag="Reset tCyclesOn" variable="tCyclesOn" value="0"/>
             <action type="assignment" tag="Reset too fast time over" variable="isTooFast" value="1"/>
             <action type="assignment" tag="Reset End state" variable="isEndState" value="0"/>  
-            <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/> 
+            <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/>
             <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
-            <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>  
+            <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>
+            <action type="assignment" tag="Reset FIO3" variable="FIO3" value="0"/> 
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
             <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(minCyclesOn-1, nCyclesOn)"/>
-            
             <action type="if" condition="doShortCatchTrial">
               <action type="assert" condition="minCyclesOn &gt; 2" stop_on_failure="1"
                       message="When doShortCatchTrial, minCyclesOn must be greater than 2"/>
             </action>
-
+            
             <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == maxCyclesOn">
-					   <action type="assignment" variable="isCatchTrial" value="1"/> 
+					<action type="assignment" variable="isCatchTrial" value="1"/> 
             </action>
 
-            <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesOff" variable="nFramesOff" value="ceil((stimOffTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesTooFast" variable="nFramesTooFast" value="ceil((tooFastTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesReact" variable="nFramesReact" value="ceil((reactTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesEarlyTimeout" variable="nFramesEarlyTimeout" value="ceil((earlyTimeoutMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesMissedTimeout" variable="nFramesMissedTimeout" value="ceil((missedTimeoutMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Set total required hold frames" variable="tTotalReqHoldFrames" value="((nFramesOn+nFramesOff)*(1+nCyclesOn))-nFramesOff"/>
-            <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="(tTotalReqHoldFrames/frameRateHz)*1000"/>
+            <action type="if" condition="doPhotodiode">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action> 
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+            <action type="assignment" tag="Reset tDidDeviantAfterMissing" variable="tDidDeviantAfterMissing" value="0"/>
+
+            <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="((stimOnTimeMs+stimOffTimeMs)*nCyclesOn)+stimOnTimeMs"/>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -453,11 +455,14 @@
             <!--Transmit the trial timestamp so strobed code sequences are unique -->
             <action type="assert" condition="tTrialStartMWTimestampMs &lt;= 2147483648" 
                     message="tTrialStartMWTimestampMs is too large - should happen only after several days of running!?"
-                    stop_on_failure="1"/>  -
+                    stop_on_failure="1"/>  
             <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
             <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
-        
+            <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
             <action type="assignment" variable="block2DoGratingAppearance" value="block2DoVisualStim"/>
@@ -466,7 +471,7 @@
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laserTrigger" value="0"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
 
@@ -714,6 +719,8 @@
               <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level8"/>
             </action>
 
+
+
             <!-- error checking                -->
             <action type="assert" stop_on_failure="1"  
                     condition="tTempStimOdds == 80"
@@ -746,9 +753,9 @@
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
-                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>  
                   <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
-                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                         
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                       
                   <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                         
                   <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                             
                   <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                       
@@ -764,9 +771,19 @@
                   <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
                   <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
                   <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
-                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
-                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>  
+                  <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>
+                  <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>
+                  
+                  <action type="if" condition="doTrialLaser">
+                  	<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+                  	<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                  	<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                  </action>
+                  <action type="if" condition="!doTrialLaser">
+                  	<action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
+                  </action>  
               </action> 
             <!-- Choose block 2 trial type -->
             <!--
@@ -779,9 +796,7 @@
 
               <!-- grating appearance for block 2 -->                         
               <action type="if" condition="doBlock2">
-              <action type="if" condition="block2DoVisualStim">
-                <action type="assert" condition="doVisualStim == 1" stop_on_failure="1"
-                        message="doVisualStim must be 1 for block2DoVisualStim == 1"/> -->
+              <action type="if" condition="block2DoVisualStim || block2DoAuditoryStim">
 
                 <!-- same for both types of block2 trials -->
                 <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>      
@@ -807,6 +822,8 @@
                   <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
                   <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
                   <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/>
+                  <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>
+                  <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
@@ -817,7 +834,7 @@
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="block2GratingMaxDirectionStepDeg"></action>
                   <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>
                   <action type="assignment" variable="tSoundMaxTargetAmplitude" value="block2SoundTargetAmplitude"></action>
-                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>                        
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>                          
                   <action type="assignment" variable="tGratingElevationDeg" value="block2GratingElevationDeg"></action>                           
                   <action type="assignment" variable="tGratingAzimuthDeg" value="block2GratingAzimuthDeg"></action>                       
                   <action type="assignment" variable="tGratingHeightDeg" value="block2GratingHeightDeg"></action>                         
@@ -830,50 +847,67 @@
                   <action type="assignment" variable="tDoAuditoryDetect" value="block2DoAuditoryDetect"/>
                   <action type="assignment" variable="tDoAuditoryStim" value="block2DoAuditoryStim"/>
                   <action type="assignment" variable="tDoAuditoryCue" value="block2DoAuditoryCue"/>
+                  <action type="assignment" variable="tDoNoResponse" value="block2DoNoResponse"/>
                   <action type="if" condition="tShortCatchTrial == 1">
-                    <action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
-                    <action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
-                    <action type="assignment" variable="tDoCatchAuditoryDetect" value="doAuditoryDetect"/>
+                  	<action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
+                  	<action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
+                  	<action type="assignment" variable="tDoCatchAuditoryDetect" value="doAuditoryDetect"/>
                     <action type="if" condition="tDoCatchOriDetect == 1">
                       <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
                       <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
                     </action>
                     <action type="if" condition="tDoCatchContrastDetect == 1">  
-                      <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                  	  <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
                       <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                     </action>
-                    <action type="if" condition="tDoCatchAuditoryDetect == 1">
+                  	<action type="if" condition="tDoCatchAuditoryDetect == 1">
                       <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
                       <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                        
-                    </action>
+                  	</action>
                   </action>
                 </action>
 
                   <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
                   <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
                   <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
-                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
-                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>  
+                    
               </action> 
-
+				<!-- using trial laser for block 1 -->
+				<action type="if" condition="doTrialLaser">
+					<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+                  	<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                  	<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                </action>
+                <action type="if" condition="!doTrialLaser">
+                  	<action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
+                  	<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
+                  </action>  
               <!-- using trial laser for block 2 -->
               <action type="if" condition="block2DoTrialLaser">
                 <action type="assert" condition="!doLaserStim" stop_on_failure="1"
                         message="When using trialLaser, doLaserStim must be off"/>
 
+
                 <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
-                  <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
-                  <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
-                  <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
-                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
-                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
-                    <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
-                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
-                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
+                    <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                    <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                    <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                    <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                    <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
+                    <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>  
+                	 <action type="if" condition="doTrialLaser">
+                  		<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
+                  		<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                  		<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                	</action>
+					<action type="if" condition="doTrialLaser == 0">
+                  		<action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
+                  		<action type="assignment" variable="tTrialLaserOnTimeMs" value="0"></action>
+                  		<action type="assignment" variable="tTrialLaserOffTimeMs" value="0"></action>
+                	</action>
                 </action>
-                  
+                	
                 <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
                   <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
@@ -901,8 +935,9 @@
                 <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
                 <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
                 <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/> 
+                <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>                                                
               </action>
-            </action>
+              </action>
              <!-- !doBlock2 error checking -->
               <action type="assert" stop_on_failure="1"
                       condition="!doLaserStim || (laserDoLinearRamp || laserDoPulseTrain)" 
@@ -932,43 +967,48 @@
             <action type="if" condition="tDoVisualStim"> 
               <action type="if" condition="tDoOriDetect">
                 <action type="assignment" variable="tGratingDirectionDeg" 
-                        value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action>
-                <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                        value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action> 
+                <action type="if" condition="!tDoContrastDetect">        
+                  <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                </action>  
               </action>
               <action type="if" condition="tDoContrastDetect">
                 <action type="assignment" variable="tGratingContrast" 
-                        value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> tD
-                <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                        value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> 
+                <action type="if" condition="!tDoOriDetect">
+                  <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                </action>  
               </action>
               <action type="if" condition="!tDoContrastDetect &amp;&amp; !tDoOriDetect">
                 <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"></action> 
                 <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
               </action>
             </action>
-			
-			      <action type="if" condition="tShortCatchTrial">
-              <action type="if" condition="tDoCatchOriDetect">
-                <action type="assignment" variable="tCatchGratingDirectionDeg" 
+            
+            <action type="if" condition="tShortCatchTrial">
+				<action type="if" condition="tDoCatchOriDetect">
+					<action type="assignment" variable="tCatchGratingDirectionDeg" 
                         value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tCatchNumber/tGratingDirectionStepsPerOctave)))"></action>
-                <action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
-                <action type="assignment" variable="tSoundCatchAmplitude" value="0"/>
-              </action>
-              <action type="if" condition="tDoCatchContrastDetect">
-                <action type="assignment" variable="tCatchGratingContrast" 
-                      value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tCatchNumber/tGratingContrastStepsPerOctave)))"></action> 
-                <action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
-                <action type="assignment" variable="tSoundCatchAmplitude" value="0"/>
-              </action>
-              <action type="if" condition="tDoCatchAuditoryDetect">
-                <action type="assignment" variable="tSoundCatchAmplitude" value="tSoundMaxTargetAmplitude / (pow(2, tCatchNumber/tSoundTargetStepsPerOctave))"></action>
-                <action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
-                <action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
-              </action>   
+                    <action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
+                    <action type="assignment" variable="tSoundCatchAmplitude" value="0"/>
+              	</action>
+				<action type="if" condition="tDoCatchContrastDetect">
+              		<action type="assignment" variable="tCatchGratingContrast" 
+                    	value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tCatchNumber/tGratingContrastStepsPerOctave)))"></action> 
+                	<action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                	<action type="assignment" variable="tSoundCatchAmplitude" value="0"/>
+              	</action>
+              	<action type="if" condition="tDoCatchAuditoryDetect">
+              		<action type="assignment" variable="tSoundCatchAmplitude" value="tSoundMaxTargetAmplitude / (pow(2, tCatchNumber/tSoundTargetStepsPerOctave))"></action>
+              		<action type="assignment" variable="tCatchGratingContrast" value="tBaseGratingContrast"/>
+              		<action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+              	</action> 	
             </action>
-              	
+
             <action type="if" condition="tDoVisualStim == 0">
               <action type="assignment" variable="tBaseGratingContrast" value="0"></action>
               <action type="assignment" variable="tGratingContrast" value="0"></action>
+              <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"></action>
             </action>
             <action type="assert" condition="tGratingContrast >= 0" stop_on_failure="1" 
                     message="No negative contrasts allowed"/>
@@ -977,8 +1017,8 @@
 
             <!-- choose auditory stim -->  
             <action type="if" condition="tDoAuditoryStim">
-              <action type="assignment" variable="tSoundBaseAmplitude" value="soundBaseAmplitude"/> 
-              <action type="assignment" variable="tSoundBasePressAmplitude" value="soundBasePressAmplitude"/> 
+              <action type="assignment" variable="tSoundBaseAmplitude" value="soundBaseAmplitude"/>
+              <action type="assignment" variable="tSoundBasePressAmplitude" value="soundBasePressAmplitude"/>  
               <action type="if" condition="tDoAuditoryDetect">     
                 <action type="assignment" variable="tSoundTargetAmplitude" 
                   value="tSoundMaxTargetAmplitude / (pow(2, tStimulusNumber/tSoundTargetStepsPerOctave))"></action>
@@ -993,7 +1033,7 @@
               <action type="assignment" variable="tSoundBaseAmplitude" value="0"/> 
               <action type="assignment" variable="tSoundTargetAmplitude" value="0"/> 
             </action>
-
+            
             <action type="if" condition="tDoAuditoryCue">
               <action type="assignment" variable="tSoundCueAmplitude" value="soundCueAmplitude"/>
             </action>
@@ -1001,6 +1041,11 @@
               <action type="assignment" variable="tSoundCueAmplitude" value="0"/>
             </action>  
 
+			<!-- set doNoResponse params -->
+			<action type="if" condition="tDoNoResponse">
+				<action type="assignment" variable="isCatchTrial" value="1"/>
+		    </action>
+			
             <!-- send laser params to controller -->
             <action type="if" condition="doLaserStim">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
@@ -1030,26 +1075,14 @@
                     value="itiTimeMs"></action>
             
             <!-- if asked for, extend ITI based on previous hold and max stim time, also takes TOs and extra cycles into account -->
-            <action type="if" condition="!isFirstTrial"> 
-              <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
-                <action type="assignment" variable="tempMs"  
+            <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
+              <action type="assignment" variable="tempMs"  
                       value="(maxCyclesOn*(stimOnTimeMs+stimOffTimeMs))-lastActualHoldTimeMs"></action> 
-              </action>
-            </action>
-            
-            <action type="if" condition="isFirstTrial">
-              <action type="assignment" variable="tempMs" value="0"></action>   
-            </action>  
-              
-            <action type="if" condition="tempMs &gt;= 0"> 
+              <action type="if" condition="tempMs > 0"> 
                 <!--add to ITI-->
               <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
-            </action>
-            
-
-            <action type="assignment" 
-                    variable="tItiWaitFrames" 
-                    value="ceil((tItiWaitTimeMs/1000)*frameRateHz)"></action>
+              </action>
+            </action> 
 
             <!-- if trialLaser, send params to controller -->
                     <action type="if" condition="tTrialLaserPowerMw > 0">
@@ -1061,40 +1094,38 @@
                       condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
                       message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
             </action>
-			<action type="report" message="cLeverUp is $cLeverUp, counter is $counter, First trial is $isFirstTrial"></action>
-            
-            <action type="assignment" tag="Log counter" variable="cItiStart" value="counter"></action>
-            <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" tag="" target="InterTrialInterval"></transition>
+          </task_system_state>
+
+          <task_system_state tag="InterTrialInterval" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+             <action type="start_timer" timer="InterTrialTimer" duration="tItiWaitTimeMs" timebase="" duration_units="ms" />
+             <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
             <action type="if" condition="doLeverSolenoidAllTrials">
-                <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
-                <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
-                <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+              <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action type="if" condition="!doLeverSolenoidAllTrials">
-                <action type="assignment" variable="MIO0" value="0"></action>
-                <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
+              <action type="assignment" variable="FIO2" value="0"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
-            <action type="report" message="In ITI, waiting $tItiWaitFrames, then wait for press"></action>
-			
+            <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>                        
+
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="WaitForLeverPress"></transition>
-            <transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; !isFirstTrial &amp;&amp; counter > cLeverUp" target="WaitForLeverPress"></transition>
-            <transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cLeverUp" target="ExitTask"></transition>
+            <transition type="timer_expired" tag="WaitForLeverPress" target="StartTrial" timer="InterTrialTimer"></transition>
           </task_system_state>
-          
-		  <task_system_state tag="ExitTask" interruptible="YES">
-			<action type="assert" stop_on_failure="1"  
-                    condition="counter > cLeverUp"
-                    message="Not receiving triggers from microscope"/>
-          </task_system_state>
-                    
-          <task_system_state tag="WaitForLeverPress" interruptible="YES">
+
+          <task_system_state tag="StartTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
               <!-- Lower solenoid at beginning of trial for any solenoid -->
-              <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="0"></action>
+              <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
@@ -1102,33 +1133,37 @@
             <action type="assignment" tag="Encode StartTrialWaitForPress" variable="strobedDigitalWord" value="7"></action>
             <!-- fake mouse calculations -->
             <action type="if" tag="if fakeMouse" condition="!doLever">
-              <action type="assignment" tag="Assign tFakeMouseReactFrames" variable="tFakeMouseReactFrames" value="rand(0, ceil((fakeMouseMaxReactMs/1000)*frameRateHz))"></action>
+              <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="rand(0, fakeMouseMaxReactMs)"></action>
               <action type="if" tag="if doFakeMouseSuccess" condition="doFakeMouseSuccessOnly">
-                <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactFrames" value="tTotalReqHoldFrames + nFramesTooFast + ceil(0.1*frameRateHz)"></action>
+                <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="tTotalReqHoldTimeMs+ tooFastTimeMs"></action>
               </action>
             </action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; FIO1 == 1" target="StartTrial"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; FIO1 == 1" target="TrialStimOn"></transition>
             <transition type="conditional" tag="If fakeMouse elapsed, go to TrialStimOn" 
-                        condition="!doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 100" target="StartTrial"></transition>
+                        condition="!doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 100" target="TrialStimOn"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to TrialStimOn" 
-                        condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="StartTrial"></transition>
-          </task_system_state>
-
-          <task_system_state tag="StartTrial" interruptible="YES">
-            <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="report" message="In press pause"></action> 
-            <action type="assignment" tag="Log counter" variable="cLeverDown" value="counter"></action>
-          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Wait for next frame" condition="counter &gt;= (cLeverDown + 1) " target="TrialStimOn"></transition>
+                        condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="TrialStimOn"></transition>
           </task_system_state>
 
           <task_system_state tag="TrialStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+            <action type="assignment" variable="stimTag" value= "1"/>
+            <action type="assignment" variable="tStimOnMs" value="now()/1000" />
+            <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="1"/>
+              </action> 
+
+            <action type="if" condition="tTrialLaserPowerMw > 0">
+              <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
+              <action type="assignment" tag="" variable="FIO3" value="1"/>
+              <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+              <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+            </action>
 
             <action type="if" condition="tCyclesOn &lt; 1">
-              <action type="assignment" variable="cFirstStim" value="counter" />
               <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>  
               <action type="play_sound" sound="pressSound"/>
               <action type="play_sound" sound="basePressSound"/>
@@ -1136,11 +1171,8 @@
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             </action>
             
-            <action type="assignment" variable="cStimOn" value="counter" />
-            <action type="assignment" variable="stimTag" value= "1"/>
-            <action type="assignment" variable="tStimOnMs" value="now()/1000" />
             <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
-			
+
 			<action type="if" condition="!tShortCatchTrial">
             	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
@@ -1159,30 +1191,52 @@
             		<action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="catch_grating"></action> 
             		<action type="play_dynamic_stimulus" stimulus="catch_grating" tag="StimOn"></action>
             		<action type="update_stimulus_display" tag="justincase"></action>
-            		<action type="assignment" variable="cCatchOn" value="counter" />
+            		<action type="play_sound" sound="catchSound"/>
             		<action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
+            		<action type="assignment" variable="tCatchTimeMs" value="now()/1000"/>
             	</action>
             </action>
-            
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+        
             <action type="play_sound" sound="baseSound"/>
-            <action type="assignment" variable="cAuditoryStimOn" value="counter"/>
+
+            <action type="if" tag="if fakeMouse and first stim on" condition="!doLever &amp;&amp; tCyclesOn == 1">
+              <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tFakeMouseReactMs" duration_units="ms"></action>
+              <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="fake mouse to react in $tFakeMouseReactMs ms"></action>
+            </action>
 
              <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cFirstStim + nFramesOn + ((tCyclesOn-1)*(nFramesOn+nFramesOff)))" target="TrialStimOff"></transition>
+            <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="TrialStimOff" timer="stimOnTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="TrialStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="cStimOff" value="counter" />
+              <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+              <action type="start_timer" timer="targetTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+              <action type="if" condition="sendElectrophysSync==1">
+                <action type="assignment" variable="FIO2" value="0"/>
+              </action> 
             <action type="assignment" variable="stimTag" value= "0"/>
             <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
             
             <action type="if" condition="!doConstantStimulus">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
 
@@ -1190,20 +1244,27 @@
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TrialStimOn"></transition>
-            <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TargetStimOn"></transition>
+            <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; timerExpired(stimOffTimer)" target="TrialStimOn"></transition>
+            <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; timerExpired(targetTimer)" target="TargetStimOn"></transition>
           </task_system_state>
 
           <task_system_state tag="TargetStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="cTargetOn" value="counter"/>
+            <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
+            <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
+            <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="1"/>
+            </action> 
+            <action type="if" condition="doCustomTargetTime==0">
+              <action type="start_timer" tag="" timer="targetOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+            </action>
+            <action type="if" condition="doCustomTargetTime==1">
+              <action type="start_timer" tag="" timer="targetOnTimer" duration="targetOnTimeMs" timebase="" duration_units="ms"/>
+            </action>
             <action type="assignment" variable="stimTag" value= "2"/>
             <action type="assignment" tag="set Stim on time" variable="tStimOnMs" value="now()/1000"/>
             <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
-				
-            <action type="report" message="Grating Contrast is $tGratingContrast"></action>
-            <action type="report" message="Grating Orientation is $tGratingDirectionDeg"></action>
 
             <!-- Must dequeue stimulus in the doConstantStimulus case -->
             <action type="if" condition="doConstantStimulus==1">
@@ -1211,33 +1272,52 @@
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
-            <action type="if" condition="isCatchTrial"> 
-            	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+            <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
                 <action type="play_sound" sound="baseSound"/>
+                <action type="assignment" variable="isCatchTrial" value= "1"/>
             </action>
-            <action type="if" condition="!isCatchTrial">
-            	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+            <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
             	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-            	<action type="if" condition="tDoAuditoryDetect">
-                	<action type="play_sound" sound="targetSound"/>
+              <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
+                <action type="play_sound" sound="targetSound"/>
+              </action> 
+              <action type="if" condition="!tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
+                <action type="play_sound" sound="baseSound"/>
+              </action> 
+            </action>
+            <action type="if" condition="nCyclesOn &lt; maxCyclesOn">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
+                <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
+                  <action type="play_sound" sound="targetSound"/>
                 </action> 
-                <action type="if" condition="!tDoAuditoryDetect">
-                  	<action type="play_sound" sound="baseSound"/>
+                <action type="if" condition="!tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
+                  <action type="play_sound" sound="baseSound"/>
                 </action> 
             </action>
 
+            <action type="if" condition="doPhotodiode">
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+             
+
             <action type="update_stimulus_display" tag="justincase"></action>
-            <action type="report" message="Target Stim On for $nFramesOn frames"/>
+            <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
             <action type="report" message="Catch is $isCatchTrial"></action>
 
             <action type="assignment" variable="tStimTurnedOn" value="1"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="if nFramesTooFast elapsed, go to React"  condition="(counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff"></transition>
+            <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="targetOnTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="React" interruptible="YES">
@@ -1245,39 +1325,44 @@
             <action type="assignment" tag="set too fast time over" variable="isTooFast" value="0"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
-            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; !doLever &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames))" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; !doLever &amp;&amp; timerExpired(fakeMouseTimer)" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; !doLever &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames))" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Reward"></transition>
-            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff" ></transition>
-            <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; (counter &gt;= (cEndOff + nFramesOff))" target="EndTrialStimOn"></transition>
-            <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; (counter &gt;= (cEndOn + nFramesOn))" target="EndTrialStimOff"></transition>
+            <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; !doLever &amp;&amp; timerExpired(fakeMouseTimer)" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="targetOnTimer"></transition>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer)" target="EndTrialStimOn"></transition>
+            <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer)" target="EndTrialStimOff"></transition>
           </task_system_state>
 
            <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="FIO2" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
-            <action type="assignment" variable="cLeverUp" value="counter"></action>
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
             
-            <action type="if" condition="tShortCatchTrial &amp;&amp; cLeverUp-cCatchOn &gt;= nFramesTooFast &amp;&amp; cLeverUp-cCatchOn &lt;= nFramesReact">
+            <action type="if" condition="tShortCatchTrial &amp;&amp; (now()/1000) - tCatchTimeMs &gt;= tooFastTimeMs &amp;&amp; (now()/1000) - tCatchTimeMs &lt;= reactTimeMs">
             	<action type="assignment" variable="tFalseAlarm" value="1"></action>
             	<action tag="ReportFalseAlarm" full_name="ReportDigital" type="report" message="** False Alarm (FIO1 = $FIO1 )"></action>
             </action>
             
-            <action type="if" condition="!tShortCatchTrial || tCyclesOn != catchCyclesOn">	
-            	<action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
-            </action>
-            
             <action type="if" condition="doITIStim == 0">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
-            </action> 
-
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            </action>	
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
             
@@ -1307,22 +1392,25 @@
               <action type="next_selection" selection="svStimNumber"/>
               <action type="next_selection" selection="svCatchNumber"/>
             </action>
-            
+
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
-              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
 
+            <action type="start_timer" tag="Start earlyTimeoutTimer" timer="earlyTimeoutTimer" timebase="" duration="earlyTimeoutMs" duration_units="ms"></action>
+
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If rewarding catch trials" condition="doShortCatchReward &amp;&amp; tFalseAlarm" target="SingleReward"></transition>
-            <transition type="conditional" tag="Early timeout elapsed" condition="counter &gt;= (cLeverUp + nFramesEarlyTimeout)" target="EndTrial"></transition>
+            <transition type="timer_expired" target="PossibleEndTimeout" timer="earlyTimeoutTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="FIO2" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
-            <action type="assignment" variable="cLeverUp" value="counter"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
@@ -1332,10 +1420,17 @@
             <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
             <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
 
-            <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
               <action type="update_stimulus_display" tag="justincase"></action>
-            </action> 
+            </action>
+            
+            <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            </action>	
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>  
 
@@ -1343,9 +1438,7 @@
               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
-            </action>    
-
-            
+            </action>
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1362,27 +1455,36 @@
               <action type="next_selection" selection="svCatchNumber"/>
             </action>
 
+
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
-              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
+            <action type="start_timer" tag="Start missedTimeoutTimer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Missed timeout elapsed" condition="counter &gt;= (cLeverUp + nFramesMissedTimeout)" target="EndTrial"></transition>
+            <transition type="timer_expired" target="PossibleEndTimeout" timer="missedTimeoutTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="FIO2" value="0"/>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
-            <action type="assignment" variable="cLeverUp" value="counter"></action>
 
-
-            <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
-              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
               <action type="update_stimulus_display" tag="justincase"></action>
-            </action> 
+            </action>
+            
+            <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
+            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+            	<action type="update_stimulus_display" tag="justincase"></action>
+            </action>	
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
@@ -1390,7 +1492,6 @@
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
-            
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1406,7 +1507,6 @@
               <action type="next_selection" selection="svStimNumber"/>
               <action type="next_selection" selection="svCatchNumber"/>
             </action>
-
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success"></action>
@@ -1462,7 +1562,7 @@
             <action type="start_timer" tag="StartTimer" timer="postRewardTimer" timebase="" duration="postRewardMs" duration_units="ms"></action> 
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="direct" tag="Always Go to EndTrial" target="EndTrial"></transition>
+            <transition type="timer_expired" tag="Always Go to EndTrial" target="EndTrial" timer="postRewardTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="SingleReward" interruptible="YES">
@@ -1487,61 +1587,114 @@
 
           <task_system_state tag="EndTrialStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="cEndOn" value="counter"></action>
-            <action type="play_sound" sound="baseSound"/>
-            <action type="if" condition="!doConstantStimulus">
-            	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-            	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-            	<action type="update_stimulus_display" tag="justincase"></action>
-            </action>	
+            <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="1"/>
+              </action> 
+            <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+            <action type="if" condition="tDoDeviantAfterMissing==0 || (tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==1)">
+              <action type="play_sound" sound="baseSound"/>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
+            <action type="if" condition="tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==0">
+              <action type="assignment" variable="tBaseGratingContrast" value="1"/>
+              <action type="assignment" variable="tBaseGratingDirectionDeg" value="90"/>
+              <action type="play_sound" sound="targetSound"/>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+              <action type="assignment" variable="tDidDeviantAfterMissing" value="1"/>
+            </action>
+
             <action type="report" message="End of Trial - Stim On"/>
             <action type="assignment" variable="stimTag" value="1"></action>
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If fake mouse timer expired, and too fast Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If fake mouse timer expired, and too fast Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
-            <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames))&amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cEndOn + nFramesOn))" target="EndTrialStimOff"></transition>
-            <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
-            <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Reward"></transition>
-            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
+            <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="endOnTimer"></transition>
+            <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
+            <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrialStimOff" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="cEndOff" value="counter"></action> 
+            <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+            <action type="if" condition="sendElectrophysSync">
+                <action type="assignment" variable="FIO2" value="0"/>
+              </action>  
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
             </action> 
-            <action type="if" condition="!doConstantStimulus">
-            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-            	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-            	<action type="update_stimulus_display" tag="justincase"></action>
-            	<action type="report" message="End of Trial - Stim Off"/>
-            </action>	
+            <action type="if" condition="doConstantStimulus">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="Return to base"></action>
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action> 
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+              <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="report" message="End of Trial - Stim Off"/>
 
             <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If fake mouse frames elapsed, and too fast Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If fake mouse timer expired, and too fast Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
-            <transition type="conditional" tag="If fake mouse frames elapsed, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If fake mouse frames elapsed, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Queue Visual Stimulus" condition="(counter &gt;= (cEndOff + nFramesOff))" target="EndTrialStimOn"></transition>            
-            <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
-            <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Reward"></transition>
-            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
+            <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endOffTimer"></transition>
+            <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
+            <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+            <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           </task_system_state>
+		  
+		  <task_system_state tag="PossibleEndTimeout" interruptible="YES">    
+            <!-- do timeout if too many recent errors:
+                 use a state rather than a wait action because states are interruptible -->
+            <action type="if" condition="tConsecErrors >= nConsecErrorsCauseTimeout">
+              <action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
+              <action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
+              <action type="if" condition="doSolenoidOnTimeout==1">
+              	<action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              </action>
+            </action>
 
+            <transition type="conditional" tag="- bypass timer checking if no timeout requested" 
+                        condition="tConsecErrors &lt; nConsecErrorsCauseTimeout" target="EndTrial"></transition>
+            <transition type="timer_expired" target="EndTrial" timer="consecErrorTimer"></transition>
+          </task_system_state>
+          
           <task_system_state tag="EndTrial" interruptble="YES">
+            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+            <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
@@ -1551,9 +1704,11 @@
 
         </task_system>
       </trial>
-      <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
       <action type="dequeue_stimulus" stimulus="base_grating"></action>
       <action tag="Update Stimulus" type="update_stimulus_display"></action>
+      <action type="assignment" tag="" variable="FIO3" value="0"/>
+      <action type="assignment" tag="" variable="FIO2" value="0"/>
+      <action type="assignment" tag="" variable="juice" value="0"/>
     </protocol>
   </experiment>
 </monkeyml>

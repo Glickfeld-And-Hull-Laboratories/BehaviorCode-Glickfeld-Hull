@@ -3,10 +3,10 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" lever2="" 
-              lever1_solenoid="FIO2"
-              lever2_solenoid=""
-              laser_trigger="laserTriggerFIO"
+              lever1="FIO1" 
+              lever1_solenoid="MIO0"
+              laser_trigger="laserTrigger"
+              optic_device="optic_device"
               strobed_digital_word="strobedDigitalWord"
               counter="counter"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -16,6 +16,7 @@
     <folder tag="Behavioral Control">
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
+      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
       <variable tag="doConstantStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
@@ -182,8 +183,8 @@
     </folder>
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
-      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
-      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -391,10 +392,7 @@
             <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
             <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
-            <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
-            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
-            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
-            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
+            
             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
             <action type="assignment" variable="block2DoGratingAppearance" value="block2DoVisualStim"/>
@@ -403,7 +401,7 @@
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            <action type="assignment" variable="laserTrigger" value="0"></action>
             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
 
@@ -923,11 +921,11 @@
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
             <action type="if" condition="doLeverSolenoidAllTrials">
               <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
-              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action type="if" condition="!doLeverSolenoidAllTrials">
-              <action type="assignment" variable="FIO2" value="0"></action>
+              <action type="assignment" variable="MIO0" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="report" message="In ITI, waiting $tItiWaitFrames, then wait for press"></action>                                    
@@ -941,7 +939,7 @@
             <action type="report" message="ITI done, waiting for press"></action> 
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
               <!-- Lower solenoid at beginning of trial for any solenoid -->
-              <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
+              <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
@@ -1197,7 +1195,7 @@
             <!-- reject stim selection -->
             <action type="reject_selections" selection="svStimNumber"></action>
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
-              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
 
@@ -1237,7 +1235,7 @@
             </action>
 
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
-              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
 

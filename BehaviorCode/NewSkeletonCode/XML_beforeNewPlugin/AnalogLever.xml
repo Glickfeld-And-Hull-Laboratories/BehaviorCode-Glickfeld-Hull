@@ -3,13 +3,12 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" 
-              lever1_solenoid="MIO0"
-              trial_laser_powerMw=""
-              laser_trigger="laserTrigger"
-              optic_device="optic_device"
-              strobed_digital_word="strobedDigitalWord"
-              counter="counter"/>
+              lever1="FIO1" lever2="" 
+              lever1_solenoid="FIO2"
+              lever2_solenoid="FIO3"
+              quadrature="quadrature"
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -17,16 +16,15 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
+      
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
+      <variable tag="doSpeedDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
-
-      <variable tag="doLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="LED Debug"/>
       
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
@@ -53,19 +51,17 @@
       <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Reward"/>
       <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Reward"/>
       <variable tag="rewardEveryNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
-
-      <variable tag="doCounterTracking" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Counter"/>
       
     </folder>
     <folder tag="Stimuli">
       <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="baseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.05" type="float" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingDurationMs" scope="global" logging="when_changed" default_value="800" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
       
@@ -73,6 +69,8 @@
       <variable tag="gratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="gratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
+	    <variable tag="gratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="gratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
 
       <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
@@ -96,18 +94,20 @@
       <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2BaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2BaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2BaseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
 
       <variable tag="block2GratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2GratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2GratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
 
       <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2TrPer80Level1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
@@ -119,7 +119,7 @@
       <variable tag="block2TrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2TrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
       
-    <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+	    <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
@@ -160,12 +160,6 @@
       <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" />
       <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
 
-      <variable tag="cTrialStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-      <variable tag="cTrialEnd" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-      <variable tag="cLeverDown" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-      <variable tag="cTargetOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-      <variable tag="cLeverUp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
-
     </folder>
     <folder tag="Fake Mouse">
       <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
@@ -188,13 +182,15 @@
     </folder>
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
-      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
-      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="FIO3" full_name="FIO3" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Lever"/>
+      <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -229,11 +225,14 @@
       <variable tag="tLaserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tBaseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingMaxContrastStep" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+      <variable tag="tGratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
-      <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+      <variable tag="tGratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tGratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tGratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -244,6 +243,7 @@
       <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDoNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -267,13 +267,13 @@
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
     <stimulus type="drifting_grating" tag="base_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
               spatial_frequency="tGratingSpatialFreqCPD" 
-              speed="tGratingSpeedDPS" 
+              speed="tBaseGratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
               x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tBaseGratingDirectionDeg" 
               alpha_multiplier="tBaseGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="tGratingStartingPhaseDeg" 
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -298,11 +298,11 @@
       <action type="assignment" tag="tempNCorrect = 0" variable="tempNCorrect" value="0"></action>
       <action type="assignment" variable="tConsecErrors" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+      <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
 
       <!-- init actions run only on first trial after loading experiment -->
       <action type="if" condition="success+ignore+failure == 0">
         <action type="report" message="**** First trial since experiment load - initializing"></action>
-        <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
 
         <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
         <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
@@ -313,19 +313,11 @@
         <action type="assignment" variable="tNStimAccepted" value="0"></action> 
       </action>
 
-      <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
+      <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
         <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" 
                      _error="Task Systems must contain >=1 transition that yields to parent">
           <task_system_state tag="Intertrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
-            <action type="assignment" tag="reset counter" variable="counter" value="0"></action>
-            <action type="if" condition="doLED==1">
-            <action type="assignment" variable="laserTrigger" value="1"/>
-            <action type="schedule" delay="125 ms" duration="1" repeats="1">
-              <action type="assignment" variable="laserTrigger" value="0"></action>
-            </action>
-          </action>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -340,7 +332,10 @@
             <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
             <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
-           
+            <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
 
@@ -350,15 +345,12 @@
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laserTrigger" value="0"></action>
+            <action type="assignment" variable="FIO3" value="0"></action>
             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
             <action type="assignment" variable="tStimTurnedOn" value="0"></action>
             <action type="assignment" variable="tDoNoStimulusChange" value="doNoStimulusChange"></action>
             <action type="assignment" variable="tDoAllCorrects" value="doAllCorrects"></action>
-            <action type="if" condition="doCounterTracking">
-              <action type="assignment" variable="cTrialStart" value="counter"></action>
-            </action>
 
             <!-- choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 -->
             <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
@@ -583,32 +575,36 @@
                 <action type="if" condition="tBlock2TrialNumber == 0">
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
                   <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
+                  <action type="assignment" variable="tBaseGratingSpeedDPS" value="baseGratingSpeedDPS"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
-                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>                       
+                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>   
+                  <action type="assignment" variable="tGratingMaxSpeedStepDPS" value="gratingMaxSpeedStepDPS"></action>
+                  <action type="assignment" variable="tGratingSpeedStepsPerOctave" value="gratingSpeedStepsPerOctave"></action>                       
                   <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                         
                   <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                             
                   <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                       
                   <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                         
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                             
-                  <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>                         
                   <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="block2BaseGratingDirectionDeg"></action>
                   <action type="assignment" variable="tBaseGratingContrast" value="block2BaseGratingContrast"></action>
+                  <action type="assignment" variable="tBaseGratingSpeedDPS" value="block2BaseGratingSpeedDPS"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="block2GratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="block2GratingMaxDirectionStepDeg"></action>
-                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>                         
+                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tGratingMaxSpeedStepDPS" value="block2GratingMaxSpeedStepDPS"></action>
+                  <action type="assignment" variable="tGratingSpeedStepsPerOctave" value="block2GratingSpeedStepsPerOctave"></action>                         
                   <action type="assignment" variable="tGratingElevationDeg" value="block2GratingElevationDeg"></action>                           
                   <action type="assignment" variable="tGratingAzimuthDeg" value="block2GratingAzimuthDeg"></action>                       
                   <action type="assignment" variable="tGratingHeightDeg" value="block2GratingHeightDeg"></action>                         
                   <action type="assignment" variable="tGratingWidthDeg" value="block2GratingWidthDeg"></action>                           
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="block2GratingSpatialFreqCPD"></action>                       
-                  <action type="assignment" variable="tGratingSpeedDPS" value="block2GratingSpeedDPS"></action>                           
                   <action type="assignment" variable="tGratingDurationMs" value="block2GratingDurationMs"/>
                 </action>
 
@@ -658,17 +654,19 @@
                 <action type="if" condition="doVisualStim == 1"> 
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>                         
                   <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
+                  <action type="assignment" variable="tBaseGratingSpeedDPS" value="baseGratingSpeedDPS"></action>
                   <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                         
                   <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                             
                   <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                       
                   <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                         
-                  <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                             
-                  <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>                         
+                  <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                                                     
                   <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>                             
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
                   <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tGratingMaxSpeedStepDPS" value="gratingMaxSpeedStepDPS"></action>
+                  <action type="assignment" variable="tGratingSpeedStepsPerOctave" value="gratingSpeedStepsPerOctave"></action>
                 </action>
               </action>
 
@@ -687,6 +685,8 @@
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
                   <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tGratingMaxSpeedStepDPS" value="gratingMaxSpeedStepDPS"></action>
+                  <action type="assignment" variable="tGratingSpeedStepsPerOctave" value="gratingSpeedStepsPerOctave"></action>
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
@@ -697,17 +697,19 @@
                   <action type="assignment" variable="tGratingContrastStepsPerOctave" value="block2GratingContrastStepsPerOctave"></action>
                   <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="block2GratingMaxDirectionStepDeg"></action>
                   <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>
+                  <action type="assignment" variable="tGratingMaxSpeedStepDPS" value="block2GratingMaxSpeedStepDPS"></action>
+                  <action type="assignment" variable="tGratingSpeedStepsPerOctave" value="block2GratingSpeedStepsPerOctave"></action>
                 </action>
 
                 <!-- in both cases -->
                 <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>     
-                <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>                           
+                <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
+                <action type="assignment" variable="tBaseGratingSpeedDPS" value="baseGratingSpeedDPS"></action>                                                      
                 <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                           
                 <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                       
                 <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                         
                 <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                           
                 <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                       
-                <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>                           
                 <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>                       
               </action>
 
@@ -717,12 +719,12 @@
             <action type="if" condition="! doBlock2">
               <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
               <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
+              <action type="assignment" variable="tBaseGratingSpeedDPS" value="baseGratingSpeedDPS"></action>
               <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                             
               <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                         
               <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                           
               <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                             
               <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                         
-              <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>                             
               <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>                         
               
               <action type="assignment" variable="tLaserRampLengthMs" value="laserRampLengthMs"></action>
@@ -732,6 +734,8 @@
               <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
               <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
               <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+              <action type="assignment" variable="tGratingMaxSpeedStepDPS" value="gratingMaxSpeedStepDPS"></action>
+              <action type="assignment" variable="tGratingSpeedStepsPerOctave" value="gratingSpeedStepsPerOctave"></action>
               <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
               <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
               <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
@@ -779,29 +783,44 @@
               <action type="assignment" variable="tLaserPowerMw" value="0"/>
             </action>
 
-            <!-- choose vis stim ori/dir -->
+            <!-- choose vis stim ori/dir/speed -->
             <action type="if" condition="doVisualStim"> 
               <action type="if" condition="doOriDetect">
                 <action type="assignment" variable="tGratingDirectionDeg" 
                         value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action> 
                 <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                <action type="assignment" variable="tGratingSpeedDPS" value="tBaseGratingSpeedDPS"/>
+                <action type="assignment" variable="tGratingStartingPhaseDeg" value="gratingStartingPhaseDeg"/>
                 <action type="report" message="Grating direction this trial is $tGratingDirectionDeg"></action>
               </action>
               <action type="if" condition="doContrastDetect">
                 <action type="assignment" variable="tGratingContrast" 
                         value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> 
                 <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                <action type="assignment" variable="tGratingSpeedDPS" value="tBaseGratingSpeedDPS"/>
+                <action type="assignment" variable="tGratingStartingPhaseDeg" value="gratingStartingPhaseDeg"/>
                 <action type="report" message="Grating contrast this trial is $tGratingContrast"></action>
+              </action>
+              <action type="if" condition="doSpeedDetect">
+                <action type="assignment" variable="tGratingSpeedDPS" 
+                        value="tBaseGratingSpeedDPS + (tGratingMaxSpeedStepDPS / (pow(2, tStimulusNumber/tGratingSpeedStepsPerOctave)))"></action> 
+                <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                <action type="assignment" variable="tGratingStartingPhaseDeg" value="((tTotalReqHoldTimeMs / 1000) * tBaseGratingSpeedDPS * tGratingSpatialFreqCPD * 360)"/> 
+                <action type="report" message="Grating speed this trial is $tGratingSpeedDPS ; Grating phase this trial is $tGratingStartingPhaseDeg"></action>
               </action>
             </action>
             <action type="if" condition="!doVisualStim">
               <action type="assignment" variable="tGratingContrast" value="0"></action>
               <action type="assignment" variable="tGratingDirectionDeg" value="0"></action>
+              <action type="assignment" variable="tGratingSpeedDPS" value="0"></action>
             </action>
             <action type="assert" condition="tGratingContrast >= 0" stop_on_failure="1" 
                     message="No negative contrasts allowed"/>
             <action type="assert" condition="abs(tBaseGratingDirectionDeg-tGratingDirectionDeg) &lt;= 360" stop_on_failure="1" 
                     message="Maximum direction step is 360 degrees"/>
+            <action type="assert" condition="tGratingSpeedDPS >= 0" stop_on_failure="1" 
+                    message="No negative speeds allowed"/>
 
             <!-- send laser params to controller -->
             <action type="if" condition="doLaserStim">
@@ -849,11 +868,11 @@
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
             <action type="if" condition="doLeverSolenoidAllTrials">
               <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
-              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action type="if" condition="!doLeverSolenoidAllTrials">
-              <action type="assignment" variable="MIO0" value="0"></action>
+              <action type="assignment" variable="FIO2" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>                        
@@ -877,7 +896,7 @@
           <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
               <!-- Lower solenoid at beginning of trial for any solenoid -->
-              <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="0"></action>
+              <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
@@ -890,7 +909,7 @@
               <action type="assignment" variable="tFakeMousePressMs" value="rand(0, fakeMouseMaxPressMs)"></action>
             </action>
 
-            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; FIO1 == 1 &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; (quadrature &gt; leverThreshold) &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
             <transition type="conditional" tag="If fakeMouse elapsed, go to HoldLever" 
                         condition="!doLever &amp;&amp; doAllCorrects==0 &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tFakeMousePressMs" target="HoldLever"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
@@ -906,9 +925,6 @@
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
 
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
-            <action type="if" condition="doCounterTracking==1">
-              <action type="assignment" variable="cLeverDown" value="counter"></action>
-            </action>
 
             <action type="if" condition="doVisualStim">
               <action type="if" condition="!doITIStim">
@@ -920,7 +936,7 @@
 
             <!-- turn on trial laser if requested -->
             <action type="if" condition="tTrialLaserPowerMw > 0">
-              <action type="assignment" variable="laserTrigger" value="1"></action> 
+              <action type="assignment" variable="FIO3" value="1"></action> 
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -941,7 +957,7 @@
             <action type="start_timer" tag="Start LeverHold Timer" timer="leverHoldTimer" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
             <action tag="Report LeverDown" full_name="ReportDigital" type="report" message="LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="quadrature &lt; leverThreshold &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
             <transition type="timer_expired" tag="If leverHoldTimer Expired, Go To StimOn" target="StimOn" timer="leverHoldTimer"></transition>
           </task_system_state>
@@ -956,14 +972,10 @@
 
               <action type="assignment" tag="Set StimulusOn" variable="stimulusOn" value="1"></action>
               <action tag="Report StimOn" full_name="ReportDigital" type="report" message="StimOn (still holding; signaling release ok)"></action>
-              <action type="if" condition="doCounterTracking==1">
-                <action type="assignment" variable="cTargetOn" value="counter"></action>
-              </action>
 
               <!-- vis stim on -->
               <action type="if" condition="doVisualStim &amp;&amp; doNoStimulusChange==0">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-                <action tag="Update Display" type="update_stimulus_display"></action>
                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
                 <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
                 <action tag="Update Display" type="update_stimulus_display"></action>
@@ -973,12 +985,11 @@
 
               <!-- laser stim on -->
               <action type="if" condition="doLaserStim">
-                <action type="assignment" variable="laserTrigger" value="1"></action> 
+                <action type="assignment" variable="FIO3" value="1"></action> 
                 <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
               </action>
 
               <!-- update display, finalize variables -->
-              <action tag="Update Display" type="update_stimulus_display"></action>
               <action type="assignment" variable="tStimTurnedOn" value="1"></action>
 
 
@@ -1003,7 +1014,7 @@
             </action>
 
             <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-            <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="(quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
             <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
             <transition type="direct" target="CheckTooFastTime"></transition>
           </task_system_state>
@@ -1026,7 +1037,7 @@
 
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1 " target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="(quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 " target="Reward"></transition>
             <transition type="conditional" tag="If DoAllCorrects, Go To Reward" condition="doAllCorrects==1" target="Reward"></transition>
             <transition type="timer_expired" tag="If fakeMouse expired, Transition to Reward" target="Reward" timer="fakeMouseTimer"></transition>
             <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
@@ -1036,9 +1047,7 @@
           <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="if" condition="doCounterTracking==1">
-              <action type="assignment" variable="cLeverUp" value="counter"></action>
-            </action>
+            <action type="assignment" variable="FIO3" value="0"></action>
 
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
 
@@ -1056,7 +1065,7 @@
             <action type="reject_selections" selection="svStimNumber"></action>
 
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
-              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
@@ -1079,9 +1088,7 @@
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="if" condition="doCounterTracking==1">
-              <action type="assignment" variable="cLeverUp" value="counter"></action>
-            </action>
+            <action type="assignment" variable="FIO3" value="0"></action>
 
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
 
@@ -1106,8 +1113,8 @@
             <action type="assignment" variable="tConsecErrors" value="0"></action>
 
             <action type="assignment" tag="Assign reward" variable="tTotalRewardTimeUs" value="minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
-      <action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
-      
+			<action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
+			
 
             <!-- assign reward size based on elapsed rand if rampdown == 0 -->
             <action type="if" condition="doBlock2 == 1">
@@ -1133,14 +1140,14 @@
             </action>
             </action>
 
-      
-      <!-- give reward on every N corrects -->
-      <action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
-      <action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="0"></action>
-      </action>
-      <action type="if" condition="tempNCorrect == rewardEveryNCorrect">
-      <action type="assignment" tag="rezero tempNCorrect" variable="tempNCorrect" value="0"></action>
-      </action>
+			
+			<!-- give reward on every N corrects -->
+			<action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+			<action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="0"></action>
+			</action>
+			<action type="if" condition="tempNCorrect == rewardEveryNCorrect">
+			<action type="assignment" tag="rezero tempNCorrect" variable="tempNCorrect" value="0"></action>
+			</action>
 
             <!-- scale based on consec corrects -->
             <action type="if" tag="if consecCorrects &lt; max" condition="consecCorrects &lt; maxConsecCorrects">
@@ -1181,24 +1188,22 @@
             <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
             <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
             <action type="if" condition= "tempNCorrect == 0">
-            <action type="report" tag="Report" message="juice = $juice"></action> 
-      </action>
-      <action type="if" condition= "tempNCorrect &gt; 0">
-      <action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
-            <action type="report" tag="Report" message="juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect"></action> 
-      </action>
-      </action>
+            <action type="report" tag="Report" message="juice = $juice"></action>	
+			</action>
+			<action type="if" condition= "tempNCorrect &gt; 0">
+			<action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+            <action type="report" tag="Report" message="juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect"></action>	
+			</action>
+			</action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" variable="FIO3" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
-            <action type="if" condition="doCounterTracking==1">
-              <action type="assignment" variable="cLeverUp" value="counter"></action>
-            </action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
@@ -1222,7 +1227,7 @@
 
             <action type="start_timer" tag="start timer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
-              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action tag="Dequeue Stimulus 1" type="dequeue_stimulus" stimulus="target_grating"></action>
@@ -1243,7 +1248,7 @@
               <action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
               <action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
               <action type="if" condition="doSolenoidOnTimeout==1">
-                <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              	<action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               </action>
             </action>
 
@@ -1256,11 +1261,9 @@
           <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
-            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            <action type="if" condition="doCounterTracking==1">
-              <action type="assignment" variable="cTrialEnd" value="counter"></action>
-            </action>
+            <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
 
+            
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
             <action type="if" condition="doITIStim == 0">

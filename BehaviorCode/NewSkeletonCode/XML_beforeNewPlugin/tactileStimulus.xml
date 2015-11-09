@@ -3,11 +3,10 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1"
-              lever1_solenoid="MIO0"
+              lever1="FIO1" lever2=""
+              lever1_solenoid="FIO2"
               counter2="counter2"
-              laser_trigger="laserTrigger"
-              optic_device="optic_device"
+              laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"
               counter="counter"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -15,7 +14,6 @@
   </io_devices>
   <variables tag="Variables">
     <folder tag="Behavioral Control">
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
     </folder>
     <folder tag="Stimuli">
       <variable tag="nScansBetweenStim" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="ExptStruct"/>
@@ -36,8 +34,8 @@
     </folder>
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
-      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
-      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
       <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"></variable>

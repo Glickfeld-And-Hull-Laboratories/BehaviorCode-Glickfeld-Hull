@@ -3,11 +3,10 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1"
-              lever1_solenoid="MIO0"
+              lever1="FIO1" lever2=""
+              lever1_solenoid="FIO2"
               counter2="counter2"
-              laser_trigger="laserTrigger"
-              optic_device="optic_device"
+              laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"
               counter="counter"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -17,19 +16,16 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="512" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
     </folder>
     <folder tag="Stimuli">
       <variable tag="stopAfterNTrials" scope="local" logging="when_changed" default_value="90" type="integer" persistant="1" groups="ExptStruct"/>      
 
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="StimulusSpecs"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="StimulusSpecs"/>
-      <variable tag="preSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="StimulusSpecs"/>
-      <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="StimulusSpecs"/>
-      <variable tag="speedTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="SpeedCounters"/>
-      <variable tag="itiTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="ITICounters"/>
 
-      <variable tag="speedTimerNFrames" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="NFrames"/>
+      <variable tag="doLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="LED Debug"/>
+
+      <variable tag="speedTimerNFrames" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="NFrames"/>
       <variable tag="itiTimerNFrames" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="NFrames"/>
       <variable tag="preSoundPauseNFrames" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="NFrames"/>
       <variable tag="postSoundPauseNFrames" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="NFrames"/>
@@ -51,8 +47,8 @@
     </folder>
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
-      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
-      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
       <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"></variable>
@@ -60,10 +56,11 @@
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
-    <folder tag="Internal Variables">
-      <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+    <folder tag="Internal Variables">   <!--added Counter and Counter2 to the internal variables liste-->
+      <variable tag="Counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="ttCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="Counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
@@ -95,6 +92,9 @@
       <variable tag="tISIWheelCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tStimWheelCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
       <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+      <variable tag="preSoundWheelCounter" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="Inter-Stim Counters"/>
+      <variable tag="postSoundWheelCounter" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="Inter-Stim Counters"/>
       
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
@@ -140,9 +140,17 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
        
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
-          <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
+          <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; (tTrialsDoneSinceStart &gt;= stopAfterNTrials)">
               <action type="report" message="** Stopping after completing $stopAfterNTrials trials"></action>
               <action type="stop_experiment"></action>  
+          </action>
+
+          
+          <action type="if" condition="doLED==1">
+            <action type="assignment" variable="laserTriggerFIO" value="1"/>
+            <action type="schedule" delay="125 ms" duration="1" repeats="1">
+              <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            </action>
           </action>
           
 
@@ -159,18 +167,18 @@
           <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
           <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
           <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
-         
+          <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
+          <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
+          <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
+          <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
           <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
           <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
           <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
           <action type="assignment" tag="tStimTimeUs Set" variable="tTactileStimulusDurationUs" value="tactileStimulusDurationUs"/>
-          <action type="assignment" tag="-" variable="laserTrigger" value="0"></action>
-          <action type="assignment" tag="Set spCounter intervals based on frames required" variable="speedTimerIntervalMs" value="((1/frameImagingFrequencyHz)*speedTimerNFrames)*1000"/>
-          <action type="assignment" tag="Set itiCounter intervals based on frames required" variable="itiTimerIntervalMs" value="((1/frameImagingFrequencyHz)*itiTimerNFrames)*1000"/>
-          <action type="assignment" tag="Set preSound interval based on frames required" variable="preSoundPauseDurationMs" value="((1/frameImagingFrequencyHz)*preSoundPauseNFrames)*1000"/>
-          <action type="assignment" tag="Set postSound interval based on frames required" variable="postSoundPauseDurationMs" value="((1/frameImagingFrequencyHz)*postSoundPauseNFrames)*1000"/>
+          
+
 
           <action type="assert" condition="soundDurationMs == 100 || soundDurationMs == 200 || soundDurationMs == 300 || soundDurationMs == 400 || soundDurationMs == 500 || soundDurationMs == 600 || soundDurationMs == 700 || soundDurationMs == 800 || soundDurationMs == 900 || soundDurationMs == 1000" message="*******SoundDurationMs must be a multiple of 100 between 100ms and 1000ms!!!*******" stop_on_failure="1"/>  
 
@@ -187,9 +195,9 @@
           <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
           <action type="assignment" tag="Reset tCounter2" variable="tCounter2" value="counter2"></action>
           <action type="assignment" tag="Reset tCounter" variable="tCounter" value="counter"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
           <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action>
-          <action type="start_timer" tag="Start 1st ITI Timer" timer="itiTimer1" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
 
           <action type="if" condition="counter-tCounter >= nScansOff"> 
             <action type="assignment" tag="Log Speed of current Interval" variable="itiCounter1" value="counter2 - tCounter2"></action>
@@ -198,13 +206,13 @@
 
           <action type="report" message="In Inter-Trial Interval, waiting for $nScansOff frames"></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" timer="itiTimer1" target="itiCounter2"/> 
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter2" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter2" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start itiTimer2" timer="itiTimer2" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter1" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
 
@@ -214,13 +222,13 @@
             </action>
           
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter3" timer="itiTimer2"></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter3" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter3" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start itiTimer3" timer="itiTimer3" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter2" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
 
@@ -230,13 +238,13 @@
             </action>
           
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter4" timer="itiTimer3"></transition>
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter4" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter4" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start itiTimer4" timer="itiTimer4" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter3" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
 
@@ -246,13 +254,13 @@
             </action>
           
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter5" timer="itiTimer4"></transition>
+          <transition type="conditional" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter5" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter5" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start itiTimer5" timer="itiTimer5" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter4" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
           
@@ -262,13 +270,13 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter6" timer="itiTimer5"></transition>
+          <transition type="conditional" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter6" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter6" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start itiTimer6" timer="itiTimer6" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter5" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
           
@@ -278,13 +286,13 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter7" timer="itiTimer6"></transition>
+          <transition type="conditional" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter7" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter7" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start itiTimer7" timer="itiTimer7" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter6" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
           
@@ -294,13 +302,13 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter8" timer="itiTimer7"></transition>
+          <transition type="conditional" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter8" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter8" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start itiTimer8" timer="itiTimer8" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter7" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
           
@@ -310,13 +318,13 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter9" timer="itiTimer8"></transition>
+          <transition type="conditional" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter9" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter9" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start speedTimer9" timer="itiTimer9" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter8" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
           
@@ -326,29 +334,26 @@
             </action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="timer_expired" target="itiCounter10" timer="itiTimer9"></transition>
+          <transition type="conditional" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounter10" ></transition>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
       </task_system_state>
       
       <task_system_state tag="itiCounter10" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-          <action type="start_timer" tag="Start speedTimer10" timer="itiTimer10" timebase="" duration="itiTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="Reset ttCounter" variable="ttCounter" value="counter"></action>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter9" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
+          <action type="report" message="REACHED ITI COUNTER 10!!!!!!!!!!!!!!!!!"/>
           
-          <action type="if" condition="counter-tCounter >= nScansOff"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="itiCounter10" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
-
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
-          <transition type="timer_expired" target="itiCounterEnd" timer="itiTimer10"></transition>
+          <transition type="conditional" condition="counter-ttCounter >= itiTimerNFrames" target="itiCounterEnd" ></transition> <!-- Mati FIX!!-->
+          <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="itiCounterEnd" ></transition> 
       </task_system_state>
 
       <task_system_state tag="itiCounterEnd" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="Log Speed of previous Interval" variable="itiCounter10" value="counter2 - tCounter2"></action>
+          <action type="report" message="in itiCounterEnd"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" tag="If nScansOFF, move to EndTrial" condition="counter-tCounter >= nScansOff" target="PreSoundPause" ></transition>
@@ -356,19 +361,22 @@
 
       <task_system_state tag="PreSoundPause" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action>
-            <action type="report" message="*** Sitting in PreSoundPause State for $preSoundPauseDurationMs ms"/>
-            <action type="start_timer" tag="Start pre-sound timer" timer="preSoundPauseTimer" timebase="" duration="preSoundPauseDurationMs" duration_units="ms"></action>
+            <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - ttCounter2"></action> 
+            <action type="assignment" tag="Zero counter2 for ISI pulses calculation" variable="tttCounter2" value="counter2"></action> 
+            <action type="assignment" tag="Zero ttCounter for time calculation" variable="ttCounter" value="counter"></action>
+
+            <action type="report" message="*** Sitting in PreSoundPause State for $preSoundPauseNFrames frames"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" timer="preSoundPauseTimer" target="PlaySound"/> 
+            <transition type="conditional" tag="PlaySound when preSoundPauseNFrames exceeded" condition="counter-ttCounter >= preSoundPauseNFrames" target="PlaySound" ></transition>
       </task_system_state>
 
       <task_system_state tag="PlaySound" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
-            <action type="report" message="*** Playing Tone Now"/>
+        
+            <action type="report" message="***** Playing Tone Now *****"/>
+            <action type="assignment" tag="Zero ttCounter for time calculation" variable="ttCounter" value="counter"></action>
+            <action type="assignment" tag="Log the locomotion received during the preSoundPause" variable="preSoundWheelCounter" value="counter2 - tITIWheelCounter"></action>
 
             <!-- Debugging sound below: delete before committing -->
             <action type="if" condition="soundDurationMs == 100">
@@ -404,186 +412,136 @@
       
             <!-- update display, finalize variables -->
             <action tag="Update Display" type="update_stimulus_display"></action>
-            <action type="start_timer" tag="Start timer with same duration as sound" timer="postSoundPauseTimer" timebase="" duration="postSoundPauseDurationMs" duration_units="ms"></action> 
+            <action type="report" message="*** Sitting in PostSoundPause State for $postSoundPauseNFrames frames"/>
 
             <!-- Can't actually have a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" timer="postSoundPauseTimer" target="SendStim"/> 
+            <transition type="conditional" tag="SendStim when postSoundPauseNFrames exceeded" condition="counter-ttCounter >= postSoundPauseNFrames" target="SendStim" ></transition>
       </task_system_state>
 
 
       <task_system_state tag="SendStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="report" message="*** Tactile Stimulus Sent -- Staying in Post-Stim State for $nScansOn scans."></action>
-            <action type="assignment" tag="Log Number of Wheel-pulses received during ISI" variable="tISIWheelCounter" value="counter2 - tttCounter2"></action>
+            <action type="assignment" tag="Log the locomotion received between sound ON and tactile stimulus onset" variable="postSoundWheelCounter" value="counter2 - preSoundWheelCounter"></action>
+            <action type="assignment" tag="Log Number of Wheel-pulses received during ISI" variable="tISIWheelCounter" value="counter2 - tttCounter2"></action> <!-- tISIWheelCounter is the sum of pre+post sound -->
             <action type="assignment" variable="tStimTurnedOn" value="now()/1000"/>
             <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
             <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
             <action type="assignment" tag="reset ttCounter2 to counter2" variable="ttCounter2" value="counter2"></action>
+            <action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
             <action type="assignment" tag="reset ttCounter to counter" variable="ttCounter" value="counter"></action>
 
 
-
-            <action type="start_timer" tag="Start 1st Speed Timer" timer="speedTimer1" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action> 
-
-            <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter1" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
-
-            <!-- Can't actually jave a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" timer="speedTimer1" target="speedCounter2"/> 
+            <transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter2" ></transition>
             <transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter2" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer2" timer="speedTimer2" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+          <action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter1" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter2" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
       		
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="timer_expired" target="speedCounter3" timer="speedTimer2"></transition>
+      		<transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter3" ></transition>
       		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter3" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer3" timer="speedTimer3" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+      		<action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter2" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
 
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter3" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
-      		
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="timer_expired" target="speedCounter4" timer="speedTimer3"></transition>
+      		<transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter4" ></transition>
       		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter4" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer4" timer="speedTimer4" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+      		<action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter3" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter4" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
       		
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="timer_expired" target="speedCounter5" timer="speedTimer4"></transition>
+      		<transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter5" ></transition>
       		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter5" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer5" timer="speedTimer5" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+      		<action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter4" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-      		
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter5" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="timer_expired" target="speedCounter6" timer="speedTimer5"></transition>
+      		<transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter6" ></transition>
       		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter6" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer6" timer="speedTimer6" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+      		<action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter5" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
       		
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter6" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="timer_expired" target="speedCounter7" timer="speedTimer6"></transition>
+      		<transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter7" ></transition>
       		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter7" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer7" timer="speedTimer7" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+      		<action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter6" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-      		
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter7" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="timer_expired" target="speedCounter8" timer="speedTimer7"></transition>
+      		<transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter8" ></transition>
       		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter8" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer8" timer="speedTimer8" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+      		<action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter7" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-      		
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter8" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="timer_expired" target="speedCounter9" timer="speedTimer8"></transition>
+      		<transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter9" ></transition>
       		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter9" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer9" timer="speedTimer9" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+      		<action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter8" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-      		
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter9" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="timer_expired" target="speedCounter10" timer="speedTimer9"></transition>
+      		<transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounter10" ></transition>
       		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
       </task_system_state>
       
       <task_system_state tag="speedCounter10" interruptible="YES">
       		<action_marker _unmoveable="1" tag="Actions"></action_marker>
-      		<action type="start_timer" tag="Start speedTimer10" timer="speedTimer10" timebase="" duration="speedTimerIntervalMs" duration_units="ms"></action>
+      		<action type="assignment" tag="reset tCounter to counter" variable="tCounter" value="counter"></action>
       		<action type="assignment" tag="Log Speed of previous Interval" variable="spCounter9" value="counter2 - tCounter2"></action>
           <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-      		
-          <action type="if" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)"> 
-            <action type="assignment" tag="Log Speed of current Interval" variable="spCounter10" value="counter2 - tCounter2"></action>
-            <action type="assignment" tag="reset tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
-            </action>
 
       		<transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-      		<transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
-          <transition type="timer_expired" target="speedCounterEnd" timer="speedTimer10"></transition>
+          <transition type="conditional" condition="counter-tCounter >= speedTimerNFrames" target="speedCounterEnd" ></transition>
+      		<transition type="conditional" tag="If nScansON, move to speedCounterEnd" condition="(counter - ttCounter) >= nScansOn" target="speedCounterEnd" ></transition>
       </task_system_state>
 
       <task_system_state tag="speedCounterEnd" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="Log Speed of previous Interval" variable="spCounter10" value="counter2 - tCounter2"></action>
+          <action type="report" message="in speedCounterEnd"/>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" tag="If nScansON, move to EndTrial" condition="(counter - ttCounter) >= nScansOn" target="EndTrial" ></transition>
@@ -592,13 +550,13 @@
       <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="Log Speed of entire stim Interval" variable="tStimWheelCounter" value="counter2 - ttCounter2"></action>
-            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
+            <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
               
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="yield" tag="return to parent task system"></transition>
