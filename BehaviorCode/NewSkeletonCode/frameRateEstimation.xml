@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices"></io_devices>
+    <variables tag="Variables">
+        <variable tag="LOCAL_time" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+        <variable tag="LOCAL_float" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+        <variable tag="LOCAL_n" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="frameRate" scope="global" logging="when_changed" default_value="60" type="float" persistant="1"></variable>
+        <variable tag="startingDLFrameRate" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+        <variable tag="endingDLFrameRate" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+    </variables>
+    <sounds tag="Sounds"></sounds>
+    <stimuli tag="Stimuli">
+        <stimulus tag="background" full_name="background" type="blank_screen" color="0, 0, 0"></stimulus>
+    </stimuli>
+    <filters tag="Filters"></filters>
+    <optimizers tag="Optimizers"></optimizers>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="FrameRate Estimation" nsamples="1" sampling_method="cycles" selection="sequential">
+            <action tag="Queue Background" type="queue_stimulus" stimulus="background"></action>
+            <action tag="Update Stimulus" type="update_stimulus_display"></action>
+            <action type="report" tag="Announce Wait" message="Waiting 30 sec for the DisplayLink to generate a solid estimate of frame timing.."></action>
+            <action type="wait" tag="Wait" duration="30" duration_units="s"></action>
+            <trial tag="Estimation Protocol" nsamples="10" sampling_method="cycles" selection="sequential">
+                <task_system tag="FrameRate Estimation Task System" interruptible="YES">
+                    <task_system_state tag="Begin State System" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="report" tag="Announce Measurement" message="Measuring for 5000 frames ..."></action>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" tag="Get Time" variable="LOCAL_time" value="now() / 1000000.0"></action>
+                        <action type="assignment" tag="Store smallest DL-reported frame rate" variable="startingDLFrameRate" value="refreshRate()"></action>
+                        <action type="assignment" tag="Store biggest DL-reported frame rate" variable="endingDLFrameRate" value="startingDLFrameRate"></action>
+                        <action type="assignment" tag="Count this update" variable="LOCAL_n" value="1"></action>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition tag="Go to Update" type="direct" target="Update"></transition>
+                    </task_system_state>
+                    <task_system_state tag="Update" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" tag="Store DL-reported frame rate" variable="LOCAL_float" value="refreshRate()"></action>
+                        <action type="if" tag="if report bigger than currently biggest" condition="LOCAL_float > endingDLFrameRate">
+                            <action type="assignment" tag="Store biggest DL-reported frame rate" variable="endingDLFrameRate" value="LOCAL_float"></action>
+                        </action>
+                        <action type="if" tag="if report smaller than currently smallest" condition="LOCAL_float &lt; startingDLFrameRate">
+                            <action type="assignment" tag="Store smallest DL-reported frame rate" variable="startingDLFrameRate" value="LOCAL_float"></action>
+                        </action>
+                        <action type="assignment" tag="Count this update" variable="LOCAL_n" value="LOCAL_n + 1"></action>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" tag="If we have 5000 frames, Transition to Exit" condition="LOCAL_n == 5000" target="Exit State System"></transition>
+                        <transition type="direct" tag="Else, repeat" target="Update"></transition>
+                    </task_system_state>
+                    <task_system_state tag="Exit State System" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" tag="Get elapsed time" variable="LOCAL_time" value="( now() / 1000000.0 ) - LOCAL_time"></action>
+                        <action type="assignment" tag="Store DL-reported frame rate 2" variable="LOCAL_float" value="refreshRate()"></action>
+                        <action type="if" tag="if report bigger than currently biggest 2" condition="LOCAL_float > endingDLFrameRate">
+                            <action type="assignment" tag="Store biggest DL-reported frame rate" variable="endingDLFrameRate" value="LOCAL_float"></action>
+                        </action>
+                        <action type="if" tag="if report smaller than currently smallest 2" condition="LOCAL_float &lt; startingDLFrameRate">
+                            <action type="assignment" tag="Store smallest DL-reported frame rate" variable="startingDLFrameRate" value="LOCAL_float"></action>
+                        </action>
+                        <action type="assignment" tag="Calculate measured Framerate" variable="frameRate" value="1.0/ (LOCAL_time/(float)LOCAL_n)"></action>
+                        <action type="assignment" tag="Get system framerate" variable="LOCAL_time" value="refreshRate()"></action>
+                        <action type="report" tag="Announce Results" message="System reports $LOCAL_time Hz ; Measurement results in $frameRate Hz"></action>
+                        <action type="report" tag="Announce DL rates" message="DL reported between $startingDLFrameRate HZ and $endingDLFrameRate HZ"></action>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition tag="Return to parent task system" type="yield"></transition>
+                    </task_system_state>
+                </task_system>
+            </trial>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="background"></action>
+            <action tag="Update Display" type="update_stimulus_display"></action>
+        </protocol>
+    </experiment>
+</monkeyml>
