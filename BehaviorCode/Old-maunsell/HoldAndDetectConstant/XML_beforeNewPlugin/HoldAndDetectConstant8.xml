@@ -3,11 +3,10 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" 
-              lever1_solenoid="MIO0"
-              laser_trigger="laserTrigger"
-              trial_laser_powerMw="tTrialLaserPowerMw"
-              optic_device="optic_device"
+              lever1="FIO1" lever2="" 
+              lever1_solenoid="FIO2"
+              lever2_solenoid="FIO3"
+              laser_trigger="laserTriggerFIO"
               strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
@@ -16,7 +15,7 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
+      
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser Variables"/>
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
@@ -186,8 +185,9 @@
     </folder>
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
-      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
-      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="FIO3" full_name="FIO3" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -225,6 +225,7 @@
       <variable tag="tLaserPeakMaxMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tLaserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="setBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBaseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingMaxContrastStep" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -248,7 +249,6 @@
       <variable tag="tDoNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Laser Variables"/>
-      <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Laser Variables"/>
       <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -277,7 +277,7 @@
               x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tBaseGratingDirectionDeg" 
-              alpha_multiplier="tBaseGratingContrast"></stimulus>
+              alpha_multiplier="setBaseGratingContrast"></stimulus>
     <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="tGratingStartingPhaseDeg" 
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
@@ -294,7 +294,7 @@
       <action type="queue_stimulus" stimulus="background"></action>
       <action type="if" condition="doVisualStim">
         <action type="if" condition="doITIStim">
-          <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>  
+          <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>	
           <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
           <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
       </action>
@@ -352,10 +352,7 @@
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laserTrigger" value="0"></action>
-            <action type="if" condition="optic_device == 'led' ">
-              <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
-            </action>
+            <action type="assignment" variable="FIO3" value="0"></action>
             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
             <action type="assignment" variable="tStimTurnedOn" value="0"></action>
@@ -580,7 +577,7 @@
                         message="doVisualStim must be 1 for block2DoGratingAppearance == 1"/>
 
                 <!-- same for both types of block2 trials -->
-                <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>      
+                <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>      
 
                 <action type="if" condition="tBlock2TrialNumber == 0">
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
@@ -688,7 +685,7 @@
                 <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
 
                 <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
-                  <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
                   <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -700,7 +697,7 @@
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
-                  <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
                   <action type="assignment" variable="tTrialLaserOffTimeMs" value="block2TrialLaserOffTimeMs"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
@@ -750,7 +747,7 @@
               <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
               <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
 
-              <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>
+              <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
               <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
               <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
 
@@ -877,17 +874,17 @@
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
             <action type="if" condition="doLeverSolenoidAllTrials">
               <!-- Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly -->
-              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action type="if" condition="!doLeverSolenoidAllTrials">
-              <action type="assignment" variable="MIO0" value="0"></action>
+              <action type="assignment" variable="FIO2" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>                        
 
             <!-- if trialLaser, send params to controller -->
-            <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
+            <action type="if" condition="tTrialLaserPowerMw > 0">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
               <!--<action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
@@ -905,7 +902,7 @@
           <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
               <!-- Lower solenoid at beginning of trial for any solenoid -->
-              <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="0"></action>
+              <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
               <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
             </action>
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
@@ -938,17 +935,15 @@
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
 
             <action type="if" condition="doVisualStim">
-              <action type="if" condition="!doITIStim">
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
-              </action>
+              <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="tBaseGratingContrast"></action>  
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
             </action>
             <action type="update_stimulus_display" tag="-"></action>
 
             <!-- turn on trial laser if requested -->
-            <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
-              <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
-              <action type="assignment" variable="laserTrigger" value="1"></action> 
+            <action type="if" condition="tTrialLaserPowerMw > 0">
+              <action type="assignment" variable="FIO3" value="1"></action> 
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -998,8 +993,7 @@
 
               <!-- laser stim on -->
               <action type="if" condition="doLaserStim">
-                <action type="assignment" variable="laserTrigger" value="1"></action>
-                <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+                <action type="assignment" variable="FIO3" value="1"></action> 
                 <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
               </action>
 
@@ -1019,7 +1013,7 @@
                 <action type="dequeue_stimulus" stimulus="target_grating"></action>
                 <action type="update_stimulus_display"></action>
                 <action type="if" condition="doITIStim==1">
-                  <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>
+                <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>	
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
                   <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
                 </action>  
@@ -1042,7 +1036,7 @@
               <action type="if" condition="(((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs">
                 <action type="dequeue_stimulus" stimulus="target_grating"></action>
                 <action type="if" condition="doITIStim">
-                  <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>
+                  <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>	
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
                   <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>                            
                 </action>
@@ -1063,8 +1057,7 @@
           <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laserTrigger" value="0"></action>
-            <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            <action type="assignment" variable="FIO3" value="0"></action>
 
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
 
@@ -1082,13 +1075,13 @@
             <action type="reject_selections" selection="svStimNumber"></action>
 
             <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
-              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Update Display" type="update_stimulus_display"></action>
             <action type="if" condition="doITIStim==1">
-              <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>
+              <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>	
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
               <action tag="Update Display" type="update_stimulus_display"></action>
@@ -1106,8 +1099,7 @@
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
-            <action type="assignment" variable="laserTrigger" value="0"></action>
-            <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            <action type="assignment" variable="FIO3" value="0"></action>
 
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
 
@@ -1176,7 +1168,7 @@
 
             <action tag="Dequeue Stimulus 2" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="if" condition="doITIStim==1">
-              <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>
+              <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>	
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
             </action>  
@@ -1221,8 +1213,7 @@
 
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="laserTrigger" value="0"></action>
-            <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            <action type="assignment" variable="FIO3" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
@@ -1248,12 +1239,12 @@
 
             <action type="start_timer" tag="start timer" timer="missedTimeoutTimer" timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
-              <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
             </action>
             <action tag="Dequeue Stimulus 1" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="if" condition="doITIStim==1">
-              <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>
+              <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>	
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
             </action>
@@ -1270,7 +1261,7 @@
               <action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
               <action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
               <action type="if" condition="doSolenoidOnTimeout==1">
-              	<action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+              	<action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
               </action>
             </action>
 
@@ -1283,8 +1274,7 @@
           <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
-            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            <action type="assignment" variable="FIO3" value="0"></action> <!-- disable trigger no matter if it went high or not -->
 
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
