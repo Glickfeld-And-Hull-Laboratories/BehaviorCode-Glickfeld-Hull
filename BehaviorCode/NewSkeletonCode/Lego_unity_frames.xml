@@ -923,12 +923,12 @@
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="WaitForInitiate"></transition>
-            			<transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; !isFirstTrial &amp;&amp; counter > cStimOn" target="WaitForInitiate"></transition>
-            			<transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cStimOn" target="ExitTask"></transition>
+            			<transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; !isFirstTrial" target="WaitForInitiate"></transition>
+            			<transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cDecision" target="ExitTask"></transition>
                       </task_system_state>
                       
                       <task_system_state tag="ExitTask" interruptible="YES">
-						<action type="assert" stop_on_failure="1" condition="counter > cStimOn" message="Not receiving triggers from microscope"/>
+						<action type="assert" stop_on_failure="1" condition="counter > cDecision" message="Not receiving triggers from microscope"/>
           			  </task_system_state>
 
                       <task_system_state tag="WaitForInitiate" interruptible="YES">
@@ -1075,7 +1075,7 @@
                         </action>
 
                         <action type="assignment" variable="juice" value="tRewardTimeUs"></action>
-                        <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
+                        <action type="start_timer" timer="postRewardTimerUs" timebase="" duration="100000" duration_units="us"/>
 
                         <!-- accept stim selection -->
                         <action type="accept_selections" selection="svStimNumber"></action>
@@ -1108,7 +1108,7 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="timer_expired" timer="rewardTimerUs" target="EndTrial"></transition>
+                        <transition type="timer_expired" timer="postRewardTimerUs" target="EndTrial"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Incorrect" interruptible="YES">
