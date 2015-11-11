@@ -19,7 +19,7 @@
         <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="15" type="integer" persistant="1"/>
         <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
         
-        <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Trial Control"/>
+        <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Task Control"/>
         <variable tag="stationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="stationaryThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
@@ -315,10 +315,7 @@
                   <action type="assignment" variable="tLastTrialWasLeft" value="0"/>
                   <action type="assignment" variable="tNStimAccepted" value="0" />
                   <action type="assignment" variable="tNStimAccepted2" value="0" />
-
-        		  <action type="if" condition="success+ignore+failure == 0">
-				    <action type="assignment" variable="isFirstTrial" value="1"></action>
-				  </action>
+				  <action type="assignment" variable="isFirstTrial" value="1"/>
 
 
                   <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="10000" sampling_method="cycles">
@@ -343,7 +340,7 @@
                           <action type="assignment" variable="tLeftTrial" value="0" />
                           <action type="assignment" tag="Log counter" variable="cItiStart" value="counter"></action>
                           
-                          <action type="if" condition="success+ignore+failure > 0">
+                          <action type="if" condition="success+ignore+incorrect > 0">
               				<action type="assignment" variable="isFirstTrial" value="0"></action>
             			  </action>
 
@@ -926,14 +923,12 @@
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="WaitForInitiate"></transition>
-            			<transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; !isFirstTrial &amp;&amp; counter > cDecision" target="WaitForLeverPress"></transition>
-            			<transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cDecision" target="ExitTask"></transition>
+            			<transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; !isFirstTrial &amp;&amp; counter > cStimOn" target="WaitForInitiate"></transition>
+            			<transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cStimOn" target="ExitTask"></transition>
                       </task_system_state>
                       
                       <task_system_state tag="ExitTask" interruptible="YES">
-						<action type="assert" stop_on_failure="1"  
-                    		condition="counter > cDecision"
-                    		message="Not receiving triggers from microscope"/>
+						<action type="assert" stop_on_failure="1" condition="counter > cStimOn" message="Not receiving triggers from microscope"/>
           			  </task_system_state>
 
                       <task_system_state tag="WaitForInitiate" interruptible="YES">
@@ -1051,7 +1046,7 @@
                         <action type="dequeue_stimulus" stimulus="targetGrating"></action>
                         <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 						
-						<action type="if" tag="stim is not already off" condition="!stimIsOff"/>
+						<action type="if" tag="stim is not already off" condition="!stimIsOff">
                         	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
                         </action>
                         
@@ -1122,7 +1117,7 @@
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
                         
-                        <action type="if" tag="stim is not already off" condition="!stimIsOff"/>
+                        <action type="if" tag="stim is not already off" condition="!stimIsOff">
                         	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
                         </action>
                         
@@ -1177,7 +1172,7 @@
                         <action type="dequeue_stimulus" stimulus="targetGrating"></action>
                         <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
                         
-                        <action type="if" tag="stim is not already off" condition="!stimIsOff"/>
+                        <action type="if" tag="stim is not already off" condition="!stimIsOff">
                         	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
                         </action>
                         

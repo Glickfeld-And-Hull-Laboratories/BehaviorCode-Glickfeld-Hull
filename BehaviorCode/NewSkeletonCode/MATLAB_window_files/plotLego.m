@@ -630,7 +630,7 @@ axH  = subplot(spSz{:},10);
 hold on
 
 if isfield(input, 'dGratingContrastDiff')
-  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
+  contrastDifferenceRight = chop((cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast)),2);
 end
 if input.gratingContrastDiffSPO > 10
   contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
