@@ -1155,13 +1155,6 @@
                                       <task_system_state tag="TrialStimOn" interruptble="YES">
                                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
-                                        <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn &lt; 1)">
-                                          <action type="assignment" variable="laserTrigger" value="1"></action> 
-                                          <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action> 
-                                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
-                                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
-                                        </action>
-
                                         <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
                                         <action type="assignment" variable="stimTag" value= "1"/>
                                         <action type="assignment" variable="tStimOnMs" value="now()/1000" />
@@ -1172,7 +1165,7 @@
                                             <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
                                          </action>
 
-                                          <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
+                                        <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
 
                                         <action type="if" condition="!tShortCatchTrial">
                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
@@ -1198,6 +1191,13 @@
                                         <action type="update_stimulus_display" tag="justincase"></action>
                                         <action type="if" condition="sendElectrophysSync">
                                           <action type="assignment" variable="MIO0" value="1"/>
+                                        </action>
+
+                                        <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == 1)">
+                                          <action type="assignment" variable="laserTrigger" value="1"></action> 
+                                          <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action> 
+                                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
                                         </action>
 
                                         <action type="if" condition="tCyclesOn == 1">
@@ -1234,9 +1234,12 @@
                                         <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
                                       </action>
 
+                                      <action type="report" message="This is Cycle $tCyclesOn."></action>
+
                                       <action type="if" condition="!doConstantStimulus">
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
+                                        <action type="report" message="Not doing Constant Stimulus"></action>
                                         <action type="update_stimulus_display" tag="justincase"></action>
                                       </action>
 
@@ -1245,6 +1248,13 @@
                                       </action>
 
                                       <action type="report" message="Lever Down - Trial Started - Stim Off"/>
+
+                                      <action type="if" condition="(doCustomTargetTime==0) &amp;&amp; (tCyclesOn &gt;= nCyclesOn)">
+                                        <action type="assignment" variable="timerDurationMs" value="stimOnTimeMs"/>
+                                      </action>
+                                      <action type="if" condition="(doCustomTargetTime==1) &amp;&amp; (tCyclesOn &gt;= nCyclesOn)">
+                                        <action type="assignment" variable="timerDurationMs" value="targetOnTimeMs"/>
+                                      </action>
 
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
@@ -1256,12 +1266,10 @@
                                     <task_system_state tag="TargetStimOn" interruptble="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                        
-                                      <action type="if" condition="doCustomTargetTime==0">
-                                        <action type="assignment" variable="timerDurationMs" value="stimOnTimeMs"/>
-                                      </action>
-                                      <action type="if" condition="doCustomTargetTime==1">
-                                        <action type="assignment" variable="timerDurationMs" value="targetOnTimeMs"/>
-                                      </action>
+                                      <action type="start_timer" tag="" timer="targetOnTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
+
+                                      <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
+                                      <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
 
                                       <action type="if" condition="doPhotodiode">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
@@ -1269,58 +1277,48 @@
                                         <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
                                       </action>
 
+                                      <action type="assignment" variable="stimTag" value= "2"/>
+                                      
+
                                       <!-- Must dequeue stimulus in the doConstantStimulus case -->
                                       <action type="if" condition="doConstantStimulus==1">
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
-                                        <action type="update_stimulus_display" tag="justincase"></action>
                                       </action>
                                       <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==maxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
                                         <action type="play_sound" sound="baseSound"/>
                                         <action type="assignment" variable="isCatchTrial" value= "1"/>
-                                        <action type="update_stimulus_display" tag="justincase"></action>
                                       </action>
                                       <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-                                        <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
-                                          <action type="play_sound" sound="targetSound"/>
-                                        </action> 
-                                        <action type="if" condition="!tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
-                                          <action type="play_sound" sound="baseSound"/>
-                                        </action>
-                                        <action type="update_stimulus_display" tag="justincase"></action>
+                                        <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
                                       </action>
                                       <action type="if" condition="nCyclesOn &lt; maxCyclesOn">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                                        <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
+                                      </action>
+
+
+                                      <action type="update_stimulus_display" tag="justincase"></action>
+                                      <action type="if" condition="sendElectrophysSync">
+                                        <action type="assignment" variable="MIO0" value="1"/>
+                                      </action>
+                                      
+                                      <action type="if" condition="((doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)) || (nCyclesOn &lt; maxCyclesOn) ">
                                         <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                                           <action type="play_sound" sound="targetSound"/>
                                         </action> 
                                         <action type="if" condition="!tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                                           <action type="play_sound" sound="baseSound"/>
                                         </action>
-                                        <action type="update_stimulus_display" tag="justincase"></action>
                                       </action>
-
-
                                       
-                                      <action type="if" condition="sendElectrophysSync">
-                                        <action type="assignment" variable="MIO0" value="1"/>
-                                      </action>
-
-                                      <action type="start_timer" tag="" timer="targetOnTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
-
-                                      <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
-                                      <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
-                                      
-
-                                      
-                                      <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
                                       <action type="report" message="Catch is $isCatchTrial"></action>
-                                      <action type="assignment" variable="stimTag" value= "2"/>
+                                      
                                       <action type="assignment" tag="set Stim on time" variable="tStimOnMs" value="now()/1000"/>
                                       <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
 
@@ -1603,7 +1601,10 @@
 
                             <task_system_state tag="EndTrialStimOn" interruptble="YES">
                               <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                            
+                              <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+                              <action type="report" message="End of Trial - Stim On"/>
+                              <action type="assignment" variable="stimTag" value="1"></action>
+
                               <action type="if" condition="doPhotodiode">
                                 <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
@@ -1614,7 +1615,6 @@
                                 <action type="play_sound" sound="baseSound"/>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-                                <action type="update_stimulus_display" tag="justincase"></action>
                               </action>
 
                               <action type="if" condition="tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==0">
@@ -1624,16 +1624,14 @@
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
                                 <action type="assignment" variable="tDidDeviantAfterMissing" value="1"/>
-                                <action type="update_stimulus_display" tag="justincase"></action>
                               </action>
                             
+                              <action type="update_stimulus_display" tag="justincase"></action>
                               <action type="if" condition="sendElectrophysSync">
                                 <action type="assignment" variable="MIO0" value="1"/>
                               </action>
 
-                              <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
-                              <action type="report" message="End of Trial - Stim On"/>
-                              <action type="assignment" variable="stimTag" value="1"></action>
+                              
 
                               <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                               <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
@@ -1651,13 +1649,18 @@
 
                             <task_system_state tag="EndTrialStimOff" interruptble="YES">
                               <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                            
+                              <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+                              <action type="assignment" variable="stimTag" value= "0"/>
+                              <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
+
                               <action type="if" condition="doPhotodiode">
                                 <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
                                 <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
                               </action>
 
+                              <action type="report" message="End of Trial - Stim Off"/>
+                              
                               <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                               </action> 
@@ -1673,9 +1676,6 @@
                                 <action type="assignment" variable="MIO0" value="0"/>
                               </action>
 
-                              <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
-                              
-                              <action type="report" message="End of Trial - Stim Off"/>
                               <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
 
                               <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
