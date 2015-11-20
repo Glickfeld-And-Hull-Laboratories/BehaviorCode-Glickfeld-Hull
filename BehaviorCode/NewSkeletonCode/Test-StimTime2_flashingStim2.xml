@@ -1159,21 +1159,7 @@
                                         <action type="assignment" variable="stimTag" value= "1"/>
                                         <action type="assignment" variable="tStimOnMs" value="now()/1000" />
 
-                                        <action type="if" condition="doPhotodiode">
-                                            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
-                                            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
-                                            <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
-                                         </action>
-
-                                        <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
-
-                                        <action type="if" condition="!tShortCatchTrial">
-                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-                                         <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
-                                       </action>
-
-                                       <action type="if" condition="tShortCatchTrial"> 
+                                        <action type="if" condition="tShortCatchTrial"> 
                                          <action type="if" condition="tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
                                           <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                           <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
@@ -1187,6 +1173,22 @@
                                           <action type="assignment" variable="tCatchTimeMs" value="now()/1000"/>
                                         </action>
                                       </action>
+
+                                        <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
+
+                                        <action type="if" condition="doPhotodiode">
+                                            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
+                                            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
+                                            <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
+                                         </action>
+
+                                        
+                                        <action type="if" condition="!tShortCatchTrial">
+                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                         <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
+                                       </action>
+
             
                                         <action type="update_stimulus_display" tag="justincase"></action>
                                         <action type="if" condition="sendElectrophysSync">
@@ -1228,13 +1230,14 @@
                                       <action type="assignment" variable="stimTag" value= "0"/>
                                       <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
 
+                                      <action type="report" message="This is Cycle $tCyclesOn."></action>
+
                                       <action type="if" condition="doPhotodiode">
                                         <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
                                         <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
                                       </action>
 
-                                      <action type="report" message="This is Cycle $tCyclesOn."></action>
 
                                       <action type="if" condition="!doConstantStimulus">
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
@@ -1269,7 +1272,9 @@
                                       <action type="start_timer" tag="" timer="targetOnTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
 
                                       <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
-                                      <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"/>
+                                      <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"></action>
+
+                                      <action type="assignment" variable="stimTag" value= "2"></action>
 
                                       <action type="if" condition="doPhotodiode">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
@@ -1277,8 +1282,6 @@
                                         <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
                                       </action>
 
-                                      <action type="assignment" variable="stimTag" value= "2"/>
-                                      
 
                                       <!-- Must dequeue stimulus in the doConstantStimulus case -->
                                       <action type="if" condition="doConstantStimulus==1">
@@ -1653,13 +1656,14 @@
                               <action type="assignment" variable="stimTag" value= "0"/>
                               <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
 
+                              <action type="report" message="End of Trial - Stim Off"></action>
+
                               <action type="if" condition="doPhotodiode">
                                 <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
                                 <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
                               </action>
 
-                              <action type="report" message="End of Trial - Stim Off"/>
                               
                               <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
