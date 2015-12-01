@@ -706,7 +706,7 @@
             <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"></action>
             
             <!-- Turn on laser driver at the beginning -->
-            <action type="if" condition="(optic_device == 'laser') &amp;&amp; (success+ignore+failure == 0)">  
+            <action type="if" condition="optic_device == 'laser' ">  
                 <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"></action>
             </action>
 
@@ -872,9 +872,11 @@
               variable="tItiWaitTimeMs" 
               value="itiTimeMs"></action>
 
-              <!-- Increase ITI time by 15s if the laser power is changed -->
-              <action type="if" condition="(tTrialLaserPowerMw_track != tTrialLaserPowerMw) &amp;&amp; (optic_device != 'led')">
-                <action type="assignment" variable="tItiWaitTimeMs" value="tItiWaitTimeMs + 15000"></action>
+              <!-- Increase ITI time by 5s if the laser power is changed and by 15s if the very first time-->
+              <action type="if" condition="(success+ignore+failure == 0) &amp;&amp; (optic_device != 'led')">
+                
+                <action type="assignment" variable="tItiWaitTimeMs" value="tItiWaitTimeMs + 10000"></action>
+                
             </action>
 
             <!-- extend based on previous hold and max stim time, if asked for -->
