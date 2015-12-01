@@ -5,6 +5,7 @@
       pulse_duration="juice" pulse_on="juice" 
       lever1="FIO1" 
       lever1_solenoid="MIO0"
+      laser_trigger="laserTrigger"
       trial_laser_powerMw="tTrialLaserPowerMw"
       optic_device="optic_device"
       strobed_digital_word="strobedDigitalWord"/>
@@ -218,6 +219,7 @@
       <folder tag="Hardware variables">
         <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
         <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+        <variable tag="laserTrigger" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
         <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
         <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -468,6 +470,7 @@
                             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
                             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
                             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+                            <action type="assignment" variable="laserTrigger" value="0"></action>
                             <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
                             <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
 
@@ -1338,6 +1341,7 @@
 
                                     <task_system_state tag="EarlyRelease" interruptible="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                                      <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
                                       <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
                                       <action type="assignment" variable="MIO0" value="0"/>
                                       <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
@@ -1407,6 +1411,7 @@
 
                                   <task_system_state tag="Missed" interruptible="YES">
                                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                                    <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
                                     <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
                                     <action type="assignment" variable="MIO0" value="0"/>
                                     <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
@@ -1468,6 +1473,7 @@
 
                                 <task_system_state tag="Reward" interruptible="YES">
                                   <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                                  <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
                                   <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
                                   <action type="assignment" variable="MIO0" value="0"/>
                                   <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
@@ -1694,6 +1700,7 @@
 
             <task_system_state tag="EndTrial" interruptble="YES">
               <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+              <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
               <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
               <action type="report" message="Trial Ended"/>
               <action type="assignment" variable="trials" value="trials+1"/>
@@ -1706,6 +1713,7 @@
         </trial>
         <action type="dequeue_stimulus" stimulus="base_grating"></action>
         <action tag="Update Stimulus" type="update_stimulus_display"></action>
+        <action type="assignment" tag="" variable="laserTrigger" value="0"/>
         <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
         <action type="assignment" tag="" variable="MIO0" value="0"/>
         <action type="assignment" tag="" variable="juice" value="0"/>
