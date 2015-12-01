@@ -250,7 +250,6 @@
 
         <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-        <variable tag="tTrialLaserPowerMw_track" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -786,7 +785,8 @@
   <action type="assignment" variable="tTotalReqHoldTimeMs" value="fixedReqHoldTimeMs + tRandReqHoldTimeMs"></action>
 
   <!-- choose laser power -->
-  <action type="if" condition="doLaserStim">
+  <action type="if" condition="doLaserStim &amp;&amp; tLaserPeakMaxMw !=0">
+
       <action type="assignment" variable="tLaserPowerMw" 
         value="tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)"></action> 
 
@@ -798,8 +798,8 @@
 
         <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
 
-
     </action>
+
     <action type="if" condition="!doLaserStim">
       <action type="assignment" variable="tLaserPowerMw" value="0"/>
   </action>
@@ -889,8 +889,6 @@
                       variable="tItiWaitTimeMs" value="tItiWaitTimeMs+tempMs"></action>
                   </action>
               </action>
-
-              <action type="assignment" variable="tTrialLaserPowerMw_track" value="tTrialLaserPowerMw"></action>
 
 
             <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
