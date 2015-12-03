@@ -27,6 +27,7 @@
       <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doCustomTargetTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
@@ -39,6 +40,7 @@
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Trial Structure"/>
+      <variable tag="targetOnTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Trial Structure"/>
@@ -311,6 +313,7 @@
       <variable tag="tTotalReqHoldFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="nFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesTarget" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesTooFast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesReact" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesEarlyTimeout" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -437,6 +440,12 @@
 
             <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
             <action type="assignment" tag="Calculate nFramesOff" variable="nFramesOff" value="ceil((stimOffTimeMs/1000)*frameRateHz)"/>
+            <action type="if" condition="doCustomTargetTime==0">
+            	<action type="assignment" tag="Calculate nFramesTarget" variable="nFramesTarget" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
+            </action>
+            <action type="if" condition="doCustomTargetTime==1">
+            	<action type="assignment" tag="Calculate nFramesTarget" variable="nFramesTarget" value="ceil((targetOnTimeMs/1000)*frameRateHz)"/>
+            </action>
             <action type="assignment" tag="Calculate nFramesTooFast" variable="nFramesTooFast" value="ceil((tooFastTimeMs/1000)*frameRateHz)"/>
             <action type="assignment" tag="Calculate nFramesReact" variable="nFramesReact" value="ceil((reactTimeMs/1000)*frameRateHz)"/>
             <action type="assignment" tag="Calculate nFramesEarlyTimeout" variable="nFramesEarlyTimeout" value="ceil((earlyTimeoutMs/1000)*frameRateHz)"/>
@@ -1237,7 +1246,7 @@
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="conditional" tag="if nFramesTooFast elapsed, go to React"  condition="(counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesTarget))" target="EndTrialStimOff"></transition>
           </task_system_state>
 
           <task_system_state tag="React" interruptible="YES">
@@ -1250,7 +1259,7 @@
             <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; !doLever &amp;&amp; (counter &gt;= (cFirstStim + tFakeMouseReactFrames))" target="EarlyRelease"></transition>
             <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Reward"></transition>
             <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; (counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff" ></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesTarget))" target="EndTrialStimOff" ></transition>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; (counter &gt;= (cEndOff + nFramesOff))" target="EndTrialStimOn"></transition>
             <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; (counter &gt;= (cEndOn + nFramesOn))" target="EndTrialStimOff"></transition>
           </task_system_state>
