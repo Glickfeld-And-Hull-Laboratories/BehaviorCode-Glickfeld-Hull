@@ -416,11 +416,11 @@ axH = subplot(spSz{:},7);
 hold on;
 
 if nCorr>0 && input.doTestRobot==0,
-  if isfield(input, 'dGratingContrastDiff')
-    contDiffV = round(cell2mat_padded(input.tGratingContrast) ./ cell2mat_padded(input.dGratingContrast),2);
-  else
-    contDiffV = round(cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast),2);
-  end
+  %if isfield(input, 'dGratingContrastDiff')
+  %  contDiffV = round(cell2mat_padded(input.tGratingContrast) ./ cell2mat_padded(input.dGratingContrast),2);
+  %else
+    contDiffV = chop(cell2mat_padded(input.tGratingContrast) - cell2mat_padded(input.dGratingContrast),2);
+  %end
     corrDiffV = contDiffV(correctIx);
     uqDiff = unique(corrDiffV);
     nLevels = length(uqDiff);
@@ -514,7 +514,7 @@ if nCorr>0 && input.doTestRobot==0,
     if isnan(minD)|isnan(maxD)
       axis tight
     else
-     % ylim([minD-100 maxD+100])
+      ylim([minD-100 maxD+100])
     end
     if isnan(minX)|isnan(maxX)
       axis tight
@@ -633,9 +633,9 @@ if isfield(input, 'dGratingContrastDiff')
   contrastDifferenceRight = chop((cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast)),2);
 end
 if input.gratingContrastDiffSPO > 10
-  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+  contrastDifferenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
-  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+  contrastDifferenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 end
 
 plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
@@ -884,7 +884,7 @@ if ~exist(cs.behavPdfPath, 'file')
 end
 outName = sprintf('%s/%s-behav-i%03d.pdf', ...
                   cs.behavPdfPath, ...
-                  datestr(now, 'yymmdd'), input.subjectNum);
+                  datestr(now, 'yymmdd-HHMM'), input.subjectNum);
 dbName = sprintf('%s/%s-behav-i%03d.pdf', ...
                   cs.dbPath, ...
                   datestr(now, 'yymmdd'), input.subjectNum);
