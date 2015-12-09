@@ -56,7 +56,12 @@
                 <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
                 <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
 
-                
+                <!-- stimulus control parameters -->
+                <variable tag="gratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
+                <variable tag="gratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
+                <variable tag="gratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
+                <variable tag="gratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
+
                 <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
             
                 <!-- block 2 control -->
@@ -80,7 +85,11 @@
                 <variable tag="block2BaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
                 <variable tag="block2BaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
                 
-
+                <variable tag="block2GratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Block2 Stimulus"/>
+                <variable tag="block2GratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+                <variable tag="block2GratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Block2 Stimulus"/>
+                <variable tag="block2GratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+                
                 <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
             
                 <variable tag="photoStimulusContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Photodiode Variables"/>
@@ -98,10 +107,7 @@
             <folder tag="Hardware variables">
                 <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
                 <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
-                <variable tag="laserTrigger" scope="global" logging="when_changed" default_value="0" type="integer"/>
-                <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
                 <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
-                <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
                 <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
             </folder>
             <folder tag="Internal Variables">
@@ -114,8 +120,11 @@
 
                 <variable tag="tBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
                 <variable tag="tBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-                <variable tag="tGratingMaxContrastStep" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
                 
+                <variable tag="tGratingMaxContrastStep" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+                <variable tag="tGratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+                <variable tag="tGratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+                <variable tag="tGratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
 
                 <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
                 <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -126,13 +135,11 @@
                 <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
                 <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
-
-                <variable tag="tDoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
                 <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
                 <variable tag="tDoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+                
             
-                <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
-
+                
                 <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
                 <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
             
@@ -149,7 +156,7 @@
         </variables>
         
         <stimuli tag="Stimuli">
-            <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"/>
+            <stimulus type="blank_screen" tag="background" color="0,0,0"/>
             <stimulus type="drifting_grating" tag="base_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
                 spatial_frequency="tGratingSpatialFreqCPD" 
                 speed="tGratingSpeedDPS" 
@@ -181,7 +188,15 @@
                 x_size="photoStimulusWidth" y_size="photoStimulusHeight" 
                 x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" 
                 rotation="0" 
-                alpha_multiplier="1"/>            
+                alpha_multiplier="1"/>
+            <stimulus type="rectangle" tag="rect_base" color="1,1,1" 
+                x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
+                x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
+                rotation="" alpha_multiplier="1"/>
+            <stimulus type="rectangle" tag="photo_base" color="1,1,1" 
+                x_size="photoStimulusWidth" y_size="photoStimulusHeight" 
+                x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" 
+                rotation="" alpha_multiplier="1"/>            
         </stimuli>
 
     <experiment tag="Experiment" full_name="">
@@ -200,7 +215,8 @@
                 <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
                     <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
                         <task_system_state tag="Initialization" interruptible="YES">
-                            
+                            <action type="queue_stimulus" stimulus="background"></action>
+                            <action type="update_stimulus_display" tag="-"></action> 
                             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"/>
 
                             <!-- In this state, do all stimulus selection/tValue setting -->
@@ -210,13 +226,13 @@
                             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
 
 
-
+                            <!--
                             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"/>
-
+                            <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>
                             <action type="update_stimulus_display" tag="justincase"/>
+                            -->
 
-
-                            <action type="assignment" variable="block2DoGratingAppearance" value="block2DoVisualStim"/>
+                            
 
                             <action type="assignment" variable="experimentXmlTrialId" value="8"/>
 
@@ -420,7 +436,11 @@
                             <action type="if" condition="!doBlock2">
                                 <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"/>
                                 <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"/>
-                                <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"/>
+                                
+                                <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                                <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                                <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                                <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
                                
                            
                                 <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"/>                         
@@ -429,13 +449,12 @@
                                 <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"/>                         
                                 <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"/>                             
                                 <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"/>                         
-                                <action type="assignment" variable="tDoVisualStim" value="doVisualStim"/>
                                 <action type="assignment" variable="tDoOriDetect" value="doOriDetect"/>
                                 <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
+                                
                                                                 
-                                <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"/>
-                                <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"/>
-                                <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"/>
+                                
+                                
                                                                 
                                 <action type="if" condition="doTrialLaser">
                                     <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
@@ -448,7 +467,7 @@
 
                             <!-- grating appearance for block 2 -->                         
                             <action type="if" condition="doBlock2">
-                                <action type="if" condition="block2DoVisualStim">
+                                
 
                                     <!-- same for both types of block2 trials -->
                                     <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>      
@@ -456,8 +475,11 @@
                                     <action type="if" condition="tBlock2TrialNumber == 0">
                                         <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"/>
                                         <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"/>
-                                        <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"/>
-                                       
+                                        
+                                        <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                                        <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                                        <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                                        <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
                                                                                              
                                         <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"/>                         
                                         <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"/>                             
@@ -465,27 +487,31 @@
                                         <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"/>                         
                                         <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"/>                             
                                         <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"/>                         
-                                        <action type="assignment" variable="tDoVisualStim" value="doVisualStim"/>
                                         <action type="assignment" variable="tDoOriDetect" value="doOriDetect"/>
                                         <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
+                                        
                                     </action>
 
                                     <action type="if" condition="tBlock2TrialNumber == 1">
                                         <action type="assignment" variable="tBaseGratingDirectionDeg" value="block2BaseGratingDirectionDeg"/>
                                         <action type="assignment" variable="tBaseGratingContrast" value="block2BaseGratingContrast"/>
-                                        <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"/>
                                         
+                                        <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                                        <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                                        <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                                        <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+
                                         <action type="assignment" variable="tGratingElevationDeg" value="block2GratingElevationDeg"/>                           
                                         <action type="assignment" variable="tGratingAzimuthDeg" value="block2GratingAzimuthDeg"/>                       
                                         <action type="assignment" variable="tGratingHeightDeg" value="block2GratingHeightDeg"/>                         
                                         <action type="assignment" variable="tGratingWidthDeg" value="block2GratingWidthDeg"/>                           
                                         <action type="assignment" variable="tGratingSpatialFreqCPD" value="block2GratingSpatialFreqCPD"/>                       
                                         <action type="assignment" variable="tGratingSpeedDPS" value="block2GratingSpeedDPS"/>                           
-                                        <action type="assignment" variable="tDoVisualStim" value="block2DoVisualStim"/>
                                         <action type="assignment" variable="tDoOriDetect" value="block2DoOriDetect"/>
-                                        <action type="assignment" variable="tDoContrastDetect" value="block2DoContrastDetect"/>                           
+                                        <action type="assignment" variable="tDoContrastDetect" value="block2DoContrastDetect"/>
+                                                                
                                     </action>
-                                </action>
+                                
                             </action> 
                             <!-- using trial laser for block 1 -->
                             <action type="if" condition="doTrialLaser">
@@ -498,7 +524,10 @@
                             <action type="if" condition="block2DoTrialLaser">
         
                                 <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
-                                    <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"/>
+                                    <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                                    <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                                    <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                                    <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
                                                                         
                                     <action type="if" condition="doTrialLaser">
                                         <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
@@ -510,7 +539,10 @@
 
                                 <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
                                     <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
-                                    <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"/>
+                                    <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                                    <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                                    <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                                    <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
                                 
                                 </action>
 
@@ -523,14 +555,26 @@
                                 <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"/>
                                 <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"/>     
                                 <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"/>   
-                                <action type="assignment" variable="tDoVisualStim" value="doVisualStim"/>
                                 <action type="assignment" variable="tDoOriDetect" value="doOriDetect"/>
                                 <action type="assignment" variable="tDoContrastDetect" value="doContrastDetect"/>
+                                
                             </action>
 
 
-                            <action type="assert" condition="tTrialLaserPowerMw_trigger == 0" stop_on_failure="1" 
-                                 message="bug: tLaserPowerMw and tTrialLaserPowerMw_trigger != 0"/>
+                            <action type="if" condition="tDoOriDetect">
+                                <action type="assignment" variable="tGratingDirectionDeg" 
+                                value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action> 
+                                <action type="if" condition="!tDoContrastDetect">        
+                                    <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                                </action>  
+                            </action>
+                            <action type="if" condition="tDoContrastDetect">
+                                <action type="assignment" variable="tGratingContrast" 
+                                value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> 
+                                <action type="if" condition="!tDoOriDetect">
+                                    <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                                </action>  
+                            </action>
 
               
                             <action type="report" message="tNStimAccepted == $tNStimAccepted, svStimN is $svStimNumber, tb2TrN is $tBlock2TrialNumber"/>
@@ -549,23 +593,29 @@
                             <action type="start_timer" timer="InterTrialTimer" duration="tItiWaitTimeMs" timebase="" duration_units="ms" />
 
                             <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"/>                        
-                            <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; tCyclesOn == 0">
+                            
+                            <!--<action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; tCyclesOn == 0">
                                 <action type="schedule" delay="(2000) ms" duration="50" repeats="1">
                                     <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"/> 
-                                    <action type="report" message="----LED is Triggerd----"/>
+                                    <action type="report" message="LED is Triggerd"/>
                                 </action>
                             </action>
-
+                            -->
                             <transition type="timer_expired" tag="Start Trial" target="TrialStimOn" timer="InterTrialTimer"/>
                         </task_system_state>
 
 
                         <task_system_state tag="TrialStimOn" interruptble="YES">
-                            
+                            <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; tCyclesOn == 0">
+                                
+                                <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"/> 
+                                <action type="report" message="----LED is Triggerd----"/>
+                                
+                            </action>
                             <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
-
+                            <action type="assignment" variable="MIO0" value="1"/>
                             <!-- Vis Stim is queued -->
-                            <action type="if" condition="tCyclesOn &lt; nCyclesOn">
+                            <!--<action type="if" condition="tCyclesOn &lt; nCyclesOn">
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"/> 
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"/>                 
                             </action>
@@ -576,12 +626,24 @@
                             </action>
 
                             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"/>
-                            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"/> 
                             <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"/>
+                            <action tag="Stop grating" type="stop_dynamic_stimulus" stimulus="photoDiodeMask"/>
+                            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"/> 
+                            -->
 
+                            <action type="if" condition="tCyclesOn &lt; nCyclesOn">-->
+                                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rect_base"/>              
+                            </action>
+
+                            <action type="if" condition="tCyclesOn == nCyclesOn">
+                                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rect_base"/>               
+                            </action>
+
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="photo_base"/>
+     
                             <action type="update_stimulus_display" tag="justincase"/>
 
-                            <action type="assignment" variable="MIO0" value="1"/>   
+                               
 
                             <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
 
@@ -592,21 +654,41 @@
                         <task_system_state tag="TrialStimOff" interruptble="YES">
                             
                             <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
-
+                            <action type="assignment" variable="MIO0" value="0"/>
+                            <!--
                             <action type="if" condition="tCyclesOn &lt;= nCyclesOn">
-                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"/> 
+                                <action tag="Stop grating" type="stop_dynamic_stimulus" stimulus="base_grating"/>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"/>
                             </action>
-
+                            
+                            
                             <action type="if" condition="tCyclesOn &gt; nCyclesOn">
-                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"/>                  
+                                <action tag="Stop grating" type="stop_dynamic_stimulus" stimulus="target_grating"/>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"/>
                             </action>
-
+                            <action tag="Stop grating" type="stop_dynamic_stimulus" stimulus="photoDiodeMask"/>
                             <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"/>
                             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"/>
+                            <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>
+                            -->
+
+                            <action type="if" condition="tCyclesOn &lt;= nCyclesOn">
+                                
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="rect_base"/>
+                            </action>
+                            
+                            
+                            <action type="if" condition="tCyclesOn &gt; nCyclesOn">
+                                
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="rect_base"/>
+                            </action>
+                            
+                            <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photo_base"/>
+                            
 
                             <action type="update_stimulus_display" tag="justincase"/>
 
-                            <action type="assignment" variable="MIO0" value="0"/>
+                            
 
                            
                             <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt;= nCyclesOn) &amp;&amp; timerExpired(stimOffTimer)" target="TrialStimOn"/>
@@ -616,7 +698,7 @@
 
                         <task_system_state tag="EndTrial" interruptble="YES">
                             <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
-                            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"/>
+                            
                             <action type="report" message="Trial Ended"/>
                             <action type="assignment" variable="trials" value="trials+1"/>
                             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
@@ -625,6 +707,7 @@
                         </task_system_state>
                     </task_system>
                 </trial>
+                <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"/>
             </protocol>
     </experiment>
 </monkeyml>
