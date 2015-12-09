@@ -5,6 +5,7 @@ av = behavParamsAV;
 
 for imouse = 1:size(av,2);
     mouse_name = av(imouse).mouse;
+    disp(mouse_name)
     ind = find(xd.Subject == mouse_name);
     date_mat = [];
     early_mat = [];
@@ -12,6 +13,7 @@ for imouse = 1:size(av,2);
     HR_amp_mat = [];
     catch_mat = zeros(2, length(ind));
     for iexp = 1:length(ind)
+        disp(iexp)
         idate = xd.DateStr{ind(iexp)};
         n  = dir(fullfile(rc.pathStr, ['data-i' num2str(mouse_name) '-' idate '-*']));
         if ~isnan(str2num(xd.ChooseMatFile{ind(iexp)}))
@@ -22,6 +24,28 @@ for imouse = 1:size(av,2);
                 input_temp = mwLoadData(fullfile(rc.pathStr, n(ifile).name), [], []);
             else
                 input_temp = [input_temp mwLoadData(fullfile(rc.pathStr, n(ifile).name), [], [])];
+%             try
+%                 input_temp = [input_temp mwLoadData(fullfile(rc.pathStr, n(ifile).name), [], [])];
+%             catch
+%                 input2 = mwLoadData(fn_mworks, [], []);
+%                 inpNames1 = fieldnames(input);
+%                 inpNames2 = fieldnames(input2);
+%                 inpLong = gt(length(inpNames1),length(inpNames2));
+%                 if inpLong == 1
+%                     inpPlusInd = ismember(inpNames1,inpNames2);
+%                     inpPlus = inpNames1(~inpPlusInd);
+%                     for i = 1:length(inpPlus)
+%                         input2.(genvarname(inpPlus(i))) = cell(1,length(inpNames1));
+%                     end
+%                 else
+%                     inpPlusInd = ismember(inpNames2,inpNames1);
+%                     inpPlus = inpNames2(~inpPlusInd);
+%                     for i = 1:length(inpPlus)
+%                         input_temp.(char(genvarname(inpPlus(i)))) = cell(1,length(inpNames2));
+%                     end
+%                 end
+%                 input_temp = [input_temp input2];
+%             end
             end
         end
         if size(n,1)>1
@@ -104,6 +128,7 @@ for imouse = 1:size(av,2);
         mouse(imouse).input(iexp).stimOnTimeMs = input_temp.stimOnTimeMs;
         mouse(imouse).input(iexp).stimOffTimeMs = input_temp.stimOffTimeMs;
         mouse(imouse).input(iexp).catchCyclesOn = input_temp.catchCyclesOn;
+        mouse(imouse).input(iexp).tCyclesOn = input_temp.tCyclesOn;
       
         if length(unique(cell2mat_padded(input_temp.tCatchGratingDirectionDeg)))>1
             catch_mat(1,iexp) = 1;
@@ -118,5 +143,6 @@ for imouse = 1:size(av,2);
     mouse(imouse).HR_ori_mat = HR_ori_mat;
     mouse(imouse).HR_amp_mat = HR_amp_mat;
     mouse(imouse).date_mat = date_mat;
+    
 end
-save(fullfile(rc.fitOutputSummary, [date '_i613_i614_CatchSummary.mat']), 'mouse');
+save(fullfile(rc.fitOutputSummary, [date '_i613_i614_i616_CatchSummary.mat']), 'mouse');
