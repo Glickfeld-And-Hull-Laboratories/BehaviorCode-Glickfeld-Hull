@@ -2,261 +2,262 @@
 <monkeyml version="1.0">
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
-              pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" lever2="" 
-              lever1_solenoid="FIO2"
-              lever2_solenoid="FIO3"
-              laser_trigger="laserTriggerFIO"
-              strobed_digital_word="strobedDigitalWord"/>
-    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
-    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+      pulse_duration="juice" pulse_on="juice" 
+      lever1="FIO1" 
+      lever1_solenoid="MIO0"
+      trial_laser_powerMw="tTrialLaserPowerMw"
+      laser_trigger="laserTrigger"
+      optic_device="optic_device"
+      strobed_digital_word="strobedDigitalWord"/>
+      <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+      <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
   <variables tag="Variables">
-    <folder tag="Behavioral Control">
-      <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      
-      <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
-      <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser Variables"/>
-      <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
-      <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
-      <variable tag="doSpeedDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
-      <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
-      <variable tag="itiContrast" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Task Type"/>
-      <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
-      <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
-      
-      <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
-      <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
-      <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
-      
-      <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
-      <variable tag="randReqHoldMaxMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Trial Structure"/>
-      <variable tag="fixedReqHoldTimeMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1" groups="Trial Structure"/>
-      <variable tag="doGeomHoldDist" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>        
-      <variable tag="geomHoldMeanMs" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>        
-      <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
-      <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1" groups="Trial Structure"/>
-      <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
-      
-      <variable tag="doSolenoidOnTimeout" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Timeouts"/>
-      <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Timeouts"/>
-      <variable tag="missedTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1" groups="Timeouts"/>
-      <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Timeouts"/>
-      <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Timeouts"/>
+      <folder tag="Behavioral Control">
+        <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+        <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
 
-      <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Reward"/>
-      <variable tag="minRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
-      <variable tag="maxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
-      <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Reward"/>
-      <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Reward"/>
-      <variable tag="rewardEveryNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
-      
+        <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string" persistant="1"/>
+
+        <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
+        <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
+        <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
+        <variable tag="doSpeedDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
+        <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
+        <variable tag="itiContrast" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Task Type"/>
+        <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+        <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+
+        <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
+        <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
+        <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
+
+        <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="randReqHoldMaxMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="fixedReqHoldTimeMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="doGeomHoldDist" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>        
+        <variable tag="geomHoldMeanMs" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>        
+        <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
+
+        <variable tag="doSolenoidOnTimeout" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Timeouts"/>
+        <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Timeouts"/>
+        <variable tag="missedTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1" groups="Timeouts"/>
+        <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Timeouts"/>
+        <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Timeouts"/>
+
+        <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="minRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="maxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="rewardEveryNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
+
     </folder>
     <folder tag="Stimuli">
-      <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="baseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.05" type="float" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingDurationMs" scope="global" logging="when_changed" default_value="800" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
-      
-      <variable tag="gratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
-	    <variable tag="gratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="gratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="baseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.05" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingDurationMs" scope="global" logging="when_changed" default_value="800" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
 
-      <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="trPer80Level3" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="trPer80Level4" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="trPer80Level5" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="trPer80Level6" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-      
-      <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
-      <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
-      <variable tag="soundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
-      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
-      <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
+        <variable tag="gratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="gratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
 
-      <!-- block 2 control -->
-      <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
-      
-      <variable tag="doBlock2SeparateReward" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Reward"/>
-      <variable tag="block2MinRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Block2 Reward"/>
-      <variable tag="block2MaxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Block2 Reward"/>
+        <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="trPer80Level3" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="trPer80Level4" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="trPer80Level5" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="trPer80Level6" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
 
-      <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2BaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2BaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2BaseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
+        <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="soundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
 
-      <variable tag="block2GratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2GratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <!-- block 2 control -->
+        <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
 
-      <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2TrPer80Level1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2TrPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2TrPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2TrPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2TrPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2TrPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2TrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      <variable tag="block2TrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
-      
-	    <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2DoRampLength" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2RampLengthMs2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2RampLengthPowerMaxMw2" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2DoRampVTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2RvtTrainPowerMaxMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2RvtTrainStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2RvtRampBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
-      <variable tag="block2RvtTrainBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
-      <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/> 
+        <variable tag="doBlock2SeparateReward" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Reward"/>
+        <variable tag="block2MinRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Block2 Reward"/>
+        <variable tag="block2MaxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Block2 Reward"/>
+
+        <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2BaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2BaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2BaseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+
+        <variable tag="block2GratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2GratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
+
+        <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TrPer80Level1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TrPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TrPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TrPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TrPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TrPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+
+        <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2DoRampLength" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Advanced Laser"/>
+        <variable tag="block2RampLengthMs2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Advanced Laser"/>
+        <variable tag="block2RampLengthPowerMaxMw2" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Advanced Laser"/>
+        <variable tag="block2DoRampVTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Advanced Laser"/>
+        <variable tag="block2RvtTrainPowerMaxMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Advanced Laser"/>
+        <variable tag="block2RvtTrainStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Advanced Laser"/>
+        <variable tag="block2RvtRampBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Advanced Laser"/>
+        <variable tag="block2RvtTrainBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Advanced Laser"/>
+        <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 doBlock2SecondLaser Laser"/> 
 
 
-      <!-- stimulus control parameters -->
+        <!-- stimulus control parameters -->
+        <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserTransitionRampUpDownMs" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserTransitionDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Advanced Laser Variables"/>  <!-- 0: do not do baseline -->
+        <variable tag="laserBaselinePostStimTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Advanced Laser Variables"/> 
 
-      <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser Variables"/>
-      <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" />
-      <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" />
-      <variable tag="laserTransitionRampUpDownMs" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" />
-      <variable tag="laserTransitionDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" />
-      <variable tag="laserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" />  <!-- 0: do not do baseline -->
-      <variable tag="laserBaselinePostStimTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1"/> 
+        <variable tag="laserDoLinearRamp" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserRampLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserRampExtraConstantLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserRampDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserPulseLengthMs" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserPulsePeriodMs" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserTrainLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserTrainRandomNPulses" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Advanced Laser Variables"/>
+        <variable tag="laserTrainRandomType" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Advanced Laser Variables"/> 
 
-      <variable tag="laserDoLinearRamp" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" />
-      <variable tag="laserRampLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" />
-      <variable tag="laserRampExtraConstantLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="laserRampDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" />
-
-      <variable tag="laserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="laserPulseLengthMs" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" />
-      <variable tag="laserPulsePeriodMs" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1"/>
-      <variable tag="laserTrainLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1"/>
-      <variable tag="laserTrainRandomNPulses" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="laserTrainRandomType" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/> 
-
-      <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser Variables"/>
-      <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" />
-      <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+        <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser Variables"/>
+        <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser Variables"/>
+        <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser Variables"/>
+        <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser Variables"/>
 
     </folder>
     <folder tag="Fake Mouse">
-      <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
-      <variable tag="fakeMouseMaxPressMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Fake Mouse"/>
-      <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Fake Mouse"/>
+        <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
+        <variable tag="fakeMouseMaxPressMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Fake Mouse"/>
+        <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Fake Mouse"/>
     </folder>
     <folder tag="Task Status">
-      <variable tag="failure" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="leverResult" scope="global" logging="when_changed" default_value="0" type="boolean"/>
-      <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
-      <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
-      <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>'
-      
+        <variable tag="failure" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="leverResult" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+        <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+        <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+        <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>'
+
     </folder>
     <folder tag="Online Display">
-      <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
     </folder>
     <folder tag="Hardware variables">
-      <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
-      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
-      <variable tag="FIO3" full_name="FIO3" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
-      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
-      <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
-      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
-      <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
+        <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+        <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+        <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
+        <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
+        <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
-      <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tDoAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-      <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tRandReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tFakeMouseReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tFakeMousePressMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="consecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
-      <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
-      <variable tag="tConsecTimeoutStartTime" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
-      <variable tag="tNRewards" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tInterRewardIntervalMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tRewardAddPerMsHoldUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tItiWaitTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="lastActualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tempMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
-      <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tSvStimNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tLaserDoLinearRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tLaserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tLaserRampLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tLaserPeakMaxMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tLaserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="setBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tBaseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingMaxContrastStep" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
-      <variable tag="tGratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
-      <variable tag="tGratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
-      <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+        <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tDoAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tRandReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tFakeMouseReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tFakeMousePressMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="consecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
+        <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
+        <variable tag="tConsecTimeoutStartTime" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
+        <variable tag="tNRewards" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tInterRewardIntervalMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tRewardAddPerMsHoldUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tItiWaitTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="lastActualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tempMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tSvStimNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tLaserDoLinearRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserRampLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserPeakMaxMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="setBaseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tBaseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingMaxContrastStep" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+        <variable tag="tGratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+        <variable tag="tGratingMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+        <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
 
-      <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tGratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tDoNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingWidthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tDoNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
-      <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Laser Variables"/>
-      <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
-      <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
-                selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
-    </folder>
+        <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
+          selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
+      </folder>
   </variables>
   <sounds tag="Sounds">
     <sound tag="louderPressSound" type="wav_file" path="../wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
