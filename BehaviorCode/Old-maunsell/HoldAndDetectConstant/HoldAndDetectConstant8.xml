@@ -688,7 +688,12 @@
             <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
                
               <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>              
-            
+              
+              <!-- Turn on laser driver at the beginning -->
+              <action type="if" condition="optic_device == 'laser' ">  
+                <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+              </action>
+
               <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
               <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
               <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -972,7 +977,7 @@
 
               <action type="if" condition="tTrialLaserPowerMw_trigger > 0 &amp;&amp; (optic_device != 'led')">
                   <action type="assignment" variable="laserTrigger" value="1"></action> 
-                  <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                  <action type="report" message="********* SENDING LASER TRIGGER and laser power is $tTrialLaserPowerMw_trigger *********"/>
                   <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
               </action>
 
