@@ -1,5 +1,5 @@
 
-    'laserTrigger', ...    'laserTrigger', ...function [retval] = HoldAndDetectConstant(data_struct, input)
+function [retval] = HoldAndDetectConstant(data_struct, input)
 % Main matlab online function for HADC8
 %
 %  MH 100115: created
