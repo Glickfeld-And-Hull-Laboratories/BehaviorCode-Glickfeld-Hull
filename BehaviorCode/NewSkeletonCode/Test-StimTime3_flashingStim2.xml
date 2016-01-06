@@ -1223,7 +1223,7 @@
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-                                      <transition type="conditional" tag="Dequeue Visual Stimulus" target="TrialStimOff" condition="now() >= (nextFrameTime + stimOnTimeMs*1000)"></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (nextFrameTime + stimOnTimeMs*1000)" target="TrialStimOff"></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="TrialStimOff" interruptble="YES">
@@ -1271,7 +1271,7 @@
                                     <task_system_state tag="TargetStimOn" interruptble="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                        
-                                      
+                                      <action type="start_timer" tag="" timer="targetOnTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
 
                                       <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
                                       <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"></action>
@@ -1333,7 +1333,7 @@
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
                                       <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-                                      <transition type="conditional" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" conditional="now() >= (nextFrameTime + targetOnTimeMs*1000)"></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (nextFrameTime + targetOnTimeMs*1000)" target="EndTrialStimOff" ></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="React" interruptible="YES">
