@@ -47,7 +47,7 @@
         <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="targetOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
-        <variable tag="nextFrameTime" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="nextFrameTimeUs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
@@ -316,6 +316,7 @@
         <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tFrameDelayUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
         <variable tag="startReactState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
         <variable tag="isTooFast" scope="global" logging="when_changed" default_value="1" persistent="0" type="integer" persistant="0"/>
@@ -345,7 +346,7 @@
           <sound tag="rewardSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/shortCorrect.wav" amplitude="soundRewardAmplitude"></sound>
         </sounds>
         <stimuli tag="Stimuli">
-          <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+          <stimulus type="blank_screen" tag="background" color="0,0,0"></stimulus>
           <stimulus type="drifting_grating" tag="base_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
             spatial_frequency="tGratingSpatialFreqCPD" 
             speed="tGratingSpeedDPS" 
@@ -1155,8 +1156,9 @@
 
                                       <task_system_state tag="TrialStimOn" interruptble="YES">
                                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                                        <action type="report" message="TrialStim On of $tCyclesOn" />
                                         <action type="assignment" variable="stimTag" value= "1"/>
-                                        <action type="assignment" variable="tStimOnMs" value="now()/1000" />
+                                        
 
                                         <action type="if" condition="tShortCatchTrial"> 
                                          <action type="if" condition="tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
@@ -1189,8 +1191,9 @@
                                        </action>
 
             
-                                        <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTime"></action>
-
+                                        <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
+                                        <action type="assignment" variable="tStimOnMs" value="now()" />
+                                        <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOnMs" />
                                         
 
                                         <action type="if" condition="sendElectrophysSync">
@@ -1223,14 +1226,14 @@
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (nextFrameTime + stimOnTimeMs*1000)" target="TrialStimOff"></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (tStimOnMs + stimOnTimeMs*1000 - tFrameDelayUs)" target="TrialStimOff"></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="TrialStimOff" interruptble="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         
                                       <action type="assignment" variable="stimTag" value= "0"/>
-                                      <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
+                                      
 
                                       <action type="report" message="This is Cycle $tCyclesOn."></action>
 
@@ -1245,7 +1248,9 @@
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
                                         <action type="report" message="Not doing Constant Stimulus"></action>
-                                        <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTime"></action>
+                                        <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
+                                        <action type="assignment" variable="tStimOffMs" value="now()" />
+                                        <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs" />
                                       </action>
 
                                       <action type="if" condition="sendElectrophysSync==1">
@@ -1264,9 +1269,9 @@
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; (now() >= (nextFrameTime + stimOffTimeMs*1000))" target="TrialStimOn"></transition>
-                                      <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; (now() >= (nextFrameTime + stimOffTimeMs*1000))" target="TargetStimOn"></transition>
-                                    </task_system_state>
+                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; (now() >= (tStimOffMs + stimOffTimeMs*1000 - tFrameDelayUs))" target="TrialStimOn"></transition>
+                                      <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; (now() >= (tStimOffMs + stimOffTimeMs*1000 - tFrameDelayUs))" target="TargetStimOn"></transition>
+                                    </task_system_state> 
 
                                     <task_system_state tag="TargetStimOn" interruptble="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
@@ -1308,11 +1313,17 @@
                                       </action>
 
 
-                                      <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTime"></action>
+                                      <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
+                                      <action type="assignment" variable="tStimOnMs" value="now()" />
+                                      <action type="report" message="tStimOnMs is $tStimOnMs" />
+                                      <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOnMs" />
+                                      <action type="report" message="tFrameDelayUs is $tFrameDelayUs" />
+
                                       <action type="if" condition="sendElectrophysSync">
                                         <action type="assignment" variable="MIO0" value="1"/>
                                       </action>
                                       
+                                      <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
                                       <action type="if" condition="((doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)) || (nCyclesOn &lt; maxCyclesOn) ">
                                         <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                                           <action type="play_sound" sound="targetSound"/>
@@ -1324,16 +1335,16 @@
                                       
                                       <action type="report" message="Catch is $isCatchTrial"></action>
                                       
-                                      <action type="assignment" tag="set Stim on time" variable="tStimOnMs" value="now()/1000"/>
-                                      <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
-
+                                      <action type="report" message="timerDurationMs is $timerDurationMs" />
+                                      
+                                      
                                       <action type="assignment" variable="tStimTurnedOn" value="1"></action>
 
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
                                       <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (nextFrameTime + targetOnTimeMs*1000)" target="EndTrialStimOff" ></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (tStimOnMs + timerDurationMs*1000 - tFrameDelayUs)" target="EndTrialStimOff" ></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="React" interruptible="YES">
@@ -1656,8 +1667,7 @@
                               <action_marker _unmoveable="1" tag="Actions"></action_marker>
                               <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
                               <action type="assignment" variable="stimTag" value= "0"/>
-                              <action type="assignment" variable="tStimOffMs" value="(now()/1000)" />
-
+                              
                               <action type="report" message="End of Trial - Stim Off"></action>
 
                               <action type="if" condition="doPhotodiode">
@@ -1676,7 +1686,9 @@
                               </action> 
 
                               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
-                              <action type="update_stimulus_display" tag="justincase"></action>
+                              <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
+                              <action type="assignment" variable="tStimOffMs" value="now()" />
+                              <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs" />
                               
                               <action type="if" condition="sendElectrophysSync">
                                 <action type="assignment" variable="MIO0" value="0"/>
