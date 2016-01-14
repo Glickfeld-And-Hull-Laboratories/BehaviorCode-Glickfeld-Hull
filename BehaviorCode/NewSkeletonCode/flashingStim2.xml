@@ -161,6 +161,11 @@
         <variable tag="block2RampLengthMs2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
         <variable tag="block2RampLengthPowerMaxMw2" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
 
+        <variable tag="block2StimOnTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2StimOffTimeMs" scope="global" logging="when_changed" default_value="250" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2TargetOnTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2MinCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2MaxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Block2 Stimulus"/>
         <variable tag="block2GratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
         <variable tag="block2GratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
         <variable tag="block2GratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
@@ -263,6 +268,11 @@
         <variable tag="tSoundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
         <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
 
+        <variable tag="tStimOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tStimOffTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTargetOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tMinCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tMaxCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -426,16 +436,6 @@
                           <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/>
                           <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
                           <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>
-                          <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
-                          <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(minCyclesOn-1, nCyclesOn)"/>
-                          <action type="if" condition="doShortCatchTrial">
-                            <action type="assert" condition="minCyclesOn &gt; 2" stop_on_failure="1"
-                              message="When doShortCatchTrial, minCyclesOn must be greater than 2"/>
-                            </action>
-
-                            <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == maxCyclesOn">
-                             <action type="assignment" variable="isCatchTrial" value="1"/> 
-                           </action>
 
                            <action type="if" condition="doPhotodiode">
                             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
@@ -443,8 +443,6 @@
                             <action type="update_stimulus_display" tag="justincase"></action>
                           </action>
                           <action type="assignment" tag="Reset tDidDeviantAfterMissing" variable="tDidDeviantAfterMissing" value="0"/>
-
-                          <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="((stimOnTimeMs+stimOffTimeMs)*nCyclesOn)+stimOnTimeMs"/>
 
                           <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -744,6 +742,11 @@
 
 
                                               <action type="if" condition="!doBlock2">
+                                                <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
+                                                <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                                                <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
+                                                <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
+                                                <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
                                                 <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
                                                 <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                                                 <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -790,6 +793,7 @@
               <!-- trial numbers assigned above in switch statement.  Note equal probability 
               - if more complicated odds wanted; add a set of block2 level odds -->
 
+
               <!-- grating appearance for block 2 -->                         
               <action type="if" condition="doBlock2">
                 <action type="if" condition="block2DoVisualStim || block2DoAuditoryStim">
@@ -798,6 +802,11 @@
                   <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>      
 
                   <action type="if" condition="tBlock2TrialNumber == 0">
+                    <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
+                    <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                    <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
+                    <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
+                    <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
                     <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
                     <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                     <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -823,6 +832,11 @@
                   </action>
 
                   <action type="if" condition="tBlock2TrialNumber == 1">
+                    <action type="assignment" variable="tStimOnTimeMs" value="block2StimOnTimeMs"></action>
+                    <action type="assignment" variable="tStimOffTimeMs" value="block2StimOffTimeMs"></action>
+                    <action type="assignment" variable="tTargetOnTimeMs" value="block2TargetOnTimeMs"></action>
+                    <action type="assignment" variable="tMinCyclesOn" value="block2MinCyclesOn"></action>
+                    <action type="assignment" variable="tMaxCyclesOn" value="block2MaxCyclesOn"></action>
                     <action type="assignment" variable="tBaseGratingDirectionDeg" value="block2BaseGratingDirectionDeg"></action>
                     <action type="assignment" variable="tBaseGratingContrast" value="block2BaseGratingContrast"></action>
                     <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
@@ -916,7 +930,12 @@
                 <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>
               </action>
 
-              <!-- in both cases -->                        
+              <!-- in both cases -->
+              <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
+              <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+              <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
+              <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
+              <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>                        
               <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                           
               <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                       
               <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                         
@@ -934,6 +953,22 @@
               <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>                                                
             </action>
           </action>
+
+          <!-- setting nCyclesOn -->
+          <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
+          <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(tMinCyclesOn-1, nCyclesOn)"/>
+          <action type="if" condition="doShortCatchTrial">
+            <action type="assert" condition="tMinCyclesOn &gt; 2" stop_on_failure="1"
+              message="When doShortCatchTrial, minCyclesOn must be greater than 2"/>
+            </action>
+
+            <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == tMaxCyclesOn">
+             <action type="assignment" variable="isCatchTrial" value="1"/> 
+           </action>
+          <!-- setting total required hold time -->
+          <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="((tStimOnTimeMs+tStimOffTimeMs)*nCyclesOn)+tStimOnTimeMs"/> 
+
+
           <!-- !doBlock2 error checking -->
           <action type="assert" stop_on_failure="1"
             condition="!doLaserStim || (laserDoLinearRamp || laserDoPulseTrain)" 
@@ -1078,7 +1113,7 @@
                               <!-- if asked for, extend ITI based on previous hold and max stim time, also takes TOs and extra cycles into account -->
                               <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
                                 <action type="assignment" variable="tempMs"  
-                                  value="(maxCyclesOn*(stimOnTimeMs+stimOffTimeMs))-lastActualHoldTimeMs"></action> 
+                                  value="(tMaxCyclesOn*(tStimOnTimeMs+tStimOffTimeMs))-lastActualHoldTimeMs"></action> 
                                   <action type="if" condition="tempMs > 0"> 
                                     <!--add to ITI-->
                                     <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
@@ -1150,7 +1185,7 @@
 
                                       <task_system_state tag="TrialStimOn" interruptble="YES">
                                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                                        <action type="start_timer" timer="stimOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+                                        <action type="start_timer" timer="stimOnTimer" duration="tStimOnTimeMs" timebase="" duration_units="ms"/>
                                         <action type="assignment" variable="stimTag" value= "1"/>
                                         <action type="assignment" variable="tStimOnMs" value="now()/1000" />
                                         <action type="if" condition="sendElectrophysSync">
@@ -1219,8 +1254,8 @@
 
                                     <task_system_state tag="TrialStimOff" interruptble="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                                      <action type="start_timer" timer="stimOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
-                                      <action type="start_timer" timer="targetTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+                                      <action type="start_timer" timer="stimOffTimer" duration="tStimOffTimeMs" timebase="" duration_units="ms"/>
+                                      <action type="start_timer" timer="targetTimer" duration="tStimOffTimeMs" timebase="" duration_units="ms"/>
                                       <action type="if" condition="sendElectrophysSync==1">
                                         <action type="assignment" variable="MIO0" value="0"/>
                                       </action> 
@@ -1257,10 +1292,10 @@
                                         <action type="assignment" variable="MIO0" value="1"/>
                                       </action> 
                                       <action type="if" condition="doCustomTargetTime==0">
-                                        <action type="start_timer" tag="" timer="targetOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+                                        <action type="start_timer" tag="" timer="targetOnTimer" duration="tStimOnTimeMs" timebase="" duration_units="ms"/>
                                       </action>
                                       <action type="if" condition="doCustomTargetTime==1">
-                                        <action type="start_timer" tag="" timer="targetOnTimer" duration="targetOnTimeMs" timebase="" duration_units="ms"/>
+                                        <action type="start_timer" tag="" timer="targetOnTimer" duration="tTargetOnTimeMs" timebase="" duration_units="ms"/>
                                       </action>
                                       <action type="assignment" variable="stimTag" value= "2"/>
                                       <action type="assignment" tag="set Stim on time" variable="tStimOnMs" value="now()/1000"/>
@@ -1272,13 +1307,13 @@
                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
                                         <action type="update_stimulus_display" tag="justincase"></action>
                                       </action>
-                                      <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+                                      <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
                                         <action type="play_sound" sound="baseSound"/>
                                         <action type="assignment" variable="isCatchTrial" value= "1"/>
                                       </action>
-                                      <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+                                      <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
                                         <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
@@ -1288,7 +1323,7 @@
                                           <action type="play_sound" sound="baseSound"/>
                                         </action> 
                                       </action>
-                                      <action type="if" condition="nCyclesOn &lt; maxCyclesOn">
+                                      <action type="if" condition="nCyclesOn &lt; tMaxCyclesOn">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
                                         <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
@@ -1308,7 +1343,7 @@
 
 
                                       <action type="update_stimulus_display" tag="justincase"></action>
-                                      <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
+                                      <action type="report" message="Target Stim On for $tStimOnTimeMs ms"/>
                                       <action type="report" message="Catch is $isCatchTrial"></action>
 
                                       <action type="assignment" variable="tStimTurnedOn" value="1"></action>
@@ -1593,7 +1628,7 @@
                               <action type="if" condition="sendElectrophysSync">
                                 <action type="assignment" variable="MIO0" value="1"/>
                               </action> 
-                              <action type="start_timer" tag="" timer="endOnTimer" duration="stimOnTimeMs" timebase="" duration_units="ms"/>
+                              <action type="start_timer" tag="" timer="endOnTimer" duration="tStimOnTimeMs" timebase="" duration_units="ms"/>
                               <action type="if" condition="tDoDeviantAfterMissing==0 || (tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==1)">
                                 <action type="play_sound" sound="baseSound"/>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
@@ -1637,7 +1672,7 @@
 
                             <task_system_state tag="EndTrialStimOff" interruptble="YES">
                               <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                              <action type="start_timer" tag="" timer="endOffTimer" duration="stimOffTimeMs" timebase="" duration_units="ms"/>
+                              <action type="start_timer" tag="" timer="endOffTimer" duration="tStimOffTimeMs" timebase="" duration_units="ms"/>
                               <action type="if" condition="sendElectrophysSync">
                                 <action type="assignment" variable="MIO0" value="0"/>
                               </action>  
