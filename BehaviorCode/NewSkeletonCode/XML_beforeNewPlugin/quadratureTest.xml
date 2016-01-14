@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" lever2=""
+              lever1_solenoid="FIO2"
+              counter2="counter2"
+              quadrature="quadrature"
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"
+              counter="counter"/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Behavioral Control">
+      <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
+      <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="512" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
+    </folder>
+    <folder tag="Stimuli">
+    </folder>
+    <folder tag="Task Status">
+    </folder>
+    <folder tag="Online Display">
+      <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+    </folder>
+    <folder tag="Hardware variables">
+      <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
+      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"></variable>
+      <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="SpeedCounters"></variable>
+      <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+    </folder>
+    <folder tag="Internal Variables">
+    </folder>
+  </variables>
+  <sounds tag="Sounds">
+  </sounds>
+  <stimuli tag="Stimuli">
+    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>       
+  </stimuli>    
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <action type="queue_stimulus" stimulus="background"></action>
+      
+    <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+      <!-- init actions before running trials after any press of start-->
+      <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+      <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
+      <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"></action>
+    <!--  <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"></action>
+      <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"></action>
+      <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/> -->
+        
+      <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
+      <trial tag="New List" nsamples="99999999" sampling_method="samples" selection="random_without_replacement">
+      <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
+    <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+      <task_system_state tag="Timer" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="start_timer" timer="timerMs" timebase="" duration="10000" duration_units="ms"/>
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="timer_expired" timer="timerMs" target="EndTrial"></transition>
+      </task_system_state>
+
+      <task_system_state tag="EndTrial" interruptible="YES">
+        <action_marker _unmoveable="1" tag="Actions"></action_marker>           
+        <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+        <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+        <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+        <transition type="yield" tag="return to parent task system"></transition>
+      </task_system_state> 
+    </task_system>
+  </trial>
+</trial>
+<action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+</protocol>
+</experiment>
+</monkeyml>

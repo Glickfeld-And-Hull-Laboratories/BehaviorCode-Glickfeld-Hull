@@ -1,0 +1,1242 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+      pulse_duration="juice" pulse_on="juice" 
+      lever1="FIO1" 
+      counter2="counter2"
+      quadrature="quadrature"
+      trial_laser_powerMw="tTrialLaserPowerMw"
+      optic_device="optic_device"
+      strobed_digital_word="strobedDigitalWord"
+      counter="counter"/>
+      <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+      <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+    </io_devices>
+    <variables tag="Variables">
+      <folder tag="Behavioral Control">
+        <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
+        <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="15" type="integer" persistant="1"/>
+        <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
+        
+        <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Task Control"/>
+        <variable tag="stationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="stationaryThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="150" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="invertDirection" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="doOnlyMaxDiff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/> 
+
+        <variable tag="doFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Feedback Motion"/>
+        <variable tag="gratingTargetEccentricity" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Feedback Motion"/>      
+        <variable tag="feedbackMotionSensitivity" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Feedback Motion"/>
+
+        <variable tag="doBlocks" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block Control"/>
+        <variable tag="blockLeftTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
+        <variable tag="blockRightTrs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block Control"/>
+
+        <variable tag="doCorrectiveTrials" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Corrective Trials"/>
+
+        <variable tag="doRewardStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Reward Staircase"/>
+        <variable tag="rewardStaircaseWindowWidth" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Reward Staircase"/>
+        <variable tag="rewardStaircaseMinReward" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward Staircase"/>
+        <variable tag="rewardStaircaseMaxReward" scope="global" logging="when_changed" default_value="200000" type="integer" persistant="1" groups="Reward Staircase"/>
+
+        <variable tag="doConsecCorrectReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Consecutive Corrects Reward"/>
+        <variable tag="consecCorrRewardInterval" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Consecutive Corrects Reward"/>
+        <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Consecutive Corrects Reward"/>
+
+        <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
+        <variable tag="incorrectTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
+
+        <variable tag="doMarkovLR" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Markov/Bias"/>
+        <variable tag="doBiasStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Markov/Bias"/>
+        <variable tag="tLeftBias" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0" groups="Markov/Bias"/>
+        <variable tag="stimProbAvgLeft" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov/Bias"/>
+        <variable tag="stimProbAvgSwitch" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov/Bias"/>
+        <variable tag="tMarkovOdds" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="a" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+        <variable tag="b" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+
+        <variable tag="doTestRobot" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Test Robot"/>
+        <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Test Robot"/>
+        <variable tag="robotLeftProb" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Test Robot"/>
+        <variable tag="robotGoLeft" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Test Robot"/>
+
+        <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+        <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      </folder>
+      <folder tag="Stimuli">
+        <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+
+        <variable tag="gratingMaxContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingContrastDiffSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
+
+        <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>    
+        <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Visual Stimuli"/>
+        <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="rewardGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+
+        <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="80" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="trPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="trPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="trPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="trPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+
+        <variable tag="doLeftSeparateOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="leftTrPer80Level1" scope="global" logging="when_changed" default_value="80" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="leftTrPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="leftTrPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="leftTrPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="leftTrPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="leftTrPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="leftTrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="leftTrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
+      </folder>
+      <folder tag="LED Variables">
+        <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Laser"/>
+        <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserTransitionRampUpDownMs" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserTransitionDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>  <!-- 0: do not do baseline -->
+        <variable tag="laserBaselinePostStimTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Laser"/> 
+
+        <variable tag="laserDoLinearRamp" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserRampLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserRampExtraConstantLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserRampDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+
+        <variable tag="laserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserPulseLengthMs" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserPulsePeriodMs" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserTrainLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserTrainRandomNPulses" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserTrainRandomType" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/> 
+
+        <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
+        <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
+        <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
+
+        <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
+        <variable tag="block2TrPer80Level1" scope="global" logging="when_changed" default_value="80" type="integer" persistant="1" groups="Block2"/>
+        <variable tag="block2TrPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
+        <variable tag="block2TrPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
+        <variable tag="block2TrPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
+        <variable tag="block2TrPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
+        <variable tag="block2TrPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
+        <variable tag="block2TrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
+        <variable tag="block2TrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
+
+        <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2DoRampLength" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2RampLengthMs2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2RampLengthPowerMaxMw2" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2DoRampVTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2RvtTrainPowerMaxMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2RvtTrainStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2RvtRampBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="block2RvtTrainBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+        <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+
+        <variable tag="tLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tLaserDoLinearRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserRampLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserPeakMaxMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLaserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+        <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+      </folder>
+      <folder tag="Task Status">
+        <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+        <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="incorrect" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="trialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="float"/>
+        <variable tag="stimTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      </folder>
+      <folder tag="Online Display">
+        <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      </folder>
+      <folder tag="Hardware variables">
+        <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
+        <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Hardware"/>
+        <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
+        <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
+        <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
+        <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
+        <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      </folder>
+      <folder tag="Temporary Trial Variables">
+        <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tQuadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tDecisionTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLastTrialWasLeft" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="tLeftTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Markov/Bias"/>
+        <variable tag="tStimProbAvgLeft" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+		<variable tag="isFirstTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+		
+        <variable tag="leftDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="rightDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="trackMotion" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+        <variable tag="tGratingEccentricityStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="dGratingContrastDiff" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+        <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+        <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+
+        <variable tag="isNotTooFast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="stimIsOff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+
+        <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+        <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+        <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+        <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
+        <variable tag="tLastTrialCorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tNBlockLeftTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
+        <variable tag="tNBlockRightTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
+
+		<!-- frame conversion -->
+      <variable tag="nFramesStationary" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesIti" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesDelay" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesTooFast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesReact" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesIncorrectTimeout" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesIgnoreTimeout" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      
+      <!-- tracking counter -->
+      <variable tag="cItiStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cStationaryStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cTrialStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cStimOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cStimOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+	  <variable tag="cDecision" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+        <!-- Shadow Vars From Mark -->
+        <variable tag="rrStimulusNumber" scope="local" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tStimulusNumber2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tSvStimNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tSvStimNumber2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tNStimAccepted2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
+          selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
+          <variable type="selection" tag="svStimNumber2" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
+            selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
+
+          </folder>
+        </variables>
+        <sounds tag="Sounds">
+          <sound tag="startSound" type="wav_file" path="wavs/10000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
+          <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="correctSoundVolume"></sound>
+          <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>
+        </sounds>
+        <stimuli tag="Stimuli">
+          <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+          <stimulus type="drifting_grating" tag="targetGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+            spatial_frequency="gratingSpatialFreqCPD" 
+            speed="gratingSpeedDPS" 
+            grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+            x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
+            x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
+            rotation="gratingDirectionDeg" 
+            alpha_multiplier="tGratingContrast"></stimulus>
+            <stimulus type="drifting_grating" tag="distractorGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
+              spatial_frequency="gratingSpatialFreqCPD" 
+              speed="gratingSpeedDPS" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="gratingWidthDeg" y_size="gratingHeightDeg" 
+              x_position="dGratingEccentricityDeg" y_position="gratingElevationDeg" 
+              rotation="gratingDirectionDeg" 
+              alpha_multiplier="dGratingContrast"></stimulus>
+              <stimulus type="drifting_grating" tag="rewardGrating"  direction="0" starting_phase="rewardGratingStartingPhaseDeg"
+                spatial_frequency=".000000000001" 
+                speed="gratingSpeedDPS" 
+                grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+                x_size="30" y_size="30" 
+                x_position="0" y_position="0" 
+                rotation="gratingDirectionDeg" 
+                alpha_multiplier="tGratingContrast"></stimulus>
+              </stimuli>    
+              <experiment tag="Experiment" full_name="">
+                <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+                  <action type="queue_stimulus" stimulus="background"/>
+                  <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+                  <!-- init actions before running trials after any press of start-->
+                  <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
+                  <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
+                  <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"/>
+                  <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+                  <action type="assignment" variable="tConsecCorrects" value="0"/>
+                  <action type="assignment" variable="tConsecErrors" value="0"/>
+                  <action type="assignment" variable="tNTrialsCompleted" value="0"/>
+                  <action type="assignment" variable="tLastTrialWasLeft" value="0"/>
+                  <action type="assignment" variable="tNStimAccepted" value="0" />
+                  <action type="assignment" variable="tNStimAccepted2" value="0" />
+				  <action type="assignment" variable="isFirstTrial" value="1"/>
+
+
+                  <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="10000" sampling_method="cycles">
+                    <trial tag="New List" nsamples="9999" sampling_method="samples" selection="random_without_replacement">
+                      <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
+                      <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+                        <task_system_state tag="InterTrialInterval" interruptible="YES">
+                          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                          <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms ****"></action>
+                          <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+                          <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+                          <action type="assignment" variable="stimulusOn" value="0"/>
+                          <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
+                          <action type="assignment" tag="set isNotTooFast to 0" variable="isNotTooFast" value="0"/>
+                          <action type="assignment" variable="tBlock2TrialNumber" value="0" />
+                          <action type="assignment" variable="tLeftTrial" value="0" />
+                          <action type="assignment" variable="cItiStart" value="counter" />
+                          
+                          <action type="if" condition="success+ignore+incorrect > 0">
+              				<action type="assignment" variable="isFirstTrial" value="0"></action>
+            			  </action>
+
+                          <action type="if" condition="tLastTrialCorrect == 1">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+                            <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+                            <action tag="Update Display" type="update_stimulus_display"></action>
+
+                            <action type="schedule" delay="125 ms" duration="1" repeats="1">
+                              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+                              <action tag="Update Display" type="update_stimulus_display"></action>
+                            </action>
+                            <action type="schedule" delay="250 ms" duration="1" repeats="1">
+                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+                              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+                              <action tag="Update Display" type="update_stimulus_display"></action>
+                            </action>
+                            <action type="schedule" delay="375 ms" duration="1" repeats="1">
+                              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+                              <action tag="Update Display" type="update_stimulus_display"></action>
+                              <action type="report" message="RewardGrating Dequeued"/>
+                            </action>
+                            <action type="schedule" delay="500 ms" duration="1" repeats="1">
+                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+                              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+                              <action tag="Update Display" type="update_stimulus_display"></action>
+                            </action>
+                            <action type="schedule" delay="625 ms" duration="1" repeats="1">
+                              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+                              <action tag="Update Display" type="update_stimulus_display"></action>
+                            </action>
+                            <action type="schedule" delay="750 ms" duration="1" repeats="1">
+                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+                              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+                              <action tag="Update Display" type="update_stimulus_display"></action>
+                            </action>
+                            <action type="schedule" delay="875 ms" duration="1" repeats="1">
+                              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+                              <action tag="Update Display" type="update_stimulus_display"></action>
+                              <action type="report" message="RewardGrating Dequeued"/>
+                            </action>
+                          </action>
+                          
+                        <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
+            			<action type="assignment" tag="Calculate nFramesStationary" variable="nFramesStationary" value="ceil((stationaryPeriodMs/1000)*frameRateHz)"/>
+            			<action type="assignment" tag="Calculate nFramesDelay" variable="nFramesDelay" value="ceil((delayTimeMs/1000)*frameRateHz)"/>
+            			<action type="assignment" tag="Calculate nFramesIti" variable="nFramesIti" value="ceil((itiTimeMs/1000)*frameRateHz)"/>
+            			<action type="assignment" tag="Calculate nFramesTooFast" variable="nFramesTooFast" value="ceil((tooFastTimeMs/1000)*frameRateHz)"/>
+            			<action type="assignment" tag="Calculate nFramesReact" variable="nFramesReact" value="ceil((reactionTimeMs/1000)*frameRateHz)"/>
+            			<action type="assignment" tag="Calculate nFramesIncorrectTimeout" variable="nFramesIncorrectTimeout" value="ceil((incorrectTimeoutMs/1000)*frameRateHz)"/>
+            			<action type="assignment" tag="Calculate nFramesIgnoreTimeout" variable="nFramesIgnoreTimeout" value="ceil((ignoreTimeoutMs/1000)*frameRateHz)"/>
+
+
+                          <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
+                          <action type="assignment" variable="tSvStimNumber2" value="svStimNumber2"/>
+                          <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
+
+                          <!-- If choosing L/R by markov based on left, switch, and last trial state. -->
+                          <action type="if" condition="doMarkovLR">
+
+                           <!-- Calculate left/right according to bias staircase -->
+                           <action type="if" condition="doBiasStaircase == 1 ">
+                             <action type="assignment" variable="tStimProbAvgLeft" value="1 - tLeftBias"/>
+                           </action>
+
+                           <!-- Calculate left/right by  to bias staircase -->
+                           <action type="if" condition="doBiasStaircase == 0">
+                             <action type="assignment" variable="tStimProbAvgLeft" value="stimProbAvgLeft"/>
+                           </action>
+
+                           <action type="if" condition="tStimProbAvgLeft &gt; 0 ">
+                            <action type="assignment" variable="tMarkovOdds" value="(1-tStimProbAvgLeft)/tStimProbAvgLeft" />
+                            <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
+                            <action type="assignment" variable="a" value="tMarkovOdds * b"/>
+
+                            <action type="if" condition="tLastTrialWasLeft == -1">  <!-- special case: no last trial / first trial -->
+                              <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; tStimProbAvgLeft"/> 
+                            </action>
+
+                            <action type="if" condition="tLastTrialWasLeft == 1">
+                              <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; (1-a)"/>
+                            </action>
+
+                            <action type="if" condition="tLastTrialWasLeft == 0">
+                              <action type="assignment" variable="tLeftTrial" value="rand(0,1) &lt; b"/>
+                            </action>
+                          </action>
+
+                          <action type="if" condition="tStimProbAvgLeft == 0 ">
+                            <action type="assignment" variable="tLeftTrial" value="0"/>
+                          </action> 
+                        </action>
+
+                        <action type="if" condition="doBlocks==1 &amp;&amp; doCorrectiveTrials == 0">
+                          <action type="if" condition="(tNBlockLeftTrsCompleted &lt; blockLeftTrs) &amp;&amp; tLastTrialWasLeft==1">
+                            <action type="assignment" variable="tLeftTrial" value="1"/>
+                          </action>
+                          <action type="if" condition="(tNBlockRightTrsCompleted &lt; blockRightTrs) &amp;&amp; tLastTrialWasLeft==0">
+                            <action type="assignment" variable="tLeftTrial" value="0"/>
+                          </action>
+                          <action type="if" condition="(tNBlockLeftTrsCompleted &gt;= blockLeftTrs) &amp;&amp; tLastTrialWasLeft==1">
+                            <action type="assignment" variable="tLeftTrial" value="0"/>
+                            <action type="assignment" variable="tNBlockRightTrsCompleted" value="0"/>
+                          </action>
+                          <action type="if" condition="(tNBlockRightTrsCompleted &gt;= blockRightTrs) &amp;&amp; tLastTrialWasLeft==0">
+                            <action type="assignment" variable="tLeftTrial" value="1"/>
+                            <action type="assignment" variable="tNBlockLeftTrsCompleted" value="0"/>
+                          </action>
+                        </action>
+
+                        <action type="if" condition="(doCorrectiveTrials == 1) &amp;&amp; (tConsecErrors &gt; 0)">
+                          <action type="assignment" variable="tLeftTrial" value="tLastTrialWasLeft" />
+                        </action>
+
+                        <!-- level 1 -->                         
+                        <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))"> 
+                          <action type="assignment" variable="tStimulusNumber" value="0"/>
+                          <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+                            <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level1-1)/2))"/>
+                          </action>
+                          <action type="if" condition="!doBlock2">
+                            <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+                          </action>
+                          <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
+                           <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2) * 2"/>
+                         </action>
+                       </action>
+                       <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level1))"> 
+                        <action type="assignment" variable="tStimulusNumber2" value="0"/>
+                      </action>
+                      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
+                      <!-- level 1: left sep odds on --> 
+                      <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+                       <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level1))">
+                        <action type="assignment" variable="tStimulusNumber" value="0"/>
+                        <action type="assignment" variable="tLeftTrial" value="1"/>
+                      </action>
+                      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level1))"> 
+                        <action type="assignment" variable="tStimulusNumber2" value="0"/>
+                      </action>
+                      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level1"/>		 
+                    </action>
+                    <!-- level 1: b2 sep odds on -->
+                    <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+                      <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level1))"> 
+                        <action type="assignment" variable="tStimulusNumber" value="0"/> 
+                        <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
+                      </action>
+                      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2TrPer80Level1))"> 
+                        <action type="assignment" variable="tStimulusNumber2" value="0"/>
+                      </action>
+                      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level1"/>
+                    </action>
+
+                    <!-- level 2 -->                         
+                    <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level2))"> 
+                      <action type="assignment" variable="tStimulusNumber" value="1"/>
+                      <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+                        <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level2-1)/2))"/>
+                      </action>
+                      <action type="if" condition="!doBlock2">
+                        <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+                      </action>
+                      <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
+                       <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2) * 2"/>
+                     </action>
+                   </action>
+                   <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level2))"> 
+                    <action type="assignment" variable="tStimulusNumber2" value="1"/>
+                  </action>
+                  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level2"/>
+                  <!-- level 2: left sep odds on --> 
+                  <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+                   <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level2))">
+                    <action type="assignment" variable="tStimulusNumber" value="1"/>
+                    <action type="assignment" variable="tLeftTrial" value="1"/>
+                  </action>
+                  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level2))"> 
+                    <action type="assignment" variable="tStimulusNumber2" value="1"/>
+                  </action>
+                  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level2"/>		 
+                </action>
+                <!-- level 2: b2 sep odds on -->                          
+                <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+                  <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level2))"> 
+                    <action type="assignment" variable="tStimulusNumber" value="1"/> 
+                    <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
+                  </action>
+                  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2TrPer80Level2))"> 
+                    <action type="assignment" variable="tStimulusNumber2" value="1"/>
+                  </action>
+                  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level2"/>
+                </action>
+
+
+                <!-- level 3 -->                         
+                <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level3))"> 
+                  <action type="assignment" variable="tStimulusNumber" value="2"/>
+                  <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+                    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level3-1)/2))"/>
+                  </action>
+                  <action type="if" condition="!doBlock2">
+                    <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+                  </action>
+                  <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
+                   <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2) * 2"/>
+                 </action>
+               </action>
+               <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level3))"> 
+                <action type="assignment" variable="tStimulusNumber2" value="2"/>
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level3"/>
+              <!-- level 3: left sep odds on --> 
+              <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+              	<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level3))">
+              		<action type="assignment" variable="tStimulusNumber" value="2"/>
+              		<action type="assignment" variable="tLeftTrial" value="1"/>
+              	</action>
+              	<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level3))"> 
+              		<action type="assignment" variable="tStimulusNumber2" value="2"/>
+               </action>
+               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level3"/>		 
+             </action>
+             <!-- level 3: b2 sep odds on -->                          
+             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+              <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level3))"> 
+                <action type="assignment" variable="tStimulusNumber" value="2"/> 
+                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
+              </action>
+              <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2TrPer80Level3))"> 
+                <action type="assignment" variable="tStimulusNumber2" value="2"/>
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level3"/>
+            </action>
+
+
+            <!-- level 4 -->                         
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level4))"> 
+              <action type="assignment" variable="tStimulusNumber" value="3"/>
+              <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level4-1)/2))"/>
+              </action>
+              <action type="if" condition="!doBlock2">
+                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+              </action>
+              <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
+              	<action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2) * 2"/>
+              </action>
+            </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level4))"> 
+              <action type="assignment" variable="tStimulusNumber2" value="3"/>
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level4"/>
+            <!-- level 4: left sep odds on --> 
+            <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level4))">
+              <action type="assignment" variable="tStimulusNumber" value="3"/>
+              <action type="assignment" variable="tLeftTrial" value="1"/>
+            </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level4))"> 
+              <action type="assignment" variable="tStimulusNumber2" value="3"/>
+            </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level4"/>		 
+          </action>
+          <!-- level 4: b2 sep odds on -->                          
+          <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level4))"> 
+              <action type="assignment" variable="tStimulusNumber" value="3"/> 
+              <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
+            </action>
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2TrPer80Level4))"> 
+             <action type="assignment" variable="tStimulusNumber2" value="3"/>
+           </action>
+           <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level4"/>
+         </action>
+
+
+         <!-- level 5 -->                         
+         <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level5))"> 
+          <action type="assignment" variable="tStimulusNumber" value="4"/>
+          <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+            <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level5-1)/2))"/>
+          </action>
+          <action type="if" condition="!doBlock2">
+            <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+          </action>
+          <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
+           <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2) * 2"/>
+         </action>
+       </action>
+       <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level5))"> 
+        <action type="assignment" variable="tStimulusNumber2" value="4"/>
+      </action>
+      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level5"/>
+      <!-- level 5: left sep odds on --> 
+      <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+       <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level5))">
+        <action type="assignment" variable="tStimulusNumber" value="4"/>
+        <action type="assignment" variable="tLeftTrial" value="1"/>
+      </action>
+      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level5))"> 
+        <action type="assignment" variable="tStimulusNumber2" value="4"/>
+      </action>
+      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level5"/>		 
+    </action>
+    <!-- level 5: b2 sep odds on -->                          
+    <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+      <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level5))"> 
+        <action type="assignment" variable="tStimulusNumber" value="4"/> 
+        <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
+      </action>
+      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2TrPer80Level5))"> 
+        <action type="assignment" variable="tStimulusNumber2" value="4"/>
+      </action>
+      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level5"/>
+    </action>
+
+
+    <!-- level 6 -->                         
+    <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level6))"> 
+      <action type="assignment" variable="tStimulusNumber" value="5"/>
+      <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+        <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level6-1)/2))"/>
+      </action>
+      <action type="if" condition="!doBlock2">
+        <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+      </action>
+      <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
+       <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2) * 2"/>
+     </action>
+   </action>
+   <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level6))"> 
+    <action type="assignment" variable="tStimulusNumber2" value="5"/>
+  </action>
+  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level6"/>
+  <!-- level 6: left sep odds on --> 
+  <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+   <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level6))">
+    <action type="assignment" variable="tStimulusNumber" value="5"/>
+    <action type="assignment" variable="tLeftTrial" value="1"/>
+  </action>
+  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level6))"> 
+    <action type="assignment" variable="tStimulusNumber2" value="5"/>
+  </action>
+  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level6"/>		 
+</action>
+<!-- level 6: b2 sep odds on -->                          
+<action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+  <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level6))"> 
+    <action type="assignment" variable="tStimulusNumber" value="5"/> 
+    <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
+  </action>
+  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2TrPer80Level6))"> 
+    <action type="assignment" variable="tStimulusNumber2" value="5"/>
+  </action>
+  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level6"/>
+</action>
+
+
+<!-- level 7 -->                         
+<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level7))"> 
+  <action type="assignment" variable="tStimulusNumber" value="6"/>
+  <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level7-1)/2))"/>
+  </action>
+  <action type="if" condition="!doBlock2">
+    <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+  </action>
+  <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
+   <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2) * 2"/>
+ </action>
+</action>
+<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level7))"> 
+  <action type="assignment" variable="tStimulusNumber2" value="6"/>
+</action>
+<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level7"/>
+<!-- level 7: left sep odds on --> 
+<action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+ <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level7))">
+  <action type="assignment" variable="tStimulusNumber" value="6"/>
+  <action type="assignment" variable="tLeftTrial" value="1"/>
+</action>
+<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level7))"> 
+  <action type="assignment" variable="tStimulusNumber2" value="6"/>
+</action>
+<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level7"/>		 
+</action>
+<!-- level 7: b2 sep odds on -->                          
+<action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+  <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level7))"> 
+    <action type="assignment" variable="tStimulusNumber" value="6"/> 
+    <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
+  </action>
+  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2TrPer80Level7))"> 
+   <action type="assignment" variable="tStimulusNumber2" value="6"/>
+ </action>
+ <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level7"/>
+</action>
+
+
+<!-- level 8 -->                         
+<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level8))"> 
+  <action type="assignment" variable="tStimulusNumber" value="7"/>
+  <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level8-1)/2))"/>
+  </action>
+  <action type="if" condition="!doBlock2">
+    <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+  </action>
+  <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
+   <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2) * 2"/>
+ </action>
+</action>
+<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level8))"> 
+  <action type="assignment" variable="tStimulusNumber2" value="7"/>
+</action>
+<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level8"/>
+<!-- level 8: left sep odds on --> 
+<action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+ <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level8))">
+  <action type="assignment" variable="tStimulusNumber" value="7"/>
+  <action type="assignment" variable="tLeftTrial" value="1"/>
+</action>
+<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level8))"> 
+  <action type="assignment" variable="tStimulusNumber2" value="7"/>
+</action>
+<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level8"/>		 
+</action>
+<!-- level 8: b2 sep odds on -->                          
+<action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+  <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level8))"> 
+    <action type="assignment" variable="tStimulusNumber" value="7"/> 
+    <action type="assignment" variable="tBlock2TrialNumber" value="1"/>         
+  </action>
+  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2TrPer80Level8))"> 
+    <action type="assignment" variable="tStimulusNumber2" value="7"/>
+  </action>
+  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level8"/>
+</action>
+
+<!-- error checking                -->
+<action type="assert" stop_on_failure="1"  
+  condition="tTempStimOdds == 80"
+  message="stim odds must sum to 80!  (sum now is $tTempStimOdds )"/>
+  <!-- stop_on_failure=0: allow slop so it can be changed while running -->
+
+  <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+    <action type="assert" condition="trPer80Level1-(((int)trPer80Level1)/2)*2 == 0" stop_on_failure="1"
+      message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
+      <action type="assert" condition="trPer80Level2-(((int)trPer80Level2)/2)*2 == 0" stop_on_failure="1"
+        message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
+        <action type="assert" condition="trPer80Level3-(((int)trPer80Level3)/2)*2 == 0" stop_on_failure="1"
+          message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
+          <action type="assert" condition="trPer80Level4-(((int)trPer80Level4)/2)*2 == 0" stop_on_failure="1"
+            message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
+            <action type="assert" condition="trPer80Level5-(((int)trPer80Level5)/2)*2 == 0" stop_on_failure="1"
+              message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
+              <action type="assert" condition="trPer80Level6-(((int)trPer80Level6)/2)*2 == 0" stop_on_failure="1"
+                message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
+                <action type="assert" condition="trPer80Level7-(((int)trPer80Level7)/2)*2 == 0" stop_on_failure="1"
+                  message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
+                  <action type="assert" condition="trPer80Level8-(((int)trPer80Level8)/2)*2 == 0" stop_on_failure="1"
+                    message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
+                  </action>
+
+                  <action type="report" tag="" message="tBlock2TrialNumber is $tBlock2TrialNumber"/>
+                  <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))"/>
+                  <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
+
+                  <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff / (pow(2, 1.0*tStimulusNumber2/gratingContrastDiffSPO)) + 1"></action>
+                  <action type="if" condition="doOnlyMaxDiff">
+                   <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff"></action>
+                 </action>
+                 <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
+
+
+                 <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
+
+
+                 <action type="if" condition="doBlock2">
+                  <action type="assert" stop_on_failure="1"
+                    condition="(block2DoRampLength+block2DoRampVTrain+block2DoTrialLaser) == 1"
+                    message="must select exactly one of block2Do variables!"/>
+                    <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>
+
+              <!-- trial numbers assigned above in switch statement.  Note equal probability 
+              - if more complicated odds wanted; add a set of block2 level odds -->
+
+              <!-- ramp length for block 2 -->
+              <action type="if" condition="block2DoRampLength">
+                <action type="assert" condition="doLaserStim == 1" stop_on_failure="1"
+                  message="doLaserStim must be 1 for block2DoRampLength == 1"/>
+                  <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
+
+                  <action type="if" condition="tBlock2TrialNumber == 0">
+                    <action type="assignment" variable="tLaserRampLengthMs" value="laserRampLengthMs"></action>                             
+                    <action type="assignment" variable="tLaserPeakMaxMw" value="laserPeakMaxMw"></action>
+                  </action>
+                  <action type="if" condition="tBlock2TrialNumber == 1">
+                    <action type="assignment" variable="tLaserRampLengthMs" value="block2RampLengthMs2"></action>                           
+                    <action type="assignment" variable="tLaserPeakMaxMw" value="block2RampLengthPowerMaxMw2"></action>                              
+                  </action>
+                </action>
+
+                <!-- ramp v train for block 2 -->
+                <action type="if" condition="block2DoRampVTrain">
+                  <action type="assert" condition="doLaserStim == 1" stop_on_failure="1"
+                    message="doLaserStim must be 1 for block2DoRampLength == 1"/>
+                    <action type="assert" condition="laserDoLinearRamp+laserDoPulseTrain == 0" stop_on_failure="1"
+                      message="when block2 controls ramp v. train, set laserDoLinearRamp/PulseTrain both to 0"/>
+                      <action type="if" condition="tBlock2TrialNumber == 0"> <!-- ramp -->
+                        <action type="assignment" variable="tLaserDoLinearRamp" value="1"></action>                             
+                        <action type="assignment" variable="tLaserRampLengthMs" value="laserRampLengthMs"></action>                             
+                        <action type="assignment" variable="tLaserDoPulseTrain" value="0"></action>                             
+                        <action type="assignment" variable="tLaserPeakMaxMw" value="laserPeakMaxMw"></action>
+                        <action type="assignment" variable="tLaserPeakStepsPerOctave" value="laserPeakStepsPerOctave"></action>
+                        <action type="assignment" variable="tLaserBaselinePowerMw" value="block2RvtRampBaselinePowerMw"></action>
+                      </action>
+                      <action type="if" condition="tBlock2TrialNumber == 1"> <!-- train -->
+                        <action type="assignment" variable="tLaserDoLinearRamp" value="0"></action>                             
+                        <action type="assignment" variable="tLaserRampLengthMs" value="laserRampLengthMs"></action>                             
+                        <action type="assignment" variable="tLaserDoPulseTrain" value="1"></action>                             
+                        <action type="assignment" variable="tLaserPeakMaxMw" value="block2RvtTrainPowerMaxMw"></action>
+                        <action type="assignment" variable="tLaserPeakStepsPerOctave" value="block2RvtTrainStepsPerOctave"></action>
+                        <action type="assignment" variable="tLaserBaselinePowerMw" value="block2RvtTrainBaselinePowerMw"></action>
+                      </action>
+                    </action>
+
+                    <action type="if" condition="block2DoTrialLaser">
+                      <action type="assert" condition="!doLaserStim" stop_on_failure="1"
+                        message="When using trialLaser, doLaserStim must be off"/>
+
+                        <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
+                          <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
+                          <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                          <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                        </action>
+
+                        <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
+                          <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
+                          <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
+                          <action type="assignment" variable="tTrialLaserOffTimeMs" value="block2TrialLaserOffTimeMs"></action>
+                        </action>                      
+                      </action>
+
+                    </action> <!-- end doBlock2 -->
+
+                    <!-- calculate target threshold-->
+
+                    <action type="if" condition="tLeftTrial == 0">
+                      <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
+                      <action type="assignment" variable="dGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
+                      <action type="assignment" variable="rightDecisionThreshold" value="gratingTargetEccentricity"/>
+                      <action type="assignment" variable="leftDecisionThreshold" value="tGratingEccentricityDeg+(tGratingEccentricityDeg-gratingTargetEccentricity)"/>
+                    </action>
+
+                    <action type="if" condition="tLeftTrial == 1">
+                      <action type="assignment" variable="tGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
+                      <action type="assignment" variable="dGratingEccentricityDeg" value="gratingEccentricityDeg"/>
+                      <action type="assignment" variable="leftDecisionThreshold" value="gratingTargetEccentricity"/>
+                      <action type="assignment" variable="rightDecisionThreshold" value="tGratingEccentricityDeg+(tGratingEccentricityDeg-gratingTargetEccentricity)"/>
+                    </action>
+
+                    <action type="assignment" variable="tGratingEccentricityStart" value="tGratingEccentricityDeg"/>
+
+                    <action type="if" condition="doLaserStim">
+                      <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
+                      <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
+                    </action>
+
+                    <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
+                      <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
+                      <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
+                      <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
+                        message="bug: tLaserPowerMw and tTrialLaserPowerMw_trigger > 0"/>
+                        <action type="assert" stop_on_failure="1"
+                          condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
+                          message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
+                        </action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="WaitForInitiate"></transition>
+            			<transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; !isFirstTrial" target="WaitForInitiate"></transition>
+            			<transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cDecision" target="ExitTask"></transition>
+                      </task_system_state>
+                      
+                      <task_system_state tag="ExitTask" interruptible="YES">
+						<action type="assert" stop_on_failure="1" condition="counter > cDecision" message="Not receiving triggers from microscope"/>
+          			  </task_system_state>
+
+                      <task_system_state tag="WaitForInitiate" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="assignment" tag="Log counter" variable="cStationaryStart" value="counter"></action>
+                        <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" condition="counter-cStationaryStart &gt;= nFramesStationary" target="TrialStart"></transition>
+                        <transition type="conditional" condition="abs(quadrature-tQuadrature) &gt;= stationaryThreshold" target="WaitForInitiate"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="TrialStart" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="report" message="**** Trial Starting: playing tone and beginning delay"></action>
+                        <action type="play_sound" sound="startSound"/>
+                        <action type="assignment" tag="Log counter" variable="cTrialStart" value="counter"></action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" condition="counter-cTrialStart &gt;= nFramesDelay" target="StimOn"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="StimOn" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
+                          <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>  
+                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+                        </action>
+                        <action type="report" message="*****-=STIMULI ON=-*****"></action>
+                        <action type="assignment" variable="stimulusOn" value="1"/>
+                        <action type="assignment" tag="set stimIsOff to 0" variable="stimIsOff" value="0"/>
+                        <action type="assignment" tag="Log counter" variable="cStimOn" value="counter"></action>
+                        <action type="report" message="In Reaction Time for $nFramesReact frames "></action>
+                        <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs" duration_units="ms"/>
+
+                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
+                        <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"></action>
+                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
+                        <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" variable="stimTimestampMs" value="now()/1000"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" condition="counter-cStimOn &gt;= nFramesOn"  target="StimOff"></transition>
+                        <transition type="conditional" condition="counter-cStimOn &gt;= nFramesTooFast" target="ZeroQuad"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="StimOff" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="assignment" tag="tag stimOff" variable="stimIsOff" value="1"/>
+                        <action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractorGrating"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="targetGrating"></action>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" condition="isNotTooFast" target="Reaction"></transition>
+                        <transition type="conditional" condition="!isNotTooFast &amp;&amp; counter-cStimOn &gt;= nFramesTooFast" target="ZeroQuad"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="ZeroQuad" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="assignment" tag="tag tooFast" variable="isNotTooFast" value="1"/>
+                        <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+                        <action type="report" message="**** Quad zeroed *****"></action>
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="direct" target="Reaction"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="Reaction" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                        <action type="if" condition="doTestRobot==0">
+                          <action type="assignment" tag="track motion" variable="trackMotion" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))+tGratingEccentricityStart"/>
+                        </action>
+
+                        <action type="if" condition="doTestRobot==1">
+                          <action type="assignment" tag="track motion" variable="trackMotion" value="1000"/>
+                        </action>
+
+                        <action type="if" condition="doFeedbackMotion==1">
+                          <action type="assignment" tag="Move stimulus" variable="tGratingEccentricityDeg" value="trackMotion"/>
+                          <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
+                          <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
+                          <action tag="Update Display" type="update_stimulus_display"/>
+                        </action>
+
+                        <action type="if" condition="doTestRobot &amp;&amp; doAllCorrects==0">
+                          <action type="assignment" tag="set robotGoLeft" variable="robotGoLeft" value="robotLeftProb >= rand(0,1)"/>
+                        </action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" condition="counter-cStimOn &gt;= nFramesOn &amp;&amp; !stimIsOff" target="StimOff"></transition>
+                        <transition type="conditional" condition="counter-cStimOn &gt;= nFramesReact" target="Ignore"></transition>
+                        <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
+                        <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Reward"></transition>
+                        <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Reward"></transition>
+                        <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
+                        <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; !invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Reward"></transition>
+                        <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
+                        <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
+                        <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Reward"></transition>
+                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==1" target="Reward"></transition>
+                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
+                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Reward"></transition>
+                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Reward"></transition>
+                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
+                        <transition type="direct" target="Reaction"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="Reward" interruptible="YES">
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+						
+						<action type="if" tag="stim is not already off" condition="!stimIsOff">
+                        	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
+                        </action>
+                        
+                        <action type="update_stimulus_display"></action>
+                        <action type="play_sound" sound="correctSound"/>
+                        <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
+                        <action type="assignment" tag="" variable="tConsecErrors" value="0"/>
+                        <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
+                        <action type="assignment" tag="Log counter" variable="cDecision" value="counter"></action>
+                        <action type="report" tag="Report" message="Decision Time = $tDecisionTimeMs"></action>
+                        <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success!!! **"></action>
+                        <!-- update running variables -->
+                        <action type="assignment" tag="success++" variable="success" value="success+1"></action>
+                        <action type="assignment" variable="tLastTrialCorrect" value="1"></action>
+                        <action type="if" condition="doConsecCorrectReward==1">
+                          <action type="if" condition="tConsecCorrects &lt; maxConsecCorrects">
+                            <action type="assignment" variable="tRewardTimeUs" value="tConsecCorrects*consecCorrRewardInterval"/>
+                          </action>
+                          <action type="if" condition="tConsecCorrects &gt;= maxConsecCorrects">
+                            <action type="assignment" variable="tRewardTimeUs" value="maxConsecCorrects*consecCorrRewardInterval"/>
+                          </action>
+                        </action>
+
+                        <action type="if" condition="doConsecCorrectReward==0">
+                          <action type="assignment" variable="tRewardTimeUs" value="rewardTimeUs"/>
+                        </action>
+
+                        <action type="assignment" variable="juice" value="tRewardTimeUs"></action>
+                        <action type="start_timer" timer="postRewardTimerUs" timebase="" duration="100000" duration_units="us"/>
+
+                        <!-- accept stim selection -->
+                        <action type="accept_selections" selection="svStimNumber"></action>
+                        <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+
+
+                        <!-- update selection variable -->
+                        <action type="if" condition="tNStimAccepted &gt;= 80">
+                          <action type="reset_selection" selection="svStimNumber"/>
+                          <action type="assignment" variable="tNStimAccepted" value="0"></action>
+                          <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
+                        </action>
+                        <action type="if" condition="tNStimAccepted &lt; 80">
+                          <action type="next_selection" selection="svStimNumber"/>
+                          <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+                        </action>
+
+                        <action type="accept_selections" selection="svStimNumber2"></action>
+                        <action type="assignment" variable="tNStimAccepted2" value="tNStimAccepted2 + 1"></action>
+
+                        <!-- update selection variable -->
+                        <action type="if" condition="tNStimAccepted2 &gt;= 80">
+                          <action type="reset_selection" selection="svStimNumber2"/>
+                          <action type="assignment" variable="tNStimAccepted2" value="0"></action>
+                          <action type="report" message="Should be resetting selections,tNStimAccepted2=$tNStimAccepted2"/>
+                        </action>
+                        <action type="if" condition="tNStimAccepted2 &lt; 80">
+                          <action type="next_selection" selection="svStimNumber2"/>
+                          <action type="report" message="Next selection,tNStimAccepted2=$tNStimAccepted2"/>
+                        </action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="postRewardTimerUs" target="EndTrial"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="Incorrect" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
+                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+                        
+                        <action type="if" tag="stim is not already off" condition="!stimIsOff">
+                        	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
+                        </action>
+                        
+						<action type="assignment" tag="Log counter" variable="cDecision" value="counter"></action>
+                        <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
+                        <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
+                        <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect: Time-Out for $incorrectTimeoutMs **"></action>
+                        <action type="update_stimulus_display"></action>
+                        <action type="play_sound" sound="incorrectSound"/>
+                        <action type="start_timer" timer="incorrectTimeoutTimer" timebase="" duration="incorrectTimeoutMs" duration_units="ms"/>
+                        <action type="assignment" tag="Incorrects++" variable="incorrect" value="incorrect+1"/>
+                        <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
+                        <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
+
+                        <!-- accept stim selection -->
+                        <action type="accept_selections" selection="svStimNumber"></action>
+                        <action type="if" condition="doCorrectiveTrials==0">
+                          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+                        </action>
+                        <action type="accept_selections" selection="svStimNumber2"></action>
+                        <action type="if" condition="doCorrectiveTrials==0">
+                          <action type="assignment" variable="tNStimAccepted2" value="tNStimAccepted2 + 1"></action>
+                        </action>
+
+                        <!-- update selection variable -->
+                        <action type="if" condition="(tNStimAccepted &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="reset_selection" selection="svStimNumber"/>
+                          <action type="assignment" variable="tNStimAccepted" value="0"></action>
+                          <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted &lt; 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="next_selection" selection="svStimNumber"/>
+                          <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted2 &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="reset_selection" selection="svStimNumber2"/>
+                          <action type="assignment" variable="tNStimAccepted2" value="0"></action>
+                          <action type="report" message="Should be resetting selections,tNStimAccepted2=$tNStimAccepted2"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted2 &lt; 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="next_selection" selection="svStimNumber2"/>
+                          <action type="report" message="Next selection,tNStimAccepted2=$tNStimAccepted2"/>
+                        </action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="incorrectTimeoutTimer" target="EndTrial"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="Ignore" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
+                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
+                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+                        
+                        <action type="if" tag="stim is not already off" condition="!stimIsOff">
+                        	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
+                        </action>
+                        
+						<action type="assignment" tag="Log counter" variable="cDecision" value="counter"></action>
+                        <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
+                        <action tag="Report Ignore" full_name="ReportDigital" type="report" message="** Ignore: Time-Out for $ignoreTimeoutMs **"></action>
+                        <action type="update_stimulus_display"></action>
+                        <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
+                        <action type="play_sound" sound="incorrectSound"/>
+                        <action type="start_timer" timer="ignoreTimeoutTimer" timebase="" duration="ignoreTimeoutMs" duration_units="ms"/>
+                        <action type="assignment" tag="Ignore++" variable="ignore" value="ignore+1"/>
+                        <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
+                        <action type="assignment" tag="" variable="tConsecCorrects" value="0"/>
+
+                        <!-- accept stim selection -->
+                        <action type="accept_selections" selection="svStimNumber"></action>
+                        <action type="if" condition="doCorrectiveTrials==0">
+                          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+                        </action>
+                        <action type="accept_selections" selection="svStimNumber2"></action>
+                        <action type="if" condition="doCorrectiveTrials==0">
+                          <action type="assignment" variable="tNStimAccepted2" value="tNStimAccepted2 + 1"></action>
+                        </action>
+
+                        <!-- update selection variable -->
+                        <action type="if" condition="(tNStimAccepted &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="reset_selection" selection="svStimNumber"/>
+                          <action type="assignment" variable="tNStimAccepted" value="0"></action>
+                          <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted &lt; 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="next_selection" selection="svStimNumber"/>
+                          <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted2 &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="reset_selection" selection="svStimNumber2"/>
+                          <action type="assignment" variable="tNStimAccepted2" value="0"></action>
+                          <action type="report" message="Should be resetting selections,tNStimAccepted2=$tNStimAccepted2"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted2 &lt; 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="next_selection" selection="svStimNumber2"/>
+                          <action type="report" message="Next selection,tNStimAccepted2=$tNStimAccepted2"/>
+                        </action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="ignoreTimeoutTimer" target="EndTrial"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="EndTrial" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>           
+                        <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
+                        <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
+                        <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
+                        <action type="if" condition="doBlocks==1">
+                          <action type="if" condition="tLeftTrial==1">
+                            <action type="assignment" variable="tNBlockLeftTrsCompleted" value="tNBlockLeftTrsCompleted+1"/>
+                          </action>
+                          <action type="if" condition="tLeftTrial==0">
+                            <action type="assignment" variable="tNBlockRightTrsCompleted" value="tNBlockRightTrsCompleted+1"/>
+                          </action>
+                        </action>
+                        <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="yield" tag="return to parent task system"></transition>
+                      </task_system_state>
+                    </task_system>
+                  </trial>
+                </trial>
+                <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+              </protocol>
+            </experiment>
+          </monkeyml>

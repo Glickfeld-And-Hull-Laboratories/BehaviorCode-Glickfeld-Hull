@@ -3,7 +3,7 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" lever2=""
+              lever1="FIO1" 
               lever1_solenoid="FIO2"
               counter2="counter2"
               quadrature="quadrature"
@@ -32,8 +32,8 @@
       <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
-      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"></variable>
-      <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="SpeedCounters"></variable>
+      <variable tag="counter" full_name="counter" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="counter2" full_name="counter2" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Hardware"/>
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
@@ -52,8 +52,8 @@
     <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
       <!-- init actions before running trials after any press of start-->
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
-      <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
-      <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"></action>
+      <!-- <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action> -->
+      <!-- <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"></action> -->
     <!--  <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"></action>
       <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"></action>
       <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/> -->

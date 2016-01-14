@@ -201,7 +201,8 @@ end
                          'Stim: %s \n', ...
                          blockStr, ...
                          block2Str, ...
-                         'Match To Target: %s \n'], ...
+                         'Match To Target: %s \n', ...
+                         'Motion Sensitivity: \t%2.3f \n'], ...
                         input.reactionTimeMs/1000, ...
                         input.itiTimeMs, ...
                         input.stimOnTimeMs, ...
@@ -213,7 +214,8 @@ end
                         input.incorrectTimeoutMs/1000, ...
                         trPer80Str, ...
                         stimStr, ...
-                        MTTstr);
+                        MTTstr, ...
+                        input.feedbackMotionSensitivity);
 
         text(0.0, 0.3, tStr, ...
              'HorizontalAlignment', 'left', ...
@@ -258,7 +260,7 @@ set(gca, 'XLim', trXLim);
 axH = subplot(spSz{:}, 4);
 hold on;
 set(axH, 'Visible', 'off');
-    set(axH, 'OuterPosition', [0.02 0.49, 0.25, 0.2])
+    set(axH, 'OuterPosition', [0.02 0.47, 0.25, 0.2])
 if nTrial > 1 
   % recompute text list from all changes
   desIx = ~cellfun(@isempty, input.constChangedOnTrial);
@@ -425,16 +427,43 @@ if nCorr>0 && input.doTestRobot==0,
     corrDiffCell = cell(1,nLevels);
     decTimes = cell2mat_padded(input.tDecisionTimeMs);
     corrDecTimes = decTimes(correctIx);
-    
+
     for ii = 1:length(uqDiff),
-        val = uqDiff(ii);
-        tix = corrDiffV==val;
-        corrDiffCell{ii} = nanmean(corrDecTimes(tix));
+      val = uqDiff(ii);
+      tix = corrDiffV==val;
+      corrDiffCell{ii} = nanmean(corrDecTimes(tix));
+    end
+    
+    if nLeft>0,
+      corrDiffVL = contDiffV(correctIx & leftTrialIx);
+      uqDiffL = unique(corrDiffVL);
+      nLevelsL = length(uqDiffL);
+      corrDiffCellL = cell(1,nLevelsL);
+      corrDecTimesL = decTimes(correctIx & leftTrialIx);
+      for ii = 1:length(uqDiffL),
+        val = uqDiffL(ii);
+        tix = corrDiffVL==val;
+        corrDiffCellL{ii} = nanmean(corrDecTimesL(tix));
+      end
+    end
+    if nRight>0,
+      corrDiffVR = contDiffV(correctIx & ~leftTrialIx);
+      uqDiffR = unique(corrDiffVR);
+      nLevelsR = length(uqDiffR);
+      corrDiffCellR = cell(1,nLevelsR);
+      corrDecTimesR = decTimes(correctIx & ~leftTrialIx);
+      for ii = 1:length(uqDiffR),
+        val = uqDiffR(ii);
+        tix = corrDiffVR==val;
+        corrDiffCellR{ii} = nanmean(corrDecTimesR(tix));
+      end
     end
 
-    lev = find(input.trPer80V>0)-1;
+
+    lev = double(find(input.trPer80V>0)-1);
     if isfield(input, 'dGratingContrastDiff')
-      possDiffV = input.gratingMaxDiff ./ (2 .^ (lev./input.gratingContrastDiffSPO))+1;
+      possDiffV = double(input.gratingMaxDiff) ./ (2 .^ (lev./double(input.gratingContrastDiffSPO)))+1;
+
       minX = min(possDiffV,[],2);
       maxX = max(possDiffV,[],2);
     else
@@ -446,8 +475,15 @@ if nCorr>0 && input.doTestRobot==0,
     minD = min(cell2mat(corrDiffCell));
     maxD = max(cell2mat(corrDiffCell));
     
+    hold on
     xLimm = [minX maxX];
     pH = plot(uqDiff, cell2mat(corrDiffCell));
+    if nLeft>0,
+      pH1 = plot(uqDiffL, cell2mat(corrDiffCellL));
+    end
+    if nRight>0,
+      pH2 = plot(uqDiffR, cell2mat(corrDiffCellR));
+    end
     if ~(xLimm(1)==0),
       xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
     else
@@ -457,13 +493,28 @@ if nCorr>0 && input.doTestRobot==0,
     xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
     xTLabelL = cellstr(num2str(xTickL(:)));
     set(pH, ...
-        'LineWidth', 1.5, ...
+       'LineWidth', 1.5, ...
         'Marker', '.', ...
-        'MarkerSize', 9);
+        'MarkerSize', 9, ...
+        'Color', 'g');
+    if nLeft>0,
+      set(pH1, ...
+          'LineWidth', 1.5, ...
+          'Marker', '.', ...
+          'MarkerSize', 9, ...
+          'Color', 'b')
+    end
+    if nRight>0,
+      set(pH2, ...
+          'LineWidth', 1.5, ...
+          'Marker', '.', ...
+          'MarkerSize', 9, ...
+          'Color', [0.8 0.8 0]);
+    end
     if isnan(minD)|isnan(maxD)
       axis tight
     else
-      ylim([minD-100 maxD+100])
+     % ylim([minD-100 maxD+100])
     end
     if isnan(minX)|isnan(maxX)
       axis tight
@@ -583,7 +634,7 @@ if isfield(input, 'dGratingContrastDiff')
 end
 if input.gratingContrastDiffSPO > 10
   contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
-else
+elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
   contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 end
 
@@ -664,7 +715,11 @@ pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '
 if sum(block2Ix)>= 1
   pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
-vH = vert_lines(0);
+if input.gratingContrastDiffSPO <= 100
+  vH = plot([1 1],[0 1]);
+else
+  vH = plot([0 0],[0 1]);
+end
 set(vH, 'Color', 'g');
 set(gca, 'XLim', [minX maxX], ...
          'YLim', [0 1]);
@@ -683,6 +738,30 @@ end
 ylabel('% Right')
 grid on
 
+maxCell = length(nLevelsB1);
+lowMidCell = maxCell/2;
+highMidCell = lowMidCell + 1;
+A = cell2mat(percentContCellB1(maxCell));
+B = cell2mat(percentContCellB1(1));
+M = (A + B)/2;
+Selectivity = A - B;
+rndSelectivity = roundn(Selectivity, -3);
+Bias = M - 0.5;
+rndBias = roundn(Bias, -2);
+
+if mod(highMidCell,1) == 0
+  C = cell2mat(percentContCellB1(highMidCell));
+  D = cell2mat(percentContCellB1(lowMidCell));
+  M2 = (C + D)/2;
+  InnerBias = M2 - 0.5;
+  rndInnerBias = roundn(InnerBias, -2);
+else
+  InnerBias = NaN;
+  rndInnerBias = NaN;
+end
+
+
+title({['Selectivity = ' num2str(rndSelectivity)], ['Intrinsic/Challenged Bias = ' num2str(rndBias) '/' num2str(rndInnerBias)]});
 %%%%%%%%%%%%%%%%%
 
 %% 11 - Target Contrast x %Correct

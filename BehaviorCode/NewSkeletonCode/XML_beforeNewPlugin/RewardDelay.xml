@@ -1,0 +1,742 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" lever2="" 
+              lever1_solenoid="FIO2"
+              lever2_solenoid=""
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Behavioral Control">
+      <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
+      <variable tag="doSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" groups="Solenoid Control" persistant="1"/>
+      <variable tag="doSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" groups="Solenoid Control" persistant="1"/>
+      <variable tag="doSolenoidOnLate" scope="global" logging="when_changed" default_value="0" type="integer" groups="Solenoid Control" persistant="1"/>
+      <variable tag="doSolenoidOnNR" scope="global" logging="when_changed" default_value="0" type="integer" groups="Solenoid Control" persistant="1"/>
+      <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="reqHoldToStartMs" scope="global" logging="when_changed" default_value="400" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="preRewardWindowMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="postRewardWindowMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="waitForLateTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" groups="Time-Outs" persistant="1"/>
+      <variable tag="lateTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
+      <variable tag="noReleaseTimeoutMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Time-Outs" persistant="1"/>
+      
+      <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" groups="Task Timing" persistant="1"/>
+      <variable tag="doScaleRewardWithHoldTime" scope="global" logging="when_changed" default_value="0" type="boolean" groups="Reward Control" persistant="1"/>
+      <variable tag="doScaleRewardToTarget" scope="global" logging="when_changed" default_value="0" type="boolean" groups="Reward Control" persistant="1"/>
+      <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="500" type="integer" groups="Reward Control" persistant="1"/>
+      <variable tag="minRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" groups="Reward Control" persistant="1"/>
+      <variable tag="maxRewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" groups="Reward Control" persistant="1"/>
+      <variable tag="interRewardIntervalMs" scope="global" logging="when_changed" default_value="200" type="integer" groups="Reward Control" persistant="1"/>
+      <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1"/>
+      <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" groups="Time-Outs" persistant="1"/>
+      <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="120" type="integer" groups="Time-Outs" persistant="1"/>
+      
+      
+      <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="rewardSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="itiEndSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      
+      <variable tag="delaySoundVolume" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="0"/>
+      
+      <variable tag="dsLevel1" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="dsNCorrLvl1" scope="global" logging="when_changed" default_value="0" type="integer" groups="Volume Control" persistant="1"/>
+      <variable tag="dsLevel2" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+      <variable tag="dsNCorrLvl2" scope="global" logging="when_changed" default_value="0" type="integer" groups="Volume Control" persistant="1"/>
+      <variable tag="dsLevel3" scope="global" logging="when_changed" default_value="0" type="float" groups="Volume Control" persistant="1"/>
+    </folder>
+    <folder tag="Stimuli">
+    </folder>
+    <folder tag="Test Robot">
+      <variable tag="doRobot" scope="global" logging="when_changed" default_value="0" type="boolean" groups="Testing/Debugging" persistant="1"/>
+      <variable tag="testRobotMaxPressMs" scope="global" logging="when_changed" default_value="300" groups="Testing/Debugging" type="integer" persistant="1"/>
+      <variable tag="testRobotMaxReactMs" scope="global" logging="when_changed" default_value="5000" groups="Testing/Debugging" type="integer" persistant="1"/>
+    </folder>
+    <folder tag="Task Status">
+      <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="leverResult" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="early" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="late" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="norelease" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+    </folder>
+    <folder tag="Online Display">
+      <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+    </folder>
+    <folder tag="Hardware variables">
+      <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward Control" />
+      <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+    </folder>
+    <folder tag="Internal Variables">
+      <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tReqHoldToStartMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tDelayTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tWaitForLateTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tPreRewardWindowMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tPostRewardWindowMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tTestRobotReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tTestRobotPressMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="consecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
+      <variable tag="tConsecTimeoutStartTime" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer"/>
+      <variable tag="tNRewards" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tInterRewardIntervalMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tRewardAddPerMsHoldUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tItiWaitTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="lastActualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tempMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tDelaySoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+    </folder>
+    <folder tag="Markov">
+      <variable tag="tMarkovOdds" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="a" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+      <variable tag="b" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0"/>
+      <variable tag="probAvgLED" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov"/>
+      <variable tag="probAvgSwitch" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov"/>
+    </folder>
+
+    <folder tag="LED Variables">
+      <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="tLastTrialWasLED" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="trPer80Level3" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="trPer80Level4" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="trPer80Level5" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="trPer80Level6" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
+
+      <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserTransitionRampUpDownMs" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserTransitionDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>  <!-- 0: do not do baseline -->
+      <variable tag="laserBaselinePostStimTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Laser"/> 
+
+      <variable tag="laserDoLinearRamp" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Laser"/>
+      <variable tag="laserRampLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserRampExtraConstantLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserRampDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+
+      <variable tag="laserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserPulseLengthMs" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserPulsePeriodMs" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserTrainLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserTrainRandomNPulses" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+      <variable tag="laserTrainRandomType" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/> 
+
+      <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
+      <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
+      <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
+      <variable tag="forceMinStimStepTo" scope="global" logging="when_changed" default_value="-1" type="float" persistant="1" groups="Laser"/>
+      <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TrPer80Level1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TrPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TrPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TrPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TrPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TrPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="doBlock2SecondLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/> 
+      <variable tag="block2DoRampLength" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"  groups="Block2 Laser"/>
+      <variable tag="block2RampLengthMs2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2RampLengthPowerMaxMw2" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2DoRampVTrain" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2RvtTrainPowerMaxMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2RvtTrainStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2RvtRampBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser" />
+      <variable tag="block2RvtTrainBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+      <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
+      <variable tag="tTempStimOdds" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tSvStimNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tLaserDoLinearRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLaserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLaserRampLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLaserPeakMaxMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tLaserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+    </folder>
+  </variables>
+  <sounds tag="Sounds">
+    <sound tag="louderPressSound" type="wav_file" path="wavs/louderFlatterPress.wav" amplitude="1"></sound>
+    <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
+    <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="rewardSoundVolume"></sound>
+    <sound tag="startSound" type="wav_file" path="wavs/8000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
+    <sound tag="itiEndSound" type="wav_file" path="wavs/8000Hz_.3s.wav" amplitude="itiEndSoundVolume"></sound>
+    <sound tag="delaySound" type="wav_file" path="wavs/8000Hz_.3s.wav" amplitude="delaySoundVolume"></sound>
+  </sounds>
+  <stimuli tag="Stimuli">
+    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="drifting_grating" tag="visualGrating"  direction="0" starting_phase="0"
+              spatial_frequency="0.1" 
+              speed="0" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="180" y_size="180" 
+              x_position="0" y_position="0" 
+              rotation="0" 
+              alpha_multiplier="1"></stimulus>
+  </stimuli>    
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+
+      <!-- Initial Actions before running trials after any press of start-->
+      <action type="queue_stimulus" stimulus="background"></action>
+      <action type="update_stimulus_display" tag="-"></action>
+      <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
+      <action type="assignment" variable="tConsecErrors" value="0"></action>
+      <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+
+      <!-- Initial Actions run ONLY on FIRST TRIAL after loading experiment -->
+      <action type="if" condition="success+late+early == 0">
+        <action type="report" message="**** First trial since experiment load - initializing"></action>
+        <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
+        <action type="assignment" variable="tLastTrialWasLED" value="-1"></action>
+        <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
+        <action type="assignment" variable="lastActualHoldTimeMs" value="0"></action>
+      </action>
+
+      <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
+        <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" 
+                     _error="Task Systems must contain >=1 transition that yields to parent">
+            
+            
+          <task_system_state tag="Intertrial" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <!-- Start IO Device and Encode Trial Start -->
+            <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+            <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>
+            <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+            <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+            <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+
+            <!--Transmit the trial timestamp so strobed code sequences are unique -->
+            <action type="assert" condition="tTrialStartMWTimestampMs &lt;= 2147483648" 
+                    message="tTrialStartMWTimestampMs is too large - should happen only after several days of running!?"
+                    stop_on_failure="1"/>
+              
+            <!-- Encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
+            <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
+            <action type="assignment" variable="strobedDigitalWord" value="tTrialStartMWTimestampMs/1000/1000000"/>  <!-- mega s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000000)*1000000000) /1000000"/> <!-- mega to kilo s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs- (tTrialStartMWTimestampMs/1000000)*1000000) /1000"/> <!-- 0-999s -->
+            <action type="assignment" variable="strobedDigitalWord" value="(tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)"/>  <!-- ms -->
+              
+            
+            <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
+            <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+            <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
+            <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+            <action type="assignment" tag="Reset tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="0"></action>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" variable="lastActualHoldTimeMs" value="actualHoldTimeMs"></action>
+            <action type="assignment" variable="experimentXmlTrialId" value="8"></action>
+            <action type="assignment" variable="tStimTurnedOn" value="0"></action>
+
+            <!-- Assign delay sound volume based on number of corrects -->
+            <action type="if" condition="success &lt; dsNCorrLvl1">
+              <action type="assignment" tag="Assign level1 of rewardSound " variable="delaySoundVolume" value="dsLevel1"/>
+            </action>
+            <action type="if" condition="(success &lt; (dsNCorrLvl1 + dsNCorrLvl2)) &amp;&amp; (success &gt;= dsNCorrLvl1)">
+              <action type="assignment" tag="Assign level2 of rewardSound " variable="delaySoundVolume" value="dsLevel2"/>
+            </action>
+            <action type="if" condition="success &gt;= (dsNCorrLvl1 + dsNCorrLvl2)">
+              <action type="assignment" tag="Assign level3 of rewardSound " variable="delaySoundVolume" value="dsLevel3"/>
+            </action>
+
+            <!-- choose block1/2 state based on probLED, probSwitch, and last trial state. -->
+            <action type="if" condition="doBlock2==1">
+              <action type="assignment" variable="tMarkovOdds" value="(1-probAvgLED)/probAvgLED" />
+              <action type="assignment" variable="b" value="probAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
+              <action type="assignment" variable="a" value="tMarkovOdds * b"/>
+
+              <action type="if" condition="tLastTrialWasLED == -1">  <!-- special case: no last trial / first trial -->
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; probAvgLED"/> 
+              </action>
+              <action type="if" condition="tLastTrialWasLED == 1">
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; (1-a)"/>
+              </action>
+              <action type="if" condition="tLastTrialWasLED == 0">
+                <action type="assignment" variable="tBlock2TrialNumber" value="rand(0,1) &lt; b"/>
+              </action>
+              <!-- End of block2 selection -->
+              <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+              <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
+              <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
+              <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
+              <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+              <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+              <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>    
+
+            <!-- using trial laser for block 2 -->
+              <action type="if" condition="block2DoTrialLaser">
+                <action type="assert" condition="!doLaserStim" stop_on_failure="1"
+                        message="When using trialLaser, doLaserStim must be off"/>
+
+
+                <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
+                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
+                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
+                </action>
+
+                <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
+                  <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
+                  <action type="assignment" variable="tTrialLaserOffTimeMs" value="block2TrialLaserOffTimeMs"></action>
+                </action>                                                
+              </action>
+              </action>
+
+              <!-- !doBlock2 error checking -->
+              <action type="assert" stop_on_failure="1"
+                      condition="!doLaserStim || (laserDoLinearRamp || laserDoPulseTrain)" 
+                      message="When doLaserStim, ramp or train must be set"/>
+
+            <!-- choose laser power -->
+            <action type="if" condition="doLaserStim">
+              <action type="assignment" variable="tLaserPowerMw" 
+                      value="tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)"></action> 
+
+              <!-- adjust from baseline -->
+              <action type="if" condition="tLaserBaselinePowerMw > 0">
+                <action type="assignment" variable="tLaserPowerMw" 
+                        value="tLaserPowerMw + tLaserBaselinePowerMw"/>
+              </action>
+
+              <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
+
+              <action type="assert" condition="tTrialLaserPowerMw == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw != 0"/>
+            </action>
+            <action type="if" condition="!doLaserStim">
+              <action type="assignment" variable="tLaserPowerMw" value="0"/>
+            </action>
+
+            <!-- Assign the variable for this trial's hold time -->
+            <action type="assignment" variable="tReqHoldToStartMs" value="reqHoldToStartMs"></action>
+
+               <!-- initialize trial start/end times -->
+            <action type="if" condition="tThisTrialStartTimeMs == -1">  
+              <!--first trial, leave lasttime as -1 -->
+              <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
+            </action>
+            <action type="if" condition="tThisTrialStartTimeMs != -1">  <!--else-->
+              <!--later trials, copy this into last before setting this again below -->
+              <action type="assignment" variable="tLastTrialStartTimeMs" value="tThisTrialStartTimeMs"></action>
+            </action>
+            <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
+
+            <!-- Assign tVariables based on constants. -->
+            <action type="assignment" variable="tItiWaitTimeMs" value="itiTimeMs"></action>
+            <action type="assignment" variable="tDelaySoundVolume" value="delaySoundVolume"></action>
+            
+          
+            <!-- extend based on previous hold and max stim time, if asked for -->
+            <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
+              <action type="assignment" variable="tempMs"  
+                      value=" delayTimeMs -lastActualHoldTimeMs"></action>
+              <action type="if" condition="tempMs > 0">
+                <!--add to ITI-->
+                <action type="assignment" tag="-"
+                        variable="tItiWaitTimeMs" value="tItiWaitTimeMs+tempMs"></action>
+              </action>
+            </action>
+
+            <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
+                    timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
+            <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
+            <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
+    
+              <!-- Turn on solenoid during ITI or not based on doSolenoidAllTrials.-->
+            <action type="if" condition="doSolenoidAllTrials==1">
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+            </action>
+              
+            <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>
+
+            <action type="if" condition="doBlock2==1 &amp;&amp; tTrialLaserPowerMw &gt; 0">
+                      <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
+              <action type="assignment" tag="Send laser paramsto controller" variable="sendLaserParams" value="0"></action>
+              <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/>
+              <action type="assert" stop_on_failure="1"
+                      condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
+                      message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
+            </action>
+
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="If Expired, Go To StartTrial" target="StartTrial" timer="interTrialTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
+            
+            <!-- Lower solenoid at beginning of trial for any solenoid -->
+            <action type="assignment" tag="lever Solenoid off" variable="FIO2" value="0"></action>
+            <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>            
+            <action type="play_sound" sound="itiEndSound"></action>
+              
+            <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
+            <action type="assignment" tag="Encode StartTrialWaitForPress" variable="strobedDigitalWord" value="7"></action>
+
+            <!-- Test Robot Calculations -->
+            <action type="if" tag="if testRobot" condition="doRobot==1">
+              <action type="assignment" variable="tTestRobotPressMs" value="rand(0, testRobotMaxPressMs)"></action>
+                
+            </action>
+
+            <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doRobot==0 &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
+            <transition type="conditional" tag="If testRobot elapsed, go to HoldLever" 
+                        condition="doRobot &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tTestRobotPressMs" target="HoldLever"></transition>
+          </task_system_state>
+            
+          <task_system_state tag="HoldLever" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>              
+            <action type="start_timer" tag="Hold Time Before Timing Trial Timer" timer="holdToStartTrialTimerMs" timebase="" duration="tReqHoldToStartMs" duration_units="ms"></action>
+            <action type="assignment" tag="Set Test Robot React" variable="tTestRobotReactMs" value="rand(0, testRobotMaxReactMs)"></action>
+
+            <action type="if" condition="tTrialLaserPowerMw > 0">
+                <action type="assignment" variable="laserTriggerFIO" value="1"></action> 
+                <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+              </action>              
+              
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If release lever, cycle to Trial Start"
+                  condition="doRobot==0 &amp;&amp; FIO1==0" target="StartTrial"></transition>
+            <transition type="timer_expired" tag="If holdTimer expired, send to start timing" target="Delay" timer="holdToStartTrialTimerMs"></transition>
+          </task_system_state>
+            
+          <task_system_state tag="Delay" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="play_sound" sound="startSound"></action>
+            <action type="assignment" tag="Assign tPreRewardWindow" variable="tPreRewardWindowMs" value="preRewardWindowMs"></action>
+            <action type="assignment" tag="Assign tPostRewardWindow" variable="tPostRewardWindowMs" value="postRewardWindowMs"></action>
+            <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
+            <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
+            <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
+
+
+            <!-- If testRobot, then time transitions based on variables variables -->
+            <action type="if" tag="if testRobot" condition="doRobot==1">
+              <action type="assignment" tag="Assign tTestRobotReactMs" variable="tTestRobotReactMs" value="rand(0, testRobotMaxReactMs)"></action>
+              <action type="start_timer" tag="Start Test Robot Reaction Timer" timer="testRobotTimer" timebase="" duration="tTestRobotReactMs" duration_units="ms"></action>
+              <action tag="Report testRobotTimer" full_name="Report Press" type="report" message="Test Robot to React in $tTestRobotReactMs ms"></action>
+            </action>
+              
+            <!-- If not testRobot, then start trial on lever press -->
+            <action type="if" tag="if not testRobot" condition="doRobot==0">
+              <action type="start_timer" tag="Start testRobotTimer infinite" timer="testRobotTimer" timebase="" duration="100000" duration_units="ms"></action>
+            </action>
+            <action type="assignment" tag="Assign tDelayTimeMs from delayTimeMs" variable="tDelayTimeMs" value="delayTimeMs"></action>
+              
+              
+            <action type="start_timer" tag="Start Delay Timer" timer="delayTimerMs" timebase="" duration="tDelayTimeMs-(tPreRewardWindowMs)" duration_units="ms"></action>
+            <action tag="Report Delay Start" full_name="ReportDigital" type="report" message="Delay Started (need to hold for $tDelayTimeMs)"></action>
+              
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="EarlyRelease"></transition>
+            <transition type="timer_expired" tag="If testRobotTimer expired, go to EarlyRelease" target="EarlyRelease" timer="testRobotTimer"></transition>
+            <transition type="timer_expired" tag="If delayTimer Expired, Go To StartReactTimer" target="StartReactTimer" timer="delayTimerMs"></transition>
+          </task_system_state>
+
+          <task_system_state tag="StartReactTimer" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action tag="report target time" full_name="ReportDigital" type="report" message="Delay Time Passed - In Reward Widow"></action>
+            <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="tPreRewardWindowMs+tPostRewardWindowMs" duration_units="ms"></action>
+			      <action type="start_timer" tag="Start delaySound Timer" timer="delaySoundTimer" timebase="" duration="tPreRewardWindowMs" duration_units="ms"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" tag="Go WaitForAction" target="DelaySoundTimerState"></transition>
+          </task_system_state>
+
+          <task_system_state tag="DelaySoundTimerState" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+         
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="Reward"></transition>
+            <transition type="timer_expired" tag="If testRobot expired, Transition to Reward" target="Reward" timer="testRobotTimer"></transition>
+            <transition type="timer_expired" tag="If delaySoundTimer expires, move to playDelaySound where delaySound plays" target="PlayDelaySound" timer="delaySoundTimer"></transition>
+            <transition type="timer_expired" tag="If React Time Expired, Go To Late" target="WaitForLate" timer="reactTimeTimer"></transition>
+          </task_system_state>
+          
+          <task_system_state tag="PlayDelaySound" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+         	  <action type="play_sound" sound="delaySound"></action>
+
+            <action type="if" condition="delaySoundVolume &gt; 0.0">
+              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="visualGrating"></action>
+              <action type="play_dynamic_stimulus" stimulus="visualGrating" tag="start"></action>
+              <action tag="Update Display" type="update_stimulus_display"></action>
+              <action type="schedule" delay="300 ms" duration="1" repeats="1" duration_units="ms">
+                <action type="dequeue_stimulus" stimulus="visualGrating"></action>
+                <action tag="Update Display" type="update_stimulus_display"></action>
+              </action>
+              <action type="report" message="**** Delay Visual Stimulus Flashed for 300ms ****"/>
+            </action>
+              
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" target="WaitForAction"></transition> <!-- Spin on this state -->  
+          </task_system_state>
+
+          <task_system_state tag="WaitForAction" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+              
+              
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doRobot == 0" target="Reward"></transition>
+            <transition type="timer_expired" tag="If testRobot expired, Transition to Reward" target="Reward" timer="testRobotTimer"></transition>
+            <transition type="timer_expired" tag="If React Time Expired, Go To Late" target="WaitForLate" timer="reactTimeTimer"></transition>
+            <transition type="direct" target="WaitForAction"></transition> <!-- Spin on this state -->
+          </task_system_state>
+            
+          <task_system_state tag="WaitForLate" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="start_timer" timer="waitForLateTimer" timebase="" duration="waitForLateTimeMs" duration_units="ms"></action>
+              <action type="report" message="Made it to WaitFor"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If release in WaitForLate, send to Late" condition="FIO1==0 &amp;&amp; doRobot==0" target="Late"></transition>
+            <transition type="timer_expired" tag="If waitForLateTime expired, go to NoRelease" target="NoRelease" timer="waitForLateTimer"></transition>
+            <transition type="timer_expired" tag="If testRobot expired, Transition to Reward" target="Late" timer="testRobotTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="EarlyRelease" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
+            <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
+              
+            <!-- update running variables -->
+            <action type="assignment" tag="early++" variable="early" value="early+1"></action>
+            <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
+            <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
+            
+
+            <action type="if" tag="if doSolenoid/Early" condition="doSolenoidOnEarly==1">
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+            </action>
+            <action type="start_timer" tag="Start earlyTimeoutTimer" timer="earlyTimeoutTimer" timebase="" duration="earlyTimeoutMs" duration_units="ms"></action>
+            <action tag="ReportEarlyTO" full_name="ReportDigital" type="report" message="* In Early Time Out for $earlyTimeoutMs ms"></action>
+              
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" target="PossibleEndTimeout" timer="earlyTimeoutTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="Reward" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
+
+
+            <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success"></action>
+            <!-- update running variables -->
+            <action type="assignment" tag="success++" variable="success" value="success+1"></action>
+            <action type="assignment" variable="tConsecErrors" value="0"></action>
+
+            <!-- scale based on consec corrects -->
+            <action type="if" tag="if consecCorrects &lt; max" condition="consecCorrects &lt; maxConsecCorrects">
+              <action type="assignment" tag="consecCorrects++" variable="consecCorrects" value="consecCorrects+1"></action>
+            </action>
+              
+            <action type="assignment" tag="set tNRewards" variable="tNRewards" value="consecCorrects"></action>
+              <!-- Normal (Randomly Assigned between Min and Max) Reward Code-->
+              <action type="if" condition="doScaleRewardToTarget==0 &amp;&amp; doScaleRewardWithHoldTime==0">
+                  <action type="assignment" tag="Determine Reward from min-max range" variable="tTotalRewardTimeUs" value="rand(minRewardUs, maxRewardUs)"></action>
+              </action>
+              
+              <!-- Reward Scaled to Length of Hold Times Code-->
+              <action type="if" condition="doScaleRewardToTarget==0 &amp;&amp; doScaleRewardWithHoldTime==1">
+                  <action type="assignment" tag="Scale Reward to Favor Long Hold Times" variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-(delayTimeMs - preRewardWindowMs))/(preRewardWindowMs+postRewardWindowMs)))+minRewardUs"></action>
+              </action>
+              
+              <!-- Reward Hold Times Close to DelayTimeMs -->
+              <action type="if" condition="doScaleRewardToTarget==1 &amp;&amp; doScaleRewardWithHoldTime==0">
+                  
+                  <!-- If the hold is shorter than delayTimeMs-->
+                  <action type="if" condition="actualHoldTimeMs &lt; delayTimeMs">
+                      <action type="assignment" tag="Scale Reward to Favor the Targeted DelayTimeMs " variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((actualHoldTimeMs-(delayTimeMs - preRewardWindowMs))/(preRewardWindowMs)))+minRewardUs"></action>
+                  </action>
+                  
+                  <!-- If the hold is longer or equal to delayTimeMs -->
+                  <action type="if" condition="actualHoldTimeMs &gt;= delayTimeMs">
+                      <action type="assignment" tag="Scale Reward to Favor the Targeted DelayTimeMs" variable="tTotalRewardTimeUs" value="((maxRewardUs-minRewardUs)*((postRewardWindowMs-(actualHoldTimeMs-delayTimeMs))/(postRewardWindowMs)))+minRewardUs"></action>
+                  </action>
+                  
+              </action>
+
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" tag="Always Go to GiveReward" target="GiveReward"></transition>
+          </task_system_state>
+
+          <task_system_state tag="GiveReward" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="if rewards remain, go to SingleReward (note must be -1)" condition="tNRewards > -1" target="SingleReward"></transition>
+            <transition type="direct" tag="Always Go to PRP" target="PostRewardPause"></transition>
+          </task_system_state>
+
+          <task_system_state tag="PostRewardPause" interruptible="YES">
+            <action type="start_timer" tag="StartTimer" timer="postRewardTimer" timebase="" duration="postRewardMs" duration_units="ms"></action> 
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" target="PossibleEndTimeout" timer="postRewardTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="SingleReward" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="interRewardInterval minimum to juiceTime" variable="tInterRewardIntervalMs" value="interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )"></action>
+            <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
+            <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
+
+            <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
+            <action type="report" tag="Report" message="juice = $juice"></action>
+            <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="Late" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
+            <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            <action type="report" tag="Report" message="ActualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action type="assignment" tag="late++" variable="late" value="late + 1"></action>
+            <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
+            <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
+            <action tag="Report Late Trial" full_name="ReportDigital" type="report" message="** Late Response -- No Reward"></action>
+
+            <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="lateTimeoutMs" duration_units="ms"></action>
+            <action tag="ReportLateTO" full_name="ReportDigital" type="report" message="* In Late Time Out for $lateTimeoutMs ms"></action>
+
+            <action type="if" tag="if doSolenoid/ErrorsOnly" condition="doSolenoidOnLate==1">
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+            </action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" target="PossibleEndTimeout" timer="lateTimeoutTimer"></transition>
+          </task_system_state>
+            
+          
+          <task_system_state tag="NoRelease" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+            <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
+            <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+            <action type="report" tag="Report" message="ActualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action type="assignment" tag="late++" variable="norelease" value="norelease + 1"></action>
+            <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
+            <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
+            <action tag="Report Late Trial" full_name="ReportDigital" type="report" message="** No Release -- No Reward"></action>
+              
+            <action type="start_timer" tag="start timer" timer="lateTimeoutTimer" timebase="" duration="noReleaseTimeoutMs" duration_units="ms"></action>
+            <action tag="ReportNoReleaseTO" full_name="ReportDigital" type="report" message="* In N.R. Time Out for $noReleaseTimeoutMs"></action>
+
+            <action type="if" tag="if doSolenoid/ErrorsOnly" condition="doSolenoidOnNR==1">
+              <action type="assignment" tag="lever Solenoid on" variable="FIO2" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
+            </action>
+                
+                <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                <transition type="timer_expired" target="PossibleEndTimeout" timer="lateTimeoutTimer"></transition>
+            </task_system_state>
+
+
+          <task_system_state tag="PossibleEndTimeout" interruptible="YES">    
+            <!-- do timeout if too many recent errors:
+                 use a state rather than a wait action because states are interruptible -->
+            <action type="if" condition="tConsecErrors >= nConsecErrorsCauseTimeout">
+              <action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
+              <action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
+            </action>
+
+            <transition type="conditional" tag="- bypass timer checking if no timeout requested" 
+                        condition="tConsecErrors &lt; nConsecErrorsCauseTimeout" target="EndTrial"></transition>
+            <transition type="timer_expired" target="EndTrial" timer="consecErrorTimer"></transition>
+          </task_system_state>
+
+          
+          <task_system_state tag="EndTrial" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action>
+
+            <action type="assignment" variable="laserTriggerFIO" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+
+            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+            <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
+            <action type="assignment" tag="" variable="tLastTrialWasLED" value="tBlock2TrialNumber"/>
+            
+            <!-- allow two trials after each timeout is over -->
+            <action type="if" condition="tConsecErrors == nConsecErrorsCauseTimeout">
+              <action type="assignment" variable="tConsecErrors" value="nConsecErrorsCauseTimeout-2"/>  
+            </action>
+
+            <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+            <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+            <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+
+            <!-- trigger serial param dump to cyberkinetics -->
+            <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="1"></action>
+            <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="0"></action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="yield" tag="return to parent task system"></transition>
+          </task_system_state>
+
+        </task_system>
+      </trial>
+    </protocol>
+  </experiment>
+</monkeyml>
+

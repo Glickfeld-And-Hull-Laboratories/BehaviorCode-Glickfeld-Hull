@@ -14,6 +14,7 @@ def main():
         client = ExptBase.initializeBridge(sys.argv, state)
         sp = ExptBase.initializeSerial()
         ExptBase.initializeStandardVariableCallbacks(client, state)
+        print('dump')
 
         
         signal.pause()  # Other threads are working; this one can sleep

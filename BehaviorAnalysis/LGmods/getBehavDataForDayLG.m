@@ -104,8 +104,13 @@ end
 nTrTemp = size(ds.trialOutcomeCell);
 
 if outS.is2AFC == 0
-    vFields = { 'tLaserPowerMw', 'tGratingContrast', 'tBaseGratingContrast', 'tTotalReqHoldTimeMs', ...
-        'tGratingDirectionDeg', 'holdTimesMs' };
+    if isfield(ds, 'tSoundTargetAmplitude')
+        vFields = { 'tLaserPowerMw', 'tGratingContrast', 'tBaseGratingContrast', 'tTotalReqHoldTimeMs', ...
+    'tGratingDirectionDeg', 'holdTimesMs', 'tSoundTargetAmplitude'};
+    else
+        vFields = { 'tLaserPowerMw', 'tGratingContrast', 'tBaseGratingContrast', 'tTotalReqHoldTimeMs', ...
+            'tGratingDirectionDeg', 'holdTimesMs' };
+    end
     for iV=1:length(vFields)
         if isfield(ds, vFields{iV})
             eval(sprintf('%s = celleqel2mat_padded(ds.%s);', vFields{iV}, vFields{iV}));
@@ -113,7 +118,9 @@ if outS.is2AFC == 0
             eval(sprintf('%s = repmat(NaN, [1 nTrTemp]);', vFields{iV}));
         end
     end
-
+    if ~isfield(ds, 'tSoundTargetAmplitude')
+        tSoundTargetAmplitude = zeros(size(tGratingContrast));
+    end
     laserPowerMw = tLaserPowerMw;
     gratingContrast = tGratingContrast;
     gratingDirectionDeg = tGratingDirectionDeg;
@@ -124,44 +131,55 @@ if outS.is2AFC == 0
     nContrastTrials = sum(find(gratingContrast>min(tGratingContrast,[],2)));
     nOriTrials = sum(find(gratingDirectionDeg>min(tGratingDirectionDeg,[],2)));
     nGratingTrials = nContrastTrials + nOriTrials;
+    nAuditoryTrials = sum(find(tSoundTargetAmplitude>0),2);
 
     if nLaserTrials > 0 && nGratingTrials == 0
         intensityIsChr2 = true;
     end
     if nLaserTrials == 0 && nGratingTrials >0
         intensityIsChr2 = false;
-        if nOriTrials>0
-            doOri = true;
+        if ds.doOriDetect
+            doOri(1) = true;
         else
-            doOri = false;
-        end 
-        if nContrastTrials>0
-            doContrast = true;
-        else
-            doContrast = false;
+            doOri(1) = false;
         end
-    end
-    elseif ~isfield(ds, 'tGratingContrast')
-        %hack for changed names
-        gratingContrast = celleqel2mat_padded(ds.gratingContrast);
-        nContrastTrials = sum(find(gratingContrast>min(gratingContrast,[],2)));
-        nOriTrials = sum(find(tGratingDirectionDeg>min(tGratingDirectionDeg,[],2)));
-        nGratingTrials = nContrastTrials + nOriTrials;
-        if nGratingTrials > 0
-            intensityIsChr2 = false;
-            if nOriTrials>0
-                doOri = true;
+        if isfield(ds, 'block2DoOriDetect')
+            if ds.block2DoOriDetect & ds.doBlock2
+                doOri(2) = true;
             else
-                doOri = false;
-            end 
-            if nContrastTrials>0
-                doContrast = true;
-            else
-                doContrast = false;
+                doOri(2) = false;
             end
-        elseif isfield(ds, 'tGratingContrast')
-        % both empty
-        error('Cannot handle such data files w/ both laser and grating yet - check code');
+        else
+            doOri(2) = false;
+        end
+        if ds.doContrastDetect
+            doContrast(1) = true;
+        else
+            doContrast(1) = false;
+        end
+        if isfield(ds, 'block2DoContrastDetect')
+            if ds.block2DoContrastDetect & ds.doBlock2
+                doContrast(2) = true;
+            else
+                doContrast(2) = false;
+            end
+        else
+            doContrast(2) = false;
+        end
+        if isfield(ds, 'doAuditoryDetect')
+            doAuditory(1) = true;
+        else
+            doAuditory(1) = false;
+        end
+        if isfield(ds, 'block2DoAuditoryDetect')
+            if ds.block2DoAuditoryDetect & ds.doBlock2
+                doAuditory(2) = true;
+            else
+                doAuditory(2) = false;
+            end
+        else
+            doAuditory(2) = false;
+        end
     end
 end
 
@@ -180,24 +198,47 @@ if outS.is2AFC
     gratingContrast = rightGratingContrast./leftGratingContrast;
     rightTrials = rightGratingContrast>leftGratingContrast;
     leftTrials = leftGratingContrast>rightGratingContrast;
+    
     %this is hard coded for now:
     nContrastTrials = sum(find(gratingContrast>=0));
-    doContrast = true;
+    doContrast = [true true];
     nOriTrials = 0;
-    doOri = false;
+    doOri = [false false];
     intensityIsChr2 = 0;
+    nAuditoryTrials = 0;
+    doAuditory = [false false];
 end
 
-if nOriTrials>0 & nContrastTrials>0
-    error('Cannot handle such data files w/ both ori and contrast changes yet');
+
+if nOriTrials>0 & nContrastTrials>0 || nGratingTrials>0 & nAuditoryTrials>0
+    doSepB2Mode = 1;
+else
+    doSepB2Mode = 0;
 end
 
-if intensityIsChr2 
-    intensityV = laserPowerMw;
-elseif nOriTrials>0
-    intensityV = gratingDirectionDeg;
-elseif nContrastTrials>0
-    intensityV = gratingContrast;
+if doSepB2Mode == 0
+    if intensityIsChr2 
+        intensityV_b1b2 = [laserPowerMw; laserPowerMw];
+    elseif nOriTrials>0
+        intensityV_b1b2 = [gratingDirectionDeg; gratingDirectionDeg];
+    elseif nContrastTrials>0
+        intensityV_b1b2 = [gratingContrast; gratingContrast];
+    end
+else
+    if ds.doContrastDetect
+        intensityV_b1b2(1,:) = gratingContrast;
+    elseif ds.doOriDetect
+        intensityV_b1b2(1,:) = gratingDirectionDeg;
+    elseif isfield(ds, 'doAuditoryDetect') & ds.doAuditoryDetect
+        intensityV_b1b2(1,:) = tSoundTargetAmplitude;
+    end
+    if ds.block2DoContrastDetect
+        intensityV_b1b2(2,:) = gratingContrast;
+    elseif ds.block2DoOriDetect
+        intensityV_b1b2(2,:) = gratingDirectionDeg;
+    elseif isfield(ds, 'doAuditoryDetect') & ds.block2DoAuditoryDetect
+        intensityV_b1b2(2,:) = tSoundTargetAmplitude;
+    end
 end
 
 if ~outS.is2AFC
@@ -206,6 +247,7 @@ else
     reactTimesMs = double(cellvect2mat_padded(ds.tDecisionTimeMs));
 end
 
+trialOutcomeCell = ds.trialOutcomeCell;  % copy so we can trim if necessary below
 if isfield(ds, 'tBlock2TrialNumber') 
     block2V = cellvect2mat_padded(ds.tBlock2TrialNumber);
 
@@ -228,9 +270,9 @@ if isfield(ds, 'tBlock2TrialNumber')
         block2V(find(rem(reqHoldTimesMs,(trialLaserOn+trialLaserOff))>350)) = 1;
     end
 else
-    block2V = zeros(size(intensityV));  % no values in file, create a single block
+    block2V = zeros(size(trialOutcomeCell));  % no values in file, create a single block
 end
-trialOutcomeCell = ds.trialOutcomeCell;  % copy so we can trim if necessary below
+
 %% trim trials if requested
 if ~isempty(uo.WhichTrials)
     if ischar(uo.WhichTrials)
@@ -249,8 +291,10 @@ if ~isempty(uo.WhichTrials)
 
     try  % use direct indexing to figure out if any indices are invalid
         trialOutcomeCell = trialOutcomeCell(desIx);
-        leftTrials = leftTrials(desIx);
-        rightTrials = rightTrials(desIx);
+        if outS.is2AFC
+            leftTrials = leftTrials(desIx);
+            rightTrials = rightTrials(desIx);
+        end
     catch
         nTrials = length(trialOutcomeCell);
         if max(uo.WhichTrials) > nTrials
@@ -266,16 +310,17 @@ if ~isempty(uo.WhichTrials)
 
     if outS.is2AFC
          gratingContrast = gratingContrast(desIx);
-         intensityV = intensityV(desIx);
+         intensityV_b1b2 = intensityV_b1b2(:,desIx);
     else
         laserPowerMw = laserPowerMw(desIx);
         gratingContrast = gratingContrast(desIx);
         gratingDirectionDeg = gratingDirectionDeg(desIx);
-        intensityV = intensityV(desIx);
+        tSoundTargetAmplitude = tSoundTargetAmplitude(desIx);
+        intensityV_b1b2 = intensityV_b1b2(:,desIx);
     end
     block2V = block2V(desIx);
     reactTimesMs = reactTimesMs(desIx);
-    
+
     nDes = sum(desIx);
     nTotal = length(desIx);
     fprintf(1,'%s: trimmed %d trials; requested via WhichTrials (%3.1f%%, %d to %d trs)\n', ...
@@ -300,7 +345,7 @@ end
 
 assert(nBlock2Indices > 0 && nBlock2Indices <= 2);
 
-intensityV = chop(intensityV,2);  % if you change the top value during session each power only accurate to 2 sig figs
+intensityV_b1b2 = chop(intensityV_b1b2,2);  % if you change the top value during session each power only accurate to 2 sig figs
 
 if ~outS.is2AFC
     earlyIx = strcmp(trialOutcomeCell, 'failure');
@@ -319,7 +364,7 @@ end
 for iB = 1:nBlock2Indices
     tBN = block2Indices(iB);
     b2Ix = block2V == tBN;
-    
+    intensityV = intensityV_b1b2(iB,:);
     intensitiesC{iB} = unique(intensityV(b2Ix));
     nIntensities(iB) = length(intensitiesC{iB});
     
@@ -467,7 +512,7 @@ end
 %% output
 fieldNames = { 'intensitiesC', 'percentsCorrect', 'intensityIsChr2', ...
     'nIntensities', 'nCorrPlusMissC', ...
-    'doContrast', 'doOri', ...
+    'doContrast', 'doOri', 'doAuditory'...
     'successIx', 'earlyIx', 'missedIx', 'intensityV', 'reactTimesMs', ...
     'block2V', 'block2Indices', 'nBlock2Indices', ...
     'nMiss', 'nCorr', 'nCorrPlusMiss', 'whichTrials' };

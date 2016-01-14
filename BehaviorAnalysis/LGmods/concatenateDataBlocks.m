@@ -5,6 +5,10 @@ function outS = concatenateDataBlocks(blockC)
     nF = length(fNames);
     outS = struct([]);
     trs = blockC(1).trialSinceReset;
+    outS(1).trialsSinceReset = blockC(1).trialSinceReset;
+    for iblock = 2:size(blockC,2)
+        outS.trialsSinceReset = [outS.trialsSinceReset blockC(iblock).trialSinceReset];
+    end
     for iF = 1:nF
         fN = cell2mat(fNames(iF,:));
         outS(1).(fN) = blockC(1).(fN);

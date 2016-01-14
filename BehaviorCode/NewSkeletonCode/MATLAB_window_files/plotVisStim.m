@@ -23,57 +23,116 @@ end
 % some data processing
 nTrial = length(input.tNStimAccepted);
 tTrialN = input.trialSinceReset;
-az_mat = [input.gratingAzimuthDeg:input.gratingAzimuthStepDeg:input.gratingAzimuthDeg+(input.gratingAzimuthStepDeg*(input.gratingAzimuthStepN-1))];
-el_mat = [input.gratingElevationDeg:input.gratingElevationStepDeg:input.gratingElevationDeg+(input.gratingElevationStepDeg*(input.gratingElevationStepN-1))];
-dir_mat = [input.gratingDirectionDeg:input.gratingDirectionStepDeg:input.gratingDirectionDeg+(input.gratingDirectionStepDeg*(input.gratingDirectionStepN-1))];
-diam_mat = [input.gratingDiameterDeg:input.gratingDiameterStepDeg:input.gratingDiameterDeg+(input.gratingDiameterStepDeg*(input.gratingDiameterStepN-1))];
-sf_mat = [input.gratingSpatialFreqCPD.*(input.gratingSpatialFreqStepLog.^(double(input.gratingSpatialFreqStepDir).*((1:input.gratingSpatialFreqStepN)-1)))];
-tf_mat = [double(input.gratingTemporalFreqCPS).*double(input.gratingTemporalFreqStepLog).^(double(input.gratingTemporalFreqStepDir).*((1:double(input.gratingTemporalFreqStepN))-1))];
-con_mat = [double(input.gratingContrast).*(double(input.gratingContrastStepLog).^(double(input.gratingContrastStepDir).*(0:double(input.gratingContrastStepN)-1)))];
+if ~input.doMovingDots
+  az_mat = [input.gratingAzimuthDeg:input.gratingAzimuthStepDeg:input.gratingAzimuthDeg+(input.gratingAzimuthStepDeg*(input.gratingAzimuthStepN-1))];
+  el_mat = [input.gratingElevationDeg:input.gratingElevationStepDeg:input.gratingElevationDeg+(input.gratingElevationStepDeg*(input.gratingElevationStepN-1))];
+  dir_mat = [input.gratingDirectionDeg:input.gratingDirectionStepDeg:input.gratingDirectionDeg+(input.gratingDirectionStepDeg*(input.gratingDirectionStepN-1))];
+  diam_mat = [input.gratingDiameterDeg:input.gratingDiameterStepDeg:input.gratingDiameterDeg+(input.gratingDiameterStepDeg*(input.gratingDiameterStepN-1))];
+  sf_mat = [input.gratingSpatialFreqCPD.*(input.gratingSpatialFreqStepLog.^(double(input.gratingSpatialFreqStepDir).*((1:input.gratingSpatialFreqStepN)-1)))];
+  tf_mat = [double(input.gratingTemporalFreqCPS).*double(input.gratingTemporalFreqStepLog).^(double(input.gratingTemporalFreqStepDir).*((1:double(input.gratingTemporalFreqStepN))-1))];
+  con_mat = [double(input.gratingContrast).*(double(input.gratingContrastStepLog).^(double(input.gratingContrastStepDir).*(0:double(input.gratingContrastStepN)-1)))];
 
-if input.doRetStim
-azs = az_mat;
-els = el_mat;
-else
-azs = az_mat(1);
-els = el_mat(1);
-end
+  if input.doRetStim
+  azs = az_mat;
+  els = el_mat;
+  else
+  azs = az_mat(1);
+  els = el_mat(1);
+  end
 
-if input.doDirStim
-dirs = dir_mat;
-else
-dirs = dir_mat(1);
-end
+  if input.doDirStim
+  dirs = dir_mat;
+  else
+  dirs = dir_mat(1);
+  end
 
-if input.doSizeStim
-diams = diam_mat;
-else
-diams = diam_mat(1);
-end
+  
+    if input.doSizeStim
+  diams = diam_mat;
+  else
+  diams = diam_mat(1);
+  end
 
-if input.doSFStim
-SFs = sf_mat;
-else
-SFs = sf_mat(1);
-end
+  if input.doSFStim
+  SFs = sf_mat;
+  else
+  SFs = sf_mat(1);
+  end
 
-if input.doTFStim
-TFs = tf_mat;
-else
-TFs = tf_mat(1);
-end
+  if input.doTFStim
+  TFs = tf_mat;
+  else
+  TFs = tf_mat(1);
+  end
 
-if input.doConStim
-cons = con_mat;
-else
-cons = con_mat(1);
-end
+  if input.doConStim
+  cons = con_mat;
+  else
+  cons = con_mat(1);
+  end
 
-if input.doMatrix
-ncond = (length(azs)*length(els))*length(dirs)*length(diams)*length(SFs)*length(TFs)*length(cons);
-else  
-ncond = max([(length(azs)*length(els)) (length(dirs)) length(diams) length(SFs) length(TFs) length(cons)]);
-end
+  if input.doMatrix
+  ncond = (length(azs)*length(els))*length(dirs)*length(diams)*length(SFs)*length(TFs)*length(cons);
+  else  
+  ncond = max([(length(azs)*length(els)) (length(dirs)) length(diams) length(SFs) length(TFs) length(cons)]);
+  end
+
+ else
+   az_mat = [input.tDotAzimuthDeg(1)];
+   el_mat = [input.tDotElevationDeg(1)];
+   dir_mat = [input.dotDirectionDeg:input.dotDirectionStepDeg:input.dotDirectionDeg+(input.dotDirectionStepDeg*(input.dotDirectionStepN-1))];
+   diam_mat = [input.dotFieldSizeDeg];
+   speed_mat = [input.dotSpeedDPS.*(input.dotSpeedStepLog.^(double(input.dotSpeedStepDir).*((1:input.dotSpeedStepN)-1)))];
+   con_mat = [double(input.dotContrast).*(double(input.dotContrastStepLog).^(double(input.dotContrastStepDir).*(0:double(input.dotContrastStepN)-1)))];
+   coh_mat = [double(input.dotCoherence).*(double(input.dotCoherenceStepLog).^(double(input.dotCoherenceStepDir).*(0:double(input.dotCoherenceStepN)-1)))];
+   size_mat = [input.dotSizeDeg:input.dotSizeStepDeg:input.dotSizeDeg+(input.dotSizeStepDeg*(input.dotSizeStepN-1))];
+   dens_mat = [input.dotDensity:input.dotDensityStep:input.dotDensity+(input.dotDensityStep*(input.dotDensityStepN-1))];
+
+   azs = az_mat(1);
+   els = el_mat(1);
+   diams = diam_mat(1);
+
+   if input.doDirStim
+   dirs = dir_mat;
+   else
+   dirs = dir_mat(1);
+   end
+
+   if input.doDotsContrastStim
+   cons = con_mat;
+   else
+   cons = con_mat(1);
+   end
+
+   if input.doDotsSizeStim
+   sizes = size_mat;
+   else
+   sizes = size_mat(1);
+   end
+
+   if input.doDotsSpeedStim
+   speeds = speed_mat;
+   elseif input.doRunFeedback
+   speeds = 'feedback';
+   else
+   speeds = speeds_mat(1);
+   end
+
+   if input.doDotsDensityStim
+   dens = dens_mat;
+   else
+   dens = dens_mat(1);
+   end
+
+   if input.doDotsCoherenceStim
+   cohs = coh_mat;
+   else
+   cohs = coh_mat(1);
+   end
+
+ end
+
+
 
 wheelIx = celleqel2mat_padded(input.tStimWheelCounter);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,8 +156,9 @@ if tTrialN > 1
 	text(0.70, 1.0, ...
              { sprintf('%2d', input.subjectNum)}, 'FontSize', 12);
 
-        
-        tStr = sprintf( ['Frames On/Off: %3.0f, %3.0f \n' ,...
+        if ~input.doMovingDots
+        tStr = sprintf( ['Drifting gratings \n', ...
+                 'Frames On/Off: %3.0f, %3.0f \n' ,...
         				 'Position (Az,El): %s , %s \n',...
         				 'Diameter (deg): %s \n', ...
         				 'Direction (deg): %s \n', ...
@@ -113,6 +173,30 @@ if tTrialN > 1
                         mat2str(SFs), ...
                         mat2str(TFs), ...
                         mat2str(cons));
+       else
+
+         tStr = sprintf( ['Moving dots  \n', ...
+                  'Frames On/Off: %3.0f, %3.0f \n' ,...
+                  'Position (Az,El): %s , %s \n',...
+                  'Field Diameter (deg): %s \n', ...
+                  'Dot Size (deg): %s \n', ...
+                  'Dot density: %s \n', ...
+                  'Direction (deg): %s \n', ...
+                  'Speed (dps) = %s \n', ...
+                  'Contrast = %s \n',...
+                  'Coherence = %s \n'], ...
+                         input.nScansOn, ...
+                         input.nScansOff, ...
+                         mat2str(cell2mat(azs)), mat2str(cell2mat(els)), ...
+                         mat2str(diams), ...
+                         mat2str(sizes), ...
+                         mat2str(dens), ...
+                         mat2str(dirs), ...
+                         mat2str(speeds), ...
+                         mat2str(cons),...
+                         mat2str(cohs));
+       end
+
 
         text(0, 0.8, tStr, ...
              'VerticalAlignment', 'top', ...

@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" lever2=""
+              lever1_solenoid="FIO2"
+              counter2="counter2"
+              laser_trigger="laserTriggerFIO"
+              strobed_digital_word="strobedDigitalWord"
+              counter="counter"/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Behavioral Control">
+
+    </folder>
+
+    <folder tag="Behavioral Control">
+      <!-- New Variables at the Top -->      
+      <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Running"/>
+      <variable tag="runningThreshold" scope="global" logging="when_changed" default_value="32" type="integer" persistant="1" groups="Running"/>
+      <variable tag="amountRun" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Running"/>
+      <variable tag="rewardUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/>
+
+      <variable tag="nCycles" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Cycles"/>
+      <variable tag="requiredCycles" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" groups="Cycles"/>
+
+      <variable tag="tRunningWheel" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+
+      <variable tag="nRewarded" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Outcomes"/>
+      <variable tag="nFailed" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Outcomes"/>
+      <variable tag="trials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Outcomes"/>
+      <variable tag="aboveThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Cycles"/>
+      <variable tag="requiredAboveThreshold" scope="global" logging="when_changed" default_value="3" type="integer" persistant="1" groups="Cycles"/>
+    </folder>
+    <folder tag="Stimuli">
+    </folder>
+    <folder tag="Task Status">
+      <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+    </folder>
+    <folder tag="Online Display">
+      <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+    </folder>
+    <folder tag="Hardware variables">
+      <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="FIO2" full_name="FIO2" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+      <variable tag="laserTriggerFIO" full_name="laserTriggerFIO" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
+      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"></variable>
+      <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="SpeedCounters"></variable>
+      <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+    </folder>
+    <folder tag="Internal Variables">
+      <variable tag="tTempStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      <variable tag="ttCounter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"/>
+      
+      <variable type="selection" tag="svRandStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89" selection="random_without_replacement" nsamples="90" sampling_method="samples"/>
+      <variable type="selection" tag="svSeqStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89" selection="sequential_ascending" nsamples="90" sampling_method="samples"/>
+
+    </folder>
+  </variables>
+  <sounds tag="Sounds">
+  </sounds>
+  <stimuli tag="Stimuli">
+    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>        
+  </stimuli>    
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <action type="queue_stimulus" stimulus="background"></action>
+      
+    <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+      <!-- init actions before running trials after any press of start-->
+            
+      <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+      <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
+      <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"></action>
+      <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"></action>
+      <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"></action>
+        
+      <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
+      <trial tag="New List" nsamples="9999" sampling_method="samples" selection="random_without_replacement">
+      <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
+    <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+
+      
+        <task_system_state tag="TrialStart" interruptible="YES">
+            <action type="assignment" variable="tRunningWheel" value="0"/>
+            <action type="assignment" variable="nCycles" value="0"/>
+            <action type="assignment" variable="amountRun" value="0"/>
+            <action type="assignment" variable="aboveThreshold" value="0"/>
+            <action type="report" message="*** Trial Starting: $requiredAboveThreshold of $requiredCycles needed for reward ***"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="direct" tag="" target="TimerOn"></transition>
+          </task_system_state>
+
+          <task_system_state tag="TimerOn" interruptible="YES">
+            <action type="start_timer" timer="runTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
+            <action type="assignment" variable="tRunningWheel" value="counter2" />
+            <action type="report" message="* Timer Started --  waiting $timerDurationMs ms ***"/>
+            <action type="assignment" variable="nCycles" value="nCycles+1" />
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" tag="Move to TimerOff evaluation" target="TimerOff" timer="runTimer"></transition>
+          </task_system_state>
+
+          <task_system_state tag="TimerOff" interruptible="YES">
+
+            <action type="assignment" variable="amountRun" value="counter2 - tRunningWheel" />
+
+            <action type="if" condition="amountRun &gt;= runningThreshold">
+              <action type="assignment" variable="aboveThreshold" value="aboveThreshold+1" />
+            </action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" condition="nCycles &lt; requiredCycles" tag="" target="TimerOn"></transition>
+            <transition type="conditional" condition="nCycles &gt;= requiredCycles" tag="" target="EndTrial"></transition>
+          </task_system_state>
+
+          <task_system_state tag="EndTrial" interruptible="YES">
+            <action type="if" condition="aboveThreshold &gt;= requiredAboveThreshold">
+              <action type="assignment" variable="nRewarded" value="nRewarded+1"/>
+              <action type="assignment" variable="juice" value="rewardUs"/>
+              <!-- Give reward here!!! -->
+              <action type="report" message=" SUCCESS: $aboveThreshold of $requiredAboveThreshold above thresholdSUCCESS "/>
+            </action>
+            <action type="if" condition="aboveThreshold &lt; requiredAboveThreshold">
+              <action type="assignment" variable="nFailed" value="nFailed+1"/>
+              <action type="report" message=" FAILED TRIAL: $aboveThreshold of $requiredAboveThreshold above threshold "/>
+              <!-- Give reward here!!! -->
+            </action>
+            <action type="report" message="******Trial Ended******"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="yield" tag="return to parent task system"></transition>
+            <action type="assignment" variable="trials" value="trials+1"/>
+          </task_system_state>
+          
+        </task_system>
+      </trial>
+      </trial>
+      <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+    </protocol>
+  </experiment>
+</monkeyml>
+

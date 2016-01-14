@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices"></io_devices>
+    <variables tag="Variables">
+        <variable tag="LOCAL_time" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+        <variable tag="LOCAL_float" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+        <variable tag="n" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="frameRate" scope="global" logging="when_changed" default_value="60" type="float" persistant="1"></variable>
+        <variable tag="startingDLFrameRate" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+        <variable tag="endingDLFrameRate" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+    </variables>
+    <sounds tag="Sounds"></sounds>
+    <stimuli tag="Stimuli">
+        <stimulus tag="background1" full_name="background" type="blank_screen" color="0, 0, 0"></stimulus>
+        <stimulus tag="background2" full_name="background" type="blank_screen" color="255, 255, 255"></stimulus>
+    </stimuli>
+    <filters tag="Filters"></filters>
+    <optimizers tag="Optimizers"></optimizers>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="FrameRate Estimation" nsamples="1" sampling_method="cycles" selection="sequential">
+            <action tag="Queue Background" type="queue_stimulus" stimulus="background1"></action>
+            <action tag="Update Stimulus" type="update_stimulus_display"></action>
+            <trial tag="Estimation Protocol" nsamples="100" sampling_method="cycles" selection="sequential">
+                <task_system tag="FrameRate Estimation Task System" interruptible="YES">
+
+
+                    <task_system_state tag="bk_1" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="background2"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="background1"></action>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" tag="Refresh Rate from white to black" variable="LOCAL_float" value="refreshRate()"></action>
+                        <action type="report" message="White to Black refresh rate is $LOCAL_float"></action>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition tag="to bk2" type="direct" target="bk_2"></transition>
+                    </task_system_state>
+
+
+                    <task_system_state tag="bk_2" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="background1"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="background2"></action>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" tag="Refresh Rate from Black to white" variable="LOCAL_float" value="refreshRate()"></action>
+                        <action type="report" message="Black to White refresh rate is $LOCAL_float"></action>
+                        <transition tag="If we have 1000 frames, Transition to Exit" target="Exit State System"></transition>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    </task_system_state>
+
+                    <task_system_state tag="Exit State System" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition tag="Return to parent task system" type="yield"></transition>
+                    </task_system_state>
+                </task_system>
+            </trial>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="background1"></action>
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="background2"></action>
+            <action tag="Update Display" type="update_stimulus_display"></action>
+        </protocol>
+    </experiment>
+</monkeyml>
