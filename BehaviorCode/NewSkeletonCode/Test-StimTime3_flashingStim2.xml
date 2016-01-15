@@ -47,7 +47,7 @@
         <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="targetOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
-        <variable tag="nextFrameTimeUs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="nextFrameTimeUs" scope="global" logging="when_changed" default_value="0" type="integer" groups="Trial Structure"/>
         <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
@@ -1226,7 +1226,7 @@
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (tStimOnMs + stimOnTimeMs*1000 - tFrameDelayUs)" target="TrialStimOff"></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() > (tStimOnMs + stimOnTimeMs*1000 - tFrameDelayUs + 1500)" target="TrialStimOff"></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="TrialStimOff" interruptble="YES">
@@ -1269,8 +1269,8 @@
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; (now() >= (tStimOffMs + stimOffTimeMs*1000 - tFrameDelayUs))" target="TrialStimOn"></transition>
-                                      <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; (now() >= (tStimOffMs + stimOffTimeMs*1000 - tFrameDelayUs))" target="TargetStimOn"></transition>
+                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; (now() > (tStimOffMs + stimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TrialStimOn"></transition>
+                                      <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; (now() >= (tStimOffMs + stimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TargetStimOn"></transition>
                                     </task_system_state> 
 
                                     <task_system_state tag="TargetStimOn" interruptble="YES">
@@ -1317,8 +1317,7 @@
                                       <action type="assignment" variable="tStimOnMs" value="now()" />
                                       <action type="report" message="tStimOnMs is $tStimOnMs" />
                                       <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOnMs" />
-                                      <action type="report" message="tFrameDelayUs is $tFrameDelayUs" />
-
+                                      
                                       <action type="if" condition="sendElectrophysSync">
                                         <action type="assignment" variable="MIO0" value="1"/>
                                       </action>
@@ -1344,7 +1343,7 @@
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
                                       <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (tStimOnMs + timerDurationMs*1000 - tFrameDelayUs)" target="EndTrialStimOff" ></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (tStimOnMs + timerDurationMs*1000 - tFrameDelayUs + 1500)" target="EndTrialStimOff" ></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="React" interruptible="YES">
