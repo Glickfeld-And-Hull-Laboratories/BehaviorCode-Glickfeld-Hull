@@ -41,12 +41,12 @@ problemFrameNumbers = find(pulsePauseIx);
 normal = pulseDiff(~pulsePauseIx);
 avgFrame = mean(normal);
 
-howManyMissed = problematic./(2*avgFrame);
+howManyMissed = (problematic./avgFrame)-1;   %altered by JH 1/14/16 to better reflect how many frames were missed. 
 % alert if data has a hole greater than 1 second
 assert(sum(howManyMissed>imagingRate)<1, '*** Do not use data: there is a skip of %3d second skip between frames. ****', problematic(howManyMissed>15)/1000000);
 hold on
 
-%%Fill any empty sp/itiCounters with a NaN
+%%Fill any empty sp/itiCounter10 with the value which was in sp/itiCounter9
 for i = 1:input.stopAfterNTrials
      if isempty(cell2mat(input.spCounter10(i)))==1
         input.spCounter10(i) = input.spCounter9(i);
