@@ -190,6 +190,7 @@
     </folder>  
     <folder tag="Fake Mouse">
       <variable tag="doLever" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
+      <variable tag="sendElectrophysSync" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
       <variable tag="doFakeMouseSuccessOnly" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Fake Mouse"/>
       <variable tag="fakeMouseMaxReactMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Fake Mouse"/>
 
@@ -353,7 +354,7 @@
     <sound tag="rewardSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/shortCorrect.wav" amplitude="soundRewardAmplitude"></sound>
   </sounds>
   <stimuli tag="Stimuli">
-    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
+    <stimulus type="blank_screen" tag="background" color="0,0,0"></stimulus>
     <stimulus type="drifting_grating" tag="base_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
@@ -1138,7 +1139,6 @@
 			<action type="if" condition="!tShortCatchTrial">
             	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             	<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-            	<action type="update_stimulus_display" tag="justincase"></action>
             	<action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
             </action>
             
@@ -1146,18 +1146,22 @@
             	<action type="if" condition="tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
             		<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
             		<action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-            		<action type="update_stimulus_display" tag="justincase"></action>
             		<action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
             	</action>
             	<action type="if" condition="tCyclesOn == catchCyclesOn">
             		<action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="catch_grating"></action> 
             		<action type="play_dynamic_stimulus" stimulus="catch_grating" tag="StimOn"></action>
-            		<action type="update_stimulus_display" tag="justincase"></action>
             		<action type="assignment" variable="cCatchOn" value="counter" />
             		<action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
             	</action>
             </action>
             
+            <action type="update_stimulus_display" tag="justincase"></action>
+
+            <action type="if" condition="sendElectrophysSync==1">
+              <action type="assignment" variable="MIO0" value="1"/>
+            </action>
+
             <action type="play_sound" sound="baseSound"/>
             <action type="assignment" variable="cAuditoryStimOn" value="counter"/>
 
@@ -1178,6 +1182,10 @@
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
+            <action type="if" condition="sendElectrophysSync==1">
+              <action type="assignment" variable="MIO0" value="0"/>
             </action>
 
             <action type="report" message="Lever Down - Trial Started - Stim Off"/>
@@ -1203,7 +1211,6 @@
             <action type="if" condition="doConstantStimulus==1">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             <action type="if" condition="isCatchTrial"> 
             	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
@@ -1213,15 +1220,23 @@
             <action type="if" condition="!isCatchTrial">
             	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
             	<action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
-            	<action type="if" condition="tDoAuditoryDetect">
-                	<action type="play_sound" sound="targetSound"/>
-                </action> 
-                <action type="if" condition="!tDoAuditoryDetect">
-                  	<action type="play_sound" sound="baseSound"/>
-                </action> 
             </action>
 
             <action type="update_stimulus_display" tag="justincase"></action>
+
+            <action type="if" condition="sendElectrophysSync==1">
+              <action type="assignment" variable="MIO0" value="1"/>
+            </action>
+
+            <action type="if" condition="!isCatchTrial">
+              <action type="if" condition="tDoAuditoryDetect">
+                  <action type="play_sound" sound="targetSound"/>
+                </action> 
+                <action type="if" condition="!tDoAuditoryDetect">
+                    <action type="play_sound" sound="baseSound"/>
+                </action> 
+            </action>
+
             <action type="report" message="Target Stim On for $nFramesOn frames"/>
             <action type="report" message="Catch is $isCatchTrial"></action>
 
@@ -1506,15 +1521,19 @@
             <action type="assignment" variable="cEndOff" value="counter"></action> 
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action> 
             <action type="if" condition="!doConstantStimulus">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-            	<action type="update_stimulus_display" tag="justincase"></action>
             	<action type="report" message="End of Trial - Stim Off"/>
             </action>	
+
+            <action type="update_stimulus_display" tag="justincase"></action>
+
+            <action type="if" condition="sendElectrophysSync==1">
+              <action type="assignment" variable="MIO0" value="0"/>
+            </action>
 
             <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
             
