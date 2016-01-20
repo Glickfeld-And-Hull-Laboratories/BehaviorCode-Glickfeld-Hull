@@ -1,8 +1,8 @@
 % function [dataStruct] = puffNRun(folder)
-clear; 
-pathName = 'Z:\Data\WidefieldImaging\GCaMP\150409_img22_1';
-imgName = [pathName '\150409_img22_1_MMStack.ome'];
-input = load([pathName '\data-img22-150409-1621']);
+%clear; 
+pathName = 'S:\150209_img19_1';
+imgName = [pathName '\150209_img19_1_MMStack.ome'];
+input = load([pathName '\data-img19-150209-1652']);
 if isfield(input,'input'),
     input = input.input;
 end
@@ -37,8 +37,8 @@ cerebellarFrameAnalyzer;
 
 %dataStruct.cameraFrameTimes = get_frame_time_by_movie_info(ds)
 %%
-sum(dataStruct.puffRun)
-sum(dataStruct.puffStill)
+sum(dataStruct.puffRun);
+sum(dataStruct.puffStill);
 dataStruct.image = readtiff(pathName);
 %% mean image field things
 dataStruct.avgF = squeeze(mean(mean(dataStruct.image,1),2))';
@@ -115,7 +115,76 @@ stillMinusRun = avgPuffStill - avgPuffRun;
 writetiff(stillMinusRun, [pathName '\stillMinusRun']);
 
 %%plotting running vs F
-B = [1:length(dataStruct.goodFramesIx)-2];
-figure; plotyy(B,4*dataStruct.locomotionMatFrames(3:end),B,dataStruct.avgF(3:length(B)+2))
-sum(puffRun)
-sum(puffStill)
+B = [1:(length(dataStruct.goodFramesIx)-2)]; %cut out first two locomotion mat frames because of start artifact. Therefore need to cut out first two imaging frames even though they are good frames
+figure;
+%Set/calculate variables with proper units
+revoLength = 30; revoPulse = 32;    %revoLength = length of 1 revolution (cm). revoPulse = # of pulses/revolution.
+runSpeed = (1000000/frameIntUs)*(revoLength/revoPulse)*dataStruct.locomotionMatFrames(3:end); %runSpeed=(frames/sec)*(cm/pulse)*(pulses/frame)
+baseF = mean(dataStruct.avgF(3:length(B)+2));
+FoverbaseF = (dataStruct.avgF(3:length(B)+2)/baseF)-1;
+%Plot Running v Fluorescence graph with appropriately labeled axes
+[a b c] = plotyy(B,runSpeed,B,FoverbaseF)
+title('Running vs. Fluorescence')
+set(a(1), 'Ylim', [0 (max(runSpeed)+3)])   %runSpeed y-axis from 0 to max runSpeed (+3 to look nicer) 
+set(a(2), 'Ylim', [min(FoverbaseF) max(FoverbaseF)])    %dF/F y-axis from min dF/F to max dF/F
+set(a(1), 'XTickLabel', (frameIntUs/1000000)*get(a(1),'XTick')) %Converts x-axis frame ticks to seconds
+set(a(2), 'XTickLabel', (frameIntUs/1000000)*get(a(2),'XTick'))
+set(a(1), 'XLim', [0 (length(dataStruct.goodFramesIx)-2)])  %Sets x-axis limits from 0 to end of data
+set(a(2), 'XLim', [0 (length(dataStruct.goodFramesIx)-2)])
+ylabel('Running Speed(cm/s)')
+xlabel('Time (s)')
+set(get(a(2),'Ylabel'),'String','dF/F')
+%Outputs number of trials w/ puffs delivered while running/still
+disp(['Number of puffs while running: ' num2str(sum(puffRun))])
+disp(['Number of puffs while still: ' num2str(sum(puffStill))])
+
+%Plot dF/F over time for stimuli during Running
+figure;
+stimWindow = 3000000/frameIntUs; %Calculates # of frames to equal 3 seconds (span of stimulus window) based on frame interval.
+stimTime = [0:2*stimWindow];    %x-axis for plot: stimulus window
+meanrunStimdFoverF = NaN(length(runPuffFrameNums),2*stimWindow+1);
+for ii=1:length(runPuffFrameNums)
+    runStimFrame = runPuffFrameNums(ii);
+    runStimdFoverF = ((dataStruct.avgF(runStimFrame-stimWindow:runStimFrame+stimWindow)/baseF)-1); %Gather F data for frames in desired window around stimulus
+    plot(stimTime,runStimdFoverF)
+    meanrunStimdFoverF(ii,:) = runStimdFoverF; %Build matrix of F data around stimulus for all trials
+    hold on;
+end
+meanrunStimdFoverF = mean(meanrunStimdFoverF,1); %Average dF/F over all trials and add to plot as red line
+plot(stimTime,meanrunStimdFoverF,'r')
+title('dF/F for Running Stimuli')
+xlabel('Time (s)')
+ylabel('dF/F')
+set(gca,'XLim',[0 2*stimWindow]);
+set(gca,'XTick', [0 stimWindow 2*stimWindow]);
+set(gca,'XTickLabel',[-3 0 3]);
+
+%Plot dF/F over time for stimuli while Still
+figure;
+meanstillStimdFoverF = NaN(length(stillPuffFrameNums),2*stimWindow+1);
+for ii=1:length(stillPuffFrameNums)
+    stillStimFrame = stillPuffFrameNums(ii);
+    stillStimdFoverF = ((dataStruct.avgF(stillStimFrame-stimWindow:stillStimFrame+stimWindow)/baseF)-1);
+    plot(stimTime,stillStimdFoverF)
+    meanstillStimdFoverF(ii,:) = stillStimdFoverF;
+    hold on;
+end
+meanstillStimdFoverF = mean(meanstillStimdFoverF,1);
+plot(stimTime,meanstillStimdFoverF,'r')
+title('dF/F for Still Stimuli')
+xlabel('Time (s)')
+ylabel('dF/F')
+set(gca,'XLim',[0 2*stimWindow]);
+set(gca,'XTick', [0 stimWindow 2*stimWindow]);
+set(gca,'XTickLabel',[-3 0 3]);
+
+
+
+
+
+
+
+
+
+
+
