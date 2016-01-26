@@ -4,6 +4,7 @@ function mouse = createExptStructAttn2AFC;
     pv = behavParamsAttn2AFC;
     
     for imouse = 1:length(pv.mouse_mat)
+        mouse(imouse).name = pv.mouse_mat(imouse);
         mouse(imouse).ind = find(xd.Subject ==  pv.mouse_mat(imouse));
         mouse(imouse).posN = [];
         mouse(imouse).oddsRightPctN = [];
@@ -44,6 +45,7 @@ function mouse = createExptStructAttn2AFC;
             end
             mouse(imouse).expt(iexp).posN = unique(cell2mat(input.tGratingEccentricityDeg));
             mouse(imouse).expt(iexp).intensities = unique(chop(cell2mat(input.tGratingContrast),3));
+            mouse(imouse).expt(iexp).pctCorrect = length(intersect(find(strcmp(input.trialOutcomeCell, 'success')), range))./length(range);
             reactTimes = cell2mat(input.tDecisionTimeMs);
             for ipos = 1:length(mouse(imouse).expt(iexp).posN)
                 mouse(imouse).expt(iexp).pos(ipos).trial_ind = intersect(find(cell2mat(input.tGratingEccentricityDeg) == mouse(imouse).expt(iexp).posN(ipos)), range);
@@ -55,11 +57,15 @@ function mouse = createExptStructAttn2AFC;
                     S_ind = intersect(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind), find(strcmp(input.trialOutcomeCell, 'success')));
                     I_ind = intersect(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind), find(strcmp(input.trialOutcomeCell, 'incorrect')));
                     mouse(imouse).expt(iexp).pos(ipos).nTrials(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind));                    
+                    mouse(imouse).expt(iexp).pos(ipos).correctInd{icon} = intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'success'))));
+                    mouse(imouse).expt(iexp).pos(ipos).incorrectInd{icon} = intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'incorrect'))));
                     mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'success')))));
                     mouse(imouse).expt(iexp).pos(ipos).nIncorrect(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'incorrect')))));
                     mouse(imouse).expt(iexp).pos(ipos).nIgnore(icon) = length(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'ignore')))));
                     mouse(imouse).expt(iexp).pos(ipos).outcome(1).reactTimes{icon} = reactTimes(1,S_ind);
                     mouse(imouse).expt(iexp).pos(ipos).outcome(2).reactTimes{icon} = reactTimes(1,I_ind);
+                    mouse(imouse).expt(iexp).pos(ipos).outcome(1).name = 'correct';
+                    mouse(imouse).expt(iexp).pos(ipos).outcome(2).name = 'incorrect';
                     [x y] = binofit(mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon),mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon)+mouse(imouse).expt(iexp).pos(ipos).nIncorrect(icon));
                     mouse(imouse).expt(iexp).pos(ipos).binofit(icon).pctCorrect = x;
                     mouse(imouse).expt(iexp).pos(ipos).binofit(icon).ci95 = y;
@@ -113,6 +119,8 @@ function mouse = createExptStructAttn2AFC;
                         mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes{icon} = [mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes{icon} mouse(imouse).expt(iexp).pos(ipos).outcome(i).reactTimes{icon}];
                     end
                 end
+                    mouse(imouse).test(itest).pos(ipos).outcome(1).name = 'correct';
+                    mouse(imouse).test(itest).pos(ipos).outcome(2).name = 'incorrect';
             end
         end
         for itest = 1:3

@@ -3,6 +3,8 @@ xd = frm_xls2frm(rc.indexFilename, [], rc.indexTextCols);
 pv = behavParamsAttn2AFC;
 
 colmat = strvcat('g', 'k', 'b');
+
+%avg hit rate by contrast
 for imouse = 1
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
@@ -35,6 +37,7 @@ for imouse = 1
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_avgHitRate_probeCon.pdf'], '-dpdf')
 end
 
+%psych curves for each day
 for imouse = 1
     figure;
     nexp = length(mouse(imouse).ind);
@@ -60,14 +63,108 @@ for imouse = 1
         ylim([0 1])
         xlim([-1.1 1.1])
         title([num2str(mouse(imouse).expt(iexp).oddsRightPct * 100) ' % Right trials'])
-        xlabel('R-L contrast')
-        ylabel('Fract. right choice')
     end
     suptitle([num2str(pv.mouse_mat(:,imouse)) ' Fraction Right Choice'])
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_fractRight_byday.pdf'], '-dpdf')
 end
 
+%timecourse of %correct for 12.5% contrast for each day
+for imouse = 1
+    figure;
+    nexp = length(mouse(imouse).ind);
+    n = ceil(sqrt(nexp));
+    if (n^2)-n > nexp
+        n2 = n-1;
+    else
+        n2 = n;
+    end
+    pos = struct;
+    for iexp = 1:nexp
+        subplot(n, n2, iexp)
+        for ipos = 1:2
+            for icon = 2
+                plotData = NaN(1,max([mouse(imouse).expt(iexp).pos(ipos).correctInd{icon} mouse(imouse).expt(iexp).pos(ipos).incorrectInd{icon}],[],2));
+                plotData(mouse(imouse).expt(iexp).pos(ipos).correctInd{icon}) = 1;
+                plotData(mouse(imouse).expt(iexp).pos(ipos).incorrectInd{icon}) = 0;
+                smPlotData = smooth(plotData,20);
+                pos(ipos).plotData_all{iexp} = plotData;
+                pos(ipos).ntrials(iexp) = length(plotData);
+                if ipos ==1
+                    plot(mouse(imouse).expt(iexp).pos(ipos).correctInd{icon}, ones(size(mouse(imouse).expt(iexp).pos(ipos).correctInd{icon})), 'xg')
+                    hold on
+                    plot(mouse(imouse).expt(iexp).pos(ipos).incorrectInd{icon}, zeros(size(mouse(imouse).expt(iexp).pos(ipos).incorrectInd{icon})), 'xg')
+                    hold on
+                    plot(1:length(plotData), smPlotData, '-g')
+                elseif ipos ==2
+                    plot(mouse(imouse).expt(iexp).pos(ipos).correctInd{icon}, ones(size(mouse(imouse).expt(iexp).pos(ipos).correctInd{icon})), 'xb')
+                    hold on
+                    plot(mouse(imouse).expt(iexp).pos(ipos).incorrectInd{icon}, zeros(size(mouse(imouse).expt(iexp).pos(ipos).incorrectInd{icon})), 'xb')
+                    hold on
+                    plot(1:length(plotData), smPlotData, '-b')
+                end
+            end
+        end
+        ylim([-1 2])
+        title([num2str(mouse(imouse).expt(iexp).oddsRightPct * 100) ' % Right trials'])
+        ylabel('1 = Correct')
+    end
+    suptitle([num2str(pv.mouse_mat(:,imouse)) ' TC corrects'])
+    print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_TCcorrect_byday.pdf'], '-dpdf')
+end
 
+for imouse = 1
+    figure;
+    tests = unique(mouse(imouse).oddsRightPctN);
+    for itest = 1:length(tests)
+        ind = find(mouse(imouse).oddsRightPctN == tests(:,itest));
+        for ipos = 1:2
+            max_trials = max(pos(ipos).ntrials(ind),[],2);
+            plotData_all = NaN(max_trials, length(ind));
+            for i = 1:length(ind)
+                plotData_all(1:pos(ipos).ntrials(ind(i)),i) = pos(ipos).plotData_all{ind(i)};
+            end
+            plotData_avg = nanmean(plotData_all,2);
+            isnan_plotdata = ~isnan(plotData_all);
+            plotData_sem = std(plotData_all,[],2)./(sqrt(sum(isnan_plotdata,2)));
+            subplot(1,3,itest)
+            if ipos == 1;
+                errorbar(1:max_trials, plotData_avg', plotData_sem', 'g')
+                hold on
+            elseif ipos == 2;
+                errorbar(1:max_trials, plotData_avg', plotData_sem', 'b')
+                hold on
+            end
+        end
+        xlim([0 300])
+        ylim([0 1])
+        xlabel('Trial number')
+        ylabel('Percent correct')
+        title([num2str(mouse(imouse).expt(iexp).oddsRightPct * 100) ' % Right trials'])
+    end
+end
+
+%summary percent correct by test
+for imouse = 1
+    figure;
+    tests = unique(mouse(imouse).oddsRightPctN);
+    for itest = 1:length(tests)
+        ind = find(mouse(imouse).oddsRightPctN == tests(:,itest));
+        pctCorrect_all = [];
+        for i = 1:length(ind)
+            pctCorrect_all = [pctCorrect_all mouse(imouse).expt(i).pctCorrect];
+        end
+        pctCorrect_avg = mean(pctCorrect_all,2);
+        pctCorrect_sem = std(pctCorrect_all,[],2)./sqrt(size(pctCorrect_all,2));
+        errorbar(itest,pctCorrect_avg,pctCorrect_sem,['o' colmat(itest)]);
+        hold on
+    end
+    ylim([0 1])
+    ylabel('% Correct')
+    title('% Correct by condition')
+end
+        
+
+%summary psych curves across days
 for imouse = 1
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
@@ -99,6 +196,7 @@ for imouse = 1
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_fractRightSummary.pdf'], '-dpdf')
 end
 
+%number of ignored trials by contrast across days
 for imouse = 1
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
@@ -117,6 +215,7 @@ for imouse = 1
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_IgnoreSummary.pdf'], '-dpdf')
 end
 
+%react times by contrast and outcome
 for imouse = 1
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
@@ -163,7 +262,7 @@ for imouse = 1
     suptitle([num2str(pv.mouse_mat(:,imouse)) ' Summary React Times by Target Contrast'])
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_ReactTimeSummary.pdf'], '-dpdf')
 end
-            
+
 itest = 2;
 figure;
 ind2 = find(mouse(imouse).oddsRightPctN == tests(:,itest));

@@ -182,10 +182,8 @@
       <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
 
-      <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean"/>
-      <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" />
-      <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" />
-      <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" />
+      <variable tag="Do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Alternating LED"/>
+      <variable tag="LED_sequence" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0" groups="Alternating LED"/>
 
     </folder>  
     <folder tag="Fake Mouse">
@@ -216,6 +214,10 @@
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -417,6 +419,10 @@
             </action> 
             <!-- In this state, do all stimulus selection/tValue setting -->
             <action type="report" message="Initializing Trial"/>
+
+            <action type="assignment" variable="led_seq" value="LED_sequence"/>
+            <action type="assignment" variable="do2led" value="Do2led"/>
+            
             <!-- Reset t_____RemainingOn/Off to 0ms -->      
             <action type="assignment" tag="Reset tLeverPressTimeMs" variable="tLeverPressTimeMs" value="0"/>
             <action type="assignment" tag="Reset tLeverReleaseTimeMs" variable="tLeverReleaseTimeMs" value="0"/>
@@ -1122,6 +1128,8 @@
           <task_system_state tag="TrialStimOn" interruptble="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
+            <action type="assignment" variable="cStimOn" value="counter" />
+
             <action type="if" condition="tCyclesOn &lt; 1">
               <action type="assignment" variable="cFirstStim" value="counter" />
               <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>  
@@ -1131,7 +1139,6 @@
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             </action>
             
-            <action type="assignment" variable="cStimOn" value="counter" />
             <action type="assignment" variable="stimTag" value= "1"/>
             <action type="assignment" variable="tStimOnMs" value="now()/1000" />
             <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
@@ -1168,7 +1175,7 @@
              <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cFirstStim + nFramesOn + ((tCyclesOn-1)*(nFramesOn+nFramesOff)))" target="TrialStimOff"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimOn + nFramesOn)" target="TrialStimOff"></transition>
           </task_system_state>
 
           <task_system_state tag="TrialStimOff" interruptble="YES">
@@ -1193,8 +1200,8 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TrialStimOn"></transition>
-            <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TargetStimOn"></transition>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; (counter  &gt;= cStimOff + nFramesOff)" target="TrialStimOn"></transition>
+            <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; (counter  &gt;= cStimOff + nFramesOff)" target="TargetStimOn"></transition>
           </task_system_state>
 
           <task_system_state tag="TargetStimOn" interruptble="YES">
