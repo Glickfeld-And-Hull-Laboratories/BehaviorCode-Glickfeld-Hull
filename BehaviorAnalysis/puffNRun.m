@@ -1,8 +1,8 @@
 % function [dataStruct] = puffNRun(folder)
-%clear; 
-pathName = 'S:\150209_img19_1';
-imgName = [pathName '\150209_img19_1_MMStack.ome'];
-input = load([pathName '\data-img19-150209-1652']);
+clear; 
+pathName = 'S:\150507_img26_3';
+imgName = [pathName '\150507_img26_3_MMStack.ome'];
+input = load([pathName '\data-i''img26''-150507-1459']);
 if isfield(input,'input'),
     input = input.input;
 end
@@ -10,6 +10,10 @@ info = imfinfo(imgName, 'TIF');
 
 %This code is duplicated within cerebellarFrameAnalyzer
 %%Fill any empty sp/itiCounters with a NaN
+%Note: Sometimes stopAfterNTrials > length of sp/iti counters, suggesting
+%that the experiment might have been stopped early. Good fix might be to
+%set input.StopAfterNTrials = length of a counter
+
 for i = 1:input.stopAfterNTrials
      if isempty(cell2mat(input.spCounter10(i)))==1
         input.spCounter10(i) = input.spCounter9(i);
@@ -56,7 +60,7 @@ end
 dataStruct.stimOnClips = frames;
 dataStruct.stimPlot=mean(dataStruct.stimOnClips,1);
 %creates a df/f movie to later average
-Fn = squeeze(mean(dataStruct.image(:,:,[400:500]),3));     %HARDCODED  enter in an identified quiescent period into the 3rd dim of dataStruct.image
+Fn = squeeze(mean(dataStruct.image(:,:,[200:300]),3));     %HARDCODED  enter in an identified quiescent period into the 3rd dim of dataStruct.image
 dFoverF = NaN(size(dataStruct.image));
 %for i = 45:size(dFoverF,3)
 for i = 1:size(dFoverF,3);
@@ -121,12 +125,12 @@ figure;
 revoLength = 30; revoPulse = 32;    %revoLength = length of 1 revolution (cm). revoPulse = # of pulses/revolution.
 runSpeed = (1000000/frameIntUs)*(revoLength/revoPulse)*dataStruct.locomotionMatFrames(3:end); %runSpeed=(frames/sec)*(cm/pulse)*(pulses/frame)
 baseF = mean(dataStruct.avgF(3:length(B)+2));
-FoverbaseF = (dataStruct.avgF(3:length(B)+2)/baseF)-1;
+dFoverbaseF = (dataStruct.avgF(3:length(B)+2)/baseF)-1;
 %Plot Running v Fluorescence graph with appropriately labeled axes
-[a b c] = plotyy(B,runSpeed,B,FoverbaseF)
+[a b c] = plotyy(B,runSpeed,B,dFoverbaseF)
 title('Running vs. Fluorescence')
 set(a(1), 'Ylim', [0 (max(runSpeed)+3)])   %runSpeed y-axis from 0 to max runSpeed (+3 to look nicer) 
-set(a(2), 'Ylim', [min(FoverbaseF) max(FoverbaseF)])    %dF/F y-axis from min dF/F to max dF/F
+set(a(2), 'Ylim', [min(dFoverbaseF) max(dFoverbaseF)])    %dF/F y-axis from min dF/F to max dF/F
 set(a(1), 'XTickLabel', (frameIntUs/1000000)*get(a(1),'XTick')) %Converts x-axis frame ticks to seconds
 set(a(2), 'XTickLabel', (frameIntUs/1000000)*get(a(2),'XTick'))
 set(a(1), 'XLim', [0 (length(dataStruct.goodFramesIx)-2)])  %Sets x-axis limits from 0 to end of data
@@ -134,9 +138,7 @@ set(a(2), 'XLim', [0 (length(dataStruct.goodFramesIx)-2)])
 ylabel('Running Speed(cm/s)')
 xlabel('Time (s)')
 set(get(a(2),'Ylabel'),'String','dF/F')
-%Outputs number of trials w/ puffs delivered while running/still
-disp(['Number of puffs while running: ' num2str(sum(puffRun))])
-disp(['Number of puffs while still: ' num2str(sum(puffStill))])
+
 
 %Plot dF/F over time for stimuli during Running
 figure;
@@ -178,8 +180,12 @@ set(gca,'XLim',[0 2*stimWindow]);
 set(gca,'XTick', [0 stimWindow 2*stimWindow]);
 set(gca,'XTickLabel',[-3 0 3]);
 
-
-
+%Outputs number of trials w/ puffs delivered while running/still
+disp(['Number of puffs while running: ' num2str(sum(puffRun))])
+disp(['Number of puffs while still: ' num2str(sum(puffStill))])
+disp([pathName])
+disp([imagingRate])
+disp([length(dataStruct.goodFramesIx)])
 
 
 

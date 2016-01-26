@@ -16,18 +16,9 @@ totalTimes = totalTimes(3:end); % removes start-stop-start artifact and 0 value 
 totalVals= totalVals(3:end); % removes start-stop-start artifact and 0 value initial state value
 lastTrCounter = cell2mat(input.counter);
 
-% extract all of our stimulus crap
-stimOnFrame = cell2mat(input.ttCounter);
-blank = zeros(1, cell2mat(input.counter(end)));    %JH Fix: expands stimOnIx to account for dropped frames. It already adjusts the stimOnFrame to account for missed frames affect on which frame the stimulus corresponds to 
-blank(stimOnFrame)=1;
-stimOnIx = blank; 
-
 imagingRate = input.frameImagingFrequencyHz; % in Hz
 frameIntUs = 1000000/imagingRate;
-%% Check that counter was not reset mid-trial
-assert(ismonotonic(totalTimes), 'counterTimesUs is not monotonically increasing: was experiment reset?');
-assert(ismonotonic(totalVals), 'counterValues is not monotonically increasing: was experiment reset?');
-%%
+
 nTrs = length(input.counter);
 for i=2:nTrs,
     lastVal = cVals{i-1}(end);
@@ -45,6 +36,18 @@ howManyMissed = (problematic./avgFrame)-1;   %altered by JH 1/14/16 to better re
 % alert if data has a hole greater than 1 second
 assert(sum(howManyMissed>imagingRate)<1, '*** Do not use data: there is a skip of %3d second skip between frames. ****', problematic(howManyMissed>15)/1000000);
 hold on
+% extract all of our stimulus crap
+stimOnFrame = cell2mat(input.ttCounter);
+blank = zeros(1,length(totalVals)+sum(howManyMissed));    %MA 1/20/16: Redefined blank (stimOnIx) to be same length as blankIx, used later. %JH Fix: expands stimOnIx to account for dropped frames. It already adjusts the stimOnFrame to account for missed frames affect on which frame the stimulus corresponds to 
+blank(stimOnFrame)=1;
+stimOnIx = blank; 
+
+
+%% Check that counter was not reset mid-trial
+assert(ismonotonic(totalTimes), 'counterTimesUs is not monotonically increasing: was experiment reset?');
+assert(ismonotonic(totalVals), 'counterValues is not monotonically increasing: was experiment reset?');
+%%
+
 
 %%Fill any empty sp/itiCounter10 with the value which was in sp/itiCounter9
 for i = 1:input.stopAfterNTrials
@@ -90,16 +93,16 @@ for i=1:nTrs,
     %creates a mat with length = to # of frames per counter and with a
     %value = to the number of wheel pulses in that counter divided by the
     %number of frames in that counter. 
-    iti1Mat = itiMat*double(input.itiCounter1{trN}/itiInt);
-    iti2Mat = itiMat*double(input.itiCounter2{trN}/itiInt);
-    iti3Mat = itiMat*double(input.itiCounter3{trN}/itiInt);
-    iti4Mat = itiMat*double(input.itiCounter4{trN}/itiInt);
-    iti5Mat = itiMat*double(input.itiCounter5{trN}/itiInt);
-    iti6Mat = itiMat*double(input.itiCounter6{trN}/itiInt);
-    iti7Mat = itiMat*double(input.itiCounter7{trN}/itiInt);
-    iti8Mat = itiMat*double(input.itiCounter8{trN}/itiInt);
-    iti9Mat = itiMat*double(input.itiCounter9{trN}/itiInt);
-    iti10Mat = itiMat*double(input.itiCounter10{trN}/itiInt);
+    iti1Mat = itiMat*double(input.itiCounter1{trN})/itiInt;
+    iti2Mat = itiMat*double(input.itiCounter2{trN})/itiInt;
+    iti3Mat = itiMat*double(input.itiCounter3{trN})/itiInt;
+    iti4Mat = itiMat*double(input.itiCounter4{trN})/itiInt;
+    iti5Mat = itiMat*double(input.itiCounter5{trN})/itiInt;
+    iti6Mat = itiMat*double(input.itiCounter6{trN})/itiInt;
+    iti7Mat = itiMat*double(input.itiCounter7{trN})/itiInt;
+    iti8Mat = itiMat*double(input.itiCounter8{trN})/itiInt;
+    iti9Mat = itiMat*double(input.itiCounter9{trN})/itiInt;
+    iti10Mat = itiMat*double(input.itiCounter10{trN})/itiInt;
     %Extracts the time each oounter was logged for this trial
     iti1Time = input.itiCounter1TimesUs{trN}(end);
     iti2Time = input.itiCounter2TimesUs{trN}(end);
@@ -124,16 +127,16 @@ for i=1:nTrs,
     iti10Val = input.itiCounter10{trN};
 
     %repeat process for sp counters
-    sp1Mat = spMat*double(input.spCounter1{trN}/spInt);
-    sp2Mat = spMat*double(input.spCounter2{trN}/spInt);
-    sp3Mat = spMat*double(input.spCounter3{trN}/spInt);
-    sp4Mat = spMat*double(input.spCounter4{trN}/spInt);
-    sp5Mat = spMat*double(input.spCounter5{trN}/spInt);
-    sp6Mat = spMat*double(input.spCounter6{trN}/spInt);
-    sp7Mat = spMat*double(input.spCounter7{trN}/spInt);
-    sp8Mat = spMat*double(input.spCounter8{trN}/spInt);
-    sp9Mat = spMat*double(input.spCounter9{trN}/spInt);
-    sp10Mat = spMat*double(input.spCounter10{trN}/spInt);
+    sp1Mat = spMat*double(input.spCounter1{trN})/spInt;
+    sp2Mat = spMat*double(input.spCounter2{trN})/spInt;
+    sp3Mat = spMat*double(input.spCounter3{trN})/spInt;
+    sp4Mat = spMat*double(input.spCounter4{trN})/spInt;
+    sp5Mat = spMat*double(input.spCounter5{trN})/spInt;
+    sp6Mat = spMat*double(input.spCounter6{trN})/spInt;
+    sp7Mat = spMat*double(input.spCounter7{trN})/spInt;
+    sp8Mat = spMat*double(input.spCounter8{trN})/spInt;
+    sp9Mat = spMat*double(input.spCounter9{trN})/spInt;
+    sp10Mat = spMat*double(input.spCounter10{trN})/spInt;
 
     sp1Time = input.spCounter1TimesUs{trN}(end);
     sp2Time = input.spCounter2TimesUs{trN}(end);
@@ -197,7 +200,7 @@ for i = 1:length(problemFrameNumbers),
     insertFrames = howManyMissed(i);
     startFrame = problemFrameNumbers(i)+1; %to correct for 1 frame "diff" offset
     blankIx(startFrame+shift+1) = 0;     
-    emptyMat = cat(2, emptyMat(1:[problemFrameNumbers(i)+shift]), NaN, emptyMat([problemFrameNumbers(i)+shift+1]:end));
+    emptyMat = cat(2, emptyMat(1:[problemFrameNumbers(i)+shift]), NaN(1,insertFrames), emptyMat([problemFrameNumbers(i)+shift+1]:end));
     stimOnIx((startFrame+shift):(startFrame+insertFrames+shift)) = 0; %make sure this is accurate    DELETE?
     shift = shift+insertFrames;
 end
@@ -206,7 +209,7 @@ dataStruct.stimOnIx = boolean(stimOnIx)
 dataStruct.locomotionMatFrames = emptyMat;
 dataStruct.locomotionTimes = emptyTimes;
 dataStruct.locomotionVals = locoVals;
-figure; plot(dataStruct.locomotionMatFrames(3:end));   %May need to recrop
+%May need to recrop
 %%converting locomotionVals and Times to speed in cm/s  ASSUMES
 %preSoundPauseNFrames + PostSoundPauseNFrames = num of frames in one iti or
 %spCounter
