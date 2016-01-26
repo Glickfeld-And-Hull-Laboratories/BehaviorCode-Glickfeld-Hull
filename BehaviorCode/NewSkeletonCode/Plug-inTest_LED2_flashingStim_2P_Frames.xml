@@ -182,10 +182,8 @@
       <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
 
-      <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Alternating LED"/>
-      <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Alternating LED"/>
-      <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Alternating LED"/>
-      <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0" groups="Alternating LED"/>
+      <variable tag="Do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Alternating LED"/>
+      <variable tag="LED_sequence" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0" groups="Alternating LED"/>
 
     </folder>  
     <folder tag="Fake Mouse">
@@ -216,6 +214,10 @@
       <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -417,6 +419,10 @@
             </action> 
             <!-- In this state, do all stimulus selection/tValue setting -->
             <action type="report" message="Initializing Trial"/>
+
+            <action type="assignment" variable="led_seq" value="LED_sequence"/>
+            <action type="assignment" variable="do2led" value="Do2led"/>
+            
             <!-- Reset t_____RemainingOn/Off to 0ms -->      
             <action type="assignment" tag="Reset tLeverPressTimeMs" variable="tLeverPressTimeMs" value="0"/>
             <action type="assignment" tag="Reset tLeverReleaseTimeMs" variable="tLeverReleaseTimeMs" value="0"/>

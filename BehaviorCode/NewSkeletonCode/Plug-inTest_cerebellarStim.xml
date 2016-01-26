@@ -25,18 +25,14 @@
 
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="0" groups="StimulusSpecs"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="0" groups="StimulusSpecs"/>
-      <variable tag="sendstimDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="0" groups="StimulusSpecs"/>
       <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="StimulusSpecs"/>
-      <variable tag="itiTimerIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="ITICounters"/>
+      <variable tag="itiIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="ITICounters"/>
 
-      <variable tag="itiTimerNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="NFrames"/>
+      <variable tag="itiNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="NFrames"/>
       <variable tag="postSoundPauseNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="NFrames"/>
       <variable tag="TStimNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="NFrames"/>
 
-      <variable tag="frameImagingFrequencyHz" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="ImagingVars"/>
-
-      <variable tag="nFramesOn" scope="global" logging="when_changed" default_value="200" type="integer" persistant="0" groups="NFrames"/>
-      <variable tag="nFramesOff" scope="global" logging="when_changed" default_value="200" type="integer" persistant="0" groups="NFrames"/>
+      <variable tag="frameImagingDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0" groups="ImagingVars"/>
 
     </folder>
     <folder tag="Task Status">
@@ -97,10 +93,10 @@
       <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
       <action type="assignment" tag="set quadrature to 0" variable="quadrature" value="0"></action>
       
-      <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((sendstimDurationMs/1000)*frameImagingFrequencyHz)"/>
-      <action type="assignment" tag="Calculate nFramesOff" variable="itiTimerNFrames" value="ceil((itiTimerIntervalMs/1000)*frameImagingFrequencyHz)"/>
-      <action type="assignment" tag="Calculate nFramesPostSound" variable="postSoundPauseNFrames" value="ceil((postSoundPauseDurationMs/1000)*frameImagingFrequencyHz)"/>
-      <action type="assignment" tag="Calculate nFramesTStim" variable="TStimNFrames" value="ceil((tactileStimulusDurationUs/1000000)*frameImagingFrequencyHz)"/>
+      
+      <action type="assignment" tag="Calculate nFramesITI" variable="itiNFrames" value="ceil(itiIntervalMs/frameImagingDurationMs)"/>
+      <action type="assignment" tag="Calculate nFramesPostSound" variable="postSoundPauseNFrames" value="ceil(postSoundPauseDurationMs/frameImagingDurationMs)"/>
+      <action type="assignment" tag="Calculate nFramesTStim" variable="TStimNFrames" value="ceil(tactileStimulusDurationUs/1000/frameImagingDurationMs)"/>
 
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
      
@@ -158,9 +154,9 @@
           <action type="assignment" tag="Clear stimulusOn" variable="soundstimulusOn" value="0"></action>
           <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action>
 
-          <action type="report" message="In Inter-Trial Interval, waiting for $nFramesOff frames"></action>
+          <action type="report" message="In Inter-Trial Interval, waiting for $itiNFrames frames"></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If $nFramesOff is scanned, move to EndTrial" condition="counter-tCounter >= nFramesOff" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If $itiNFrames is scanned, move to EndTrial" condition="counter-tCounter >= itiNFrames" target="PlaySound" ></transition>
       </task_system_state>
 
 
@@ -221,7 +217,7 @@
 
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If $nFramesOn, move to EndTrial" condition="(counter - tCounter) >= TStimNFrames" target="EndTrial" ></transition>
+            <transition type="conditional" tag="If $TStimNFrames, move to EndTrial" condition="(counter - tCounter) >= TStimNFrames" target="EndTrial" ></transition>
       </task_system_state>
                     
       <task_system_state tag="EndTrial" interruptible="YES">
