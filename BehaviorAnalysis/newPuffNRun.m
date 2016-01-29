@@ -1,3 +1,4 @@
+%Old puffNRun adapted for new cerebellarStim program.
 % function [dataStruct] = puffNRun(folder)
 clear; 
 pathName = 'S:\testData\';
@@ -8,38 +9,10 @@ if isfield(input1,'input'),
 end
 info = imfinfo(imgName, 'TIF');
 
-%This code is duplicated within cerebellarFrameAnalyzer
-%%Fill any empty sp/itiCounters with a NaN
-%Note: Sometimes stopAfterNTrials > length of sp/iti counters, suggesting
-%that the experiment might have been stopped early. Good fix might be to
-%set input.StopAfterNTrials = length of a counter
-
-for i = 1:input1.stopAfterNTrials
-     if isempty(cell2mat(input1.spCounter10(i)))==1
-        input1.spCounter10(i) = input1.spCounter9(i);
-        sprintf('filled an empty spCounter10')
-    end
-    if isempty(cell2mat(input1.itiCounter10(i)))==1
-        input1.itiCounter10(i) = input1.itiCounter9(i);
-        sprintf('filled an empty itiCounter10')
-    end
-end
-
-Fill in any missing iti/spCounterTimes
-for i = 1:input1.stopAfterNTrials
-    if isempty(cell2mat(input1.spCounter10TimesUs(i)))
-        input1.spCounter10TimesUs(i) =  mat2cell(cell2mat(input1.spCounter9TimesUs(i))+500000);
-        sprintf('filled an empty spCounterTime')
-    end
-    if isempty(cell2mat(input1.itiCounter10TimesUs(i)))
-        input1.itiCounter10TimesUs(i) =  mat2cell(cell2mat(input1.itiCounter9TimesUs(i))+500000);
-        sprintf('filled an empty itiCounterTime')
-    end
-end
 %%
-cerebellarFrameAnalyzer;
+newCerebellarFrameAnalyzer;
 roi_selector;
-%dataStruct.cameraFrameTimes = get_frame_time_by_movie_info(ds)
+
 %%
 sum(dataStruct.puffRun);
 sum(dataStruct.puffStill);
@@ -60,7 +33,7 @@ end
 dataStruct.avgF = squeeze(mean(mean(dataStruct.image,1),2))';
 %% end things
 dataStruct.behaviorFramesAsCameraFrames = cumsum(dataStruct.goodFramesIx); %each space represents which camera frame it is. Each value represents which 
-frameWindow = 15;
+frameWindow = 1;
 stimOns = find(dataStruct.stimOnIx);
 %plot average fluoresence of each timepoint in a trial
 for i = 1:length(stimOns);
@@ -130,12 +103,12 @@ writetiff(avgPuffStill, [pathName '\avgPuffStill']);
 stillMinusRun = avgPuffStill - avgPuffRun;
 writetiff(stillMinusRun, [pathName '\stillMinusRun']);
 
-%%plotting running vs F
+%% Plotting running vs F
 B = [1:(length(dataStruct.goodFramesIx)-2)]; %cut out first two locomotion mat frames because of start artifact. Therefore need to cut out first two imaging frames even though they are good frames
 figure;
 %Set/calculate variables with proper units
 revoLength = 30; revoPulse = 32;    %revoLength = length of 1 revolution (cm). revoPulse = # of pulses/revolution.
-runSpeed = (1000000/frameIntUs)*(revoLength/revoPulse)*dataStruct.locomotionMatFrames(3:end); %runSpeed=(frames/sec)*(cm/pulse)*(pulses/frame)
+runSpeed = (1000/frameIntMs)*(revoLength/revoPulse)*dataStruct.locomotionMatFrames(3:end); %runSpeed=(frames/sec)*(cm/pulse)*(pulses/frame)
 baseF = mean(dataStruct.avgF(3:length(B)+2));
 dFoverbaseF = (dataStruct.avgF(3:length(B)+2)/baseF)-1;
 %Plot Running v Fluorescence graph with appropriately labeled axes
@@ -143,8 +116,8 @@ dFoverbaseF = (dataStruct.avgF(3:length(B)+2)/baseF)-1;
 title('Running vs. Fluorescence')
 set(a(1), 'Ylim', [0 (max(runSpeed)+3)])   %runSpeed y-axis from 0 to max runSpeed (+3 to look nicer) 
 set(a(2), 'Ylim', [min(dFoverbaseF) max(dFoverbaseF)])    %dF/F y-axis from min dF/F to max dF/F
-set(a(1), 'XTickLabel', (frameIntUs/1000000)*get(a(1),'XTick')) %Converts x-axis frame ticks to seconds
-set(a(2), 'XTickLabel', (frameIntUs/1000000)*get(a(2),'XTick'))
+set(a(1), 'XTickLabel', (frameIntMs/1000)*get(a(1),'XTick')) %Converts x-axis frame ticks to seconds
+set(a(2), 'XTickLabel', (frameIntMs/1000)*get(a(2),'XTick'))
 set(a(1), 'XLim', [0 (length(dataStruct.goodFramesIx)-2)])  %Sets x-axis limits from 0 to end of data
 set(a(2), 'XLim', [0 (length(dataStruct.goodFramesIx)-2)])
 ylabel('Running Speed(cm/s)')
@@ -159,10 +132,10 @@ end
 
 %Plot dF/F over time for stimuli during Running
 figure;
-stimWindow = 3000000/frameIntUs; %Calculates # of frames to equal 3 seconds (span of stimulus window) based on frame interval.
+stimWindow = 3000/frameIntMs; %Calculates # of frames to equal 3 seconds (span of stimulus window) based on frame interval.
 stimTime = [0:2*stimWindow];    %x-axis for plot: stimulus window
-meanrunStimdFoverF = NaN(length(runPuffFrameNums),2*stimWindow+1,cluster.num_cluster);
-for ii=1:length(runPuffFrameNums)
+meanrunStimdFoverF = NaN(length(runPuffFrameNums)-1,2*stimWindow+1,cluster.num_cluster);
+for ii=1:(length(runPuffFrameNums)-1)
     runStimFrame = runPuffFrameNums(ii);
     for jj=1:cluster.num_cluster
     runStimdFoverF = ((dataStruct.(sprintf('avgF%d',jj))(runStimFrame-stimWindow:runStimFrame+stimWindow)/maskBaseF{jj})-1); %Gather F data for frames in desired window around stimulus
@@ -188,8 +161,8 @@ set(gca,'XTickLabel',[-3 0 3]);
 
 %Plot dF/F over time for stimuli while Still
 figure;
-meanstillStimdFoverF = NaN(length(stillPuffFrameNums),2*stimWindow+1,cluster.num_cluster);
-for ii=1:length(stillPuffFrameNums)
+meanstillStimdFoverF = NaN(length(stillPuffFrameNums)-1,2*stimWindow+1,cluster.num_cluster);
+for ii=(1:length(stillPuffFrameNums)-1)
     stillStimFrame = stillPuffFrameNums(ii);
     for jj=1:cluster.num_cluster
     stillStimdFoverF = ((dataStruct.(sprintf('avgF%d',jj))(stillStimFrame-stimWindow:stillStimFrame+stimWindow)/maskBaseF{jj})-1);
@@ -213,17 +186,10 @@ set(gca,'XLim',[0 2*stimWindow]);
 set(gca,'XTick', [0 stimWindow 2*stimWindow]);
 set(gca,'XTickLabel',[-3 0 3]);
 
-%Outputs number of trials w/ puffs delivered while running/still
+%% Outputs number of trials w/ puffs delivered while running/still
 disp(['Number of puffs while running: ' num2str(sum(puffRun))])
 disp(['Number of puffs while still: ' num2str(sum(puffStill))])
 disp([pathName])
 disp([imagingRate])
 disp([length(dataStruct.goodFramesIx)])
-
-
-
-
-
-
-
 

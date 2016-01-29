@@ -2,24 +2,24 @@
 % length that point to dropped or added frames and builds an index
 
 dataStruct = struct;
-%% formatting assumes "input" is a cerebellarStim data set
-ds = input;
+%% formatting assumes "input1" is a cerebellarStim data set
+ds = input1;
 % and also enforces it
 assert(isfield(ds, 'spCounter1TimesUs'), 'Input File is not a cerebellarStim data set');
 % takes tr by tr
-cTimes = input.counterTimesUs;
-cVals = input.counterValues;
+cTimes = input1.counterTimesUs;
+cVals = input1.counterValues;
 %  compresses all times/vals
-totalTimes = cell2mat(cTimes);
-totalVals =  cell2mat(cVals);
+totalTimes = double(cell2mat(cTimes));
+totalVals =  double(cell2mat(cVals));
 totalTimes = totalTimes(3:end); % removes start-stop-start artifact and 0 value initial state value
 totalVals= totalVals(3:end); % removes start-stop-start artifact and 0 value initial state value
-lastTrCounter = cell2mat(input.counter);
+%lastTrCounter = cell2mat(input.counter);
 
-imagingRate = input.frameImagingFrequencyHz; % in Hz
+imagingRate = input.frameImagingFrequencyHz; %in Hz
 frameIntUs = 1000000/imagingRate;
 
-nTrs = length(input.counter);
+nTrs = length(input1.counter);
 for i=2:nTrs,
     lastVal = cVals{i-1}(end);
     thisTrVal = cVals{i}(1);
@@ -38,37 +38,34 @@ assert(sum(howManyMissed>imagingRate)<1, '*** Do not use data: there is a skip o
 hold on
 % extract all of our stimulus crap
 stimOnFrame = cell2mat(input.ttCounter);
-blank = zeros(1,length(totalVals)+sum(howManyMissed));    %MA 1/20/16: Redefined blank (stimOnIx) to be same length as blankIx, used later. %JH Fix: expands stimOnIx to account for dropped frames. It already adjusts the stimOnFrame to account for missed frames affect on which frame the stimulus corresponds to 
+blank = zeros(1,length(totalVals)+sum(howManyMissed)); %MA 1/20/16: Redefined blank (stimOnIx) to be same length as blankIx, used later. %JH Fix: expands stimOnIx to account for dropped frames. It already adjusts the stimOnFrame to account for missed frames affect on which frame the stimulus corresponds to 
 blank(stimOnFrame)=1;
-stimOnIx = blank; 
-
+stimOnIx=blank;
 
 %% Check that counter was not reset mid-trial
 assert(ismonotonic(totalTimes), 'counterTimesUs is not monotonically increasing: was experiment reset?');
 assert(ismonotonic(totalVals), 'counterValues is not monotonically increasing: was experiment reset?');
-%%
 
-
-%%Fill any empty sp/itiCounter10 with the value which was in sp/itiCounter9
-for i = 1:input.stopAfterNTrials
-     if isempty(cell2mat(input.spCounter10(i)))==1
-        input.spCounter10(i) = input.spCounter9(i);
+%% Fill any empty sp/itiCounter10 with the value which was in sp/itiCounter9
+for i = 1:input1.stopAfterNTrials
+     if isempty(cell2mat(input1.spCounter10(i)))==1
+        input1.spCounter10(i) = input1.spCounter9(i);
         sprintf('filled an empty spCounter10')
     end
-    if isempty(cell2mat(input.itiCounter10(i)))==1
-        input.itiCounter10(i) = input.itiCounter9(i);
+    if isempty(cell2mat(input1.itiCounter10(i)))==1
+        input1.itiCounter10(i) = input1.itiCounter9(i);
         sprintf('filled an empty itiCounter10')
     end
 end
 
 %Fill in any missing iti/spCounterTimes
-for i = 1:input.stopAfterNTrials
-    if isempty(cell2mat(input.spCounter10TimesUs(i)))
-        input.spCounter10TimesUs(i) =  mat2cell(cell2mat(input.spCounter9TimesUs(i))+500000);
+for i = 1:input1.stopAfterNTrials
+    if isempty(cell2mat(input1.spCounter10TimesUs(i)))
+       input1.spCounter10TimesUs(i) =  mat2cell(cell2mat(input1.spCounter9TimesUs(i))+500000);
         sprintf('filled an empty spCounterTime')
     end
-    if isempty(cell2mat(input.itiCounter10TimesUs(i)))
-        input.itiCounter10TimesUs(i) =  mat2cell(cell2mat(input.itiCounter9TimesUs(i))+500000);
+    if isempty(cell2mat(input1.itiCounter10TimesUs(i)))
+        input1.itiCounter10TimesUs(i) =  mat2cell(cell2mat(input1.itiCounter9TimesUs(i))+500000);
         sprintf('filled an empty itiCounterTime')
     end
 end
@@ -79,90 +76,99 @@ emptyMat = [];
 emptyTimes = [];
 locoVals = [];
 
-counterStart = input.itiCounter1TimesUs{1}(end);
+
 for i=1:nTrs,
     trN = i;
-    itiInt = input.nScansOff/10;
-    spInt = input.nScansOn/10;
-    preInt = input.preSoundPauseNFrames;
-    postInt = input.postSoundPauseNFrames;
+    
+    
+    
+    itiInt = input1.nScansOff/10;
+    spInt = input1.nScansOn/10;
+    preInt = input1.preSoundPauseNFrames;
+    postInt = input1.postSoundPauseNFrames;
     
     itiMat = ones(1,itiInt);
     spMat = ones(1, spInt);
-    stimMat = ones(1,preInt+postInt);
+    stimMat = ones(1,preInt+postInt); 
+    
+    
     %creates a mat with length = to # of frames per counter and with a
     %value = to the number of wheel pulses in that counter divided by the
-    %number of frames in that counter. 
-    iti1Mat = itiMat*double(input.itiCounter1{trN})/itiInt;
-    iti2Mat = itiMat*double(input.itiCounter2{trN})/itiInt;
-    iti3Mat = itiMat*double(input.itiCounter3{trN})/itiInt;
-    iti4Mat = itiMat*double(input.itiCounter4{trN})/itiInt;
-    iti5Mat = itiMat*double(input.itiCounter5{trN})/itiInt;
-    iti6Mat = itiMat*double(input.itiCounter6{trN})/itiInt;
-    iti7Mat = itiMat*double(input.itiCounter7{trN})/itiInt;
-    iti8Mat = itiMat*double(input.itiCounter8{trN})/itiInt;
-    iti9Mat = itiMat*double(input.itiCounter9{trN})/itiInt;
-    iti10Mat = itiMat*double(input.itiCounter10{trN})/itiInt;
+    %number of frames in that counter.
+    
+    iti1Mat = itiMat*double(input1.itiCounter1{trN})/itiInt;
+    iti2Mat = itiMat*double(input1.itiCounter2{trN})/itiInt;
+    iti3Mat = itiMat*double(input1.itiCounter3{trN})/itiInt;
+    iti4Mat = itiMat*double(input1.itiCounter4{trN})/itiInt;
+    iti5Mat = itiMat*double(input1.itiCounter5{trN})/itiInt;
+    iti6Mat = itiMat*double(input1.itiCounter6{trN})/itiInt;
+    iti7Mat = itiMat*double(input1.itiCounter7{trN})/itiInt;
+    iti8Mat = itiMat*double(input1.itiCounter8{trN})/itiInt;
+    iti9Mat = itiMat*double(input1.itiCounter9{trN})/itiInt;
+    iti10Mat = itiMat*double(input1.itiCounter10{trN})/itiInt;
     %Extracts the time each oounter was logged for this trial
-    iti1Time = input.itiCounter1TimesUs{trN}(end);
-    iti2Time = input.itiCounter2TimesUs{trN}(end);
-    iti3Time = input.itiCounter3TimesUs{trN}(end);
-    iti4Time = input.itiCounter4TimesUs{trN}(end);
-    iti5Time = input.itiCounter5TimesUs{trN}(end);
-    iti6Time = input.itiCounter6TimesUs{trN}(end);
-    iti7Time = input.itiCounter7TimesUs{trN}(end);
-    iti8Time = input.itiCounter8TimesUs{trN}(end);
-    iti9Time = input.itiCounter9TimesUs{trN}(end);
-    iti10Time = input.itiCounter10TimesUs{trN}(end);
+    iti1Time = input1.itiCounter1TimesUs{trN}(end);
+    iti2Time = input1.itiCounter2TimesUs{trN}(end);
+    iti3Time = input1.itiCounter3TimesUs{trN}(end);
+    iti4Time = input1.itiCounter4TimesUs{trN}(end);
+    iti5Time = input1.itiCounter5TimesUs{trN}(end);
+    iti6Time = input1.itiCounter6TimesUs{trN}(end);
+    iti7Time = input1.itiCounter7TimesUs{trN}(end);
+    iti8Time = input1.itiCounter8TimesUs{trN}(end);
+    iti9Time = input1.itiCounter9TimesUs{trN}(end);
+    iti10Time = input1.itiCounter10TimesUs{trN}(end);
     %extracts # of wheel pulses in each counter. 
-    iti1Val = input.itiCounter1{trN};
-    iti2Val = input.itiCounter2{trN};
-    iti3Val = input.itiCounter3{trN};
-    iti4Val = input.itiCounter4{trN};
-    iti5Val = input.itiCounter5{trN};
-    iti6Val = input.itiCounter6{trN};
-    iti7Val = input.itiCounter7{trN};
-    iti8Val = input.itiCounter8{trN};
-    iti9Val = input.itiCounter9{trN};
-    iti10Val = input.itiCounter10{trN};
+    iti1Val = input1.itiCounter1{trN};
+    iti2Val = input1.itiCounter2{trN};
+    iti3Val = input1.itiCounter3{trN};
+    iti4Val = input1.itiCounter4{trN};
+    iti5Val = input1.itiCounter5{trN};
+    iti6Val = input1.itiCounter6{trN};
+    iti7Val = input1.itiCounter7{trN};
+    iti8Val = input1.itiCounter8{trN};
+    iti9Val = input1.itiCounter9{trN};
+    iti10Val = input1.itiCounter10{trN};
 
     %repeat process for sp counters
-    sp1Mat = spMat*double(input.spCounter1{trN})/spInt;
-    sp2Mat = spMat*double(input.spCounter2{trN})/spInt;
-    sp3Mat = spMat*double(input.spCounter3{trN})/spInt;
-    sp4Mat = spMat*double(input.spCounter4{trN})/spInt;
-    sp5Mat = spMat*double(input.spCounter5{trN})/spInt;
-    sp6Mat = spMat*double(input.spCounter6{trN})/spInt;
-    sp7Mat = spMat*double(input.spCounter7{trN})/spInt;
-    sp8Mat = spMat*double(input.spCounter8{trN})/spInt;
-    sp9Mat = spMat*double(input.spCounter9{trN})/spInt;
-    sp10Mat = spMat*double(input.spCounter10{trN})/spInt;
+    sp1Mat = spMat*double(input1.spCounter1{trN})/spInt;
+    sp2Mat = spMat*double(input1.spCounter2{trN})/spInt;
+    sp3Mat = spMat*double(input1.spCounter3{trN})/spInt;
+    sp4Mat = spMat*double(input1.spCounter4{trN})/spInt;
+    sp5Mat = spMat*double(input1.spCounter5{trN})/spInt;
+    sp6Mat = spMat*double(input1.spCounter6{trN})/spInt;
+    sp7Mat = spMat*double(input1.spCounter7{trN})/spInt;
+    sp8Mat = spMat*double(input1.spCounter8{trN})/spInt;
+    sp9Mat = spMat*double(input1.spCounter9{trN})/spInt;
+    sp10Mat = spMat*double(input1.spCounter10{trN})/spInt;
 
-    sp1Time = input.spCounter1TimesUs{trN}(end);
-    sp2Time = input.spCounter2TimesUs{trN}(end);
-    sp3Time = input.spCounter3TimesUs{trN}(end);
-    sp4Time = input.spCounter4TimesUs{trN}(end);
-    sp5Time = input.spCounter5TimesUs{trN}(end);
-    sp6Time = input.spCounter6TimesUs{trN}(end);
-    sp7Time = input.spCounter7TimesUs{trN}(end);
-    sp8Time = input.spCounter8TimesUs{trN}(end);
-    sp9Time = input.spCounter9TimesUs{trN}(end);
-    sp10Time = input.spCounter10TimesUs{trN}(end);
+    sp1Time = input1.spCounter1TimesUs{trN}(end);
+    sp2Time = input1.spCounter2TimesUs{trN}(end);
+    sp3Time = input1.spCounter3TimesUs{trN}(end);
+    sp4Time = input1.spCounter4TimesUs{trN}(end);
+    sp5Time = input1.spCounter5TimesUs{trN}(end);
+    sp6Time = input1.spCounter6TimesUs{trN}(end);
+    sp7Time = input1.spCounter7TimesUs{trN}(end);
+    sp8Time = input1.spCounter8TimesUs{trN}(end);
+    sp9Time = input1.spCounter9TimesUs{trN}(end);
+    sp10Time = input1.spCounter10TimesUs{trN}(end);
 
-    sp1Val = input.spCounter1{trN};
-    sp2Val = input.spCounter2{trN};
-    sp3Val = input.spCounter3{trN};
-    sp4Val = input.spCounter4{trN};
-    sp5Val = input.spCounter5{trN};
-    sp6Val = input.spCounter6{trN};
-    sp7Val = input.spCounter7{trN};
-    sp8Val = input.spCounter8{trN};
-    sp9Val = input.spCounter9{trN};
-    sp10Val = input.spCounter10{trN};
+    sp1Val = input1.spCounter1{trN};
+    sp2Val = input1.spCounter2{trN};
+    sp3Val = input1.spCounter3{trN};
+    sp4Val = input1.spCounter4{trN};
+    sp5Val = input1.spCounter5{trN};
+    sp6Val = input1.spCounter6{trN};
+    sp7Val = input1.spCounter7{trN};
+    sp8Val = input1.spCounter8{trN};
+    sp9Val = input1.spCounter9{trN};
+    sp10Val = input1.spCounter10{trN};
     
-    stimMat = stimMat*double(input.tISIWheelCounter{trN}/(preInt+postInt));   
-    stimTime = input.postSoundWheelCounterTimesUs{trN}(end);
-    stimVal = input.tISIWheelCounter{trN};
+    
+    
+    stimMat = stimMat*double(input1.tISIWheelCounter{trN}/(preInt+postInt));   
+    stimTime = input1.postSoundWheelCounterTimesUs{trN}(end);
+    stimVal = input1.tISIWheelCounter{trN};
+    
     %Creates a string with the # of wheel pulses associated with each frame
     %in this trial
     locoMatFrame = [iti1Mat iti2Mat iti3Mat iti4Mat iti5Mat iti6Mat iti7Mat iti8Mat iti9Mat iti10Mat stimMat sp1Mat sp2Mat sp3Mat sp4Mat sp5Mat sp6Mat sp7Mat sp8Mat sp9Mat sp10Mat];
@@ -252,8 +258,8 @@ dataStruct.puffStill = puffStill;
 
 %% IF doLED ACTIVE, SEARCH FOR HIGH LUMINANCE SPIKES
 
-% if isfield(input, 'doLED')
-%     if input.doLED==1,
+% if isfield(input1, 'doLED')
+%     if input1.doLED==1,
     % do LED searchy type things: probably something like "all the luminous frames please stand up"
     % and then correlate that with trial starts/ends to see if you're all
     % matched up
