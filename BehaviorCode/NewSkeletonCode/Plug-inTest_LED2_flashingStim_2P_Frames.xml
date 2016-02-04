@@ -8,7 +8,7 @@
               laser_trigger="laserTrigger"
               optic_device="optic_device"
               counter="counter"
-              do2led="do2led" led_seq="led_seq" led1_status="led1_status" led2_status="led2_status"/>
+              do2led="do2led" led_seq="led_seq" LED_duration="LED_durationMS" led1_status="led1_status" led2_status="led2_status"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -215,6 +215,7 @@
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="LED_durationMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0"/>
@@ -422,6 +423,7 @@
 
             <action type="assignment" variable="led_seq" value="LED_sequence"/>
             <action type="assignment" variable="do2led" value="Do2LED"/>
+            <action type="assignment" variable="LED_durationMS" value="round(1/frameRateHz*1000)"/>
             
             <!-- Reset t_____RemainingOn/Off to 0ms -->      
             <action type="assignment" tag="Reset tLeverPressTimeMs" variable="tLeverPressTimeMs" value="0"/>
