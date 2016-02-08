@@ -323,10 +323,10 @@
         <variable tag="nCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-        <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="double" persistant="0"/>
         <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-        <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-        <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="double" persistant="0"/>
+        <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="double" persistant="0"/>
         <variable tag="tFrameDelayUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tempNCorrect" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
         <variable tag="startReactState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
@@ -1228,8 +1228,10 @@
 
             
                                         <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
+
                                         <action type="assignment" variable="tStimOnMs" value="now()/1000" />
                                         <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOnMs*1000" />
+                                        <action type="report" message="The tFrameDelayUs is $tFrameDelayUs"/>
                                         
 
                                         <action type="if" condition="sendElectrophysSync">
@@ -1377,7 +1379,7 @@
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
                                       <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (tStimOnMs*1000 + timerDurationMs*1000 - tFrameDelayUs + 1500)" target="EndTrialStimOff" ></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (targetStimOnMs*1000 + timerDurationMs*1000 - tFrameDelayUs + 1500)" target="EndTrialStimOff" ></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="React" interruptible="YES">
@@ -1658,9 +1660,9 @@
                               <action type="assignment" variable="stimTag" value="1"></action>
 
                               <action type="if" condition="doPhotodiode">
-                                <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
-                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
-                                <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
                               </action>
                                         
                               <action type="if" condition="tDoDeviantAfterMissing==0 || (tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==1)">
