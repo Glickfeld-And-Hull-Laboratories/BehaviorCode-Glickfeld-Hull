@@ -176,10 +176,10 @@
           <action type="assignment" tag="Clear stimulusOn" variable="soundstimulusOn" value="0"></action>
           <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action>
 
-          <action type="report" message="In Inter-Trial Interval, waiting for $itiNFrames frames"></action>
+          <action type="report" message="In Inter-Trial Interval, waiting..."></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" tag="If passed running criteria, move to Playsound" condition="startStimulus == 1" target="PlaySound" ></transition>
-          <transition type="conditional" tag="If $itiNFrames is scanned, time out and move to EndTrial" condition="counter-tCounter >= itiNFrames" target="EndTrial" ></transition>
+          <transition type="conditional" tag="If $itiNFrames is scanned, time out and move to EndTrial" condition="counter-tCounter >= itiNFrames + postSoundPauseNFrames + TStimNFrames" target="EndTrial" ></transition>
       </task_system_state>
 
 
