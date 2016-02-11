@@ -92,6 +92,10 @@ end
 
 fprintf(1,'Contrast: T=%0.2f, D=%0.2f, %s, %s, React: %0.0f ms, Rew: %2.0f\n ', input.tGratingContrast{trN}, input.dGratingContrast{trN}, tLeftStr, outcomeStr, decisionTime, rewS)
 
+% input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
+%                               '~/Documents/MWorks/Data', ...
+%                               mat2str(input.subjectNum), input.saveTime);
+
 
 %itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));
 %fprintf(1,'Hold %d, req %d, react %d, %s%s %s- %d rew %dms\n', ...
@@ -102,6 +106,8 @@ fprintf(1,'Contrast: T=%0.2f, D=%0.2f, %s, %s, React: %0.0f ms, Rew: %2.0f\n ', 
 
 %% run subfunctions
 input = exptRunSubfunctions(ds, input, { @plotLego });
+
+save(input.savedDataName, 'input');
 
 %% save variables for next trial
 retval = input;
