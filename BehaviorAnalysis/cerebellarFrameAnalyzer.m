@@ -16,7 +16,7 @@ totalTimes = totalTimes(3:end); % removes start-stop-start artifact and 0 value 
 totalVals= totalVals(3:end); % removes start-stop-start artifact and 0 value initial state value
 %lastTrCounter = cell2mat(input.counter);
 
-imagingRate = input.frameImagingFrequencyHz; %in Hz
+imagingRate = input1.frameImagingFrequencyHz; %in Hz
 frameIntUs = 1000000/imagingRate;
 
 nTrs = length(input1.counter);
@@ -32,12 +32,12 @@ problemFrameNumbers = find(pulsePauseIx);
 normal = pulseDiff(~pulsePauseIx);
 avgFrame = mean(normal);
 
-howManyMissed = (problematic./avgFrame)-1;   %altered by JH 1/14/16 to better reflect how many frames were missed. 
+howManyMissed = round((problematic./avgFrame)-1);   %altered by JH 1/14/16 to better reflect how many frames were missed. 
 % alert if data has a hole greater than 1 second
 assert(sum(howManyMissed>imagingRate)<1, '*** Do not use data: there is a skip of %3d second skip between frames. ****', problematic(howManyMissed>15)/1000000);
 hold on
 % extract all of our stimulus crap
-stimOnFrame = cell2mat(input.ttCounter);
+stimOnFrame = cell2mat(input1.ttCounter);
 blank = zeros(1,length(totalVals)+sum(howManyMissed)); %MA 1/20/16: Redefined blank (stimOnIx) to be same length as blankIx, used later. %JH Fix: expands stimOnIx to account for dropped frames. It already adjusts the stimOnFrame to account for missed frames affect on which frame the stimulus corresponds to 
 blank(stimOnFrame)=1;
 stimOnIx=blank;

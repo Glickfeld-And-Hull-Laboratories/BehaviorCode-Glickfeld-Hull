@@ -32,6 +32,18 @@ assert(ismonotonic(totalTimes), 'Counter times are not monotonically increasing.
 assert(ismonotonic(totalVals), ' Counter values are not monotonically increasing. Was experiment reset?');
 %% Extract and format locomotion data
 
+%Error fix: Empty cells in quadValues/quadTimes (mouse didn't move for that
+%trial) have different data types (double) than the other cells (int64).
+%This loop finds those cells and converts them to int64 so we can use
+%cell2mat below. MA 2/3/16
+if sum(cellfun('isempty',input1.quadratureValues))> 0
+    emptyCellIx = find(cellfun('isempty',input1.quadratureValues));
+    for ii=1:length(emptyCellIx)
+        input1.quadratureValues{emptyCellIx(ii)}=int64(input1.quadratureValues{emptyCellIx(ii)});
+        input1.quadratureTimesUs{emptyCellIx(ii)}=int64(input1.quadratureTimesUs{emptyCellIx(ii)});
+    end
+end
+
 quadTimes = double(cell2mat(input1.quadratureTimesUs))/1000;
 quadValues = double(cell2mat(input1.quadratureValues));
 %Removes start-stop-start artifact data from quadTimes/quadValues
@@ -42,8 +54,8 @@ quadTimes = quadTimes(startquad:end); quadValues = quadValues(startquad:end);
 %of a frame in quadTimes and quadValues.
 quadFrameIndex = NaN(1,length(totalTimes));
 for ii=1:length(totalTimes)
-    quadFrame = find((quadTimes/totalTimes(ii)) < 1.000001 & (quadTimes/totalTimes(ii)) > 0.999999);
-    quadFrameIndex(:,ii) = quadFrame;
+    quadFrame = find((quadTimes/totalTimes(ii)) < 1.00001 & (quadTimes/totalTimes(ii)) > 0.99999);
+    quadFrameIndex(:,ii) = quadFrame(1);
 end
 
 %Creates a frame-by-frame index of wheel pulse data (pulses per frame).

@@ -1,22 +1,24 @@
 %Old puffNRun adapted for new cerebellarStim program.
 % function [dataStruct] = puffNRun(folder)
 clear; 
-pathName = 'S:\testData\';
-imgName = [pathName 'cb_stim_TS_round_1_MMStack.ome'];
-input1 = load([pathName 'data-i666-160128-1004']);
+pathName = 'S:\VermisImaging\160219_img40_3\';
+imgName = [pathName '160219_img40_3_MMStack.ome'];
+input1 = load([pathName 'data-i940-160219-1705']);
 if isfield(input1,'input'),
     input1 = input1.input;
 end
 info = imfinfo(imgName, 'TIF');
 
 %%
+tic;
 newCerebellarFrameAnalyzer;
+CFAtime = toc;
+tic;
 roi_selector;
-
+ROItime = toc;
 %%
-sum(dataStruct.puffRun);
-sum(dataStruct.puffStill);
-dataStruct.image = readtiff(pathName);
+dataStruct.image = readtiff([imgName '.tif']);
+tic;
 %For loop creates a "mask movie" for each ROI
 for ii=1:cluster.num_cluster
     mask_index{ii} = NaN(1002,1004,size(dataStruct.image,3));
@@ -28,10 +30,11 @@ for ii=1:cluster.num_cluster
     mask_movie{ii}(~mask_index{ii})=0;
     dataStruct.(sprintf('avgF%d',ii))= squeeze(mean(mean(mask_movie{ii},1),2))';
 end
-    
+maskmovietime = toc;    
 %% mean image field things
 dataStruct.avgF = squeeze(mean(mean(dataStruct.image,1),2))';
 %% end things
+tic;
 dataStruct.behaviorFramesAsCameraFrames = cumsum(dataStruct.goodFramesIx); %each space represents which camera frame it is. Each value represents which 
 frameWindow = 1;
 stimOns = find(dataStruct.stimOnIx);
@@ -103,35 +106,71 @@ writetiff(avgPuffStill, [pathName '\avgPuffStill']);
 stillMinusRun = avgPuffStill - avgPuffRun;
 writetiff(stillMinusRun, [pathName '\stillMinusRun']);
 
+tifftime = toc;
+
+%% Calculate base F
+tic;
+%Uses runMat matrix to return an index which adds up consecutive 1s. ie
+%[0 1 1 0 1 1 1] = [0 1 2 0 1 2 3]
+runMat(8000:8040) = 1;
+mm = size(runMat,1);
+consecRunIx = [reshape([zeros(1,mm);runMat.'],[],1);0];
+pp=find(~consecRunIx); dd=1-diff(pp);
+consecRunIx(pp)=[0;dd];
+consecRunIx=reshape(cumsum(consecRunIx(1:end-1)),[],mm).';
+consecRunIx(:,1)=[];
+%Finds the location of the longest consecutive run.
+longestRunIx= find(consecRunIx == max(consecRunIx));
+%These if-statements make sure we get a buffered 3 second period of
+%locomotion to calculate the baseF for each ROI, by averaging the avgF over
+%those frames. 
+if max(consecRunIx) > 30
+    for ii=1:cluster.num_cluster
+    maskBaseF{ii}= mean(dataStruct.(sprintf('avgF%d',ii))((longestRunIx(1)-26):longestRunIx(1)));
+    end
+end
+if max(consecRunIx) == 30
+    for ii=1:cluster.num_cluster
+    maskBaseF{ii}= mean(dataStruct.(sprintf('avgF%d',ii))((longestRunIx(1)-28):longestRunIx(1)-2));
+    end
+end
+%Ends program if there isn't at least a 3 second period of locomotion.
+if max(consecRunIx) < 30
+    disp('No 3 second period of consecutive locomotion found.');
+    return
+end
+
+baseFcalctime = toc;
+    
 %% Plotting running vs F
+tic;
 B = [1:(length(dataStruct.goodFramesIx)-2)]; %cut out first two locomotion mat frames because of start artifact. Therefore need to cut out first two imaging frames even though they are good frames
-figure;
+B = B*(frameIntMs/1000);
+runvFfig = figure;
 %Set/calculate variables with proper units
-revoLength = 30; revoPulse = 32;    %revoLength = length of 1 revolution (cm). revoPulse = # of pulses/revolution.
+revoLength = 30; revoPulse = 128;    %revoLength = length of 1 revolution (cm). revoPulse = # of pulses/revolution.
 runSpeed = (1000/frameIntMs)*(revoLength/revoPulse)*dataStruct.locomotionMatFrames(3:end); %runSpeed=(frames/sec)*(cm/pulse)*(pulses/frame)
 baseF = mean(dataStruct.avgF(3:length(B)+2));
-dFoverbaseF = (dataStruct.avgF(3:length(B)+2)/baseF)-1;
+for ii=1:cluster.num_cluster
+    dFoverbaseF(ii,:) = (dataStruct.(sprintf('avgF%d',ii))(3:length(B)+2)/maskBaseF{ii})-1;
+    B2(ii,:) = B;
+end
 %Plot Running v Fluorescence graph with appropriately labeled axes
-[a b c] = plotyy(B,runSpeed,B,dFoverbaseF)
+[a b c] = plotyy(B,runSpeed,B2',dFoverbaseF')
 title('Running vs. Fluorescence')
 set(a(1), 'Ylim', [0 (max(runSpeed)+3)])   %runSpeed y-axis from 0 to max runSpeed (+3 to look nicer) 
-set(a(2), 'Ylim', [min(dFoverbaseF) max(dFoverbaseF)])    %dF/F y-axis from min dF/F to max dF/F
-set(a(1), 'XTickLabel', (frameIntMs/1000)*get(a(1),'XTick')) %Converts x-axis frame ticks to seconds
-set(a(2), 'XTickLabel', (frameIntMs/1000)*get(a(2),'XTick'))
-set(a(1), 'XLim', [0 (length(dataStruct.goodFramesIx)-2)])  %Sets x-axis limits from 0 to end of data
-set(a(2), 'XLim', [0 (length(dataStruct.goodFramesIx)-2)])
+set(a(2), 'Ylim', [min(min(dFoverbaseF)) max(max(dFoverbaseF))])    %dF/F y-axis from min dF/F to max dF/F
+set(a(1), 'XTick', [0,100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]) %Converts x-axis frame ticks to seconds
+set(a(2), 'XTick', [0,100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
+set(a(1), 'XLim', [0 max(B)])  %Sets x-axis limits from 0 to end of data
+set(a(2), 'XLim', [0 max(B)])
 ylabel('Running Speed(cm/s)')
 xlabel('Time (s)')
 set(get(a(2),'Ylabel'),'String','dF/F')
 
-%Create baseF for each mask
-for ii=1:cluster.num_cluster
-    maskBaseF{ii}=mean(dataStruct.(sprintf('avgF%d',ii)));
-end
-
 
 %Plot dF/F over time for stimuli during Running
-figure;
+rundFvtimefig = figure;
 stimWindow = 3000/frameIntMs; %Calculates # of frames to equal 3 seconds (span of stimulus window) based on frame interval.
 stimTime = [0:2*stimWindow];    %x-axis for plot: stimulus window
 meanrunStimdFoverF = NaN(length(runPuffFrameNums)-1,2*stimWindow+1,cluster.num_cluster);
@@ -160,7 +199,7 @@ set(gca,'XTick', [0 stimWindow 2*stimWindow]);
 set(gca,'XTickLabel',[-3 0 3]);
 
 %Plot dF/F over time for stimuli while Still
-figure;
+stilldFvtimefig = figure;
 meanstillStimdFoverF = NaN(length(stillPuffFrameNums)-1,2*stimWindow+1,cluster.num_cluster);
 for ii=(1:length(stillPuffFrameNums)-1)
     stillStimFrame = stillPuffFrameNums(ii);
@@ -186,10 +225,19 @@ set(gca,'XLim',[0 2*stimWindow]);
 set(gca,'XTick', [0 stimWindow 2*stimWindow]);
 set(gca,'XTickLabel',[-3 0 3]);
 
+graphingtime = toc;
+
 %% Outputs number of trials w/ puffs delivered while running/still
 disp(['Number of puffs while running: ' num2str(sum(puffRun))])
 disp(['Number of puffs while still: ' num2str(sum(puffStill))])
 disp([pathName])
 disp([imagingRate])
 disp([length(dataStruct.goodFramesIx)])
+
+%% Save important figures automatically
+
+saveas(runvFfig,[pathName 'RunvF'], 'fig')
+saveas(rundFvtimefig,[pathName 'RunStim'], 'fig')
+saveas(stilldFvtimefig,[pathName 'StillStim'], 'fig')
+save([pathName 'fulldata.mat'],'locoMat','blankIx','cluster','dFoverbaseF','runMat','runSpeed','stillMat','stimOnIx')
 
