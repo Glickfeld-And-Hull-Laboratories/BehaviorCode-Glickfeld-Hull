@@ -5,7 +5,7 @@ pv = behavParamsAttn2AFC;
 colmat = strvcat('g', 'k', 'b');
 
 %avg hit rate by contrast
-for imouse = 1
+for imouse = 1:size(pv.mouse_mat,2)
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
     ntest = zeros(3,3,2);
@@ -33,12 +33,49 @@ for imouse = 1
         end
     end
     %legend([num2str((tests*100)') repmat('% 30 deg- n = ', 3,1) num2str(num')])
-    suptitle(['Black- 50% - n = ' num2str(num(2)) '; Green- 10% - n = ' num2str(num(1)) '; Blue- 90% - n = ' num2str(num(1))])
+    suptitle([num2str(pv.mouse_mat(:,imouse)) '- Black- 50% - n = ' num2str(num(2)) '; Green- 10% - n = ' num2str(num(1)) '; Blue- 90% - n = ' num2str(num(1))])
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_avgHitRate_probeCon.pdf'], '-dpdf')
 end
 
+%avg hit rate by contrast by half
+for imouse = 1:size(pv.mouse_mat,2)
+    figure;
+    tests = unique(mouse(imouse).oddsRightPctN);
+    ntest = zeros(3,3,2);
+    for itest = 1:length(tests)
+        num(itest) = length(mouse(imouse).test(itest).oddsRightPct);
+        if size(mouse(imouse).test(itest).pos(1).half(1).pctCorrect,1) == 1
+            ncon = length(mouse(imouse).test(itest).pos(1).pctCorrect);
+            for icon = 1:length(mouse(imouse).test(itest).pos(1).pctCorrect)
+                for ihalf = 1:2
+                    subplot(2,3,icon+((ihalf-1)*ncon))
+                    x = mouse(imouse).posN(1,:);
+                    y = [mouse(imouse).test(itest).pos(1).half(ihalf).pctCorrect(icon) mouse(imouse).test(itest).pos(2).half(ihalf).pctCorrect(icon)];
+                    errL = [mouse(imouse).test(itest).pos(1).half(ihalf).pctCorrect(icon) - mouse(imouse).test(itest).pos(1).half(ihalf).ci95(icon,1) mouse(imouse).test(itest).pos(2).half(ihalf).pctCorrect(icon) - mouse(imouse).test(itest).pos(2).half(ihalf).ci95(icon,1)];
+                    errU = [mouse(imouse).test(itest).pos(1).half(ihalf).ci95(icon,2) - mouse(imouse).test(itest).pos(1).half(ihalf).pctCorrect(icon) mouse(imouse).test(itest).pos(2).half(ihalf).ci95(icon,2) - mouse(imouse).test(itest).pos(2).half(ihalf).pctCorrect(icon)];
+                    errorbar(x, y, errL, errU, ['-o' colmat(itest,:)]);
+                    hold on
+                    for ipos = 1:2
+                        ntest(:,itest,ipos) = sum(mouse(imouse).test(itest).pos(ipos).half(ihalf).nCorrect,1)+sum(mouse(imouse).test(itest).pos(ipos).half(ihalf).nIncorrect,1);
+                    end
+                    if itest == 3
+                        title({[num2str(mouse(imouse).test(itest).intensities(1,icon)*100) '% contrast'], ['Black (' num2str(ntest(icon,2,:)) '); Green (' num2str(ntest(icon,1,:)) '); Blue (' num2str(ntest(icon,3,:)) ')']})
+                        ylim([0 1])
+                        ylabel('Hit rate')
+                        xlabel('Stimulus position (deg)')
+                    end
+                end
+            end
+        end
+    end
+    %legend([num2str((tests*100)') repmat('% 30 deg- n = ', 3,1) num2str(num')])
+    suptitle([num2str(pv.mouse_mat(:,imouse)) '- Black- 50% - n = ' num2str(num(2)) '; Green- 10% - n = ' num2str(num(1)) '; Blue- 90% - n = ' num2str(num(1))])
+    print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_avgHitRate_probeCon_byHalf.pdf'], '-dpdf')
+end
+
+
 %psych curves for each day
-for imouse = 1
+for imouse = 1:size(pv.mouse_mat,2)
     figure;
     nexp = length(mouse(imouse).ind);
     n = ceil(sqrt(nexp));
@@ -69,7 +106,7 @@ for imouse = 1
 end
 
 %timecourse of %correct for 12.5% contrast for each day
-for imouse = 1
+for imouse = 1:size(pv.mouse_mat,2)
     figure;
     nexp = length(mouse(imouse).ind);
     n = ceil(sqrt(nexp));
@@ -78,7 +115,6 @@ for imouse = 1
     else
         n2 = n;
     end
-    pos = struct;
     for iexp = 1:nexp
         subplot(n, n2, iexp)
         for ipos = 1:2
@@ -87,8 +123,8 @@ for imouse = 1
                 plotData(mouse(imouse).expt(iexp).pos(ipos).correctInd{icon}) = 1;
                 plotData(mouse(imouse).expt(iexp).pos(ipos).incorrectInd{icon}) = 0;
                 smPlotData = smooth(plotData,20);
-                pos(ipos).plotData_all{iexp} = plotData;
-                pos(ipos).ntrials(iexp) = length(plotData);
+                mouse(imouse).pos(ipos).plotData_all{iexp} = plotData;
+                mouse(imouse).pos(ipos).ntrials(iexp) = length(plotData);
                 if ipos ==1
                     plot(mouse(imouse).expt(iexp).pos(ipos).correctInd{icon}, ones(size(mouse(imouse).expt(iexp).pos(ipos).correctInd{icon})), 'xg')
                     hold on
@@ -112,16 +148,16 @@ for imouse = 1
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_TCcorrect_byday.pdf'], '-dpdf')
 end
 
-for imouse = 1
+for imouse = 1:size(pv.mouse_mat,2)
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
     for itest = 1:length(tests)
         ind = find(mouse(imouse).oddsRightPctN == tests(:,itest));
         for ipos = 1:2
-            max_trials = max(pos(ipos).ntrials(ind),[],2);
+            max_trials = max(mouse(imouse).pos(ipos).ntrials(ind),[],2);
             plotData_all = NaN(max_trials, length(ind));
             for i = 1:length(ind)
-                plotData_all(1:pos(ipos).ntrials(ind(i)),i) = pos(ipos).plotData_all{ind(i)};
+                plotData_all(1:mouse(imouse).pos(ipos).ntrials(ind(i)),i) = mouse(imouse).pos(ipos).plotData_all{ind(i)};
             end
             plotData_avg = nanmean(plotData_all,2);
             isnan_plotdata = ~isnan(plotData_all);
@@ -144,7 +180,7 @@ for imouse = 1
 end
 
 %summary percent correct by test
-for imouse = 1
+for imouse = 1:size(pv.mouse_mat,2)
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
     for itest = 1:length(tests)
@@ -165,7 +201,7 @@ end
         
 
 %summary psych curves across days
-for imouse = 1
+for imouse = 1:size(pv.mouse_mat,2)
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
     for itest = 1:length(tests)
@@ -197,7 +233,7 @@ for imouse = 1
 end
 
 %number of ignored trials by contrast across days
-for imouse = 1
+for imouse = 1:size(pv.mouse_mat,2)
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
     for itest = 1:length(tests)
@@ -216,7 +252,7 @@ for imouse = 1
 end
 
 %react times by contrast and outcome
-for imouse = 1
+for imouse = 1:size(pv.mouse_mat,2)
     figure;
     tests = unique(mouse(imouse).oddsRightPctN);
     for itest = 1:length(tests)
@@ -263,34 +299,36 @@ for imouse = 1
     print([rc.fitOutputSummary '\' date '_' num2str(pv.mouse_mat(:,imouse)) '_ReactTimeSummary.pdf'], '-dpdf')
 end
 
-itest = 2;
-figure;
-ind2 = find(mouse(imouse).oddsRightPctN == tests(:,itest));
-mouse(imouse).test(itest).intensities = [];
-mouse(imouse).test(itest).nCorrect = 0;
-mouse(imouse).test(itest).nIncorrect = 0;
-for ipos = 1:2
-    for iexp = 1:length(ind2)
-        i = ind2(iexp);
-        mouse(imouse).test(itest).intensities = [mouse(imouse).test(itest).intensities ; mouse(imouse).expt(i).intensities];
-        mouse(imouse).test(itest).nCorrect = [mouse(imouse).test(itest).nCorrect + mouse(imouse).expt(i).pos(ipos).nCorrect];
-        mouse(imouse).test(itest).nIncorrect = [mouse(imouse).test(itest).nIncorrect + mouse(imouse).expt(i).pos(ipos).nIncorrect];
+for imouse = 1 :size(pv.mouse_mat,2)
+    itest = 2;
+    figure;
+    ind2 = find(mouse(imouse).oddsRightPctN == tests(:,itest));
+    mouse(imouse).test(itest).intensities = [];
+    mouse(imouse).test(itest).nCorrect = 0;
+    mouse(imouse).test(itest).nIncorrect = 0;
+    for ipos = 1:2
+        for iexp = 1:length(ind2)
+            i = ind2(iexp);
+            mouse(imouse).test(itest).intensities = [mouse(imouse).test(itest).intensities ; mouse(imouse).expt(i).intensities];
+            mouse(imouse).test(itest).nCorrect = [mouse(imouse).test(itest).nCorrect + mouse(imouse).expt(i).pos(ipos).nCorrect];
+            mouse(imouse).test(itest).nIncorrect = [mouse(imouse).test(itest).nIncorrect + mouse(imouse).expt(i).pos(ipos).nIncorrect];
+        end
+        [mouse(imouse).test(itest).pctCorr mouse(imouse).test(itest).ci95] = binofit(mouse(imouse).test(itest).nCorrect,mouse(imouse).test(itest).nCorrect + mouse(imouse).test(itest).nIncorrect);
+        xval = mean(mouse(imouse).test(itest).intensities,1);
+        if ipos == 1
+            mouse(imouse).test(itest).pctCorr = 1-mouse(imouse).test(itest).pctCorr;
+            mouse(imouse).test(itest).ci95 = fliplr(1-mouse(imouse).test(itest).ci95);
+        end
+        subplot(1,2,ipos)
+        errorbar(xval, mouse(imouse).test(itest).pctCorr, mouse(imouse).test(itest).pctCorr-mouse(imouse).test(itest).ci95(:,1)', mouse(imouse).test(itest).ci95(:,2)' - mouse(imouse).test(itest).pctCorr, ['o' colmat(itest,:)]);
+        hold on
+        xlabel('R-L contrast')
+        ylabel('Fract. right choice')
+        ylim([0 1])
+        xlim([0.01 2])
+        title([num2str(mouse(imouse).posN(1,ipos)) 'deg - n = ' num2str(length(ind2)) 'sessions'])
+        set(gca, 'xscale', 'log')
     end
-    [mouse(imouse).test(itest).pctCorr mouse(imouse).test(itest).ci95] = binofit(mouse(imouse).test(itest).nCorrect,mouse(imouse).test(itest).nCorrect + mouse(imouse).test(itest).nIncorrect);
-    xval = mean(mouse(imouse).test(itest).intensities,1);
-    if ipos == 1
-        mouse(imouse).test(itest).pctCorr = 1-mouse(imouse).test(itest).pctCorr;
-        mouse(imouse).test(itest).ci95 = fliplr(1-mouse(imouse).test(itest).ci95);
-    end
-    subplot(1,2,ipos)
-    errorbar(xval, mouse(imouse).test(itest).pctCorr, mouse(imouse).test(itest).pctCorr-mouse(imouse).test(itest).ci95(:,1)', mouse(imouse).test(itest).ci95(:,2)' - mouse(imouse).test(itest).pctCorr, ['o' colmat(itest,:)]);
-    hold on
-    xlabel('R-L contrast')
-    ylabel('Fract. right choice')
-    ylim([0 1])
-    xlim([0.01 2])
-    title([num2str(mouse(imouse).posN(1,ipos)) 'deg - n = ' num2str(length(ind2)) 'sessions'])
-    set(gca, 'xscale', 'log')
 end
 
             

@@ -4,48 +4,27 @@ xd = frm_xls2frm(rc.indexFilename, [], rc.indexTextCols);
 av = behavParamsAV;
 
 for imouse = 1:size(av,2);
+    imouse
     mouse_name = av(imouse).mouse;
-    disp(mouse_name)
     ind = find(xd.Subject == mouse_name);
     date_mat = [];
     early_mat = [];
     HR_ori_mat = [];
     HR_amp_mat = [];
     catch_mat = zeros(2, length(ind));
+   
     for iexp = 1:length(ind)
-        disp(iexp)
+        iexp
         idate = xd.DateStr{ind(iexp)};
         n  = dir(fullfile(rc.pathStr, ['data-i' num2str(mouse_name) '-' idate '-*']));
-        if ~isnan(str2num(xd.ChooseMatFile{ind(iexp)}))
-            n = n(str2num(xd.ChooseMatFile{ind(iexp)}));
-        end
+%         if ~isnan(str2num(xd.ChooseMatFile{ind(iexp)}))
+%             n = n(str2num(xd.ChooseMatFile{ind(iexp)}));
+%         end
         for ifile = 1:size(n,1)
             if ifile == 1
                 input_temp = mwLoadData(fullfile(rc.pathStr, n(ifile).name), [], []);
             else
                 input_temp = [input_temp mwLoadData(fullfile(rc.pathStr, n(ifile).name), [], [])];
-%             try
-%                 input_temp = [input_temp mwLoadData(fullfile(rc.pathStr, n(ifile).name), [], [])];
-%             catch
-%                 input2 = mwLoadData(fn_mworks, [], []);
-%                 inpNames1 = fieldnames(input);
-%                 inpNames2 = fieldnames(input2);
-%                 inpLong = gt(length(inpNames1),length(inpNames2));
-%                 if inpLong == 1
-%                     inpPlusInd = ismember(inpNames1,inpNames2);
-%                     inpPlus = inpNames1(~inpPlusInd);
-%                     for i = 1:length(inpPlus)
-%                         input2.(genvarname(inpPlus(i))) = cell(1,length(inpNames1));
-%                     end
-%                 else
-%                     inpPlusInd = ismember(inpNames2,inpNames1);
-%                     inpPlus = inpNames2(~inpPlusInd);
-%                     for i = 1:length(inpPlus)
-%                         input_temp.(char(genvarname(inpPlus(i)))) = cell(1,length(inpNames2));
-%                     end
-%                 end
-%                 input_temp = [input_temp input2];
-%             end
             end
         end
         if size(n,1)>1
@@ -65,6 +44,10 @@ for imouse = 1:size(av,2);
         
         gratingDirectionDeg = celleqel2mat_padded(input_temp.tGratingDirectionDeg);
         soundAmplitude = celleqel2mat_padded(input_temp.tSoundTargetAmplitude);
+        
+%         catchgratingdirectiondeg = celleqel2mat_padded(input_temp.tCatchGratingDirectionDeg);
+       
+        
 
         oris = unique(gratingDirectionDeg);
         amps = unique(soundAmplitude);
@@ -128,8 +111,52 @@ for imouse = 1:size(av,2);
         mouse(imouse).input(iexp).stimOnTimeMs = input_temp.stimOnTimeMs;
         mouse(imouse).input(iexp).stimOffTimeMs = input_temp.stimOffTimeMs;
         mouse(imouse).input(iexp).catchCyclesOn = input_temp.catchCyclesOn;
-        mouse(imouse).input(iexp).tCyclesOn = input_temp.tCyclesOn;
+        mouse(imouse).input(iexp).tCatchTimeMs = input_temp.tCatchTimeMs;
+        mouse(imouse).input(iexp).uniqueCatchDeg = unique(celleqel2mat_padded(input_temp.tCatchGratingDirectionDeg));
+        mouse(imouse).input(iexp).uniqueDeg= unique(mouse(imouse).input(iexp).uniqueCatchDeg(isnan(mouse(imouse).input(iexp).uniqueCatchDeg) ==0));
+        mouse(imouse).input(iexp).FAIx =strcmp(input_temp.catchTrialOutcomeCell, 'FA');
+        mouse(imouse).input(iexp).CRIx =strcmp(input_temp.catchTrialOutcomeCell, 'CR');
+        mouse(imouse).input(iexp).Ignorex =strcmp(input_temp.trialOutcomeCell, 'ignore');
+        mouse(imouse).input(iexp).SuccessIx =strcmp(input_temp.trialOutcomeCell, 'success');
+        mouse(imouse).input(iexp).hitrates = zeros(1,length(mouse(imouse).input(iexp).uniqueDeg));
+        
+        
+        mouse(imouse).input(iexp).countDegs = length(mouse(imouse).input(iexp).uniqueDeg);
+        
+        for level = 1: length(mouse(imouse).input(iexp).uniqueDeg)
+            
+            deg = mouse(imouse).input(iexp).uniqueDeg(level);
+            mouse(imouse).input(iexp).find = find(celleqel2mat_padded(mouse(imouse).input(iexp).tCatchGratingDirectionDeg)==deg);
+            mouse(imouse).input(iexp).FAs =  mouse(imouse).input(iexp).FAIx( mouse(imouse).input(iexp).find)
+            mouse(imouse).input(iexp).levelFA = sum( mouse(imouse).input(iexp).FAs)/ length(mouse(imouse).input(iexp).find)
+            mouse(imouse).input(iexp).hitrates(level) = mouse(imouse).input(iexp).levelFA;
+            
+        end
+        
+          
+
+        
+%         mouse(imouse).input(iexp).levelone= find(celleqel2mat_padded(input_temp.tCatchGratingDirectionDeg)==22.5000);
+%         mouse(imouse).input(iexp).leveltwo= find(celleqel2mat_padded(input_temp.tCatchGratingDirectionDeg)==90);
+%         
+% 
+%         
+%         mouse(imouse).input(iexp).oneFA =  mouse(imouse).input(iexp).FAIx( mouse(imouse).input(iexp).levelone);
+%         mouse(imouse).input(iexp).twoFA= mouse(imouse).input(iexp).FAIx(mouse(imouse).input(iexp).leveltwo);
+%         mouse(imouse).input(iexp).leveloneFA = sum( mouse(imouse).input(iexp).oneFA)/ length(mouse(imouse).input(iexp).levelone);
+%         mouse(imouse).input(iexp).leveltwoFA = sum( mouse(imouse).input(iexp).twoFA)/ length(mouse(imouse).input(iexp).leveltwo);
       
+        totalCatchLevels = double(input_temp.catchTrPerB2Level1+input_temp.catchTrPerB2Level2 + input_temp.catchTrPerB2Level3 +input_temp.catchTrPerB2Level4+input_temp.catchTrPerB2Level5+input_temp.catchTrPerB2Level6+input_temp.catchTrPerB2Level7+input_temp.catchTrPerB2Level8)./80
+        mouse(imouse).input(iexp).catchvalue = totalCatchLevels;
+        
+        mouse(imouse).input(iexp).measuredcatchvalue = (length(input_temp.catchTrialOutcomeCell) - sum(strcmp(input_temp.catchTrialOutcomeCell, 'NaN')))/ length(input_temp.catchTrialOutcomeCell) ;
+        
+        
+        mouse(imouse).input(iexp).measured = (mouse(imouse).input(iexp).FAIx+  mouse(imouse).input(iexp).CRIx)/ (mouse(imouse).input(iexp).FAIx+  mouse(imouse).input(iexp).CRIx+ mouse(imouse).input(iexp).Ignorex+ mouse(imouse).input(iexp).SuccessIx);
+        
+        mouse(imouse).input(iexp).measuredDegs = ones(1,mouse(imouse).input(iexp).countDegs) *mouse(imouse).input(iexp).measured;
+        
+        
         if length(unique(cell2mat_padded(input_temp.tCatchGratingDirectionDeg)))>1
             catch_mat(1,iexp) = 1;
         end
@@ -143,6 +170,5 @@ for imouse = 1:size(av,2);
     mouse(imouse).HR_ori_mat = HR_ori_mat;
     mouse(imouse).HR_amp_mat = HR_amp_mat;
     mouse(imouse).date_mat = date_mat;
-    
 end
-save(fullfile(rc.fitOutputSummary, [date '_i613_i614_i616_CatchSummary.mat']), 'mouse');
+save(fullfile(rc.fitOutputSummary, [date '_i613_i614_CatchSummary.mat']), 'mouse');

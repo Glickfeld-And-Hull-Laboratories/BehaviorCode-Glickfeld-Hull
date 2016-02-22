@@ -15,8 +15,11 @@ close all
 
 AFig = figure;
 VFig = figure;
-maxEarlyRate = 1;
-maxLapseRate = 0;
+%need to change bc need to turn off thresholds for 2x and 4x
+maxEarlyRate = 1.0;
+maxLapseRate = 0.0;
+
+%for graphs, need to manually change titles
 
 for imouse = 1:length(miceAnalyzed);
     mouse_name = av(imouse).mouse; 
@@ -72,7 +75,8 @@ for imouse = 1:length(miceAnalyzed);
     reactVsuccess = reactV(successIx);
     reactVsuccessa = reactV(successaud);
     reactVsuccessv= reactV(successvis);
-    reactC =  celleqel2mat_padded(input.leverUpTimeMs) -( celleqel2mat_padded(input.leverDownTimeMs) +((unique(input.stimOnTimeMs)+unique(input.stimOffTimeMs)).*(celleqel2mat_padded(input.catchCyclesOn)-1)));
+%    reactC =  celleqel2mat_padded(input.leverUpTimeMs) -( celleqel2mat_padded(input.leverDownTimeMs) +((unique(input.stimOnTimeMs)+unique(input.stimOffTimeMs)).*(celleqel2mat_padded(input.catchCyclesOn)-1)));
+    reactC = celleqel2mat_padded(input.leverUpTimeMs) - celleqel2mat_padded(input.tCatchTimeMs);
     reactCsuccess = reactC(successIx);
     reactCsuccessa = reactC(FAaud);
     reactCsuccessv = reactC(FAvis);
@@ -262,9 +266,9 @@ for imouse = 1:length(miceAnalyzed);
     hold on
 %     xlim([0 1])
 %     ylim([0 1])
-    xlabel('Hit rate- valid cue')
-    ylabel('Hit rate- invalid cue')
-    title('Auditory trials')
+    xlabel('React time- valid cue')
+    ylabel('React time- invalid cue')
+    title('Auditory trials-2x')
     
     figure(VFig);
     ind_catch = find(n_ori(2,:)>1);
@@ -311,8 +315,8 @@ for imouse = 1:length(miceAnalyzed);
     plot(x,y,'--k')
     hold on
    
-    xlabel('Hit rate- valid cue')
-    ylabel('Hit rate- invalid cue')
+    xlabel('React time- valid cue')
+    ylabel('React time- invalid cue')
     title('Visual trials -2x')
      end
 figure(VFig);

@@ -118,9 +118,11 @@ if nSync >= 4 % is Justin Timberlake missing?
   %   trial.  Don't ask me why this is, pressing it once doesn't
   %   send the constants.
   errFlag = false;
-  if ~ all(diff([events.time_us]) >= 0)
-    disp('increasing in time?');     errFlag = true;
-  elseif ~(syncNs(1) == 1)
+  %if ~ all(diff([events.time_us]) >= 0)
+  %  disp('increasing in time?');     errFlag = true;   No need to check
+  %  time here because it contains all the timestamps for all event code --
+  %  they do not have to be in non-decreasing order.
+  if ~(syncNs(1) == 1)
     disp('sync structure'); errFlag = true;
   elseif ~(syncNs(end) == length(events))
     disp('last code'); errFlag = true;

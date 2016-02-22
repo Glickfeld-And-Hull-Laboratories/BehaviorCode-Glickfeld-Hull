@@ -16,8 +16,16 @@ function mouse = createExptStructAttn2AFC;
                 mouse(imouse).test(itest).pos(ipos).nCorrect = [];
                 mouse(imouse).test(itest).pos(ipos).nIncorrect = [];
                 mouse(imouse).test(itest).pos(ipos).nIgnore = [];
+                for ihalf = 1:2
+                    mouse(imouse).test(itest).pos(ipos).half(ihalf).nCorrect = [];
+                    mouse(imouse).test(itest).pos(ipos).half(ihalf).nIncorrect = [];
+                    mouse(imouse).test(itest).pos(ipos).half(ihalf).nIgnore = [];
+                end
                 for i = 1:2
                     mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes = cell(1,3);
+                    for ihalf = 1:2
+                        mouse(imouse).test(itest).pos(ipos).half(ihalf).outcome(i).reactTimes = cell(1,3);
+                    end
                 end
             end
         end
@@ -69,6 +77,28 @@ function mouse = createExptStructAttn2AFC;
                     [x y] = binofit(mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon),mouse(imouse).expt(iexp).pos(ipos).nCorrect(icon)+mouse(imouse).expt(iexp).pos(ipos).nIncorrect(icon));
                     mouse(imouse).expt(iexp).pos(ipos).binofit(icon).pctCorrect = x;
                     mouse(imouse).expt(iexp).pos(ipos).binofit(icon).ci95 = y;
+                    for ihalf = 1:2
+                        if ihalf == 1
+                            sub_range = range(1:ceil(length(range)./2));
+                        else
+                            sub_range = range(ceil(length(range)./2):end);
+                        end
+                        S_ind = intersect(sub_range,intersect(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind), find(strcmp(input.trialOutcomeCell, 'success'))));
+                        I_ind = intersect(sub_range,intersect(intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind), find(strcmp(input.trialOutcomeCell, 'incorrect'))));
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nTrials(icon) = length(intersect(sub_range, intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, con_ind)));                    
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).correctInd{icon} = intersect(sub_range,intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'success')))));
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).incorrectInd{icon} = intersect(sub_range,intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'incorrect')))));
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nCorrect(icon) = length(intersect(sub_range,intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'success'))))));
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nIncorrect(icon) = length(intersect(sub_range,intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'incorrect'))))));
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nIgnore(icon) = length(intersect(sub_range,intersect(mouse(imouse).expt(iexp).pos(ipos).trial_ind, intersect(con_ind, find(strcmp(input.trialOutcomeCell, 'ignore'))))));
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).outcome(1).reactTimes{icon} = reactTimes(1,S_ind);
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).outcome(2).reactTimes{icon} = reactTimes(1,I_ind);
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).outcome(1).name = 'correct';
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).outcome(2).name = 'incorrect';
+                        [x y] = binofit(mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nCorrect(icon),mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nCorrect(icon)+mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nIncorrect(icon));
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).binofit(icon).pctCorrect = x;
+                        mouse(imouse).expt(iexp).pos(ipos).half(ihalf).binofit(icon).ci95 = y;
+                    end
                 end
             end
             if isfield(input, 'doLeftSeparateOdds')
@@ -105,8 +135,8 @@ function mouse = createExptStructAttn2AFC;
                 itest = 2;
                 test_pos = 1;
             end
-            mouse(imouse).test(itest).oddsRightPct = [mouse(imouse).test(itest).oddsRightPct mouse(imouse).expt(iexp).oddsRightPct];
-            mouse(imouse).test(itest).testCon = [mouse(imouse).test(itest).testCon mouse(imouse).expt(iexp).pos(test_pos).intensities];
+            mouse(imouse).test(itest).oddsRightPct = [mouse(imouse).test(itest).oddsRightPct; mouse(imouse).expt(iexp).oddsRightPct];
+            mouse(imouse).test(itest).testCon = [mouse(imouse).test(itest).testCon; mouse(imouse).expt(iexp).pos(test_pos).intensities];
             mouse(imouse).test(itest).intensities = [mouse(imouse).test(itest).intensities; mouse(imouse).expt(iexp).intensities];
             mouse(imouse).posN = [mouse(imouse).posN; mouse(imouse).expt(iexp).posN];
             mouse(imouse).oddsRightPctN = [mouse(imouse).oddsRightPctN, mouse(imouse).expt(iexp).oddsRightPct];
@@ -114,9 +144,17 @@ function mouse = createExptStructAttn2AFC;
                 mouse(imouse).test(itest).pos(ipos).nCorrect = [mouse(imouse).test(itest).pos(ipos).nCorrect; mouse(imouse).expt(iexp).pos(ipos).nCorrect];
                 mouse(imouse).test(itest).pos(ipos).nIncorrect = [mouse(imouse).test(itest).pos(ipos).nIncorrect; mouse(imouse).expt(iexp).pos(ipos).nIncorrect];
                 mouse(imouse).test(itest).pos(ipos).nIgnore = [mouse(imouse).test(itest).pos(ipos).nIgnore; mouse(imouse).expt(iexp).pos(ipos).nIgnore];
+                for ihalf = 1:2
+                    mouse(imouse).test(itest).pos(ipos).half(ihalf).nCorrect = [mouse(imouse).test(itest).pos(ipos).half(ihalf).nCorrect; mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nCorrect];
+                    mouse(imouse).test(itest).pos(ipos).half(ihalf).nIncorrect = [mouse(imouse).test(itest).pos(ipos).half(ihalf).nIncorrect; mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nIncorrect];
+                    mouse(imouse).test(itest).pos(ipos).half(ihalf).nIgnore = [mouse(imouse).test(itest).pos(ipos).half(ihalf).nIgnore; mouse(imouse).expt(iexp).pos(ipos).half(ihalf).nIgnore];
+                end
                 for icon = 1:length(mouse(imouse).expt(iexp).intensities)
                     for i = 1:2
                         mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes{icon} = [mouse(imouse).test(itest).pos(ipos).outcome(i).reactTimes{icon} mouse(imouse).expt(iexp).pos(ipos).outcome(i).reactTimes{icon}];
+                        for ihalf = 1:2
+                        	mouse(imouse).test(itest).pos(ipos).half(ihalf).outcome(i).reactTimes{icon} = [mouse(imouse).test(itest).pos(ipos).half(ihalf).outcome(i).reactTimes{icon} mouse(imouse).expt(iexp).pos(ipos).half(ihalf).outcome(i).reactTimes{icon}];
+                        end
                     end
                 end
                     mouse(imouse).test(itest).pos(ipos).outcome(1).name = 'correct';
@@ -129,6 +167,11 @@ function mouse = createExptStructAttn2AFC;
                     [x y] = binofit(sum(mouse(imouse).test(itest).pos(ipos).nCorrect,1),sum(mouse(imouse).test(itest).pos(ipos).nCorrect,1) + sum(mouse(imouse).test(itest).pos(ipos).nIncorrect,1));
                     mouse(imouse).test(itest).pos(ipos).pctCorrect = x;
                     mouse(imouse).test(itest).pos(ipos).ci95 = y;
+                    for ihalf = 1:2
+                        [x y] = binofit(sum(mouse(imouse).test(itest).pos(ipos).half(ihalf).nCorrect,1),sum(mouse(imouse).test(itest).pos(ipos).half(ihalf).nCorrect,1) + sum(mouse(imouse).test(itest).pos(ipos).half(ihalf).nIncorrect,1));
+                        mouse(imouse).test(itest).pos(ipos).half(ihalf).pctCorrect = x;
+                        mouse(imouse).test(itest).pos(ipos).half(ihalf).ci95 = y;
+                    end
                 end
             end
         end

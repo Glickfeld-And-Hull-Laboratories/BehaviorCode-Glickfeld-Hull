@@ -375,7 +375,7 @@
                              <action type="assignment" variable="tStimProbAvgLeft" value="stimProbAvgLeft"/>
                            </action>
 
-                           <action type="if" condition="tStimProbAvgLeft &gt; 0 ">
+                           <action type="if" condition="tStimProbAvgLeft &gt; 0 &amp;&amp; tStimProbAvgLeft &lt; 1">
                             <action type="assignment" variable="tMarkovOdds" value="(1-tStimProbAvgLeft)/tStimProbAvgLeft" />
                             <action type="assignment" variable="b" value="stimProbAvgSwitch * (1+tMarkovOdds) / (1+(tMarkovOdds*tMarkovOdds)) "/>
                             <action type="assignment" variable="a" value="tMarkovOdds * b"/>
@@ -395,6 +395,10 @@
 
                           <action type="if" condition="tStimProbAvgLeft == 0 ">
                             <action type="assignment" variable="tLeftTrial" value="0"/>
+                          </action>
+
+                          <action type="if" condition="tStimProbAvgLeft == 1 ">
+                            <action type="assignment" variable="tLeftTrial" value="1"/>
                           </action> 
                         </action>
 
