@@ -33,9 +33,13 @@ for imouse = 1:nMice;
         end
         range = str2num(xd.TrialRangeToUse{ind(iexp)});
         if ~isnan(range(1))
-            input_temp = trialChopper(input_temp, [range(1) range(end)]);
+            if range(end) > input_temp.trialSinceReset
+                input_temp = trialChopper(input_temp, [range(1) input_temp.trialSinceReset]);
+            else
+                input_temp = trialChopper(input_temp, [range(1) range(end)]);
+            end
         end
-       date_mat = [date_mat; idate];
+        date_mat = [date_mat; idate];
         
         failureIx = strcmp(input_temp.trialOutcomeCell, 'failure');
         missedIx = strcmp(input_temp.trialOutcomeCell, 'ignore');
