@@ -2,10 +2,11 @@ function mouse = createExptStructAV;
 rc = behavConstsAV;
 xd = frm_xls2frm(rc.indexFilename, [], rc.indexTextCols);
 av = behavParamsAV;
+mice = unique(xd.Subject);
+nMice = length(mice);
 
-for imouse = 1:size(av,2);
-    imouse
-    mouse_name = av(imouse).mouse;
+for imouse = 1:nMice;
+    mouse_name = mice(imouse);
     ind = find(xd.Subject == mouse_name);
     date_mat = [];
     early_mat = [];
@@ -111,6 +112,7 @@ for imouse = 1:size(av,2);
         mouse(imouse).input(iexp).stimOnTimeMs = input_temp.stimOnTimeMs;
         mouse(imouse).input(iexp).stimOffTimeMs = input_temp.stimOffTimeMs;
         mouse(imouse).input(iexp).catchCyclesOn = input_temp.catchCyclesOn;
+        mouse(imouse).input(iexp).tCyclesOn = input_temp.tCyclesOn
         mouse(imouse).input(iexp).tCatchTimeMs = input_temp.tCatchTimeMs;
         mouse(imouse).input(iexp).uniqueCatchDeg = unique(celleqel2mat_padded(input_temp.tCatchGratingDirectionDeg));
         mouse(imouse).input(iexp).uniqueDeg= unique(mouse(imouse).input(iexp).uniqueCatchDeg(isnan(mouse(imouse).input(iexp).uniqueCatchDeg) ==0));
@@ -146,7 +148,7 @@ for imouse = 1:size(av,2);
 %         mouse(imouse).input(iexp).leveloneFA = sum( mouse(imouse).input(iexp).oneFA)/ length(mouse(imouse).input(iexp).levelone);
 %         mouse(imouse).input(iexp).leveltwoFA = sum( mouse(imouse).input(iexp).twoFA)/ length(mouse(imouse).input(iexp).leveltwo);
       
-        totalCatchLevels = double(input_temp.catchTrPerB2Level1+input_temp.catchTrPerB2Level2 + input_temp.catchTrPerB2Level3 +input_temp.catchTrPerB2Level4+input_temp.catchTrPerB2Level5+input_temp.catchTrPerB2Level6+input_temp.catchTrPerB2Level7+input_temp.catchTrPerB2Level8)./80
+        totalCatchLevels = double(input_temp.catchTrPerB2Level1+input_temp.catchTrPerB2Level2 + input_temp.catchTrPerB2Level3 +input_temp.catchTrPerB2Level4+input_temp.catchTrPerB2Level5+input_temp.catchTrPerB2Level6+input_temp.catchTrPerB2Level7+input_temp.catchTrPerB2Level8)./80;
         mouse(imouse).input(iexp).catchvalue = totalCatchLevels;
         
         mouse(imouse).input(iexp).measuredcatchvalue = (length(input_temp.catchTrialOutcomeCell) - sum(strcmp(input_temp.catchTrialOutcomeCell, 'NaN')))/ length(input_temp.catchTrialOutcomeCell) ;
@@ -171,4 +173,4 @@ for imouse = 1:size(av,2);
     mouse(imouse).HR_amp_mat = HR_amp_mat;
     mouse(imouse).date_mat = date_mat;
 end
-save(fullfile(rc.fitOutputSummary, [date '_i613_i614_CatchSummary.mat']), 'mouse');
+save(fullfile(rc.fitOutputSummary, [date '_CatchSummary.mat']), 'mouse');

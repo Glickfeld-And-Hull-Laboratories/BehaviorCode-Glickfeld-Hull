@@ -31,7 +31,7 @@ switch tHostname
             rc.fitOutputMatDir = fullfile(rootDir, '\Behavior\output\fitMatStats');
             rc.eyeOutputDir = fullfile(rootDir);
             rc.eyeInputDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis\';
-            rc.caOutputDir = fullfile(rootDir);
+            rc.caOutputDir = fullfile(rootDir, 'FSAV Summaries');
             rc.ashleyAnalysis = fullfile(rootDir);
        elseif tUsername(1:5) == 'aiwei'
    
