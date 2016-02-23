@@ -18,6 +18,7 @@
         <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
 
         <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string" persistant="1"/>
+        <variable tag="doAnalogLever" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
 
         <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
         <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser Variables"/>
@@ -188,6 +189,8 @@
         <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
         <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
         <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+        <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Lever"/>
+      <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
         <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
         <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
         <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -942,7 +945,8 @@
             <action type="assignment" variable="tFakeMousePressMs" value="rand(0, fakeMouseMaxPressMs)"></action>
         </action>
 
-        <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; FIO1 == 1 &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
+        <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; doAnalogLever == 0 &amp;&amp; FIO1 == 1 &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
+        <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; doAnalogLever &amp;&amp; (quadrature &gt; leverThreshold) &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
         <transition type="conditional" tag="If fakeMouse elapsed, go to HoldLever" 
             condition="!doLever &amp;&amp; doAllCorrects==0 &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tFakeMousePressMs" target="HoldLever"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
@@ -997,7 +1001,8 @@
               <action type="start_timer" tag="Start LeverHold Timer" timer="leverHoldTimer" timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
               <action tag="Report LeverDown" full_name="ReportDigital" type="report" message="LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)"></action>
               <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+              <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+              <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever &amp;&amp; quadrature &lt; leverThreshold &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
               <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
               <transition type="timer_expired" tag="If leverHoldTimer Expired, Go To StimOn" target="StimOn" timer="leverHoldTimer"></transition>
           </task_system_state>
@@ -1056,7 +1061,8 @@
   </action>
 
   <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
-  <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+  <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
+  <transition type="conditional" tag="If LeverUp, go to EarlyRelease" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; doAllCorrects==0" target="EarlyRelease"></transition>
   <transition type="timer_expired" tag="If fakeMouseTimer expired, go to EarlyRelease" target="EarlyRelease" timer="fakeMouseTimer"></transition>
   <transition type="direct" target="CheckTooFastTime"></transition>
 </task_system_state>
@@ -1080,7 +1086,8 @@
 
 
 <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-<transition type="conditional" tag="If Lever Up, Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1 " target="Reward"></transition>
+<transition type="conditional" tag="If Lever Up, Go To Reward" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 " target="Reward"></transition>
+<transition type="conditional" tag="If Lever Up, Go To Reward" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 " target="Reward"></transition>
 <transition type="conditional" tag="If DoAllCorrects, Go To Reward" condition="doAllCorrects==1" target="Reward"></transition>
 <transition type="timer_expired" tag="If fakeMouse expired, Transition to Reward" target="Reward" timer="fakeMouseTimer"></transition>
 <transition type="timer_expired" tag="If React Time Expired, Go To Missed" target="Missed" timer="reactTimeTimer"></transition>
