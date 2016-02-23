@@ -1081,6 +1081,13 @@
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+
+             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
+              <!-- Raise solenoid after correct trial for any solenoid -->
+              <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
+            </action>
+
             <action type="if" condition="doCounterTracking==1">
               <action type="assignment" variable="cLeverUp" value="counter"></action>
             </action>
