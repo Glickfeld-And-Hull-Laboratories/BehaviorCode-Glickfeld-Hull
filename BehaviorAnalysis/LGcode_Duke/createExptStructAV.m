@@ -163,13 +163,13 @@ for imouse = 1:nMice;
         mouse(imouse).input(iexp).measuredDegs = ones(1,mouse(imouse).input(iexp).countDegs) *mouse(imouse).input(iexp).measured;
         
         
-        if length(unique(cell2mat_padded(input_temp.tCatchGratingDirectionDeg)))>1
-            catch_mat(1,iexp) = 1;
-        end
-        if length(unique(cell2mat_padded(input_temp.tSoundCatchAmplitude)))>1
-            catch_mat(2,iexp) = 1;
-        end
-        mouse(imouse).input(iexp).catch = catch_mat(:,iexp);
+%         if length(unique(cell2mat_padded(input_temp.tCatchGratingDirectionDeg)))>1
+%             catch_mat(1,iexp) = 1;
+%         end
+%         if length(unique(cell2mat_padded(input_temp.tSoundCatchAmplitude)))>1
+%             catch_mat(2,iexp) = 1;
+%         end
+%         mouse(imouse).input(iexp).catch = catch_mat(:,iexp);
     end
     mouse(imouse).catch_mat = catch_mat;
     mouse(imouse).early_mat = early_mat;
