@@ -38,8 +38,11 @@ for imouse = 1:nMice;
     
     missedIx = strcmp(input.trialOutcomeCell, 'ignore');
     successIx = strcmp(input.trialOutcomeCell, 'success');
+    earliesIx = strcmp(input.trialOutcomeCell, 'failure');
     FAIx = strcmp(input.catchTrialOutcomeCell, 'FA');
     CRIx = strcmp(input.catchTrialOutcomeCell, 'CR');
+    earliesIx(FAIx) = 0;
+    earliesIx(CRIx) = 0;
 
     catchDirectionDeg = chop(double(celleqel2mat_padded(input.tCatchGratingDirectionDeg)),2);
     catchAmplitude = chop(double(celleqel2mat_padded(input.tSoundCatchAmplitude, NaN, 'double')),2);
@@ -50,15 +53,28 @@ for imouse = 1:nMice;
     targetOris = unique(targetDirectionDeg);
     targetAmps = unique(targetAmplitude(~isnan(targetAmplitude)));
     
+    cycTimeMs = unique(input.stimOffTimeMs+input.stimOnTimeMs);
+    nCyc{imouse} = cell2mat(input.tCyclesOn);
+    if length(cycTimeMs) > 1
+        trialTimeMs{imouse} = NaN(size(nCyc{imouse}));
+    else
+        trialTimeMs{imouse} = double(cycTimeMs*nCyc{imouse});
+        lastStimTimeMs{imouse} = double(cycTimeMs*(nCyc{imouse}-1))
+    end
+    
     targetReact = celleqel2mat_padded(input.reactTimeMs);
     catchReact = celleqel2mat_padded(input.leverUpTimeMs) - celleqel2mat_padded(input.tCatchTimeMs);
     
-    cycTimeMs = unique(input.stimOffTimeMs+input.stimOnTimeMs);
+    earlyReact = (celleqel2mat_padded(input.leverUpTimeMs) - celleqel2mat_padded(input.leverDownTimeMs)) - lastStimTimeMs{imouse};
+    earlyReact(earlyReact < 100) = NaN;
+    
+    
     
     % make cell array of target and catch values for success, miss, FA, and
     % CR trials
     tarRct{imouse} = targetReact;
     cRct{imouse} = catchReact;
+    eRct{imouse} = earlyReact;
     
     tarDeg{imouse} = targetDirectionDeg;
     tarAmp{imouse} = targetAmplitude;
@@ -67,15 +83,10 @@ for imouse = 1:nMice;
     
     sIx_all{imouse} = successIx;
     mIx_all{imouse} = missedIx;
+    eIx_all{imouse} = earliesIx;
     faIx_all{imouse} = FAIx;
     crIx_all{imouse} = CRIx;
-    
-    nCyc{imouse} = cell2mat(input.tCyclesOn);
-    if length(cycTimeMs) > 1
-        trialTimeMs{imouse} = NaN(size(nCyc{imous}));
-    else
-        trialTimeMs{imouse} = double(cycTimeMs*nCyc{imouse});
-    end
+
 
     [h_amp, bin_amp] = histc(targetAmplitude, amp_edges);
     [h_ampc, bin_ampc] = histc(catchAmplitude, amp_edges);
@@ -343,6 +354,7 @@ faIx = cat(2,cell2mat(faIx_all));
 crIx = cat(2,cell2mat(crIx_all));
 tarRct_all = cat(2,cell2mat(tarRct));
 cRct_all = cat(2,cell2mat(cRct));
+eRct_all = cat(2,cell2mat(eRct));
 
 reducedOriC_edges = [1 24 100];
 catch_ori_edges = unique(cDeg_all(~isnan(cDeg_all)));
@@ -710,6 +722,7 @@ axis square
 %% working memory test
 visInd_all = find(tarDeg_all > 1);
 cVisInd_all = find(cDeg_all > 1);
+eIx = cat(2,cell2mat(eIx_all));
 
 nCyc_all =  cat(2,cell2mat(nCyc));
 trialTimeMs_all = cat(2,cell2mat(trialTimeMs));
@@ -720,12 +733,15 @@ trialTime_edges = [max(trialTimeMs_all)/3 (max(trialTimeMs_all)/3 +max(trialTime
 avg_trTime = zeros(1,length(trialTime_edges));
 hits_trTime = zeros(1,length(trialTime_edges));
 misses_trTime = zeros(1,length(trialTime_edges));
+earlies_trTime = zeros(1,length(trialTime_edges));
 fa_trTime = zeros(1,length(trialTime_edges));
 cr_trTime = zeros(1,length(trialTime_edges));
 rct_trTime = zeros(1,length(trialTime_edges));
 rctC_trTime = zeros(1,length(trialTime_edges));
 rct_sem_trTime = zeros(1,length(trialTime_edges));
 rctC_sem_trTime = zeros(1,length(trialTime_edges));
+rctE_trTime = zeros(1,length(trialTime_edges));
+rctE_sem_trTime = zeros(1,length(trialTime_edges));
 time_bins = unique(bin_time);
 
 for ibin = 1:length(time_bins)
@@ -737,10 +753,13 @@ for ibin = 1:length(time_bins)
     rct_trTime(ibin) = mean(tarRct_all(intersect(find(sIx),v)));
     rct_sem_trTime(ibin) = std(tarRct_all(intersect(find(sIx),v)))/length(intersect(find(sIx),v));
     rctC_trTime(ibin) = mean(cRct_all(intersect(find(faIx),c)));
-    rctC_sem_trTime(ibin) = std(tarRct_all(intersect(find(faIx),c)))/length(intersect(find(faIx),c));
+    rctC_sem_trTime(ibin) = std(cRct_all(intersect(find(faIx),c)))/length(intersect(find(faIx),c));
+    rctE_trTime(ibin) = nanmean(eRct_all(intersect(find(eIx),v)));
+    rctE_sem_trTime(ibin) = std(cRct_all(intersect(find(eIx),v)))/length(intersect(find(eIx),v));
     
     hits_trTime(ibin) = sum(sIx(v));
     misses_trTime(ibin) = sum(mIx(v));
+    earlies_trTime(ibin) = sum(eIx(v));
     fa_trTime(ibin) = sum(faIx(c));
     cr_trTime(ibin) = sum(crIx(c));
 end
@@ -750,17 +769,23 @@ n_fa_ind = fa_trTime > 10;
 
 [HR_trTime ci_95_HR_trTime] = binofit(hits_trTime,hits_trTime+misses_trTime);
 [FR_trTime ci_95_FR_trTime] = binofit(fa_trTime,fa_trTime+cr_trTime);
+[ER_trTime ci_95_ER_trTime] = binofit(earlies_trTime,earlies_trTime+hits_trTime+misses_trTime);
+
 
 workingMemoryFig = figure;
 subplot(2,1,1)
-errorbar(avg_trTime,HR_trTime,HR_trTime-ci_95_HR_trTime(:,1)',ci_95_HR_trTime(:,2)'-HR_trTime,'ko')
+errorbar(avg_trTime,HR_trTime,HR_trTime-ci_95_HR_trTime(:,1)',ci_95_HR_trTime(:,2)'-HR_trTime,'ko');
 hold on
-errorbar(avg_trTime(n_c_ind),FR_trTime(n_c_ind),FR_trTime(n_c_ind)-ci_95_FR_trTime((n_c_ind),1)',ci_95_FR_trTime((n_c_ind),2)'-FR_trTime(n_c_ind),'co')
+errorbar(avg_trTime(n_c_ind),FR_trTime(n_c_ind),FR_trTime(n_c_ind)-ci_95_FR_trTime((n_c_ind),1)',ci_95_FR_trTime((n_c_ind),2)'-FR_trTime(n_c_ind),'co');
+hold on
+errorbar(avg_trTime,ER_trTime,ER_trTime-ci_95_ER_trTime(:,1)',ci_95_ER_trTime(:,2)'-ER_trTime,'bo');
+hold on
 xlim([0 trialTime_edges(end)+500])
 ylim([0 1])
 xlabel('trial length (ms)')
 ylabel('HR')
 title('visual trials - HR')
+legend({'valid';'invalid';'earlies'})
 
 
 figure(workingMemoryFig)
@@ -768,12 +793,15 @@ subplot(2,1,2)
 errorbar(avg_trTime ,rct_trTime ,rct_sem_trTime,'ko')
 hold on
 errorbar(avg_trTime ,rctC_trTime ,rctC_sem_trTime,'co')
+hold on
+errorbar(avg_trTime,rctE_trTime,rctE_sem_trTime,'bo')
+hold on
 xlabel('trial length (ms)')
 ylabel('RT')
 xlim([0 trialTime_edges(end)+500])
 ylim([0 550])
 title('visual trials - RT')
-
+legend({'valid';'invalid';'earlies'})
 
 
 %% save 'uni bins' figs
