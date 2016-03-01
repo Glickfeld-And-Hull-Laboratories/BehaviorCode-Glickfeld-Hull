@@ -1041,7 +1041,8 @@
 
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="direct" tag="Always Go to CheckTooFastTime" target="CheckTooFastTime"></transition>
+          <transition type="conditional" tag="If tooFastTimer is nonzero, Go to CheckTooFastTime" condition="tooFastTimeMs > 0 " target="CheckTooFastTime"></transition>
+          <transition type="conditional" tag="If tooFastTimer is zero, Skip CheckTooFastTime" condition="tooFastTimeMs == 0 " target="React"></transition>
       </task_system_state>
 
       <task_system_state tag="CheckTooFastTime" interruptible="YES">
