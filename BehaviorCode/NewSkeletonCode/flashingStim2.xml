@@ -978,9 +978,8 @@
            <!-- for paired pulse experiments -->
           <action type="if" condition="doPairedPulse">
             <action type="assignment" tag="Set nCyclesOn to 1" variable="nCyclesOn" value="1"/>
-            <action type="assignment" tag="Set target contrast to base" variable="tGratingContrast" value="baseGratingContrast"/>
-            <action type="assignment" tag="Set target ori to base" variable="tGratingDirectionDeg" value="baseGratingDirectionDeg"/>
-            <action type="assignment" tag="Set stim off time" variable="tStimOffTimeMs" value="stimOffTimeMs / (pow(2, tStimulusNumber")))/>
+            <action type="assignment" tag="Set stim off time" variable="tStimOffTimeMs" value="stimOffTimeMs / (pow(2, tStimulusNumber))"/>
+            <action type="report" message="Stim off time this trial is $tStimOffTimeMs"></action>
           </action>  
           <!-- setting total required hold time -->
           <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="((tStimOnTimeMs+tStimOffTimeMs)*nCyclesOn)+tStimOnTimeMs"/> 
@@ -1030,6 +1029,10 @@
                           <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"></action> 
                           <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
                         </action>
+                        <action type="if" condition="doPairedPulse">
+                            <action type="assignment" tag="Set target contrast to base" variable="tGratingContrast" value="baseGratingContrast"/>
+                            <action type="assignment" tag="Set target ori to base" variable="tGratingDirectionDeg" value="baseGratingDirectionDeg"/>
+                        </action> 
                       </action>
 
                       <action type="if" condition="tShortCatchTrial">
@@ -1057,6 +1060,7 @@
                         <action type="assignment" variable="tGratingContrast" value="0"></action>
                         <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"></action>
                       </action>
+                      
                       <action type="assert" condition="tGratingContrast >= 0" stop_on_failure="1" 
                         message="No negative contrasts allowed"/>
                         <action type="assert" condition="abs(tBaseGratingDirectionDeg-tGratingDirectionDeg) &lt;= 360" stop_on_failure="1" 

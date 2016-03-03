@@ -168,6 +168,9 @@ if input.tBlock2TrialNumber{trN} == 0
             stimStr = [stimStr sprintf('direction %g%deg ', chop(input.gratingDirectionDeg{trN},2))];
         end
     end
+    if input.doPairedPulse
+        stimStr = [stimStr sprintf('stimOffMs %g%ms ', input.tStimOffTimeMs{trN})];
+    end
     if input.doAuditoryStim
         if input.doAuditoryDetect
             stimStr = [stimStr sprintf(' tone vol %g%% ', chop(abs(double(input.tSoundTargetAmplitude{trN})*100),2))];
