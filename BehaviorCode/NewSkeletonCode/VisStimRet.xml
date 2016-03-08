@@ -10,7 +10,8 @@
       laser_trigger="laserTrigger"
       optic_device="optic_device"
       strobed_digital_word="strobedDigitalWord"
-      counter="counter"/>
+      counter="counter"
+      do2led="do2led" led_seq="led_seq" LED_duration="LED_durationMS" led1_status="led1_status" led2_status="led2_status"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
       <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
     </io_devices>
@@ -153,7 +154,10 @@
         <variable tag="photoStimulusWidth" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
         <variable tag="photoStimulusHeight" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Photodiode Variables"/>
         <variable tag="photoMaskSpatialFreq" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Photodiode Variables"/>
-
+        
+        <variable tag="Do2LED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Alternating LED"/>
+        <variable tag="LED_sequence" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="1" groups="Alternating LED"/>
+        <variable tag="LED_DurationMS" scope="global" logging="when_changed" default_value="33" type="integer" persistant="1" groups="Alternating LED"/>
 
       </folder>
       <folder tag="Task Status">
@@ -171,6 +175,11 @@
         <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
         <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"></variable>
         <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="SpeedCounters"></variable>
+        <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="LED_durationMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0"/>
         <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       </folder>
@@ -301,6 +310,10 @@
                   <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"></action>
                   <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"></action>
                   <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"></action>
+
+                  <action type="assignment" variable="led_seq" value="LED_sequence"/>
+                  <action type="assignment" variable="do2led" value="Do2LED"/>
+                  <action type="assignment" variable="LED_durationMS" value="LED_DurationMS"></action>
 
                   <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
                     <trial tag="New List" nsamples="9999" sampling_method="samples" selection="random_without_replacement">

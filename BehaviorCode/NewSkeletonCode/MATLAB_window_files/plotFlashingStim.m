@@ -154,6 +154,10 @@ elseif ~(doVisDetect | block2DoVisDetect);
 	vPowerV = zeros(size(lPowerV));
 end
 
+if input.doPairedPulse
+  vPowerV = 0.0001.*ones(size(lPowerV));
+end
+
 if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial
 	if find(cell2mat_padded(input.tShortCatchTrial) == 1)
 		if doOriAndContrastInterleaved

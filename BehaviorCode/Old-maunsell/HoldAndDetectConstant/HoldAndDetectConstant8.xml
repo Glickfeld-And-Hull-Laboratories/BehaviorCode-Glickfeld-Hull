@@ -8,6 +8,7 @@
       trial_laser_powerMw="tTrialLaserPowerMw"
       laser_trigger="laserTrigger"
       optic_device="optic_device"
+      quadrature="quadrature"
       strobed_digital_word="strobedDigitalWord"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
       <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
@@ -1040,7 +1041,8 @@
 
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="direct" tag="Always Go to CheckTooFastTime" target="CheckTooFastTime"></transition>
+          <transition type="conditional" tag="If tooFastTimer is nonzero, Go to CheckTooFastTime" condition="tooFastTimeMs > 0 " target="CheckTooFastTime"></transition>
+          <transition type="conditional" tag="If tooFastTimer is zero, Skip CheckTooFastTime" condition="tooFastTimeMs == 0 " target="React"></transition>
       </task_system_state>
 
       <task_system_state tag="CheckTooFastTime" interruptible="YES">
@@ -1141,6 +1143,13 @@
 <task_system_state tag="Reward" interruptible="YES">
     <action_marker _unmoveable="1" tag="Actions"></action_marker>
     <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
+
+    <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
+        <!-- Raise solenoid after correct trial for any solenoid -->
+        <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="1"></action>
+        <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
+    </action>
+
     <action type="assignment" variable="laserTrigger" value="0"></action>
     <action type="if" condition="optic_device == 'led'">
         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
