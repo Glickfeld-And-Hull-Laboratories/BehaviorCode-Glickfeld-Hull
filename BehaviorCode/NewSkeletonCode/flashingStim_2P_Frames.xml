@@ -28,7 +28,9 @@
       <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doPairedPulse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
+      <variable tag="block2MatchB1VisStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>            
@@ -156,6 +158,11 @@
       <variable tag="block2RampLengthMs2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2RampLengthPowerMaxMw2" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
 
+      <variable tag="block2StimOnTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2StimOffTimeMs" scope="global" logging="when_changed" default_value="250" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2MinCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2MaxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Block2 Stimulus"/>
+
       <variable tag="block2GratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2GratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
@@ -260,6 +267,11 @@
       <variable tag="tSoundMaxTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
       <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+
+      <variable tag="tStimOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tStimOffTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tMinCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tMaxCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -438,26 +450,6 @@
             <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/> 
             <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
             <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>  
-            <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(minCyclesOn, (maxCyclesOn+1))"/>
-            <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(minCyclesOn-1, nCyclesOn)"/>
-            
-            <action type="if" condition="doShortCatchTrial">
-              <action type="assert" condition="minCyclesOn &gt; 2" stop_on_failure="1"
-                      message="When doShortCatchTrial, minCyclesOn must be greater than 2"/>
-            </action>
-
-            <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == maxCyclesOn">
-					   <action type="assignment" variable="isCatchTrial" value="1"/> 
-            </action>
-
-            <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesOff" variable="nFramesOff" value="ceil((stimOffTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesTooFast" variable="nFramesTooFast" value="ceil((tooFastTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesReact" variable="nFramesReact" value="ceil((reactTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesEarlyTimeout" variable="nFramesEarlyTimeout" value="ceil((earlyTimeoutMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesMissedTimeout" variable="nFramesMissedTimeout" value="ceil((missedTimeoutMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Set total required hold frames" variable="tTotalReqHoldFrames" value="((nFramesOn+nFramesOff)*(1+nCyclesOn))-nFramesOff"/>
-            <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="(tTotalReqHoldFrames/frameRateHz)*1000"/>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -754,8 +746,11 @@
                       message="When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2"/>
             </action>
 
-
             <action type="if" condition="!doBlock2">
+                  <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
+                  <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                  <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
+                  <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
                   <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -802,6 +797,10 @@
                 <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>      
 
                 <action type="if" condition="tBlock2TrialNumber == 0">
+                  <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
+                  <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                  <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
+                  <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
                   <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -825,43 +824,67 @@
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
-                  <action type="assignment" variable="tBaseGratingDirectionDeg" value="block2BaseGratingDirectionDeg"></action>
-                  <action type="assignment" variable="tBaseGratingContrast" value="block2BaseGratingContrast"></action>
-                  <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
-                  <action type="assignment" variable="tGratingContrastStepsPerOctave" value="block2GratingContrastStepsPerOctave"></action>
-                  <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="block2GratingMaxDirectionStepDeg"></action>
-                  <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>
-                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="block2SoundTargetAmplitude"></action>
-                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>                        
-                  <action type="assignment" variable="tGratingElevationDeg" value="block2GratingElevationDeg"></action>                           
-                  <action type="assignment" variable="tGratingAzimuthDeg" value="block2GratingAzimuthDeg"></action>                       
-                  <action type="assignment" variable="tGratingHeightDeg" value="block2GratingHeightDeg"></action>                         
-                  <action type="assignment" variable="tGratingWidthDeg" value="block2GratingWidthDeg"></action>                           
-                  <action type="assignment" variable="tGratingSpatialFreqCPD" value="block2GratingSpatialFreqCPD"></action>                       
-                  <action type="assignment" variable="tGratingSpeedDPS" value="block2GratingSpeedDPS"></action>                           
-                  <action type="assignment" variable="tDoVisualStim" value="block2DoVisualStim"/>
-                  <action type="assignment" variable="tDoOriDetect" value="block2DoOriDetect"/>
-                  <action type="assignment" variable="tDoContrastDetect" value="block2DoContrastDetect"/>
-                  <action type="assignment" variable="tDoAuditoryDetect" value="block2DoAuditoryDetect"/>
-                  <action type="assignment" variable="tDoAuditoryStim" value="block2DoAuditoryStim"/>
-                  <action type="assignment" variable="tDoAuditoryCue" value="block2DoAuditoryCue"/>
-                  <action type="if" condition="tShortCatchTrial == 1">
-                    <action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
-                    <action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
-                    <action type="assignment" variable="tDoCatchAuditoryDetect" value="doAuditoryDetect"/>
-                    <action type="if" condition="tDoCatchOriDetect == 1">
-                      <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
-                      <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
-                    </action>
-                    <action type="if" condition="tDoCatchContrastDetect == 1">  
-                      <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
-                      <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
-                    </action>
-                    <action type="if" condition="tDoCatchAuditoryDetect == 1">
-                      <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
-                      <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                        
-                    </action>
+                  <action type="if" condition="block2MatchB1VisStim == 0">
+                    <action type="assignment" variable="tStimOnTimeMs" value="block2StimOnTimeMs"></action>
+                    <action type="assignment" variable="tStimOffTimeMs" value="block2StimOffTimeMs"></action>
+                    <action type="assignment" variable="tMinCyclesOn" value="block2MinCyclesOn"></action>
+                    <action type="assignment" variable="tMaxCyclesOn" value="block2MaxCyclesOn"></action>
+                    <action type="assignment" variable="tBaseGratingDirectionDeg" value="block2BaseGratingDirectionDeg"></action>
+                    <action type="assignment" variable="tBaseGratingContrast" value="block2BaseGratingContrast"></action>
+                    <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
+                    <action type="assignment" variable="tGratingContrastStepsPerOctave" value="block2GratingContrastStepsPerOctave"></action>
+                    <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="block2GratingMaxDirectionStepDeg"></action>
+                    <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>                        
+                    <action type="assignment" variable="tGratingElevationDeg" value="block2GratingElevationDeg"></action>                           
+                    <action type="assignment" variable="tGratingAzimuthDeg" value="block2GratingAzimuthDeg"></action>                       
+                    <action type="assignment" variable="tGratingHeightDeg" value="block2GratingHeightDeg"></action>                         
+                    <action type="assignment" variable="tGratingWidthDeg" value="block2GratingWidthDeg"></action>                           
+                    <action type="assignment" variable="tGratingSpatialFreqCPD" value="block2GratingSpatialFreqCPD"></action>                       
+                    <action type="assignment" variable="tGratingSpeedDPS" value="block2GratingSpeedDPS"></action>                           
                   </action>
+                  <action type="if" condition="block2MatchB1VisStim == 1">
+                    <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
+                    <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                    <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
+                    <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
+                    <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
+                    <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
+                    <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                    <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                    <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                    <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>                       
+                    <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                           
+                    <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                       
+                    <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                         
+                    <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>                           
+                    <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>                       
+                    <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>
+                  </action>
+                    <action type="assignment" variable="tSoundMaxTargetAmplitude" value="block2SoundTargetAmplitude"></action>
+                    <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>  
+                    <action type="assignment" variable="tDoVisualStim" value="block2DoVisualStim"/>
+                    <action type="assignment" variable="tDoOriDetect" value="block2DoOriDetect"/>
+                    <action type="assignment" variable="tDoContrastDetect" value="block2DoContrastDetect"/>
+                    <action type="assignment" variable="tDoAuditoryDetect" value="block2DoAuditoryDetect"/>
+                    <action type="assignment" variable="tDoAuditoryStim" value="block2DoAuditoryStim"/>
+                    <action type="assignment" variable="tDoAuditoryCue" value="block2DoAuditoryCue"/>
+                    <action type="if" condition="tShortCatchTrial == 1">
+                      <action type="assignment" variable="tDoCatchOriDetect" value="doOriDetect"/>
+                      <action type="assignment" variable="tDoCatchContrastDetect" value="doContrastDetect"/>
+                      <action type="assignment" variable="tDoCatchAuditoryDetect" value="doAuditoryDetect"/>
+                      <action type="if" condition="tDoCatchOriDetect == 1">
+                        <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="gratingMaxDirectionStepDeg"></action>
+                        <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="gratingDirectionStepsPerOctave"></action>
+                      </action>
+                      <action type="if" condition="tDoCatchContrastDetect == 1">  
+                        <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
+                        <action type="assignment" variable="tGratingContrastStepsPerOctave" value="gratingContrastStepsPerOctave"></action>
+                      </action>
+                      <action type="if" condition="tDoCatchAuditoryDetect == 1">
+                        <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
+                        <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                        
+                      </action>
+                  </action>  
                 </action>
 
                   <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
@@ -901,7 +924,11 @@
                   <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>
                 </action>
 
-                <!-- in both cases -->                        
+                <!-- in both cases -->  
+                <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
+                <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
+                <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>                     
                 <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                           
                 <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                       
                 <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                         
@@ -943,6 +970,34 @@
               <action type="assignment" variable="tLaserPowerMw" value="0"/>
             </action>
 
+            <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
+            <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(tMinCyclesOn-1, nCyclesOn)"/>
+            
+            <action type="if" condition="doShortCatchTrial">
+              <action type="assert" condition="tMinCyclesOn &gt; 2" stop_on_failure="1"
+                      message="When doShortCatchTrial, minCyclesOn must be greater than 2"/>
+            </action>
+
+            <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == tMaxCyclesOn">
+             <action type="assignment" variable="isCatchTrial" value="1"/> 
+            </action>
+
+            <!-- for paired pulse experiments -->
+            <action type="if" condition="doPairedPulse">
+              <action type="assignment" tag="Set nCyclesOn to 1" variable="nCyclesOn" value="1"/>
+              <action type="assignment" tag="Set stim off time" variable="tStimOffTimeMs" value="stimOffTimeMs / (pow(2, tStimulusNumber))"/>
+              <action type="report" message="Stim off time this trial is $tStimOffTimeMs"></action>
+            </action>
+  
+            <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((tStimOnTimeMs/1000)*frameRateHz)"/>
+            <action type="assignment" tag="Calculate nFramesOff" variable="nFramesOff" value="ceil((tStimOffTimeMs/1000)*frameRateHz)"/>
+            <action type="assignment" tag="Calculate nFramesTooFast" variable="nFramesTooFast" value="ceil((tooFastTimeMs/1000)*frameRateHz)"/>
+            <action type="assignment" tag="Calculate nFramesReact" variable="nFramesReact" value="ceil((reactTimeMs/1000)*frameRateHz)"/>
+            <action type="assignment" tag="Calculate nFramesEarlyTimeout" variable="nFramesEarlyTimeout" value="ceil((earlyTimeoutMs/1000)*frameRateHz)"/>
+            <action type="assignment" tag="Calculate nFramesMissedTimeout" variable="nFramesMissedTimeout" value="ceil((missedTimeoutMs/1000)*frameRateHz)"/>
+            <action type="assignment" tag="Set total required hold frames" variable="tTotalReqHoldFrames" value="((nFramesOn+nFramesOff)*(1+nCyclesOn))-nFramesOff"/>
+            <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="(tTotalReqHoldFrames/frameRateHz)*1000"/>
+
             <!-- choose vis stim ori/dir -->
             <action type="if" condition="tDoVisualStim"> 
               <action type="if" condition="tDoOriDetect">
@@ -958,6 +1013,10 @@
               <action type="if" condition="!tDoContrastDetect &amp;&amp; !tDoOriDetect">
                 <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"></action> 
                 <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+              </action>
+              <action type="if" condition="doPairedPulse">
+                  <action type="assignment" tag="Set target contrast to base" variable="tGratingContrast" value="baseGratingContrast"/>
+                  <action type="assignment" tag="Set target ori to base" variable="tGratingDirectionDeg" value="baseGratingDirectionDeg"/>
               </action>
             </action>
 			
@@ -1048,7 +1107,7 @@
             <action type="if" condition="!isFirstTrial"> 
               <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
                 <action type="assignment" variable="tempMs"  
-                      value="(maxCyclesOn*(stimOnTimeMs+stimOffTimeMs))-lastActualHoldTimeMs"></action> 
+                      value="(maxCyclesOn*(tStimOnTimeMs+tStimOffTimeMs))-lastActualHoldTimeMs"></action> 
               </action>
             </action>
             

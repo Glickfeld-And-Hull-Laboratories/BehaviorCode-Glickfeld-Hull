@@ -153,9 +153,10 @@ elseif doOri
 elseif ~(doVisDetect | block2DoVisDetect);
 	vPowerV = zeros(size(lPowerV));
 end
-
-if input.doPairedPulse
-  vPowerV = 0.0001.*ones(size(lPowerV));
+if isfield(input, 'doPairedPulse')
+  if input.doPairedPulse
+    vPowerV = 0.0001.*ones(size(lPowerV));
+  end
 end
 
 if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial
