@@ -43,6 +43,8 @@
         <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="doPreHoldTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+        <variable tag="preHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
 
         <variable tag="doSolenoidOnTimeout" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Timeouts"/>
         <variable tag="earlyTimeoutMs" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="Timeouts"/>
@@ -946,15 +948,26 @@
             <action type="assignment" variable="tFakeMousePressMs" value="rand(0, fakeMouseMaxPressMs)"></action>
         </action>
 
-        <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; doAnalogLever == 0 &amp;&amp; FIO1 == 1 &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
-        <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; doAnalogLever &amp;&amp; (quadrature &gt; leverThreshold) &amp;&amp; doAllCorrects==0" target="HoldLever"></transition>
-        <transition type="conditional" tag="If fakeMouse elapsed, go to HoldLever" 
-            condition="!doLever &amp;&amp; doAllCorrects==0 &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tFakeMousePressMs" target="HoldLever"></transition>
-            <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
-              condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="HoldLever"></transition>
-              <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" 
-                condition="doAllCorrects==1" target="HoldLever"></transition>
+        <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; doAnalogLever == 0 &amp;&amp; FIO1 == 1 &amp;&amp; doAllCorrects==0 &amp;&amp; doPreHoldTime == 0" target="HoldLever"></transition>
+        <transition type="conditional" tag="If Lever Down, Go To Hold Lever" condition="doLever &amp;&amp; doAnalogLever &amp;&amp; (quadrature &gt; leverThreshold) &amp;&amp; doAllCorrects==0 " target="HoldLever"></transition>
+        <transition type="conditional" tag="If Lever Down, and doPreHoldTime, Go To Lever Down" condition="doLever &amp;&amp; doAnalogLever == 0 &amp;&amp; FIO1 == 1 &amp;&amp; doAllCorrects==0 &amp;&amp; doPreHoldTime" target="LeverDown"></transition>
+        <transition type="conditional" tag="If Lever Down, and doPreHoldTime, Go To Lever Down" condition="doLever &amp;&amp; doAnalogLever  &amp;&amp; (quadrature &gt; leverThreshold) &amp;&amp; doAllCorrects==0 &amp;&amp; doPreHoldTime" target="LeverDown"></transition>
+        <transition type="conditional" tag="If fakeMouse elapsed, go to HoldLever" condition="!doLever &amp;&amp; doAllCorrects==0 &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tFakeMousePressMs" target="HoldLever"></transition>
+        <transition type="conditional" tag="If waiting here too long (120s), go to HoldLever" condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="HoldLever"></transition>
+        <transition type="conditional" tag="If doAllCorrects, go to HoldLever" condition="doAllCorrects==1 &amp;&amp; doPreHoldTime == 0" target="HoldLever"></transition>
+        <transition type="conditional" tag="If doAllCorrects, go to LeverDown" condition="doAllCorrects==1 &amp;&amp; doPreHoldTime == 1" target="LeverDown"></transition>
             </task_system_state>
+
+        <task_system_state tag="LeverDown" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="start_timer" tag="Start PreHold timer" timer="preHoldTimer" timebase="" duration="preHoldTimeMs" duration_units="ms"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Lever Up, recycle" condition="doLever &amp;&amp; doAnalogLever == 0 &amp;&amp; FIO1 == 0" target="StartTrial"></transition>
+            <transition type="conditional" tag="If Lever Up, recycle" condition="doLever &amp;&amp; doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold)" target="StartTrial"></transition>
+            <transition type="conditional" tag="If Lever Down, go to HoldLever" condition="timerExpired(preHoldTimer) &amp;&amp; doLever &amp;&amp; doAnalogLever == 0 &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
+            <transition type="conditional" tag="If Lever Down, go to HoldLever" condition="timerExpired(preHoldTimer) &amp;&amp; doLever &amp;&amp; doAnalogLever == 1 &amp;&amp; (quadrature &gt; leverThreshold)" target="HoldLever"></transition>
+            <transition type="conditional" tag="If doAllCorrects, go to HoldLever" condition="doAllCorrects==1 &amp;&amp; timerExpired(preHoldTimer)" target="HoldLever"></transition>
+        </task_system_state>
 
             <task_system_state tag="HoldLever" interruptible="YES">
                 <action_marker _unmoveable="1" tag="Actions"></action_marker>
