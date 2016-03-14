@@ -1283,7 +1283,6 @@
             <action type="if" condition="doConstantStimulus==1">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             <action type="if" condition="isCatchTrial"> 
             	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
@@ -1349,19 +1348,18 @@
             
             <action type="if" condition="doITIStim == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action> 
 
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
             
             <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             
+            <action type="update_stimulus_display" tag="justincase"></action>
+
             <!-- update running variables -->
             <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
@@ -1409,19 +1407,17 @@
 
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action> 
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>            
-            <action type="update_stimulus_display" tag="justincase"></action>  
+              
 
             <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action>    
 
-            
+            <action type="update_stimulus_display" tag="justincase"></action>
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1457,17 +1453,16 @@
 
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action> 
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            
             <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             
+            <action type="update_stimulus_display" tag="justincase"></action>
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
@@ -1592,15 +1587,16 @@
             <action type="assignment" variable="cEndOff" value="counter"></action> 
             <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-              <action type="update_stimulus_display" tag="justincase"></action>
+              
             </action> 
             <action type="if" condition="!doConstantStimulus">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-            	<action type="update_stimulus_display" tag="justincase"></action>
             	<action type="report" message="End of Trial - Stim Off"/>
             </action>	
+
+            <action type="update_stimulus_display" tag="justincase"></action>
 
             <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
             
