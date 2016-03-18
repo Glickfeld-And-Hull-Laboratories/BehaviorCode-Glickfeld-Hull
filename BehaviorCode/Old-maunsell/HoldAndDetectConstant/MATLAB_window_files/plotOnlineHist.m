@@ -684,17 +684,24 @@ title('mean react/hold over time (robust fit)');
 %level
 if nStims == 1
   axH = subplot(spSz{:}, 10);
-  winLen = 200;
-  winStart = 200;
+    winLen = 400;
+  if median(reactV(successIx)) <= 400;
+    winStart = 150;
+  else
+    winStart = 250;
+  end
   winReal = reactV > winStart & reactV <= (winStart+winLen);
-  baselineRange = [-winLen*2 winLen];
+  baselineRange = [-winLen*2 winLen+winStart];
   nBaseWins = range(baselineRange)./winLen;
   winBaseline = reactV > baselineRange(1) & reactV <= baselineRange(2);
   winBefore = winBaseline ./ nBaseWins;
   
+  %% Calculates % of responses within a specific range per total trials - Blue - 
+  %% and trials near stimulus change - Black
   
   hold on;
   p1H = plot(smooth(double(winReal), ceil(nTrial/10), 'lowess'));
+  set(p1H, 'LineWidth', 2, 'Color', [0.25 0.3 0.9]);
   nSm = 5;
   v1 = smooth(double(winReal), ceil(nTrial./nSm), 'lowess');
   v2 = smooth(double(winBefore), ceil(nTrial./nSm), 'lowess');
@@ -703,13 +710,15 @@ if nStims == 1
   set(p2H, 'LineWidth', 3);
   %p2H = plot(smooth(double(winBefore), ceil(nTrial/10), 'lowess'));
   %p3H = plot(smooth(double(winAfter), ceil(nTrial/10), 'lowess'));
-  title('trs inside react win')
+  title('Reaction to Stimulus')
+  ylabel('% <'winStart+winLen'ms')
   
   %xLim = [0 nTrials];
   xLim = trXLim;
   set(gca, 'YLim', [0 1], ...
            'XLim', xLim);
-  plot(xLim, 0.5*[1 1], '--');
+  plot(xLim, 0.30*[1 1], '--','Color', [0.65 0.55 0.95])
+  plot(xLim, 0.55*[1 1], '--','Color',[0.78 0.72 0.00]);
   
   axH = subplot(spSz{:}, 4);
   hold on;
