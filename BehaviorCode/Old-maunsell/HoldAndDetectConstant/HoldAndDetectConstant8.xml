@@ -961,6 +961,7 @@
         <task_system_state tag="LeverDown" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="Start PreHold timer" timer="preHoldTimer" timebase="" duration="preHoldTimeMs" duration_units="ms"></action>
+            <action type="play_sound" sound="basePressSound"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, recycle" condition="doLever &amp;&amp; doAnalogLever == 0 &amp;&amp; FIO1 == 0" target="StartTrial"></transition>
             <transition type="conditional" tag="If Lever Up, recycle" condition="doLever &amp;&amp; doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold)" target="StartTrial"></transition>
