@@ -711,7 +711,7 @@ if nStims == 1
   %p2H = plot(smooth(double(winBefore), ceil(nTrial/10), 'lowess'));
   %p3H = plot(smooth(double(winAfter), ceil(nTrial/10), 'lowess'));
   title('Reaction to Stimulus')
-  ylabel('% <'winStart+winLen'ms')
+  %ylabel('% <'winStart+winLen'ms')
   
   %xLim = [0 nTrials];
   xLim = trXLim;
