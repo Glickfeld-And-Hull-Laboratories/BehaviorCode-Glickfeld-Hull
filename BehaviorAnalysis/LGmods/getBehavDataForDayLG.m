@@ -411,7 +411,7 @@ if uo.DoCorrectEarlies
             %% method 1 - based on estimating early rate and extrap over actual RT window
             realTooFast = 125; % min RT to any stimulus
             % first find early PDF
-            xs = 1:max(holdTimesMs+ds.reactTimeMs);
+            xs = 1:max(holdTimesMs+double(ds.reactTimeMs));
             earlyHoldV = holdTimesMs(earlyIx);
             Fy = ksdensity(earlyHoldV, xs, 'function','pdf', 'width',300);
             
