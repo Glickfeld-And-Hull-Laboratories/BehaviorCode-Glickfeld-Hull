@@ -1,9 +1,9 @@
 %Old puffNRun adapted for new cerebellarStim program.
 % function [dataStruct] = puffNRun(folder)
 clear; 
-pathName = 'S:\VermisImaging\160219_img40_3\';
-imgName = [pathName '160219_img40_3_MMStack.ome'];
-input1 = load([pathName 'data-i940-160219-1705']);
+pathName = 'S:\VermisImaging\160223_img36_1\';
+imgName = [pathName '160223_img36_1_MMStack.ome'];
+input1 = load([pathName 'data-i936-160223-1031']);
 if isfield(input1,'input'),
     input1 = input1.input;
 end

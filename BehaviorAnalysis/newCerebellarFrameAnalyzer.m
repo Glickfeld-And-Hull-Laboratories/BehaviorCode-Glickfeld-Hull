@@ -19,9 +19,15 @@ imagingRate = 1000/frameIntMs;
 pulseDiff = diff(totalTimes);
 pulsePauseIx = pulseDiff>(1.5*frameIntMs);
 
+problematic = pulseDiff(pulsePauseIx);
+problemFrameNumbers = find(pulsePauseIx);
+normal = pulseDiff(~pulsePauseIx);
+avgFrame = mean(normal);
+howManyMissed = round((problematic./avgFrame)-1);
+
 %create index for when stimulus was delivered
 stimOnFrame = cell2mat(input1.tStimTurnedOn);
-stimOnIx = zeros(1, length(totalTimes));
+stimOnIx = zeros(1, length(totalTimes)+sum(howManyMissed));
 for ii=1:length(stimOnFrame)
     stimOn = find((totalTimes/stimOnFrame(ii)) < 1.00001 & (totalTimes/stimOnFrame(ii))> 0.99999);  %creates a logical array that indexes which frames were stimulus frames, according to their timestamp.
     stimOnIx(stimOn) = 1;
@@ -68,11 +74,7 @@ locoMat = [locoMat locoMat(end)];
 
 %% Replicate graphing to allow frame skipping feedback
 %Copied from original cerebellarFrameAnalyzer to check for dropped frames.
-problematic = pulseDiff(pulsePauseIx);
-problemFrameNumbers = find(pulsePauseIx);
-normal = pulseDiff(~pulsePauseIx);
-avgFrame = mean(normal);
-howManyMissed = (problematic./avgFrame)-1;
+
 
 if length(problemFrameNumbers)>0,
     [a b c] = plotyy(1:length(pulseDiff), pulseDiff, problemFrameNumbers, howManyMissed)
