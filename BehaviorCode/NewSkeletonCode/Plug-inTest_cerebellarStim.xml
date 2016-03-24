@@ -105,7 +105,7 @@
       <action type="queue_stimulus" stimulus="background"></action>
       
       <!-- init actions before running trials after any press of start-->
-      
+      <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
       <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
       <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
@@ -131,7 +131,7 @@
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
-          <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+          
     
 
           
@@ -144,6 +144,7 @@
           <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
           <action type="if" condition="tTrialsDoneSinceStart == 0">
             <action type="assignment" variable="tCounter" value="0"></action>
+            <action type="assignment" variable="counter" value="0"></action>
           </action>
           <action type="if" condition="tTrialsDoneSinceStart != 0">
             <action type="assignment" variable="tCounter" value="counter"></action>
@@ -273,14 +274,14 @@
             <action type="report" message="*** Trial Ends *** tTrialsDoneSinceStart =$tTrialsDoneSinceStart"></action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="0"></action>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
-            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+            
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="yield" tag="return to parent task system"></transition>
         </task_system_state> 
         </task_system>
         
       </trial>
-      
+      <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
     </protocol>
   </experiment>
 </monkeyml>
