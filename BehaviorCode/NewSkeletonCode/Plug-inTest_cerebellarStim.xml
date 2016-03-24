@@ -15,7 +15,8 @@
               Qbin_size="binSize"
               start_CB="startStimulus"
               Qpulse_criteria="pulse_criteria"
-              doCB="docerebellarStim"/>
+              doCB="docerebellarStim"
+              checkrun="checkRunState"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -30,13 +31,15 @@
       <variable tag="stopAfterNTrials" scope="local" logging="when_changed" default_value="90" type="integer" persistant="1"/>      
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
-      <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1"/>
-      <variable tag="itiIntervalMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1"/>
+      <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
+      <variable tag="itiIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
+      <variable tag="checkMovementMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
     </folder>
     <folder tag="NFrames">
       <variable tag="itiNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="postSoundPauseNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="TStimNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="checkNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
     <folder tag="ImagingVars">
       <variable tag="frameImagingDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1"/>
@@ -69,6 +72,7 @@
       <variable tag="startStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="docerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="pulse_criteria" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="checkRunState" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -101,7 +105,7 @@
       <action type="queue_stimulus" stimulus="background"></action>
       
       <!-- init actions before running trials after any press of start-->
-            
+      <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
       <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
       <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
@@ -111,6 +115,7 @@
       <action type="assignment" tag="Calculate nFramesITI" variable="itiNFrames" value="ceil(itiIntervalMs/frameImagingDurationMs)"/>
       <action type="assignment" tag="Calculate nFramesPostSound" variable="postSoundPauseNFrames" value="ceil(postSoundPauseDurationMs/frameImagingDurationMs)"/>
       <action type="assignment" tag="Calculate nFramesTStim" variable="TStimNFrames" value="ceil(tactileStimulusDurationUs/1000/frameImagingDurationMs)"/>
+      <action type="assignment" tag="Calculate nFramesCheck" variable="checkNFrames" value="ceil(checkMovementMs/frameImagingDurationMs)"/>
 
       <action type="assignment" variable="binSize" value="BinSize"/>
       <action type="assignment" variable="running_Bincriteria" value="requiredRunningBins"/>
@@ -127,7 +132,7 @@
           
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
 
-          <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+    
 
           
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
@@ -178,7 +183,8 @@
 
           <action type="report" message="In Inter-Trial Interval, waiting..."></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-          <transition type="conditional" tag="If $itiNFrames is scanned,, move to PlaySound" condition="counter-tCounter >= itiNFrames &amp;&amp; DoCerebellarStim == 1" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If $itiNFrames is scanned,, move to CheckCriteria" condition="counter-tCounter >= itiNFrames &amp;&amp; DoCerebellarStim == 1" target="CheckCriteria" ></transition>
+          <transition type="conditional" tag="If $itiNFrames is scanned,, move to SendStim" condition="counter-tCounter >= itiNFrames &amp;&amp; DoCerebellarStim == 0" target="PlaySound" ></transition>
           <transition type="conditional" tag="If $itiNFrames is scanned, time out and move to EndTrial" condition="counter-tCounter >= itiNFrames + postSoundPauseNFrames + TStimNFrames" target="EndTrial" ></transition>
       </task_system_state>
 
@@ -224,25 +230,26 @@
             <action type="assignment" tag="Turn stimulusOn" variable="soundstimulusOn" value="1"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If $postSoundPauseNFrames is scanned, move to SendStim" condition="counter-tCounter >= postSoundPauseNFrames" target="SendStim" ></transition> 
+            <transition type="conditional" tag="If $postSoundPauseNFrames is scanned, move to EndTrial" condition="counter-tCounter >= postSoundPauseNFrames" target="EndTrial" ></transition> 
       </task_system_state>
 
+      <task_system_state tag="CheckCriteria" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" variable="tCounter" value="counter"></action>
+            <action type="assignment" variable="checkRunState" value="1"></action>
+            <action type="report" message="checking running/still criteria for nFrames"/>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="if passing criteria, move to SendStim" condition="startStimulus == 1" target="SendStim"></transition>
+            <transition type="conditional" tag="If $checkNFrames, move to EndTrial" condition="(counter - tCounter) >= checkNFrames" target="EndTrial" ></transition>
+      </task_system_state>
 
       <task_system_state tag="SendStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tCounter" value="counter"></action>
 
-            <action type="if" condition="startStimulus == 1 &amp;&amp; DoCerebellarStim == 1">
               <action type="report" message="*** Sending Tactile Stimulus -- Staying in Post-Stim State for $TStimNFrames scans."></action>
               <action type="assignment" variable="tStimTurnedOn" value="now()/1000"/>
               <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
-            </action>
-
-            <action type="if" condition="DoCerebellarStim == 0">
-              <action type="report" message="*** Sending Tactile Stimulus -- Staying in Post-Stim State for $TStimNFrames scans."></action>
-              <action type="assignment" variable="tStimTurnedOn" value="now()/1000"/>
-              <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
-            </action>
 
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -252,7 +259,7 @@
       <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            
+            <action type="assignment" variable="checkRunState" value="0"></action>
             <action type="assignment" variable="startStimulus" value="0"/>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
@@ -261,14 +268,14 @@
             <action type="report" message="*** Trial Ends *** tTrialsDoneSinceStart =$tTrialsDoneSinceStart"></action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="0"></action>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
-            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+            
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="yield" tag="return to parent task system"></transition>
         </task_system_state> 
         </task_system>
         
       </trial>
-      
+      <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
     </protocol>
   </experiment>
 </monkeyml>
