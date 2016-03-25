@@ -711,7 +711,7 @@ if nStims == 1
   set(p2H, 'LineWidth', 3);
   %p2H = plot(smooth(double(winBefore), ceil(nTrial/10), 'lowess'));
   %p3H = plot(smooth(double(winAfter), ceil(nTrial/10), 'lowess'));
-  title(['Reaction to Stimulus: ',reactionRate,'%'])
+  title(['Reaction to Stimulus: ',num2str(reactionRate,3),'%'])
   if winStart == 150;
     ylabel('% 150-550ms')
   else if winStart == 250;
