@@ -67,6 +67,12 @@ for imouse = 1:nMice;
     degrees1 = uniquedegrees(find(edgesB==1))
     degrees2 = uniquedegrees(find(edgesB==2))
     
+    Muniquedegrees{imouse} = uniquedegrees;
+    Mhitrates{imouse} = hitrates;
+    Mcounts{imouse} = counts;
+    Mmeasured{imouse} = measured;
+    Mdegrees1{imouse}= degrees1;
+    Mdegrees2{imouse}= degrees2;
     
     
 figure;
@@ -166,9 +172,127 @@ figure;
     xlabel('Actual % of catch')
     
     xlim([0 val])
+    legend('0-45 degrees', '45-90 degrees')
     title(['i' num2str(mouse_name) '- HR vs Catch % '])
-end   
+end 
 
+    
+    Muniquedegrees{imouse} = uniquedegrees;
+    Mhitrates{imouse} = hitrates;
+    Mcounts{imouse} = counts;
+    Mmeasured{imouse} = measured;
+    Mdegrees1{imouse}= degrees1;
+    Mdegrees2{imouse}= degrees2;
+    
+    uniquedegrees_all= cat(2, cell2mat(Muniquedegrees));
+    hitrates_all = cat(2, cell2mat(Mhitrates));
+    counts_all= cat(2, cell2mat(Mcounts));
+    measured_all= cat(2, cell2mat(Mmeasured));
+    degrees1_all= cat(2, cell2mat(Mdegrees1));
+    degrees2_all = cat(2, cell2mat(Mdegrees2));
+    
+    val = max(measured_all);
+    edges = [0 val/3 2*val/3 val+1];
+    
+    deg = max(uniquedegrees_all);
+    edgesDeg = [0 deg/2 deg+1];
+    [M, edgesB] = histc(uniquedegrees_all, edgesDeg)
+    
+    
+    color = ['k','b','g','r','c','m','y'];
+    dotcolor =  ['ok','ob','og','or','oc','om','oy'];
+    totalN = zeros(1,7)
+    
+    figure;
+    
+    index = [];
+        for i= 1:length(degrees1_all)
+            deg = degrees1_all(i)
+            A = find(uniquedegrees_all == deg)  
+            index = [index A]
+        end
+    index = sort(index)
+    HR= hitrates_all(index); 
+    a = measured_all(index);
+        
+    bins = [1 2 3];
+        
+    [N,edgesA] = histc(a,edges);
+    avgA_all = zeros(1,max(bins,[],2));
+    semA_all = zeros(1,max(bins,[],2));
+    avglevelone_all= zeros(1,max(bins,[],2));
+    stdlevelone_all= zeros(1,max(bins,[],2));
+    
+        
+       
+        for ibin = 1:max(edgesA,[],2)
+            
+            ind = find(edgesA == ibin)
+            avgA_all(ibin) = mean(a(:,ind),2);
+            semA_all(ibin) = std(a(:,ind),[],2)./sqrt(length(ind));
+            avglevelone_all(ibin) = mean(HR(ind),2);
+            stdlevelone_all(ibin) = std(HR(ind),[],2)/sqrt(length(HR(ind)));
+        end 
+        
+        labels = cellstr(num2str(N(1:3)'))
+        
+        
+       
+        errorbarxy(avgA_all, avglevelone_all, semA_all, stdlevelone_all,{'ok', 'k', 'k'});
+        hold on
+        text(avgA_all, avglevelone_all, labels, 'horizontal','left', 'vertical','bottom')
+        hold on
+
+  
+     ylabel('Hit Rate %')
+    xlabel('Actual % of catch')
+  
+    xlim([0 val])
+    
+    hold on
+        clear index
+        
+        index = [];
+        for i= 1:length(degrees2_all)
+            deg = degrees2_all(i)
+            B = find(uniquedegrees_all == deg)  
+            index = [index B]
+        end
+        index = sort(index)
+
+        HR= hitrates_all(index); 
+        a = measured_all(index);
+        
+        bins = [1 2 3];
+        
+        [N,edgesA] = histc(a,edges);
+        avgA_all = zeros(1,max(bins,[],2));
+        semA_all = zeros(1,max(bins,[],2));
+        avglevelone_all= zeros(1,max(bins,[],2));
+        stdlevelone_all= zeros(1,max(bins,[],2));
+    
+        
+        for ibin = 1:max(edgesA,[],2)
+            
+            ind = find(edgesA == ibin)
+            avgA_all(ibin) = mean(a(:,ind),2);
+            semA_all(ibin) = std(a(:,ind),[],2)./sqrt(length(ind));
+            avglevelone_all(ibin) = mean(HR(ind),2);
+            stdlevelone_all(ibin) = std(HR(ind),[],2)/sqrt(length(HR(ind)));
+        end 
+        
+        labels = cellstr(num2str(N(1:3)'))
+        
+      
+       
+        errorbarxy(avgA_all, avglevelone_all, semA_all, stdlevelone_all,{'ob', 'b', 'b'});
+        hold on
+        text(avgA_all, avglevelone_all, labels, 'horizontal','left', 'vertical','bottom')
+        hold on
+    
+    xlim([0 val])
+    legend('0-45 degrees', '45-90 degrees')
+    title(['All mice- HR vs Catch % '])
 
 
 
