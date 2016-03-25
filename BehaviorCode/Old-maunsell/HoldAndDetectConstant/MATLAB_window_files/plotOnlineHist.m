@@ -696,6 +696,7 @@ if nStims == 1
   winBaseline = reactV > baselineRange(1) & reactV <= baselineRange(2);
   winBefore = winBaseline ./ nBaseWins;
   reactionRate = (sum(winReal)./nTrial)*100;
+  precision = 3;
 
   %% Calculates % of responses within a specific range out of total trials - Blue 
   %% and trials near stimulus change - Black
@@ -711,11 +712,11 @@ if nStims == 1
   set(p2H, 'LineWidth', 3);
   %p2H = plot(smooth(double(winBefore), ceil(nTrial/10), 'lowess'));
   %p3H = plot(smooth(double(winAfter), ceil(nTrial/10), 'lowess'));
-  title(['Reaction to Stimulus: ',num2str(reactionRate,3),'%'])
+  title(['Reaction to Stimulus: ',num2str(reactionRate,precision),'%'])
   if winStart == 150;
-    ylabel('% 150-550ms')
-  else if winStart == 250;
-    ylabel('% 250-650ms')
+    ylabel('% Correct in 150-550ms')
+  elseif winStart == 250;
+    ylabel('% Correct in 250-650ms')
   end
   
   %xLim = [0 nTrials];
