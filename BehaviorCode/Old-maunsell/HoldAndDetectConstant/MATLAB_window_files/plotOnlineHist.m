@@ -182,19 +182,19 @@ tTrialN = input.trialSinceReset;
 % Performance Values
 
 if length(holdStarts) > 2
-	holdTimeMS = input.holdTimesMs{end};
-	switch input.trialOutcomeCell{end}
-	case 'success'
-		outcomeString = 'correct';
-	case 'failure'
-		outcomeString = 'early';
-	case 'ignore'
-		outcomeString = 'failed';
-	end
+  holdTimeMS = input.holdTimesMs{end};
+  switch input.trialOutcomeCell{end}
+  case 'success'
+    outcomeString = 'correct';
+  case 'failure'
+    outcomeString = 'early';
+  case 'ignore'
+    outcomeString = 'failed';
+  end
 
-        axH = subplot(spSz{:}, 1);						% default axes are 0 to 1
+        axH = subplot(spSz{:}, 1);            % default axes are 0 to 1
         
-	set(axH, 'Visible', 'off');
+  set(axH, 'Visible', 'off');
         set(axH, 'OuterPosition', [0.02 0.75, 0.25, 0.2])
 
         numTrials = nTrial;
@@ -206,7 +206,7 @@ if length(holdStarts) > 2
 
         text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 14);
         text(0.00, 1.05, {'Subject:', 'Start time + elapsed:', 'Reward vol (m \pm std):'});
-	      text(0.60, 1.05, ...
+        text(0.60, 1.05, ...
              { sprintf('%2d', input.subjectNum), ...
                sprintf('%s + %2dm', startStr, elMin), ...
                sprintf('%.1fs     (%gms \\pm %gms)', ...
@@ -214,13 +214,13 @@ if length(holdStarts) > 2
                        chop(nanmean(juiceTimesMsV),2), ...
                        chop(nanstd(juiceTimesMsV),2))
              });
-	t2H(1) = text(0.00, 0.9, {'Trials:', 'Correct:', 'Early:', 'Failed:'});
-	t2H(2) = text(0.35, 0.9, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
-				                    sprintf('%d', nFail), sprintf('%d', nIg)});
-	t2H(3) = text(0.54, 0.9, {' ', ...
+  t2H(1) = text(0.00, 0.9, {'Trials:', 'Correct:', 'Early:', 'Failed:'});
+  t2H(2) = text(0.35, 0.9, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
+                            sprintf('%d', nFail), sprintf('%d', nIg)});
+  t2H(3) = text(0.54, 0.9, {' ', ...
         sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
-				sprintf('%.0f%%', nFail / numTrials * 100.0), ...
-				sprintf('%.0f%%', nIg / numTrials * 100.0)});
+        sprintf('%.0f%%', nFail / numTrials * 100.0), ...
+        sprintf('%.0f%%', nIg / numTrials * 100.0)});
         set(t2H, 'VerticalAlignment', 'top', ...
                  'HorizontalAlignment', 'left');
         tStr = sprintf(['Hold, react median:\n', ...
@@ -341,7 +341,7 @@ if length(holdStarts) > 2
 
         set(gcf, 'Visible', 'on');
 
-end			
+end     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Specific plots for specific tasks in this section
@@ -361,7 +361,7 @@ end
 visIx = holdV <= maxX;
 nVisPts = sum(visIx);
 if nVisPts > 50
-  binWidth = iqr(holdV(visIx)) ./ nVisPts.^(1/3);	% robust version of std
+  binWidth = iqr(holdV(visIx)) ./ nVisPts.^(1/3); % robust version of std
   nBins = ceil(maxX ./ binWidth);
 else
   nBins = 10;
@@ -712,13 +712,20 @@ if nStims == 1
   set(p2H, 'LineWidth', 3);
   %p2H = plot(smooth(double(winBefore), ceil(nTrial/10), 'lowess'));
   %p3H = plot(smooth(double(winAfter), ceil(nTrial/10), 'lowess'));
+
   title(['Reaction to Stimulus: ',num2str(reactionRate,precision),'%'])
   if winStart == 150;
     ylabel('% Correct in 150-550ms')
   elseif winStart == 250;
     ylabel('% Correct in 250-650ms')
+
+  title(['Reaction to Stimulus: ', num2str(reactionRate), '%'])
+  if winStart == 150;
+    ylabel('% 150-550ms')
+  elseif winStart == 250;
+    ylabel('% 250-650ms')
+
   end
-  
   %xLim = [0 nTrials];
   xLim = trXLim;
   set(gca, 'YLim', [0 1], ...
@@ -1007,7 +1014,7 @@ axH = subplot(spSz{:}, 12);
 maxReqX = double(max(input.fixedReqHoldTimeMs)+ ...
           max(input.randReqHoldMaxMs));
 if nVisPts > 50
-  binWidth = 100;	% Mark's code crashed -- pulger
+  binWidth = 100; % Mark's code crashed -- pulger
   nBins = ceil(maxReqX ./ binWidth);
 else
   nBins = 10;
