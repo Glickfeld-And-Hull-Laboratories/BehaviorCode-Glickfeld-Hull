@@ -1358,12 +1358,12 @@
                                         <action type="play_sound" sound="baseSound"/>
                                         <action type="assignment" variable="isCatchTrial" value= "1"/>
                                       </action>
-                                      <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)">
+                                      <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
                                         <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
                                       </action>
-                                      <action type="if" condition="nCyclesOn &lt; tMaxCyclesOn">
+                                      <action type="if" condition="nCyclesOn #LE tMaxCyclesOn">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
                                         <action type="report" message="Target Stim On for $tStimOnTimeMs ms"/>
@@ -1378,7 +1378,7 @@
                                         <action type="assignment" variable="MIO0" value="1"/>
                                       </action>
                                       
-                                      <action type="if" condition="((doLongCatchTrial==0) &amp;&amp; (nCyclesOn==maxCyclesOn)) || (nCyclesOn &lt; maxCyclesOn) ">
+                                      <action type="if" condition="((doLongCatchTrial==0) &amp;&amp; (nCyclesOn==tMaxCyclesOn)) || (nCyclesOn &lt; tMaxCyclesOn) ">
                                         <action type="if" condition="tDoAuditoryDetect &amp;&amp; tDoDeviantAfterMissing==0">
                                           <action type="play_sound" sound="targetSound"/>
                                         </action> 
@@ -1539,7 +1539,6 @@
                                     <action type="next_selection" selection="svStimNumber"/>
                                     <action type="next_selection" selection="svCatchNumber"/>
                                   </action>
-
 
                                   <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss">
                                     <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
@@ -1726,6 +1725,7 @@
                             <task_system_state tag="EndTrialStimOff" interruptble="YES">
                               <action_marker _unmoveable="1" tag="Actions"></action_marker>
                               <action type="start_timer" tag="" timer="endOffTimer" duration="tStimOffTimeMs" timebase="" duration_units="ms"/>
+                              <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"></action>
                               <action type="assignment" variable="stimTag" value= "0"/>
                               
                               <action type="report" message="End of Trial - Stim Off"></action>
