@@ -691,15 +691,19 @@ if nStims == 1
     winStart = 250;
   end
   winReal = reactV > winStart & reactV <= (winStart+winLen);
-  baselineRange = [-winLen*2 winLen+winStart];
+  baselineRange = [-winLen*1.5 winLen+winStart];         % From -600ms --> 550ms/650ms
   nBaseWins = range(baselineRange)./winLen;
   winBaseline = reactV > baselineRange(1) & reactV <= baselineRange(2);
   winBefore = winBaseline ./ nBaseWins;
-  reactionRate = (sum(winReal)./nTrial)*100;
-  precision = 3;
+  if nTrial <= 80
+    reactionRate = (sum(winReal)./nTrial)*100;
+  else
+    recentTrials = winReal(nTrial-79:nTrial);                         % Last 80 Trials
+    reactionRate = (sum(recentTrials)./length(recentTrials))*100;
+  end
 
   %% Calculates % of responses within a specific range out of total trials - Blue 
-  %% and trials near stimulus change - Black
+  %% and trials near stimulus change, from 600ms before to end of react window - Black
   
   hold on;
   p1H = plot(smooth(double(winReal), ceil(nTrial/10), 'lowess'));
@@ -713,18 +717,11 @@ if nStims == 1
   %p2H = plot(smooth(double(winBefore), ceil(nTrial/10), 'lowess'));
   %p3H = plot(smooth(double(winAfter), ceil(nTrial/10), 'lowess'));
 
-  title(['Reaction to Stimulus: ',num2str(reactionRate,precision),'%'])
+  title(['Reaction to Stimulus (last 80): ',num2str(reactionRate,3),'%'])
   if winStart == 150;
     ylabel('% Correct in 150-550ms')
   elseif winStart == 250;
     ylabel('% Correct in 250-650ms')
-
-  title(['Reaction to Stimulus: ', num2str(reactionRate), '%'])
-  if winStart == 150;
-    ylabel('% 150-550ms')
-  elseif winStart == 250;
-    ylabel('% 250-650ms')
-
   end
   %xLim = [0 nTrials];
   xLim = trXLim;
