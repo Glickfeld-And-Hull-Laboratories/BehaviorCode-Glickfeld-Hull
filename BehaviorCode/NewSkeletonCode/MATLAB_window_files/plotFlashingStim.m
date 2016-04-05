@@ -1461,10 +1461,17 @@ if doPpBlock2Grating
   tV.gratingElevationDeg = input.block2GratingElevationDeg;
   tV.gratingSpatialFreqCPD = input.block2GratingSpatialFreqCPD;
   tV.gratingSpeedDPS = input.block2GratingSpeedDPS;
-  tV.stimOnTimeMs = input.block2StimOnTimeMs;
-  tV.stimOffTimeMs = input.block2StimOffTimeMs;
-  tV.minCyclesOn = input.block2MinCyclesOn;
-  tV.maxCyclesOn = input.block2MaxCyclesOn;
+  if isfield(input, 'block2StimOnTimeMs')
+    tV.stimOnTimeMs = input.block2StimOnTimeMs;
+    tV.stimOffTimeMs = input.block2StimOffTimeMs;
+    tV.minCyclesOn = input.block2MinCyclesOn;
+    tV.maxCyclesOn = input.block2MaxCyclesOn;
+  else
+    tV.stimOnTimeMs = input.stimOnTimeMs;
+    tV.stimOffTimeMs = input.stimOffTimeMs;
+    tV.minCyclesOn = input.minCyclesOn;
+    tV.maxCyclesOn = input.maxCyclesOn;
+  end
 else
   tV.gratingWidthDeg = input.gratingWidthDeg;
   tV.gratingHeightDeg = input.gratingHeightDeg;
