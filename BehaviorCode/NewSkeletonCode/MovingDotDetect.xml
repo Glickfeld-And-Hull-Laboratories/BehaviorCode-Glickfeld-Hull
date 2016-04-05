@@ -3,7 +3,7 @@
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" 
+              lever1="FIO1"
               lever1_solenoid="MIO0"
               laser_trigger="laserTrigger"
               optic_device="optic_device"
@@ -21,13 +21,18 @@
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doSpeedDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doDirDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoSpeedDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoDirDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>            
       <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="block2DoAuditoryStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
+      <variable tag="block2DoAuditoryDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
 	
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="randReqHoldMaxMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Trial Structure"/>
@@ -41,6 +46,9 @@
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundIncorrectAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundRewardAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
 
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Solenoid"/>
@@ -76,9 +84,10 @@
       <variable tag="dotMaxCoherenceStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="dotCoherenceStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Stimulus Parameters"/>
 
+      <variable tag="dotMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
+      <variable tag="dotContrastStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
 
       <variable tag="doOriAndContrastInterleaved" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="block2DoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
 
       <variable tag="dotMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="dotSpeedStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Stimulus Parameters"/>
@@ -151,6 +160,9 @@
       <variable tag="block2DotSizeDeg" scope="global" logging="when_changed" default_value=".2" type="float" persistant="1" groups="Block2 Stimulus Parameters"/>
       <variable tag="block2DotDensity" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Block2 Stimulus Parameters"/>
       <variable tag="block2DotDirectionDeg" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Block2 Stimulus Parameters"/>
+
+      <variable tag="block2SoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Sounds"/>
+      <variable tag="block2SoundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Sounds"/>
       
       <variable tag="block2DotMaxCoherenceStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Block2 Stimulus Parameters"/>
       <variable tag="block2DotCoherenceStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Block2 Stimulus Parameters"/>
@@ -231,6 +243,12 @@
       <variable tag="setDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="setDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+      <variable tag="tSoundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+      <variable tag="tSoundMaxTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tSoundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
       <variable tag="tDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="setDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotCoherenceStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
@@ -238,19 +256,21 @@
       <variable tag="tDotMaxCoherenceStep" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tDotMaxSpeedStepDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
-
+      <variable tag="tDotMaxContrastStep" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tDotContrastStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
       <variable tag="tDotElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" />
       <variable tag="tDotAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" />
       <variable tag="tDotFieldSizeDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="0" />
       <variable tag="tDotSizeDeg" scope="global" logging="when_changed" default_value=".2" type="float" persistant="0" />
       <variable tag="tDotDensity" scope="global" logging="when_changed" default_value="1" type="float" persistant="0" />
       <variable tag="tDotDirectionDeg" scope="global" logging="when_changed" default_value="1" type="float" persistant="0" />
-
-      <variable tag="tSoundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       
       <variable tag="tDoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoSpeedDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoDirDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
       <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
 
@@ -274,6 +294,8 @@
     <sound tag="pressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
     <sound tag="incorrectSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="soundIncorrectAmplitude"></sound>
     <sound tag="rewardSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/shortCorrect.wav" amplitude="soundRewardAmplitude"></sound>
+    <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBasePressAmplitude"></sound>
+    <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundTargetAmplitude"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -350,7 +372,7 @@
             <!-- prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML -->
             <!-- encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms -->
             <action type="assignment" tag="Encode TimestampStart" variable="strobedDigitalWord" value="200"/>
-           
+            
             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
             <action type="assignment" variable="block2DoGratingAppearance" value="block2DoVisualStim"/>
@@ -609,7 +631,13 @@
                   <action type="assignment" variable="tDoVisualStim" value="doVisualStim"/>
                   <action type="assignment" variable="tDoSpeedDetect" value="doSpeedDetect"/>
                   <action type="assignment" variable="tDoDirDetect" value="doDirDetect"/>
+                  <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
+                  <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"/>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"/>
                   <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
+
+                  
 
                   
                   <action type="if" condition="doTrialLaser">
@@ -634,7 +662,7 @@
 
               <!-- stimulus appearance for block 2 -->                         
               <action type="if" condition="doBlock2">
-              <action type="if" condition="block2DoVisualStim">
+              <action type="if" condition="block2DoVisualStim || block2DoAuditoryStim">
 
                 <!-- same for both types of block2 trials -->
                 <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>      
@@ -659,6 +687,10 @@
                   <action type="assignment" variable="tDoVisualStim" value="doVisualStim"/>
                   <action type="assignment" variable="tDoSpeedDetect" value="doSpeedDetect"/>
                   <action type="assignment" variable="tDoDirDetect" value="doDirDetect"/>
+                  <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
+                  <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"/>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"/>
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
@@ -681,6 +713,10 @@
                   <action type="assignment" variable="tDoVisualStim" value="block2DoVisualStim"/>
                   <action type="assignment" variable="tDoSpeedDetect" value="block2DoSpeedDetect"/>
                   <action type="assignment" variable="tDoDirDetect" value="block2DoDirDetect"/>
+                  <action type="assignment" variable="tDoAuditoryDetect" value="block2DoAuditoryDetect"/>
+                  <action type="assignment" variable="tDoAuditoryStim" value="block2DoAuditoryStim"/>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="block2SoundTargetAmplitude"/>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"/>
                   </action>
                 </action>
 
@@ -711,6 +747,8 @@
                   <action type="assignment" variable="tDotSpeedStepsPerOctave" value="dotSpeedStepsPerOctave"/>
                   <action type="assignment" variable="tDotMaxCoherenceStep" value="dotMaxCoherenceStep"/>
                   <action type="assignment" variable="tDotCoherenceStepsPerOctave" value="dotCoherenceStepsPerOctave"/>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action> 
                 	<action type="if" condition="doTrialLaser">
                   		<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
                   		<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
@@ -731,6 +769,8 @@
                   <action type="assignment" variable="tDotSpeedStepsPerOctave" value="block2DotSpeedStepsPerOctave"/>
                   <action type="assignment" variable="tDotMaxCoherenceStep" value="block2DotMaxCoherenceStep"/>
                   <action type="assignment" variable="tDotCoherenceStepsPerOctave" value="block2DotCoherenceStepsPerOctave"/>
+                  <action type="assignment" variable="tSoundMaxTargetAmplitude" value="block2SoundTargetAmplitude"></action>
+                  <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>
                 </action>
 
                 <!-- in both cases -->                        
@@ -748,7 +788,9 @@
                   <action type="assignment" variable="tDotDirectionDeg" value="dotDirectionDeg"/>                      
                   <action type="assignment" variable="tDoVisualStim" value="doVisualStim"/>
                   <action type="assignment" variable="tDoSpeedDetect" value="doSpeedDetect"/>
-                  <action type="assignment" variable="tDoDirDetect" value="doDirDetect"/>                                               
+                  <action type="assignment" variable="tDoDirDetect" value="doDirDetect"/> 
+                  <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
+                  <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>                                              
               </action>
              <!-- !doBlock2 error checking -->
               <action type="assert" stop_on_failure="1"
@@ -807,6 +849,24 @@
             </action>
             <action type="assert" condition="tDotContrast >= 0" stop_on_failure="1" 
                     message="No negative contrasts allowed"/>
+
+
+            <!-- choose auditory stim -->  
+            <action type="if" condition="tDoAuditoryStim">
+              <action type="assignment" variable="tSoundBasePressAmplitude" value="soundBasePressAmplitude"/>  
+              <action type="if" condition="tDoAuditoryDetect">     
+                <action type="assignment" variable="tSoundTargetAmplitude" 
+                  value="tSoundMaxTargetAmplitude / (pow(2, tStimulusNumber/tSoundTargetStepsPerOctave))"></action>
+              </action>
+              <action type="if" condition="!tDoAuditoryDetect">      
+                <action type="assignment" variable="tSoundTargetAmplitude" value="0"/>
+              </action>
+            </action>
+
+            <action type="if" condition="!tDoAuditoryStim"> 
+              <action type="assignment" variable="tSoundBasePressAmplitude" value="0"/> 
+              <action type="assignment" variable="tSoundTargetAmplitude" value="0"/> 
+            </action>
 
 			
             <!-- send laser params to controller -->
@@ -925,6 +985,11 @@
                 <action type="play_dynamic_stimulus" stimulus="moving_dots" tag="start"></action>
                 <action type="update_stimulus_display" tag="-"></action>
               </action>
+
+            <action type="if" condition="tDoAuditoryDetect">
+              <action type="play_sound" sound="basePressSound"/>
+            </action> 
+
             </action>
 
             <!-- turn on trial laser if requested -->
@@ -962,6 +1027,10 @@
             <action type="assignment" tag="set dot params" variable="setDotContrast" value="tDotContrast"/>
             <action type="report" message="Stimulus On"/>
 
+            <action type="if" condition="tDoAuditoryDetect">
+              <action type="play_sound" sound="targetSound"/>
+            </action> 
+
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
@@ -978,7 +1047,6 @@
 
            <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
@@ -1018,7 +1086,6 @@
 
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
@@ -1066,7 +1133,6 @@
 
           <task_system_state tag="Reward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
@@ -1192,7 +1258,6 @@
           
           <task_system_state tag="EndTrial" interruptble="YES">
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
-            <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" tag="Turn off LED" variable="laserTrigger" value="0"></action>
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>

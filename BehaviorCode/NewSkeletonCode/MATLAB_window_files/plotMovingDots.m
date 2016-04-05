@@ -113,7 +113,16 @@ elseif ~(doVisDetect | block2DoVisDetect);
 end
 
 
+if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
+    aPowerV = double(celleqel2mat_padded(input.tSoundTargetAmplitude))*100;
+    nAP = length(chop(unique(aPowerV(~isnan(aPowerV))),4));
+else
+  nAP = 0;
+  aPowerV = [];
+end
+
 vPowerV(find(vPowerV==0)) = NaN;
+aPowerV(find(aPowerV==0)) = NaN;
 
 if all(vPowerV) == 0
   nVP = 0;
@@ -121,15 +130,26 @@ else
   nVP = length(chop(unique(vPowerV(~isnan(vPowerV))),4));
 end
 
+if all(aPowerV) == 0
+  nAP = 0;
+else
+  nAP = 1;
+end
 
 if nVP >= 1
   showLaserStim = false;
   nStims = nVP;
+  if nAP >= 1
+      nStims = nVP+nAP;
+  end
+elseif nAP >= 1
+  showLaserStim = false;
+  nStims = nAP;
 elseif nLP >= 1
   showLaserStim = true;
   nStims = nLP;
 else
-  if all(isnan(vPowerV))
+  if all(isnan(vPowerV) & isnan(aPowerV))
     showLaserStim = true;
     nStims = 1;
   elseif all(isnan(lPowerV))
@@ -141,7 +161,7 @@ else
     nStims = 1;
   else
     disp(sprintf('nLaser %d, nVis %d', nLP, nVP));
-    error('confused on number of laser and vis levels');
+    error('confused on number of laser and vis levels: contrast/dir base and step set?');
   end
 end
 
@@ -846,6 +866,9 @@ if nStims >= 1
     stimPowerV = chop(lPowerV,2);
   else
     stimPowerV = chop(vPowerV,2);
+    if nAP>0
+      stimPowerV = [stimPowerV; chop(aPowerV,2)];
+    end
   end
   powerLevels = unique(stimPowerV(~isnan(stimPowerV)));
   nL = length(powerLevels);
@@ -982,6 +1005,8 @@ if nStims >= 1
     xlabel('speed change (dps)');
  elseif input.doDirDetect
     xlabel('coherence (%)');
+    elseif input.doAuditoryDetect
+    xlabel('volume (%)');
  end
 
   % manually compute limits and tick positions
