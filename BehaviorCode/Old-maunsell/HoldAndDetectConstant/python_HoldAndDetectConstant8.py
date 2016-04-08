@@ -4,30 +4,30 @@ import numpy
 def add_to_reactTimesCorrect():
 
     tReactTimeMsCorrect = getvar('actualHoldTimeMs') - getvar('tTotalReqHoldTimeMs')
-    
+    reactTimesMsCorrect = getvar('reactTimesMsCorrect')
     reactTimesMsCorrect.append(tReactTimeMsCorrect)
 
     setvar('reactTimesMsCorrect', reactTimesMsCorrect)
 
-    if tReactTimeMsCorrect > 150 and tReactTimeMsCorrect < 550:
-    	fastReact = getvar('fastReact') + 1
-    	setvar('fastReact', fastReact)
+    if mouseSpeed = 0:
+		targetCorrect = tReactTimeMsCorrect > 150 and tReactTimeMsCorrect < 550
+	elif mouseSpeed = 1:
+		targetCorrect = tReactTimeMsCorrect > 250 and tReactTimeMsCorrect < 650
 
-    elif tReactTimeMsCorrect > 250 and tReactTimeMsCorrect < 650:
-    	slowReact = getvar('slowReact') + 1
-    	setvar('slowReact', slowReact) 
+	reactToWindow = sum(targetCorrect) / length(reactTimesMsTotal)
+
 
 def add_to_reactTimesTotal():
 
     tReactTimeMsTotal = getvar('actualHoldTimeMs') - getvar('tTotalReqHoldTimeMs')
-    
+    reactTimesMsTotal = getvar('reactTimesMsTotal')
     reactTimesMsTotal.append(tReactTimeMsTotal)
     
     setvar('reactTimesMsTotal', reactTimesMsTotal)
 
 def find_median():
 
-	reactTimesMs = getvar('reactTimesMs')
+	reactTimesMs = getvar('reactTimesMsTotal')
 
 	medianReactTimesMs = numpy.median(reactTimesMs)
 
@@ -45,20 +45,21 @@ def find_median():
 
 def get_targetCorrect():
 
-	targetCorrect = getvar('fastReact')/float(getvar('slowReact'))
 	randReqHoldMaxMs = getvar('randReqHoldMaxMs')
 	targetCorrect_last40 = getvar('targetCorrect_last40')
+
 	
-	if targetCorrect >= 0.3 and (getvar('achievedTierRandom') == 0):
+	
+	if reactToWindow >= 0.3 and (getvar('achievedTierRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 200)
 
-	elif targetCorrect <= 0.3:
+	elif reactToWindow <= 0.3:
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
 
-	elif targetCorrect >= 0.55 and (getvar('achievedMaxRandom') == 0):
+	elif reactToWindow >= 0.55 and (getvar('achievedMaxRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 400)
 
-	elif (targetCorrect + targetCorrect_last40)/2 <= 0.4 and (getvar('tTrialsDoneSinceStart')%80 == 0):
+	elif (reactToWindow + reactToWindow_last40)/2 <= 0.4 and (getvar('tTrialsDoneSinceStart')%80 == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
 
 	if getvar('randReqHoldMaxMs') == 1200:
@@ -67,8 +68,8 @@ def get_targetCorrect():
 	elif getvar('randReqHoldMaxMs') == 4000:
 		setvar('achievedMaxRandom', 1)
 
-	targetCorrect_last40 = targetCorrect
-	setvar('targetCorrect_last40', targetCorrect_last40)
+	reactToWindow_last40 = reactToWindow
+	setvar('reactToWindow_last40', reactToWindow_last40)
 	setvar('fastReact', 0)
 	setvar('slowReact', 0)
 

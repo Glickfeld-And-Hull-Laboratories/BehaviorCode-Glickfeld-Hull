@@ -1387,13 +1387,13 @@
             <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="0"></action>
 
             <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
-            <action type="if" condition="tTrialsDoneSinceStart % 40 == 0">
+            <action type="if" condition="tTrialsDoneSinceStart % 20 == 0">
                 <action type="run_python_string" tag="find median react time" code="find_median()"></action>
                 <action type="run_python_string" tag="get targetCorrect" code="get_targetCorrect()"></action>
                 <action type="report" message="The mouseSpeed of subject is $mouseSpeed"></action>
                 <action type="report" message="The mouseHolder of subject is $mouseHolder"></action>
             </action>
-            <action type="if" condition="tTrialsDoneSinceStart % 160 == 0">
+            <action type="if" condition="tTrialsDoneSinceStart % 80 == 0">
                 <action type="run_python_string" tag="update react time" code="updateReactTime()"></action>
                 <action type="report" message="the updated react time is $reactTimeMs"></action>
             </action>
