@@ -8,14 +8,16 @@ def add_to_reactTimesCorrect():
     reactTimesMsCorrect.append(tReactTimeMsCorrect)
 
     setvar('reactTimesMsCorrect', reactTimesMsCorrect)
+    targetCorrect = getvar('targetCorrect')
 
-    if mouseSpeed = 0:
-		targetCorrect = tReactTimeMsCorrect > 150 and tReactTimeMsCorrect < 550
-	elif mouseSpeed = 1:
-		targetCorrect = tReactTimeMsCorrect > 250 and tReactTimeMsCorrect < 650
+    if getvar('mouseSpeed') == 0 and tReactTimeMsCorrect > 150 and tReactTimeMsCorrect < 550:
+		targetCorrect = targetCorrect + 1
+	else getvar('mouseSpeed') == 1 and tReactTimeMsCorrect > 250 and tReactTimeMsCorrect < 650:
+		targetCorrect = targetCorrect + 1
 
-	reactToWindow = sum(targetCorrect) / length(reactTimesMsTotal)
-
+	setvar('targetCorrect', targetCorrect)
+	reactToWindow = targetCorrect/float(getvar('tTrialsDoneSinceStart'))
+	setvar('reactToWindow', reactToWindow)
 
 def add_to_reactTimesTotal():
 
@@ -46,9 +48,8 @@ def find_median():
 def get_targetCorrect():
 
 	randReqHoldMaxMs = getvar('randReqHoldMaxMs')
-	targetCorrect_last40 = getvar('targetCorrect_last40')
 
-	
+	reactToWindow = getvar('reactToWindow')
 	
 	if reactToWindow >= 0.3 and (getvar('achievedTierRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 200)
@@ -68,8 +69,7 @@ def get_targetCorrect():
 	elif getvar('randReqHoldMaxMs') == 4000:
 		setvar('achievedMaxRandom', 1)
 
-	reactToWindow_last40 = reactToWindow
-	setvar('reactToWindow_last40', reactToWindow_last40)
+	setvar('reactToWindow_last40', reactToWindow)
 	setvar('fastReact', 0)
 	setvar('slowReact', 0)
 
