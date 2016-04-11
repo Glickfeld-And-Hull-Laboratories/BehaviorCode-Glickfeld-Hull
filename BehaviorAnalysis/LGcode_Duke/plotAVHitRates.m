@@ -53,7 +53,7 @@ for imouse = 1:nMice;
     targetOris = unique(targetDirectionDeg);
     targetAmps = unique(targetAmplitude(~isnan(targetAmplitude)));
     
-    cycTimeMs = unique(input.stimOffTimeMs+input.stimOnTimeMs);
+    cycTimeMs = unique(double(input.stimOffTimeMs)+double(input.stimOnTimeMs));
     nCyc{imouse} = cell2mat(input.tCyclesOn);
     if length(cycTimeMs) > 1
         trialTimeMs{imouse} = NaN(size(nCyc{imouse}));
@@ -343,6 +343,9 @@ set(0,'defaultfigurepaperorientation','portrait');
 set(0,'defaultfigurepapersize',[8.5 11]);
 set(0,'defaultfigurepaperposition',[.25 .25 [8.5 11]-0.5]);
 set(0,'DefaultaxesFontSize', 16)
+%minimum number of trials in order to plot
+minTrNms = 5;
+minTrNall = 10;
 % create universal ori and amp bins
 tarDeg_all = cat(2,cell2mat(tarDeg));
 cDeg_all = cat(2,cell2mat(cDeg));
@@ -352,6 +355,7 @@ sIx = cat(2,cell2mat(sIx_all));
 mIx = cat(2,cell2mat(mIx_all));
 faIx = cat(2,cell2mat(faIx_all));
 crIx = cat(2,cell2mat(crIx_all));
+eIx = cat(2,cell2mat(eIx_all));
 tarRct_all = cat(2,cell2mat(tarRct));
 cRct_all = cat(2,cell2mat(cRct));
 eRct_all = cat(2,cell2mat(eRct));
@@ -365,8 +369,109 @@ catch_amp_edges = unique(cAmp_all(~isnan(cAmp_all)));
 [h_amp, bin_amp_all] = histc(tarAmp_all, amp_edges);
 [h_ampc, bin_ampc_all] = histc(cAmp_all, amp_edges);
 
+
+nTrials = cell2mat(cellfun(@length,tarDeg,'Unif',false));
+cumTrials = cumsum(nTrials);
+
 ori_bins = unique(bin_ori_all);
 amp_bins = unique(bin_amp_all);
+%% for each mouse with universal bins
+% get hit rate curves across all mice with universal ori and amp bins
+for imouse = 1:nMice
+    
+    if imouse == 1
+        trialInd = 1:nTrials(imouse);
+    else
+        trialInd = cumTrials(imouse-1)+1:cumTrials(imouse);
+    end
+    %pre-allocate
+    Hits_ori_all{imouse} = zeros(1,max(ori_bins,[],2));
+    Misses_ori_all{imouse} = zeros(1,max(ori_bins,[],2));
+    FAs_ori_all{imouse} = zeros(1,max(ori_bins,[],2));
+    CRs_ori_all{imouse} = zeros(1,max(ori_bins,[],2));
+    
+    Hits_amp_all{imouse} = zeros(1,max(amp_bins,[],2));
+    Misses_amp_all{imouse} = zeros(1,max(amp_bins,[],2));
+    FAs_amp_all{imouse} = zeros(1,max(amp_bins,[],2));
+    CRs_amp_all{imouse} = zeros(1,max(amp_bins,[],2));
+    
+    n_ori_all{imouse} = zeros(2,max(amp_bins,[],2));
+    n_amp_all{imouse} = zeros(2,max(amp_bins,[],2));
+    
+    rct_ori_each{imouse} = NaN(1,max(ori_bins,[],2));
+    rctsem_ori_each{imouse} = NaN(1,max(ori_bins,[],2));
+    rct_oric_each{imouse} = NaN(1,max(ori_bins,[],2));
+    rctsem_oric_each{imouse} = NaN(1,max(ori_bins,[],2));
+    rct_amp_each{imouse} = NaN(1,max(amp_bins,[],2));
+    rctsem_amp_each{imouse} = NaN(1,max(amp_bins,[],2));
+    rct_ampc_each{imouse} = NaN(1,max(amp_bins,[],2));
+    rctsem_ampc_each{imouse} = NaN(1,max(amp_bins,[],2));
+    
+    for ibin = 1:max(ori_bins,[],2)
+        ind = find(bin_ori_all(trialInd) == ibin);
+        if length(ind)>minTrNms
+            Hits_ori_all{imouse}(ibin) = sum(sIx_all{imouse}(ind),2);
+            Misses_ori_all{imouse}(ibin) = sum(mIx_all{imouse}(ind),2);
+            rct_ori_each{imouse}(ibin) = mean(tarRct{imouse}(intersect(find(sIx_all{imouse}),ind)),2);
+            rctsem_ori_each{imouse}(ibin) = std(tarRct{imouse}(intersect(find(sIx_all{imouse}),ind)),[],2)./sqrt(length(ind));
+        end
+        indc = find(bin_oric_all(trialInd) == ibin);
+        if length(indc)>minTrNms
+            FAs_ori_all{imouse}(ibin) = sum(faIx_all{imouse}(indc),2);
+            CRs_ori_all{imouse}(ibin) = sum(crIx_all{imouse}(indc),2);
+            rct_oric_each{imouse}(ibin) = mean(cRct{imouse}(intersect(find(faIx_all{imouse}),indc)),2);
+            rctsem_oric_each{imouse}(ibin) = std(cRct{imouse}(intersect(find(faIx_all{imouse}),indc)),[],2)./sqrt(length(indc));
+        end
+    end
+    [HR_ori_each{imouse}, ci95_HR_ori_each{imouse}] = binofit(Hits_ori_all{imouse}, Misses_ori_all{imouse} + Hits_ori_all{imouse});
+    [FR_ori_each{imouse}, ci95_FR_ori_each{imouse}] = binofit(FAs_ori_all{imouse}, CRs_ori_all{imouse} + FAs_ori_all{imouse});
+    n_ori_all{imouse} = [Hits_ori_all{imouse}+Misses_ori_all{imouse}; FAs_ori_all{imouse}+CRs_ori_all{imouse}];
+    
+
+    for ibin = 1:max(amp_bins,[],2)
+        ind = find(bin_amp_all(trialInd) == ibin);
+        if length(ind)>minTrNms
+            Hits_amp_all{imouse}(ibin) = sum(sIx_all{imouse}(ind),2);
+            Misses_amp_all{imouse}(ibin) = sum(mIx_all{imouse}(ind),2);
+            rct_amp_each{imouse}(ibin) = mean(tarRct{imouse}(intersect(find(sIx_all{imouse}),ind)),2);
+            rctsem_amp_each{imouse}(ibin) = std(tarRct{imouse}(intersect(find(sIx_all{imouse}),ind)),[],2)./sqrt(length(ind));
+        end
+        indc = find(bin_ampc_all(trialInd) == ibin);
+        if length(indc)>minTrNms
+            FAs_amp_all{imouse}(ibin) = sum(faIx_all{imouse}(indc),2);
+            CRs_amp_all{imouse}(ibin) = sum(crIx_all{imouse}(indc),2);
+            rct_ampc_each{imouse}(ibin) = mean(cRct{imouse}(intersect(find(faIx_all{imouse}),indc)),2);
+            rctsem_ampc_each{imouse}(ibin) = std(cRct{imouse}(intersect(find(faIx_all{imouse}),indc)),[],2)./sqrt(length(indc));
+        end
+    end
+    [HR_amp_each{imouse}, ci95_HR_amp_each{imouse}] = binofit(Hits_amp_all{imouse}, Misses_amp_all{imouse} + Hits_amp_all{imouse});
+    [FR_amp_each{imouse}, ci95_FR_amp_each{imouse}] = binofit(FAs_amp_all{imouse}, CRs_amp_all{imouse} + FAs_amp_all{imouse});
+    n_amp_all{imouse} = [Hits_amp_all{imouse}+Misses_amp_all{imouse}; FAs_amp_all{imouse}+CRs_amp_all{imouse}];
+end
+
+visMiceInd = intersect(find(~isnan(nanmean(cell2mat(rct_ori_each'),2))),find(~isnan(nanmean(cell2mat(rct_oric_each'),2))));
+audMiceInd = intersect(find(~isnan(nanmean(cell2mat(rct_amp_each'),2))),find(~isnan(nanmean(cell2mat(rct_ampc_each'),2))));
+
+
+%% use bins across all mice
+tarDeg_all = cat(2,cell2mat(tarDeg(visMiceInd)));
+cDeg_all = cat(2,cell2mat(cDeg(visMiceInd)));
+tarAmp_all = cat(2,cell2mat(tarAmp(audMiceInd)));
+cAmp_all = cat(2,cell2mat(cAmp(audMiceInd)));
+sIx = cat(2,cell2mat(sIx_all(visMiceInd)));
+mIx = cat(2,cell2mat(mIx_all(visMiceInd)));
+faIx = cat(2,cell2mat(faIx_all(visMiceInd)));
+crIx = cat(2,cell2mat(crIx_all(visMiceInd)));
+eIx = cat(2,cell2mat(eIx_all(visMiceInd)));
+tarRct_all = cat(2,cell2mat(tarRct(visMiceInd)));
+cRct_all = cat(2,cell2mat(cRct(visMiceInd)));
+eRct_all = cat(2,cell2mat(eRct(visMiceInd)));
+
+[h_ori, bin_ori_all] = histc(tarDeg_all, ori_edges);
+[h_oric, bin_oric_all] = histc(cDeg_all, ori_edges);
+[h_amp, bin_amp_all] = histc(tarAmp_all, amp_edges);
+[h_ampc, bin_ampc_all] = histc(cAmp_all, amp_edges);
+
 avg_ori_all = zeros(1,max(ori_bins,[],2));
 sem_ori_all = zeros(1,max(ori_bins,[],2));    
 avg_amp_all = zeros(1,max(amp_bins,[],2));
@@ -386,27 +491,27 @@ rctsem_ampc_all = NaN(1,max(amp_bins,[],2));
 for ibin = 1:max(ori_bins,[],2)
     ind = find(bin_ori_all == ibin);
     avg_ori_all(ibin) = mean(tarDeg_all(ind),2);
-    sem_ori_all(ibin) = std(tarDeg_all(ind),[],2)./length(ind);
+    sem_ori_all(ibin) = std(tarDeg_all(ind),[],2)./sqrt(length(ind));
     rct_ori_all(ibin) = mean(tarRct_all(intersect(find(sIx),ind)),2);
-    rctsem_ori_all(ibin) = std(tarRct_all(intersect(find(sIx),ind)),[],2)./length(ind);
+    rctsem_ori_all(ibin) = std(tarRct_all(intersect(find(sIx),ind)),[],2)./sqrt(length(ind));
     indc = find(bin_oric_all == ibin);
     avg_oric_all(ibin) = mean(cDeg_all(indc),2);
-    sem_oric_all(ibin) = std(cDeg_all(indc),[],2)./length(indc);
+    sem_oric_all(ibin) = std(cDeg_all(indc),[],2)./sqrt(length(indc));
     rct_oric_all(ibin) = mean(cRct_all(intersect(find(faIx),indc)),2);
-    rctsem_oric_all(ibin) = std(cRct_all(intersect(find(faIx),indc)),[],2)./length(indc);
+    rctsem_oric_all(ibin) = std(cRct_all(intersect(find(faIx),indc)),[],2)./sqrt(length(indc));
 end
 
 for ibin = 1:max(amp_bins,[],2);
     ind = find(bin_amp_all == ibin);
     avg_amp_all(ibin) = mean(tarAmp_all(ind),2);
-    sem_amp_all(ibin) = std(tarAmp_all(ind),[],2)./length(ind);
+    sem_amp_all(ibin) = std(tarAmp_all(ind),[],2)./sqrt(length(ind));
     rct_amp_all(ibin) = mean(tarRct_all(intersect(find(sIx),ind)),2);
-    rctsem_amp_all(ibin) = std(tarRct_all(intersect(find(sIx),ind)),[],2)./length(ind);
+    rctsem_amp_all(ibin) = std(tarRct_all(intersect(find(sIx),ind)),[],2)./sqrt(length(ind));
     indc = find(bin_ampc_all == ibin);
     avg_ampc_all(ibin) = mean(cAmp_all(indc),2);
-    sem_ampc_all(ibin) = std(cAmp_all(indc),[],2)./length(indc);
+    sem_ampc_all(ibin) = std(cAmp_all(indc),[],2)./sqrt(length(indc));
     rct_ampc_all(ibin) = mean(cRct_all(intersect(find(faIx),indc)),2);
-    rctsem_ampc_all(ibin) =  std(cRct_all(intersect(find(faIx),indc)),[],2)./length(indc);
+    rctsem_ampc_all(ibin) =  std(cRct_all(intersect(find(faIx),indc)),[],2)./sqrt(length(indc));
 end
 
 
@@ -456,82 +561,6 @@ end
 [FR_amp_all, ci95_FR_amp_all] = binofit(faAll_A, faAll_A + crAll_A);
 
 
-nTrials = cell2mat(cellfun(@length,tarDeg,'Unif',false));
-cumTrials = cumsum(nTrials);
-
-%%
-% get hit rate curves across all mice with universal ori and amp bins
-for imouse = 1:nMice
-    
-    if imouse == 1
-        trialInd = 1:nTrials(imouse);
-    else
-        trialInd = cumTrials(imouse-1)+1:cumTrials(imouse);
-    end
-    %pre-allocate
-    Hits_ori_all{imouse} = zeros(1,max(ori_bins,[],2));
-    Misses_ori_all{imouse} = zeros(1,max(ori_bins,[],2));
-    FAs_ori_all{imouse} = zeros(1,max(ori_bins,[],2));
-    CRs_ori_all{imouse} = zeros(1,max(ori_bins,[],2));
-    
-    Hits_amp_all{imouse} = zeros(1,max(amp_bins,[],2));
-    Misses_amp_all{imouse} = zeros(1,max(amp_bins,[],2));
-    FAs_amp_all{imouse} = zeros(1,max(amp_bins,[],2));
-    CRs_amp_all{imouse} = zeros(1,max(amp_bins,[],2));
-    
-    n_ori_all{imouse} = zeros(2,max(amp_bins,[],2));
-    n_amp_all{imouse} = zeros(2,max(amp_bins,[],2));
-    
-    rct_ori_each{imouse} = NaN(1,max(ori_bins,[],2));
-    rctsem_ori_each{imouse} = NaN(1,max(ori_bins,[],2));
-    rct_oric_each{imouse} = NaN(1,max(ori_bins,[],2));
-    rctsem_oric_each{imouse} = NaN(1,max(ori_bins,[],2));
-    rct_amp_each{imouse} = NaN(1,max(amp_bins,[],2));
-    rctsem_amp_each{imouse} = NaN(1,max(amp_bins,[],2));
-    rct_ampc_each{imouse} = NaN(1,max(amp_bins,[],2));
-    rctsem_ampc_each{imouse} = NaN(1,max(amp_bins,[],2));
-    
-    for ibin = 1:max(ori_bins,[],2)
-        ind = find(bin_ori_all(trialInd) == ibin);
-        if length(ind)>5
-            Hits_ori_all{imouse}(ibin) = sum(sIx_all{imouse}(ind),2);
-            Misses_ori_all{imouse}(ibin) = sum(mIx_all{imouse}(ind),2);
-            rct_ori_each{imouse}(ibin) = mean(tarRct{imouse}(intersect(find(sIx_all{imouse}),ind)),2);
-            rctsem_ori_each{imouse}(ibin) = std(tarRct{imouse}(intersect(find(sIx_all{imouse}),ind)),[],2)./length(ind);
-        end
-        indc = find(bin_oric_all(trialInd) == ibin);
-        if length(indc)>5
-            FAs_ori_all{imouse}(ibin) = sum(faIx_all{imouse}(indc),2);
-            CRs_ori_all{imouse}(ibin) = sum(crIx_all{imouse}(indc),2);
-            rct_oric_each{imouse}(ibin) = mean(cRct{imouse}(intersect(find(faIx_all{imouse}),indc)),2);
-            rctsem_oric_each{imouse}(ibin) = std(cRct{imouse}(intersect(find(faIx_all{imouse}),indc)),[],2)./length(indc);
-        end
-    end
-    [HR_ori_each{imouse}, ci95_HR_ori_each{imouse}] = binofit(Hits_ori_all{imouse}, Misses_ori_all{imouse} + Hits_ori_all{imouse});
-    [FR_ori_each{imouse}, ci95_FR_ori_each{imouse}] = binofit(FAs_ori_all{imouse}, CRs_ori_all{imouse} + FAs_ori_all{imouse});
-    n_ori_all{imouse} = [Hits_ori_all{imouse}+Misses_ori_all{imouse}; FAs_ori_all{imouse}+CRs_ori_all{imouse}];
-
-    for ibin = 1:max(amp_bins,[],2)
-        ind = find(bin_amp_all(trialInd) == ibin);
-        if length(ind)>5
-            Hits_amp_all{imouse}(ibin) = sum(sIx_all{imouse}(ind),2);
-            Misses_amp_all{imouse}(ibin) = sum(mIx_all{imouse}(ind),2);
-            rct_amp_each{imouse}(ibin) = mean(tarRct{imouse}(intersect(find(sIx_all{imouse}),ind)),2);
-            rctsem_amp_each{imouse}(ibin) = std(tarRct{imouse}(intersect(find(sIx_all{imouse}),ind)),[],2)./length(ind);
-        end
-        indc = find(bin_ampc_all(trialInd) == ibin);
-        if length(indc)>5
-            FAs_amp_all{imouse}(ibin) = sum(faIx_all{imouse}(indc),2);
-            CRs_amp_all{imouse}(ibin) = sum(crIx_all{imouse}(indc),2);
-            rct_ampc_each{imouse}(ibin) = mean(cRct{imouse}(intersect(find(faIx_all{imouse}),indc)),2);
-            rctsem_ampc_each{imouse}(ibin) = std(cRct{imouse}(intersect(find(faIx_all{imouse}),indc)),[],2)./length(indc);
-        end
-    end
-    [HR_amp_each{imouse}, ci95_HR_amp_each{imouse}] = binofit(Hits_amp_all{imouse}, Misses_amp_all{imouse} + Hits_amp_all{imouse});
-    [FR_amp_each{imouse}, ci95_FR_amp_each{imouse}] = binofit(FAs_amp_all{imouse}, CRs_amp_all{imouse} + FAs_amp_all{imouse});
-    n_amp_all{imouse} = [Hits_amp_all{imouse}+Misses_amp_all{imouse}; FAs_amp_all{imouse}+CRs_amp_all{imouse}];
-end
-
 %% plot each mouse curve and avg across mice with universal bins
 uniHRFig = figure;
 uniRTFig = figure;
@@ -549,7 +578,7 @@ for imouse = 1:nMice
     colstr = av(find(cell2mat({av.mouse}) == mice(imouse))).col_str;
     hrInd = ~isnan(HR_ori_each{imouse});
     frInd = ~isnan(FR_ori_each{imouse});
-    plot(avg_ori_all(hrInd),HR_ori_each{imouse}(hrInd),'ko-')
+    plot(avg_ori_all(hrInd),HR_ori_each{imouse}(hrInd),'go-')
     hold on
     plot(avg_ori_all(frInd),FR_ori_each{imouse}(frInd),'co-')
     hold on
@@ -571,17 +600,17 @@ set(gca,'XTick',ori_edges)
 xlim(xVis)
 ylim(yHR)
 hold on
-errorbarxy(avg_ori_all, HR_ori_all, sem_ori_all, sem_ori_all, HR_ori_all - ci95_HR_ori_all(:,1)', ci95_HR_ori_all(:,2)' - HR_ori_all, {['o' 'k'], 'k', 'k'});
+errorbarxy(avg_ori_all, HR_ori_all, sem_ori_all, sem_ori_all, HR_ori_all - ci95_HR_ori_all(:,1)', ci95_HR_ori_all(:,2)' - HR_ori_all, {['o' 'g'], 'g', 'g'});
 hold on
 errorbarxy(avg_oric_all, FR_ori_all, sem_oric_all, sem_oric_all, FR_ori_all - ci95_FR_ori_all(:,1)', ci95_FR_ori_all(:,2)' - FR_ori_all, {['o' 'b'], 'b', 'b'});
 hold on
-hrInd = intersect(find(~isnan(HR_ori_all)),find(n_ori>20));
-frInd = intersect(find(~isnan(FR_ori_all)),find(n_oric>20));
-plot(avg_ori_all(hrInd),HR_ori_all(hrInd),'k')
+hrInd = intersect(find(~isnan(HR_ori_all)),find(n_ori>minTrNall));
+frInd = intersect(find(~isnan(FR_ori_all)),find(n_oric>minTrNall));
+plot(avg_ori_all(hrInd),HR_ori_all(hrInd),'g','linewidth',3)
 hold on
-plot(avg_oric_all(frInd),FR_ori_all(frInd),'b')
+plot(avg_oric_all(frInd),FR_ori_all(frInd),'b','linewidth',3)
 hold on
-scatter(avg_ori_all(hrInd),HR_ori_all(hrInd),'ko','filled');
+scatter(avg_ori_all(hrInd),HR_ori_all(hrInd),'go','filled');
 hold on
 scatter(avg_oric_all(frInd),FR_ori_all(frInd),'bo','filled')
 axis square
@@ -594,7 +623,7 @@ for imouse = 1:nMice
     colstr = av(find(cell2mat({av.mouse}) == mice(imouse))).col_str;
     hrInd = ~isnan(rct_ori_each{imouse});
     frInd = ~isnan(rct_oric_each{imouse});
-    plot(avg_ori_all(hrInd),rct_ori_each{imouse}(hrInd),'ko-')
+    plot(avg_ori_all(hrInd),rct_ori_each{imouse}(hrInd),'go-')
     hold on
     plot(avg_oric_all(frInd),rct_oric_each{imouse}(frInd),'co-')
     hold on
@@ -614,17 +643,17 @@ set(gca,'XTick',ori_edges)
 xlim(xVis)
 ylim(yRT)
 hold on
-errorbarxy(avg_ori_all, rct_ori_all, sem_ori_all, sem_ori_all, rct_ori_all - rctsem_ori_all, rctsem_ori_all - rct_ori_all, {['o' 'k'], 'k', 'k'});
+errorbarxy(avg_ori_all, rct_ori_all, sem_ori_all, sem_ori_all, rct_ori_all - rctsem_ori_all, rctsem_ori_all - rct_ori_all, {['o' 'g'], 'g', 'g'});
 hold on
 errorbarxy(avg_oric_all, rct_oric_all, sem_oric_all, sem_oric_all, rct_oric_all - rctsem_oric_all, rctsem_oric_all - rct_oric_all, {['o' 'b'], 'b', 'b'});
 hold on
-hrInd = intersect(find(~isnan(rct_ori_all)),find(n_ori>20));
-frInd = intersect(find(~isnan(rct_oric_all)),find(n_oric>20));
-plot(avg_ori_all(hrInd),rct_ori_all(hrInd),'k')
+hrInd = intersect(find(~isnan(rct_ori_all)),find(n_ori>minTrNall));
+frInd = intersect(find(~isnan(rct_oric_all)),find(n_oric>minTrNall));
+plot(avg_ori_all(hrInd),rct_ori_all(hrInd),'g','linewidth',3)
 hold on
-plot(avg_oric_all(frInd),rct_oric_all(frInd),'b')
+plot(avg_oric_all(frInd),rct_oric_all(frInd),'b','linewidth',3)
 hold on
-scatter(avg_ori_all(hrInd),rct_ori_all(hrInd),'ko','filled');
+scatter(avg_ori_all(hrInd),rct_ori_all(hrInd),'go','filled');
 hold on
 scatter(avg_oric_all(frInd),rct_oric_all(frInd),'bo','filled');
 hold on
@@ -638,10 +667,14 @@ for imouse = 1:nMice
     colstr = av(find(cell2mat({av.mouse}) == mice(imouse))).col_str;
     hrInd = ~isnan(HR_amp_each{imouse});
     frInd = ~isnan(FR_amp_each{imouse});
-    plot(avg_amp_all(hrInd),HR_amp_each{imouse}(hrInd),'ko-')
+    if length(hrInd) >= 2
+    plot(avg_amp_all(hrInd),HR_amp_each{imouse}(hrInd),'ko--')
     hold on
-    plot(avg_amp_all(frInd),FR_amp_each{imouse}(frInd),'co-')
+    end
+    if length(frInd) >=2
+    plot(avg_amp_all(frInd),FR_amp_each{imouse}(frInd),'co--')
     hold on
+    end
 %     errorbarxy(avg_amp_all, HR_amp_each{imouse}, sem_amp_all, sem_amp_all, HR_amp_each{imouse} - ci95_HR_amp_each{imouse}(:,1)', ci95_HR_amp_each{imouse}(:,2)' - HR_amp_each{imouse}, {['o' 'k'], 'k', 'k'});
 %     hold on
 %     errorbarxy(avg_ampc_all, FR_amp_each{imouse}, sem_ampc_all, sem_ampc_all, FR_amp_each{imouse} - ci95_FR_amp_each{imouse}(:,1)', ci95_FR_amp_each{imouse}(:,2)' - FR_amp_each{imouse}, {['o' 'c'], 'c', 'c'});
@@ -666,9 +699,9 @@ errorbarxy(avg_ampc_all, FR_amp_all, sem_ampc_all, sem_ampc_all, FR_amp_all - ci
 hold on
 hrInd = intersect(find(~isnan(HR_amp_all)),find(n_amp>10));
 frInd = intersect(find(~isnan(HR_amp_all)),find(n_ampc>10));
-plot(avg_amp_all(hrInd),HR_amp_all(hrInd),'k')
+plot(avg_amp_all(hrInd),HR_amp_all(hrInd),'k--','linewidth',3)
 hold on
-plot(avg_ampc_all(frInd),FR_amp_all(frInd),'b')
+plot(avg_ampc_all(frInd),FR_amp_all(frInd),'b--','linewidth',3)
 hold on
 scatter(avg_amp_all(hrInd),HR_amp_all(hrInd),'ko','filled');
 hold on
@@ -683,10 +716,14 @@ for imouse = 1:nMice
     colstr = av(find(cell2mat({av.mouse}) == mice(imouse))).col_str;
     hrInd = ~isnan(rct_amp_each{imouse});
     frInd = ~isnan(rct_ampc_each{imouse});
-    plot(avg_amp_all(hrInd),rct_amp_each{imouse}(hrInd),'ko-')
+    if length(hrInd) >= 2
+    plot(avg_amp_all(hrInd),rct_amp_each{imouse}(hrInd),'ko--')
     hold on
-    plot(avg_amp_all(frInd),rct_amp_each{imouse}(frInd),'co-')
+    end
+    if length(frInd >=2)
+    plot(avg_amp_all(frInd),rct_amp_each{imouse}(frInd),'co--')
     hold on
+    end
 %     errorbarxy(avg_ori_all, rct_ori_each{imouse}, sem_ori_all, sem_ori_all, rct_ori_each{imouse} - rctsem_ori_each{imouse}, rctsem_ori_each{imouse} - rct_ori_each{imouse}, {['o' 'k'], 'k', 'k'});
 %     hold on
 %     errorbarxy(avg_oric_all, rct_oric_each{imouse}, sem_oric_all, sem_oric_all, rct_oric_each{imouse} - rctsem_ori_each{imouse}, rctsem_oric_each{imouse} - rct_oric_each{imouse}, {['o' 'c'], 'c', 'c'});
@@ -707,11 +744,11 @@ errorbarxy(avg_amp_all, rct_amp_all, sem_amp_all, sem_amp_all, rct_amp_all - rct
 hold on
 errorbarxy(avg_ampc_all, rct_ampc_all, sem_ampc_all, sem_ampc_all, rct_ampc_all - rctsem_ampc_all, rctsem_ampc_all - rct_ampc_all, {['o' 'b'], 'b', 'b'});
 hold on
-hrInd = intersect(find(~isnan(rct_amp_all)),find(n_amp>10));
-frInd = intersect(find(~isnan(rct_ampc_all)),find(n_ampc>10));
-plot(avg_amp_all(hrInd),rct_amp_all(hrInd),'k-')
+hrInd = intersect(find(~isnan(rct_amp_all)),find(n_amp>minTrNall));
+frInd = intersect(find(~isnan(rct_ampc_all)),find(n_ampc>minTrNall));
+plot(avg_amp_all(hrInd),rct_amp_all(hrInd),'k--','linewidth',3)
 hold on
-plot(avg_ampc_all(frInd),rct_ampc_all(frInd),'b-')
+plot(avg_ampc_all(frInd),rct_ampc_all(frInd),'b--','linewidth',3)
 hold on
 scatter(avg_amp_all(hrInd),rct_amp_all(hrInd),'ko','filled');
 hold on
@@ -719,43 +756,105 @@ scatter(avg_ampc_all(frInd),rct_ampc_all(frInd),'bo','filled');
 hold on
 axis square
 
+
+
 %% working memory test
+
+% converge all react times for hits, invalid hits, earlies
 visInd_all = find(tarDeg_all > 1);
 cVisInd_all = find(cDeg_all > 1);
-eIx = cat(2,cell2mat(eIx_all));
+audInd_all = find(tarAmp_all > 0);
+cAudInd_all = find(cAmp_all > 0);
+cRct_a_all = cat(2,cell2mat(cRct(audMiceInd)));
+eRct_a_all = cat(2,cell2mat(eRct(audMiceInd)));
+rct_a_h = mean(tarRct_all(intersect(audInd_all,find(cat(2,cell2mat(sIx_all(audMiceInd)))))));
+rct_a_h_sem = std(tarRct_all(intersect(audInd_all,find(cat(2,cell2mat(sIx_all(audMiceInd)))))))/sqrt(length(tarRct_all(intersect(audInd_all,find(cat(2,cell2mat(sIx_all(audMiceInd))))))));
+rct_a_fa = mean(cRct_a_all(intersect(audInd_all,find(cat(2,cell2mat(faIx_all(audMiceInd)))))));
+rct_a_fa_sem = std(cRct_a_all(intersect(audInd_all,find(cat(2,cell2mat(faIx_all(audMiceInd)))))))/sqrt(length(cRct_a_all(intersect(audInd_all,find(cat(2,cell2mat(faIx_all(audMiceInd))))))));
+rct_a_e = nanmean(eRct_a_all(intersect(audInd_all,find(cat(2,cell2mat(eIx_all(audMiceInd)))))));
+rct_a_e_sem = nanstd(eRct_a_all(intersect(audInd_all,find(cat(2,cell2mat(eIx_all(audMiceInd)))))))/sqrt(sum(~isnan(eRct_a_all(intersect(audInd_all,find(cat(2,cell2mat(eIx_all(audMiceInd)))))))));
+rct_v_h = mean(tarRct_all(intersect(visInd_all,find(sIx))));
+rct_v_h_sem = std(tarRct_all(intersect(visInd_all,find(sIx))))/sqrt(length(tarRct_all(intersect(visInd_all,find(sIx)))));
+rct_v_fa = mean(cRct_all(intersect(cVisInd_all,find(faIx))));
+rct_v_fa_sem = std(cRct_all(intersect(cVisInd_all,find(faIx))))/sqrt(length(cRct_all(intersect(cVisInd_all,find(faIx)))));
+rct_v_e_sem = nanstd(eRct_all(intersect(visInd_all,find(eIx))))/sqrt(sum(~isnan(eRct_all(intersect(visInd_all,find(eIx))))));
+rct_v_e = nanmean(eRct_all(intersect(visInd_all,find(eIx))));
+
+
+rtAll = figure;
+subplot(2,1,1)
+errorbar(1,rct_v_h,rct_v_h_sem,'go');
+hold on
+errorbar(1,rct_v_fa,rct_v_fa_sem,'co');
+hold on
+errorbar(1,rct_v_e,rct_v_e_sem,'mo');
+xlabel('trial length (ms)')
+ylabel('RT')
+xlim([0 10])
+ylim([0 550])
+axis square
+title('visual trials - RT all')
+legend({'valid';'invalid';'earlies'})
+subplot(2,1,2)
+errorbar(1,rct_a_h,rct_a_h_sem,'ko');
+hold on
+errorbar(1,rct_a_fa,rct_a_fa_sem,'co');
+hold on
+errorbar(1,rct_a_e,rct_a_e_sem,'mo');
+xlabel('trial length (ms)')
+ylabel('RT')
+xlim([0 10])
+ylim([0 550])
+axis square
+title('auditory trials - RT all')
+legend({'valid';'invalid';'earlies'})
+
 
 nCyc_all =  cat(2,cell2mat(nCyc));
 trialTimeMs_all = cat(2,cell2mat(trialTimeMs));
-trialTime_edges = [max(trialTimeMs_all)/3 (max(trialTimeMs_all)/3 +max(trialTimeMs_all)/3 ) max(trialTimeMs_all)];
+trialTime_edges = [0:max(trialTimeMs_all)/5:max(trialTimeMs_all)]+100;
 
 [h_time, bin_time] = histc(trialTimeMs_all,trialTime_edges);
 
-avg_trTime = zeros(1,length(trialTime_edges));
-hits_trTime = zeros(1,length(trialTime_edges));
-misses_trTime = zeros(1,length(trialTime_edges));
-earlies_trTime = zeros(1,length(trialTime_edges));
-fa_trTime = zeros(1,length(trialTime_edges));
-cr_trTime = zeros(1,length(trialTime_edges));
-rct_trTime = zeros(1,length(trialTime_edges));
-rctC_trTime = zeros(1,length(trialTime_edges));
-rct_sem_trTime = zeros(1,length(trialTime_edges));
-rctC_sem_trTime = zeros(1,length(trialTime_edges));
-rctE_trTime = zeros(1,length(trialTime_edges));
-rctE_sem_trTime = zeros(1,length(trialTime_edges));
 time_bins = unique(bin_time);
+avg_trTime = zeros(1,length(time_bins));
+hits_trTime = zeros(1,length(time_bins));
+misses_trTime = zeros(1,length(time_bins));
+earlies_trTime = zeros(1,length(time_bins));
+fa_trTime = zeros(1,length(time_bins));
+cr_trTime = zeros(1,length(time_bins));
+rct_trTime = zeros(1,length(time_bins));
+rctC_trTime = zeros(1,length(time_bins));
+rct_sem_trTime = zeros(1,length(time_bins));
+rctC_sem_trTime = zeros(1,length(time_bins));
+rctE_trTime = zeros(1,length(time_bins));
+rctE_sem_trTime = zeros(1,length(time_bins));
+iv2vRatio = zeros(1,length(time_bins));
+
 
 for ibin = 1:length(time_bins)
     ind = find(bin_time == time_bins(ibin));
     v = intersect(visInd_all,ind);
     c = intersect(cVisInd_all,ind);
+    if sum(faIx(c))+sum(crIx(c)) ~= 0 & sum(sIx(v))+sum(mIx(v)) ~= 0
+    iv2vRatio(ibin) = (sum(faIx(c))+sum(crIx(c)))/(sum(sIx(v))+sum(mIx(v)));
+    end
+end
+iv2vRatioMax = max(iv2vRatio);
+
+for ibin = 1:length(time_bins)
+    ind = find(bin_time == time_bins(ibin));
+    v = intersect(visInd_all,ind);
+    c = intersect(cVisInd_all,ind);
+    v = v(randperm(length(v),ceil(length(c)/iv2vRatioMax)));
     
     avg_trTime(ibin) = mean(trialTimeMs_all(ind));
     rct_trTime(ibin) = mean(tarRct_all(intersect(find(sIx),v)));
-    rct_sem_trTime(ibin) = std(tarRct_all(intersect(find(sIx),v)))/length(intersect(find(sIx),v));
+    rct_sem_trTime(ibin) = nanstd(tarRct_all(intersect(find(sIx),v)))/sqrt(length(intersect(find(sIx),v)));
     rctC_trTime(ibin) = mean(cRct_all(intersect(find(faIx),c)));
-    rctC_sem_trTime(ibin) = std(cRct_all(intersect(find(faIx),c)))/length(intersect(find(faIx),c));
+    rctC_sem_trTime(ibin) = nanstd(cRct_all(intersect(find(faIx),c)))/sqrt(length(intersect(find(faIx),c)));
     rctE_trTime(ibin) = nanmean(eRct_all(intersect(find(eIx),v)));
-    rctE_sem_trTime(ibin) = std(cRct_all(intersect(find(eIx),v)))/length(intersect(find(eIx),v));
+    rctE_sem_trTime(ibin) = nanstd(eRct_all(intersect(find(eIx),v)))/sqrt(length(intersect(find(eIx),v)));
     
     hits_trTime(ibin) = sum(sIx(v));
     misses_trTime(ibin) = sum(mIx(v));
@@ -763,9 +862,13 @@ for ibin = 1:length(time_bins)
     fa_trTime(ibin) = sum(faIx(c));
     cr_trTime(ibin) = sum(crIx(c));
 end
-n_c = fa_trTime+cr_trTime;
-n_c_ind = n_c > 10;
-n_fa_ind = fa_trTime > 10;
+
+%min trial n indices
+hrBinIx = find(hits_trTime+misses_trTime > minTrNall);
+hBinIx = find(hits_trTime > minTrNall);
+faBinIx = find(fa_trTime > minTrNall);
+cBinIx = find(fa_trTime+cr_trTime > minTrNall);
+eBinIx = find(earlies_trTime > minTrNall);
 
 [HR_trTime ci_95_HR_trTime] = binofit(hits_trTime,hits_trTime+misses_trTime);
 [FR_trTime ci_95_FR_trTime] = binofit(fa_trTime,fa_trTime+cr_trTime);
@@ -774,34 +877,37 @@ n_fa_ind = fa_trTime > 10;
 
 workingMemoryFig = figure;
 subplot(2,1,1)
-errorbar(avg_trTime,HR_trTime,HR_trTime-ci_95_HR_trTime(:,1)',ci_95_HR_trTime(:,2)'-HR_trTime,'ko');
+errorbar(avg_trTime(hrBinIx),HR_trTime(hrBinIx),HR_trTime(hrBinIx)-ci_95_HR_trTime((hrBinIx),1)',ci_95_HR_trTime((hrBinIx),2)'-HR_trTime(hrBinIx),'go');
 hold on
-errorbar(avg_trTime(n_c_ind),FR_trTime(n_c_ind),FR_trTime(n_c_ind)-ci_95_FR_trTime((n_c_ind),1)',ci_95_FR_trTime((n_c_ind),2)'-FR_trTime(n_c_ind),'co');
+errorbar(avg_trTime(cBinIx),FR_trTime(cBinIx),FR_trTime(cBinIx)-ci_95_FR_trTime((cBinIx),1)',ci_95_FR_trTime((cBinIx),2)'-FR_trTime(cBinIx),'co');
 hold on
-errorbar(avg_trTime,ER_trTime,ER_trTime-ci_95_ER_trTime(:,1)',ci_95_ER_trTime(:,2)'-ER_trTime,'bo');
+errorbar(avg_trTime(eBinIx),ER_trTime(eBinIx),ER_trTime(eBinIx)-ci_95_ER_trTime((eBinIx),1)',ci_95_ER_trTime((eBinIx),2)'-ER_trTime(eBinIx),'mo');
 hold on
 xlim([0 trialTime_edges(end)+500])
 ylim([0 1])
 xlabel('trial length (ms)')
 ylabel('HR')
+axis square
 title('visual trials - HR')
 legend({'valid';'invalid';'earlies'})
 
 
 figure(workingMemoryFig)
 subplot(2,1,2)
-errorbar(avg_trTime ,rct_trTime ,rct_sem_trTime,'ko')
+errorbar(avg_trTime(hrBinIx) ,rct_trTime(hrBinIx) ,rct_sem_trTime(hrBinIx),'go')
 hold on
-errorbar(avg_trTime ,rctC_trTime ,rctC_sem_trTime,'co')
+errorbar(avg_trTime(faBinIx),rctC_trTime(faBinIx) ,rctC_sem_trTime(faBinIx),'co')
 hold on
-errorbar(avg_trTime,rctE_trTime,rctE_sem_trTime,'bo')
+errorbar(avg_trTime(eBinIx),rctE_trTime(eBinIx),rctE_sem_trTime(eBinIx),'mo')
 hold on
 xlabel('trial length (ms)')
 ylabel('RT')
 xlim([0 trialTime_edges(end)+500])
 ylim([0 550])
+axis square
 title('visual trials - RT')
 legend({'valid';'invalid';'earlies'})
+
 
 
 %% save 'uni bins' figs
@@ -816,3 +922,5 @@ figure(uniRTFig);
 print(fullfile(rc.fitOutputSummary, [date '_uniRT.pdf']),'-dpdf')
 figure(workingMemoryFig);
 print(fullfile(rc.fitOutputSummary, [date '_visbyTrialLength.pdf']),'-dpdf')
+figure(rtAll);
+print(fullfile(rc.fitOutputSummary, [date '_meanRT.pdf']),'-dpdf')
