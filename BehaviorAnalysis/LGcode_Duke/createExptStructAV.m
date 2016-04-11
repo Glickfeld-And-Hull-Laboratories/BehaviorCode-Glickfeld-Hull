@@ -19,8 +19,8 @@ for imouse = 1:nMice;
         idate = xd.DateStr{ind(iexp)};
         idate
         n  = dir(fullfile(rc.pathStr, ['data-i' num2str(mouse_name) '-' idate '-*']));
-        if ~isnan(str2num(xd.ChooseMatFile{ind(iexp)}))
-            n = n(str2num(xd.ChooseMatFile{ind(iexp)}));
+        if ~isnan(xd.ChooseMatFile(ind(iexp)))
+            n = n(xd.ChooseMatFile(ind(iexp)));
         end
         for ifile = 1:size(n,1)
             if ifile == 1
