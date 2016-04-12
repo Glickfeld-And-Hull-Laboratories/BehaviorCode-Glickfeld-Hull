@@ -2,17 +2,18 @@ import math
 import numpy
 
 def add_to_reactTimesCorrect():
+	
+	tReactTimeMsCorrect = getvar('actualHoldTimeMs') - getvar('tTotalReqHoldTimeMs')
+	reactTimesMsCorrect = getvar('reactTimesMsCorrect')
+	reactTimesMsCorrect.append(tReactTimeMsCorrect)
+	setvar('reactTimesMsCorrect', reactTimesMsCorrect)
+	targetCorrect = getvar('targetCorrect')
 
-    tReactTimeMsCorrect = getvar('actualHoldTimeMs') - getvar('tTotalReqHoldTimeMs')
-    reactTimesMsCorrect = getvar('reactTimesMsCorrect')
-    reactTimesMsCorrect.append(tReactTimeMsCorrect)
+	mouseSpeed = getvar('mouseSpeed')
 
-    setvar('reactTimesMsCorrect', reactTimesMsCorrect)
-    targetCorrect = getvar('targetCorrect')
-
-    if getvar('mouseSpeed') == 0 and tReactTimeMsCorrect > 150 and tReactTimeMsCorrect < 550:
+	if mouseSpeed == 0 and tReactTimeMsCorrect > 150 and tReactTimeMsCorrect < 550:
 		targetCorrect = targetCorrect + 1
-	else getvar('mouseSpeed') == 1 and tReactTimeMsCorrect > 250 and tReactTimeMsCorrect < 650:
+	elif mouseSpeed == 1 and tReactTimeMsCorrect > 250 and tReactTimeMsCorrect < 650:
 		targetCorrect = targetCorrect + 1
 
 	setvar('targetCorrect', targetCorrect)
