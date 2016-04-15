@@ -25,7 +25,6 @@
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="512" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string" persistant="0"/>
-
     </folder>
     <folder tag="StimulusSpecs">
       <variable tag="stopAfterNTrials" scope="local" logging="when_changed" default_value="90" type="integer" persistant="1"/>      
@@ -34,6 +33,11 @@
       <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="itiIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="checkMovementMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
+      <variable tag="playVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="frames_per_second" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/>
+      <variable tag="movie_ended" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="movieStartMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="repeats" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1"/>
     </folder>
     <folder tag="NFrames">
       <variable tag="itiNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -98,7 +102,13 @@
     <sound tag="sound1000ms" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/sound-1k-1000ms.wav"/>
   </sounds>
   <stimuli tag="Stimuli">
-    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>       
+    <stimulus_group tag="images">
+            <range_replicator tag="New Replicator" from="1" to="11" step="1" variable="index">
+                <stimulus type="image_file" tag="circle_${index}" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/images/CerebellarStim_Images/circle_${index}.png" x_size="40" y_size="40" x_position="0.0" y_position="0.0" rotation="0.0" alpha_multiplier="1.0" deferred="NO"></stimulus>
+            </range_replicator>
+    </stimulus_group>
+    <stimulus type="movie" tag="movie" stimulus_group="images" frames_per_second="frames_per_second" ended="movie_ended" repeats="repeats"></stimulus>
+    <stimulus type="blank_screen" tag="background" color="0,0,0"></stimulus>
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -132,8 +142,12 @@
           
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
           
-    
-
+          <action type="if" condition="playVisualStim == 1 &amp;&amp; tTrialsDoneSinceStart == 0">
+            <action tag="Queue movie" type="queue_stimulus" stimulus="movie"></action>
+            <action tag="Update stimulus display" type="update_stimulus_display"></action>
+            <action tag="Start movie" stimulus="movie" type="play_dynamic_stimulus"></action>
+            <action type="assignment" tag="Record start time" variable="movieStartMS" value="now()/1000"></action>
+          </action>
           
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
