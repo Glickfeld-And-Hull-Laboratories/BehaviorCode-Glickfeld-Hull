@@ -1208,7 +1208,10 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="interRewardInterval minimum to juiceTime" variable="tInterRewardIntervalMs" value="interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )"></action>
             <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
-            <action type="assignment" variable="tRewardOmissionTrial" value="(int)(rand(1, rewardOmissionPercent*100) &lt;= rewardOmissionPercent*10)"/>
+            <action type="if" condition="rewardOmissionPercent != 0">
+              <action type="assignment" variable="tRewardOmissionTrial" value="(int)(rand(0, rewardOmissionPercent*100) &lt; rewardOmissionPercent*10)"/>
+              <action type="report" message="the tRewardOmissionTrial is $tRewardOmissionTrial"/>
+            </action>
             <action type="report" message="the tRewardOmissionTrial is $tRewardOmissionTrial"/>
             <action type="if" condition="tRewardOmissionTrial == 0">
               <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
