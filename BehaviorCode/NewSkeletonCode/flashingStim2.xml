@@ -8,7 +8,8 @@
       laser_trigger="laserTrigger"
       trial_laser_powerMw="tTrialLaserPowerMw"
       optic_device="optic_device"
-      strobed_digital_word="strobedDigitalWord"/>
+      strobed_digital_word="strobedDigitalWord"
+      laser_duration="laserDuration"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
       <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
     </io_devices>
@@ -143,6 +144,8 @@
         <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
         <variable tag="forceMinStimStepTo" scope="global" logging="when_changed" default_value="-1" type="float" persistant="1" groups="Laser"/>
 
+        <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Laser"/>
+        <variable tag="laserDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
         <!-- block 2 control -->
 
         <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Stimulus"/>
@@ -1254,6 +1257,8 @@
                                         <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == 1)">
                                           <action type="assignment" variable="laserTrigger" value="1"></action> 
                                           <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action> 
+                                          <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                                          <action type="report" message="-----Laser Duration is to $laserDuration"/>
                                           <action type="report" message="********* SENDING LASER TRIGGER *********"/>
                                           <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
                                         </action>
