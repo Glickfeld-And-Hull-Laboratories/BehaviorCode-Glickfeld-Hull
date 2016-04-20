@@ -56,7 +56,7 @@
         <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="doLongCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
-        <variable tag="doRandomStimOffTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+        <variable tag="doRandStimOffTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
         <variable tag="minStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="maxStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
 
@@ -424,7 +424,7 @@
                       <action type="assignment" variable="tNStimAccepted" value="0"></action> 
                     </action>
                     <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
-                      <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+                      <task_system tag="TS" full_name="TS" interruptible="YES" description="">
                         <task_system_state tag="Initialization" interruptible="YES">
                           <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
                           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
@@ -1220,7 +1220,7 @@
                                         condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="TrialStimOn"></transition>
                                       </task_system_state>
 
-                                      <task_system_state tag="TrialStimOn" interruptble="YES">
+                                      <task_system_state tag="TrialStimOn" interruptible="YES">
                                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                         <action type="report" message="TrialStim On of $tCyclesOn" />
                                         <action type="assignment" variable="stimTag" value= "1"/>
@@ -1297,6 +1297,9 @@
                                         <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tFakeMouseReactMs" duration_units="ms"></action>
                                         <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="fake mouse to react in $tFakeMouseReactMs ms"></action>
                                       </action>
+                                      <action type="if" tag="if fakeMouse and first stim on" condition="!doLever &amp;&amp; tCyclesOn == 1 &amp;&amp; doFakeMouseSuccessOnly">
+                                        <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="9999" duration_units="ms"></action>
+                                      </action>
 
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
@@ -1304,7 +1307,7 @@
                                       <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() > (tStimOnMs*1000 + tStimOnTimeMs*1000 - tFrameDelayUs + 1500)" target="TrialStimOff"></transition>
                                     </task_system_state>
 
-                                    <task_system_state tag="TrialStimOff" interruptble="YES">
+                                    <task_system_state tag="TrialStimOff" interruptible="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         
                                       <action type="assignment" variable="stimTag" value= "0"/>
@@ -1354,7 +1357,7 @@
                                       <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; (now() >= (tStimOffMs*1000 + tStimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TargetStimOn"></transition>
                                     </task_system_state> 
 
-                                    <task_system_state tag="TargetStimOn" interruptble="YES">
+                                    <task_system_state tag="TargetStimOn" interruptible="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                        
                                       <action type="start_timer" tag="" timer="targetOnTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
@@ -1703,7 +1706,7 @@
                               <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
                             </task_system_state>
 
-                            <task_system_state tag="EndTrialStimOn" interruptble="YES">
+                            <task_system_state tag="EndTrialStimOn" interruptible="YES">
                               <action_marker _unmoveable="1" tag="Actions"></action_marker>
                               <action type="start_timer" tag="" timer="endOnTimer" duration="tStimOnTimeMs" timebase="" duration_units="ms"/>
                               <action type="report" message="End of Trial - Stim On"/>
@@ -1756,7 +1759,7 @@
                               <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
                             </task_system_state>
 
-                            <task_system_state tag="EndTrialStimOff" interruptble="YES">
+                            <task_system_state tag="EndTrialStimOff" interruptible="YES">
                               <action_marker _unmoveable="1" tag="Actions"></action_marker>
                               <action type="start_timer" tag="" timer="endOffTimer" duration="tStimOffTimeMs" timebase="" duration_units="ms"/>
                               
@@ -1822,7 +1825,7 @@
               <transition type="timer_expired" target="EndTrial" timer="consecErrorTimer"></transition>
             </task_system_state>
 
-            <task_system_state tag="EndTrial" interruptble="YES">
+            <task_system_state tag="EndTrial" interruptible="YES">
               <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
               <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
               <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>

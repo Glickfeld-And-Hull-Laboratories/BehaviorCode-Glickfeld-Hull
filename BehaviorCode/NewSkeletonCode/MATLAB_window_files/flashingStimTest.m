@@ -115,12 +115,15 @@ reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
 holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
 reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
 
-if isfield(input, 'doRandomStimTime')
+if isfield(input, 'doRandStimOffTime')
     totalStimTime = input.tTotalStimTimeMs{trN};
-    nCyclesRemaining = input.tCyclesOn{trN} - numberCyclesOn;
-    avgCycleTime = ((maxStimOffTimeMs+minStimOffTimeMs)./2) + stimOnTimeMs;
+    nCyclesRemaining = numberCyclesOn - input.tCyclesOn{trN};
+    avgCycleTime = ((input.maxStimOffTimeMs+input.minStimOffTimeMs)./2) + input.stimOnTimeMs;
     reqHoldTimeMs = totalStimTime + (nCyclesRemaining*avgCycleTime);
+    reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
 end
+
+
 
 % add to array
 input.holdStartsMs{trN} = leverDownUs/1000;
