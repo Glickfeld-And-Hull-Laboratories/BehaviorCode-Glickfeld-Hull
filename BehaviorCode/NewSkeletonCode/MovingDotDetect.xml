@@ -17,6 +17,7 @@
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
       <variable tag="doITIStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="itiContrast" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Task Type"/>
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doSpeedDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
@@ -331,7 +332,7 @@
               <action type="if" condition="doITIStim">
                 <action type="assignment" tag="set dot params" variable="setDotCoherence" value="baseDotCoherence"/>
                 <action type="assignment" tag="set dot params" variable="setDotSpeedDPS" value="baseDotSpeedDPS"/>
-                <action type="assignment" tag="set dot params" variable="setDotContrast" value="baseDotContrast"/>
+                <action type="assignment" tag="set dot params" variable="setDotContrast" value="itiContrast"/>
                 <action type="assignment" tag="set dot params" variable="tDotDensity" value="dotDensity"/>
                 <action type="assignment" tag="set dot params" variable="tDotSizeDeg" value="dotSizeDeg"/>
                 <action type="assignment" tag="set dot params" variable="tDotFieldSizeDeg" value="dotFieldSizeDeg"/>
@@ -983,6 +984,10 @@
                 <action type="assignment" tag="set dot params" variable="setDotContrast" value="baseDotContrast"/>
                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots"></action>    
                 <action type="play_dynamic_stimulus" stimulus="moving_dots" tag="start"></action>
+                <action type="update_stimulus_display" tag="-"></action>
+              </action>
+              <action type="if" condition="doITIStim">
+                <action type="assignment" tag="set dot params" variable="setDotContrast" value="baseDotContrast"/>
                 <action type="update_stimulus_display" tag="-"></action>
               </action>
 
