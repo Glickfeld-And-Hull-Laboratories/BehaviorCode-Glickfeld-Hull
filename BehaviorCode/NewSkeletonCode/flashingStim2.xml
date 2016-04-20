@@ -33,6 +33,7 @@
         <variable tag="doTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doPairedPulse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+        <variable tag="doPulseLength" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
         <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
         <variable tag="block2DoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
@@ -983,7 +984,15 @@
             <action type="assignment" tag="Set nCyclesOn to 1" variable="nCyclesOn" value="1"/>
             <action type="assignment" tag="Set stim off time" variable="tStimOffTimeMs" value="stimOffTimeMs / (pow(2, tStimulusNumber))"/>
             <action type="report" message="Stim off time this trial is $tStimOffTimeMs"></action>
-          </action>  
+          </action>
+
+          <!-- for paired pulse experiments -->
+          <action type="if" condition="doPulseLength">
+            <action type="assignment" tag="Set nCyclesOn to 1" variable="nCyclesOn" value="1"/>
+            <action type="assignment" tag="Set stim off time" variable="tStimOnTimeMs" value="stimOnTimeMs / (pow(2, tStimulusNumber))"/>
+            <action type="report" message="Stim off time this trial is $tStimOnTimeMs"></action>
+          </action>
+
           <!-- setting total required hold time -->
           <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="((tStimOnTimeMs+tStimOffTimeMs)*nCyclesOn)+tStimOnTimeMs"/> 
 
@@ -1035,6 +1044,9 @@
                         <action type="if" condition="doPairedPulse">
                             <action type="assignment" tag="Set target contrast to base" variable="tGratingContrast" value="baseGratingContrast"/>
                             <action type="assignment" tag="Set target ori to base" variable="tGratingDirectionDeg" value="baseGratingDirectionDeg"/>
+                        </action>
+                        <action type="if" condition="doPulseLength">
+                            <action type="assignment" tag="Set target contrast to base" variable="tGratingContrast" value="0"/>
                         </action> 
                       </action>
 
