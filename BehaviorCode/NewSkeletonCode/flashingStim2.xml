@@ -56,6 +56,9 @@
         <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="doLongCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+        <variable tag="doRandomStimOffTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+        <variable tag="minStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="maxStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
 
         <variable tag="doShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
         <variable tag="doShortCatchReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
@@ -239,6 +242,7 @@
       <folder tag="Internal Variables">
         <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tTotalStimTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="tFakeMouseReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -447,6 +451,7 @@
                           <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/>
                           <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
                           <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>
+                          <action type="assignment" tag="Reset total cycle time" variable="tTotalStimTimeMs" value="0"/>
                           
 
                            <action type="if" condition="doPhotodiode">
@@ -986,7 +991,7 @@
             <action type="report" message="Stim off time this trial is $tStimOffTimeMs"></action>
           </action>
 
-          <!-- for paired pulse experiments -->
+          <!-- for pulse length experiments -->
           <action type="if" condition="doPulseLength">
             <action type="assignment" tag="Set nCyclesOn to 1" variable="nCyclesOn" value="1"/>
             <action type="assignment" tag="Set stim off time" variable="tStimOnTimeMs" value="stimOnTimeMs / (pow(2, tStimulusNumber))"/>
@@ -1205,9 +1210,6 @@
                                     <!-- fake mouse calculations -->
                                     <action type="if" tag="if fakeMouse" condition="!doLever">
                                       <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="rand(0, fakeMouseMaxReactMs)"></action>
-                                      <action type="if" tag="if doFakeMouseSuccess" condition="doFakeMouseSuccessOnly">
-                                        <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactMs" value="tTotalReqHoldTimeMs+ tooFastTimeMs"></action>
-                                      </action>
                                     </action>
 
                                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -1240,6 +1242,11 @@
                                       </action>
 
                                         <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
+
+                                        <action type="if" condition="doRandStimOffTime">
+                                            <action type="assignment" tag="Set tStimOffTime between min and maxStimOffTime" variable="tStimOffTimeMs" value="(int)rand(minStimOffTimeMs, maxStimOffTimeMs)"/>
+                                            <action type="assignment" tag="Count total cycle time" variable="tTotalStimTimeMs" value="tTotalStimTimeMs + tStimOnTimeMs + tStimOffTimeMs"/>
+                                        </action>
 
                                         <action type="if" condition="doPhotodiode">
                                             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
@@ -1286,7 +1293,7 @@
 
                                       <action type="play_sound" sound="baseSound"/>
 
-                                      <action type="if" tag="if fakeMouse and first stim on" condition="!doLever &amp;&amp; tCyclesOn == 1">
+                                      <action type="if" tag="if fakeMouse and first stim on" condition="!doLever &amp;&amp; tCyclesOn == 1 &amp;&amp; !doFakeMouseSuccessOnly">
                                         <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tFakeMouseReactMs" duration_units="ms"></action>
                                         <action tag="Report FakeMouseTimer" full_name="Report Press" type="report" message="fake mouse to react in $tFakeMouseReactMs ms"></action>
                                       </action>
@@ -1354,6 +1361,14 @@
 
                                       <action type="start_timer" tag="" timer="tooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
                                       <action type="start_timer" tag="" timer="reactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"></action>
+
+                                      <action type="if" tag="if doFakeMouseSuccess" condition="doFakeMouseSuccessOnly">
+                                        <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tooFastTimeMs+100" duration_units="ms"></action>
+                                      </action>
+
+                                      <action type="if" condition="doRandStimOffTime">
+                                        <action type="assignment" tag="Set tStimOffTime between min and maxStimOffTime" variable="tStimOffTimeMs" value="rand(minStimOffTimeMs, maxStimOffTimeMs)"/>
+                                      </action>
 
                                       <action type="assignment" variable="stimTag" value= "2"></action>
 
@@ -1723,7 +1738,9 @@
                                 <action type="assignment" variable="MIO0" value="1"/>
                               </action>
 
-                              
+                              <action type="if" condition="doRandStimOffTime">
+                                <action type="assignment" tag="Set tStimOffTime between min and maxStimOffTime" variable="tStimOffTimeMs" value="rand(minStimOffTimeMs, maxStimOffTimeMs)"/>
+                              </action>
 
                               <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                               <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>

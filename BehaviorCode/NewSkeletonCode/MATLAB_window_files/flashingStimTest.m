@@ -87,6 +87,7 @@ varsOneValEachTrial = {...
     'tTargetOnTimeMs', ...
     'tMinCyclesOn', ...
     'tMaxCyclesOn', ...
+    'tTotalStimTimeMs', ...
 };
 
 exptSetupBridge;
@@ -113,6 +114,13 @@ reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
 
 holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
 reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
+
+if isfield(input, 'doRandomStimTime')
+    totalStimTime = input.tTotalStimTimeMs{trN};
+    nCyclesRemaining = input.tCyclesOn{trN} - numberCyclesOn;
+    avgCycleTime = ((maxStimOffTimeMs+minStimOffTimeMs)./2) + stimOnTimeMs;
+    reqHoldTimeMs = totalStimTime + (nCyclesRemaining*avgCycleTime);
+end
 
 % add to array
 input.holdStartsMs{trN} = leverDownUs/1000;
