@@ -121,6 +121,8 @@ if isfield(input, 'doRandStimOffTime')
     avgCycleTime = ((input.maxStimOffTimeMs+input.minStimOffTimeMs)./2) + input.stimOnTimeMs;
     reqHoldTimeMs = totalStimTime + (nCyclesRemaining*avgCycleTime);
     reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
+    tempTimes = mwGetEventValue(eventsTrial, ds.event_codec, 'tStimOffTimeMs', 'all', 1);
+    input.tStimOffTimes{trN} = tempTimes(2:end);
 end
 
 
