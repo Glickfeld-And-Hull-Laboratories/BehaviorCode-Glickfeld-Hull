@@ -779,6 +779,7 @@
             </action>
 
             <action type="assignment" variable="tTotalReqHoldTimeMs" value="fixedReqHoldTimeMs + tRandReqHoldTimeMs"></action>
+            <action type="assignment" variable="tTotalReqHoldFrames" value="ceil((tTotalReqHoldTimeMs/1000)*frameRateHz)"></action>
 
             <!-- choose laser power -->
             <action type="if" condition="doLaserStim">
@@ -953,7 +954,7 @@
             <action type="assignment" variable="tStartTrialWaitForPressTimeMs" value="now()/1000.0"></action>
 
             <action type="assignment" tag="Encode StartTrialWaitForPress" variable="strobedDigitalWord" value="7"></action>
-            
+            <action type="report" message="in WaitforLever Stage"></action>
             <!-- fake mouse calculations -->
             <action type="if" tag="if fakeMouse" condition="!doLever">
               <action type="assignment" tag="Assign tFakeMouseReactFrames" variable="tFakeMouseReactFrames" value="rand(0, ceil((fakeMouseMaxReactMs/1000)*frameRateHz))"></action>
@@ -963,11 +964,11 @@
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; FIO1 == 1" target="StartTrial"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
             <transition type="conditional" tag="If fakeMouse elapsed, go to TrialStimOn" 
-                        condition="!doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 100" target="StartTrial"></transition>
+                        condition="!doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 100" target="HoldLever"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to TrialStimOn" 
-                        condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="StartTrial"></transition>
+                        condition="doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000" target="HoldLever"></transition>
           </task_system_state>
 
           <task_system_state tag="HoldLever" interruptible="YES">
