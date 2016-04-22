@@ -77,16 +77,6 @@ for imouse = 1:nMice;
     
 %%
 
-    for i = 2:max(length(uniquedegrees))
-        degree = uniquedegrees(i);
-        e = find(catchDirectionDeg == degree);
-        Catchpercent = length(e) / length(catchDirectionDeg);
-        f = find(targetDirectionDeg == degree);
-        Targetpercent = length(f) / length(targetDirectionDeg);
-        g = randperm(length(f), length(e));
-        NewTarget = f(g);     
-        
-    end
     
     
 % 
