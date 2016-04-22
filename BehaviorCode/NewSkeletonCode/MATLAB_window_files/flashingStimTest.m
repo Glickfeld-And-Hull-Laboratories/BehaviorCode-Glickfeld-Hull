@@ -115,14 +115,16 @@ reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
 holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
 reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
 
-if isfield(input, 'doRandStimOffTime')
-    totalStimTime = input.tTotalStimTimeMs{trN};
-    nCyclesRemaining = numberCyclesOn - input.tCyclesOn{trN};
-    avgCycleTime = ((input.maxStimOffTimeMs+input.minStimOffTimeMs)./2) + input.stimOnTimeMs;
-    reqHoldTimeMs = totalStimTime + (nCyclesRemaining*avgCycleTime);
-    reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
-    tempTimes = mwGetEventValue(eventsTrial, ds.event_codec, 'tStimOffTimeMs', 'all', 1);
-    input.tStimOffTimes{trN} = tempTimes(2:end);
+if isfield(input, 'doRandStimOffTime') 
+    if input.doRandStimOffTime == 1
+        totalStimTime = input.tTotalStimTimeMs{trN};
+        nCyclesRemaining = numberCyclesOn - input.tCyclesOn{trN};
+        avgCycleTime = ((input.maxStimOffTimeMs+input.minStimOffTimeMs)./2) + input.stimOnTimeMs;
+        reqHoldTimeMs = totalStimTime + (nCyclesRemaining*avgCycleTime);
+        reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
+        tempTimes = mwGetEventValue(eventsTrial, ds.event_codec, 'tStimOffTimeMs', 'all', 1);
+        input.tStimOffTimes{trN} = tempTimes(2:end);
+    end
 end
 
 
