@@ -134,7 +134,7 @@ for imouse = 1:nMice;
             mouse(imouse).input(iexp).Ignorex =strcmp(input_temp.trialOutcomeCell, 'ignore');
             mouse(imouse).input(iexp).SuccessIx =strcmp(input_temp.trialOutcomeCell, 'success');
             mouse(imouse).input(iexp).hitrates = zeros(1,length(mouse(imouse).input(iexp).uniqueDeg));
-        
+            mouse(imouse).input(iexp).indexes = iexp;
         
             mouse(imouse).input(iexp).countDegs = length(mouse(imouse).input(iexp).uniqueDeg);
         
@@ -161,7 +161,7 @@ for imouse = 1:nMice;
             mouse(imouse).input(iexp).measured = (mouse(imouse).input(iexp).FAIx+  mouse(imouse).input(iexp).CRIx)/ (mouse(imouse).input(iexp).FAIx+  mouse(imouse).input(iexp).CRIx+ mouse(imouse).input(iexp).Ignorex+ mouse(imouse).input(iexp).SuccessIx);
         
             mouse(imouse).input(iexp).measuredDegs = ones(1,mouse(imouse).input(iexp).countDegs) *mouse(imouse).input(iexp).measured;
-        
+            mouse(imouse).input(iexp).CatchReactday = celleqel2mat_padded(mouse(imouse).input(iexp).leverUpTimeMs) - celleqel2mat_padded(mouse(imouse).input(iexp).tCatchTimeMs);
         
             
         else
@@ -193,7 +193,10 @@ for imouse = 1:nMice;
             mouse(imouse).input(iexp).Ignorex =strcmp(input_temp.trialOutcomeCell, 'ignore');
             mouse(imouse).input(iexp).SuccessIx =strcmp(input_temp.trialOutcomeCell, 'success');
             mouse(imouse).input(iexp).hitrates = zeros(1,length(mouse(imouse).input(iexp).uniqueDeg));
-
+            
+               mouse(imouse).input(iexp).CatchReactday = celleqel2mat_padded(mouse(imouse).input(iexp).leverUpTimeMs) - celleqel2mat_padded(mouse(imouse).input(iexp).tCatchTimeMs);
+            
+            mouse(imouse).input(iexp).indexes = iexp;
 
             mouse(imouse).input(iexp).countDegs = length(mouse(imouse).input(iexp).uniqueDeg);
 
