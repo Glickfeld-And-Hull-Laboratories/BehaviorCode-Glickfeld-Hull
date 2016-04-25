@@ -332,6 +332,10 @@
                           <action type="assignment" variable="tBlock2TrialNumber" value="0" />
                           <action type="assignment" variable="tLeftTrial" value="0" />
                           <action type="assignment" variable="cItiStart" value="counter" />
+
+                          <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000" />
+
+                          <action type="start_timer" timer="itiTimerMs" timebase="" duration="itiTimeMs" duration_units="ms"/>
                           
                           <action type="if" condition="success+ignore+incorrect > 0">
               				<action type="assignment" variable="isFirstTrial" value="0"></action>
@@ -917,7 +921,7 @@
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="WaitForInitiate"></transition>
             			<transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + nFramesIti) &amp;&amp; !isFirstTrial" target="WaitForInitiate"></transition>
-            			<transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cDecision" target="ExitTask"></transition>
+            			<transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; timerExpired(itiTimerMs) &amp;&amp; counter == cDecision" target="ExitTask"></transition>
                       </task_system_state>
                       
                       <task_system_state tag="ExitTask" interruptible="YES">
@@ -931,7 +935,7 @@
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" condition="counter-cStationaryStart &gt;= nFramesStationary" target="TrialStart"></transition>
-                        <transition type="conditional" condition="abs(quadrature-tQuadrature) &gt;= stationaryThreshold" target="WaitForInitiate"></transition>
+                        <transition type="conditional" condition="abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="WaitForInitiate"></transition>
                       </task_system_state>
 
                       <task_system_state tag="TrialStart" interruptible="YES">

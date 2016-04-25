@@ -46,6 +46,7 @@ varsOneValEachTrial = { ...
     'tTrialLaserOnTimeMs', ...
     'tTrialLaserOffTimeMs', ...
     'robotGoLeft', ...
+    'stimTimestampMs', ...
   };
 
 exptSetupBridge;
@@ -73,6 +74,14 @@ if input.tLeftTrial{trN}==1,
 else
     input.leftGratingContrast{trN} = input.dGratingContrast{trN};
     input.rightGratingContrast{trN} = input.tGratingContrast{trN};
+end
+
+try
+    input.quadratureTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
+    input.quadratureValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1) ;
+catch
+    input.quadratureTimesUs{trN} = NaN;
+    input.quadratureValues{trN} = NaN;
 end
 
 %% disp status
