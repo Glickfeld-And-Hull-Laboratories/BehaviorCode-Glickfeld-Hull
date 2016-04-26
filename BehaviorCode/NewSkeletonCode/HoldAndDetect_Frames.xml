@@ -289,7 +289,7 @@
               alpha_multiplier="tGratingContrast"></stimulus>
   </stimuli>    
   <experiment tag="Experiment" full_name="">
-    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="">
 
       <!-- init actions before running trials after any press of start-->
       <action type="queue_stimulus" stimulus="background"></action>
@@ -320,9 +320,8 @@
       </action>
 
       <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
-        <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" 
-                     _error="Task Systems must contain >=1 transition that yields to parent">
-          <task_system_state tag="Intertrial" interruptible="YES">
+        <task_system tag="TS" full_name="TS" description="" >
+          <task_system_state tag="Intertrial">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="assignment" tag="reset counter" variable="counter" value="0"></action>
@@ -880,7 +879,7 @@
             <transition type="timer_expired" tag="If Expired, Go To StartTrial" target="StartTrial" timer="interTrialTimer"></transition>
           </task_system_state>
 
-          <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
+          <task_system_state tag="StartTrial" full_name="" description="">
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
               <!-- Lower solenoid at beginning of trial for any solenoid -->
               <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="0"></action>
@@ -905,7 +904,7 @@
                         condition="doAllCorrects==1" target="HoldLever"></transition>
           </task_system_state>
 
-          <task_system_state tag="HoldLever" interruptible="YES">
+          <task_system_state tag="HoldLever">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action tag="p" type="play_sound" sound="louderPressSound"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
@@ -952,7 +951,7 @@
             <transition type="timer_expired" tag="If leverHoldTimer Expired, Go To StimOn" target="StimOn" timer="leverHoldTimer"></transition>
           </task_system_state>
 
-          <task_system_state tag="StimOn" interruptible="YES">
+          <task_system_state tag="StimOn">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="start_timer" tag="Start Too Fast Timer" timer="tooFastTimer" timebase="" duration="tooFastTimeMs" duration_units="ms"></action>
@@ -992,7 +991,7 @@
             <transition type="direct" tag="Always Go to CheckTooFastTime" target="CheckTooFastTime"></transition>
           </task_system_state>
 
-          <task_system_state tag="CheckTooFastTime" interruptible="YES">
+          <task_system_state tag="CheckTooFastTime">
 
             <!-- turn off stimulus if longer than gratingDurationMs -->                     
             <action type="if" condition="tStimTurnedOn == 1">  <!-- so we only turn it off once here -->
@@ -1014,7 +1013,7 @@
             <transition type="direct" target="CheckTooFastTime"></transition>
           </task_system_state>
 
-          <task_system_state tag="React" interruptible="YES">
+          <task_system_state tag="React">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <!-- turn off stimulus if longer than gratingDurationMs -->                     
@@ -1039,7 +1038,7 @@
             <transition type="direct" target="React"></transition> <!-- spin on this state to turn off stim if necessary -->
           </task_system_state>
 
-          <task_system_state tag="EarlyRelease" interruptible="YES">
+          <task_system_state tag="EarlyRelease">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="if" condition="doCounterTracking==1">
@@ -1082,7 +1081,7 @@
             <transition type="timer_expired" target="PossibleEndTimeout" timer="earlyTimeoutTimer"></transition>
           </task_system_state>
 
-          <task_system_state tag="Reward" interruptible="YES">
+          <task_system_state tag="Reward">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
 
@@ -1171,7 +1170,7 @@
             <transition type="direct" tag="Always Go to GiveReward" target="GiveReward"></transition>
           </task_system_state>
 
-          <task_system_state tag="GiveReward" interruptible="YES">
+          <task_system_state tag="GiveReward">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -1179,14 +1178,14 @@
             <transition type="direct" tag="Always Go to PRP" target="PostRewardPause"></transition>
           </task_system_state>
 
-          <task_system_state tag="PostRewardPause" interruptible="YES">
+          <task_system_state tag="PostRewardPause">
             <action type="start_timer" tag="StartTimer" timer="postRewardTimer" timebase="" duration="postRewardMs" duration_units="ms"></action> 
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" target="PossibleEndTimeout" timer="postRewardTimer"></transition>
           </task_system_state>
 
-          <task_system_state tag="SingleReward" interruptible="YES">
+          <task_system_state tag="SingleReward">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="interRewardInterval minimum to juiceTime" variable="tInterRewardIntervalMs" value="interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )"></action>
             <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
@@ -1211,7 +1210,7 @@
             <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
           </task_system_state>
 
-          <task_system_state tag="Missed" interruptible="YES">
+          <task_system_state tag="Missed">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
@@ -1255,7 +1254,7 @@
           </task_system_state>
 
 
-          <task_system_state tag="PossibleEndTimeout" interruptible="YES">    
+          <task_system_state tag="PossibleEndTimeout">    
             <!-- do timeout if too many recent errors:
                  use a state rather than a wait action because states are interruptible -->
             <action type="if" condition="tConsecErrors >= nConsecErrorsCauseTimeout">
@@ -1272,7 +1271,7 @@
           </task_system_state>
 
           
-          <task_system_state tag="EndTrial" interruptible="YES">
+          <task_system_state tag="EndTrial">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
