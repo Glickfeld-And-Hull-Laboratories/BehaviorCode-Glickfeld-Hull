@@ -1405,8 +1405,9 @@
                                         <action type="report" message="Target Stim On for $tStimOnTimeMs ms"/>
                                       </action>
 
-
-                                      <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
+                                      <action type="if" condition="doPulseLength == 0">
+                                        <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
+                                      </action>
                                       <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
                                       <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
                                       
