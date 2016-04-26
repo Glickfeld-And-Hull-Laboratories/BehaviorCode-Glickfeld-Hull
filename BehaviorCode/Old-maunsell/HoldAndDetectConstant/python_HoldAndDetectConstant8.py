@@ -52,16 +52,20 @@ def get_targetCorrect():
 
 	reactToWindow = getvar('reactToWindow')
 	
+	reactToWindow_last40 = getvar('reactToWindow_last40')
+
+	tTrialsDoneSinceStart = getvar('tTrialsDoneSinceStart')
+
 	if reactToWindow >= 0.3 and (getvar('achievedTierRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 200)
 
-	elif reactToWindow <= 0.3:
+	elif reactToWindow <= 0.3 and randReqHoldMaxMs >= 200:
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
 
 	elif reactToWindow >= 0.55 and (getvar('achievedMaxRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 400)
 
-	elif (reactToWindow + reactToWindow_last40)/2 <= 0.4 and (getvar('tTrialsDoneSinceStart')%80 == 0):
+	elif (reactToWindow + reactToWindow_last40)/2 <= 0.4 and (tTrialsDoneSinceStart%80 == 0) and randReqHoldMaxMs >= 200:
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
 
 	if getvar('randReqHoldMaxMs') == 1200:
@@ -70,18 +74,18 @@ def get_targetCorrect():
 	elif getvar('randReqHoldMaxMs') == 4000:
 		setvar('achievedMaxRandom', 1)
 
-	setvar('reactToWindow_last40', reactToWindow)
-	setvar('fastReact', 0)
-	setvar('slowReact', 0)
+	if tTrialsDoneSinceStart % 40 == 0:
+		setvar('reactToWindow_last40', reactToWindow)
+
 
 def updateReactTime():
 
 	if getvar('mouseHolder') == 1:
-		reacTimeMs = getvar('reacTimeMs')
-		setvar('reacTimeMs', reacTimeMs - 1000)
+		reactTimeMs = getvar('reactTimeMs')
+		setvar('reactTimeMs', reactTimeMs - 1000)
 
-	if (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 0 and getvar('reacTimeMs') != 600:
-		setvar('reacTimeMs', 600)
+	if (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 0 and getvar('reactTimeMs') != 600:
+		setvar('reactTimeMs', 600)
 
-	elif (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 1 and getvar('reacTimeMs') != 720:
-		setvar('reacTimeMs', 720)
+	elif (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 1 and getvar('reactTimeMs') != 720:
+		setvar('reactTimeMs', 720)

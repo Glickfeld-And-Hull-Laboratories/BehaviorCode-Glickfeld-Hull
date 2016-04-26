@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <monkeyml version="1.0">
     <io_devices tag="IO Devices">
-        <iodevice type="labjacku6" tag="labjacku6" pulse_duration="pulse_duration" pulse_on="pulse_on" lever1="lever1" lever1_solenoid="lever1_solenoid" counter1="counter" counter2="counter2" trial_laser_powerMw="tTrialLaserPowerMw" laser_trigger="laser_trigger" optic_device="optic_device"></iodevice>
+        <iodevice type="labjacku6" tag="labjacku6" pulse_duration="pulse_duration" pulse_on="pulse_on" lever1="lever1" lever1_solenoid="lever1_solenoid" counter="counter" counter2="counter2" trial_laser_powerMw="tTrialLaserPowerMw" laser_trigger="laser_trigger" optic_device="optic_device"></iodevice>
     </io_devices>
     <variables tag="Variables">
         <variable tag="pulse_duration" scope="global" logging="when_changed" default_value="0" type="integer">
@@ -23,7 +23,7 @@
         <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"></variable>
         <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"></variable>
         <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float"></variable>
-        <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"></variable>
+        <variable tag="optic_device" scope="global" logging="when_changed" default_value="lasergreen" type="string"></variable>
         <variable tag="tempCount1" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
         <variable tag="tempCount2" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
         <variable tag="nScans1" scope="global" logging="when_changed" default_value="200" type="integer"></variable>ß
@@ -37,28 +37,28 @@
     <experiment tag="New Experiment" full_name="" description="">
         <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential" interruptible="YES">
             <task_system tag="New Task System" interruptible="YES">
-                <task_system_state tag="Task State One" interruptable="YES">
+                <task_system_state tag="Task State One" interruptible="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                     <action tag="Start labjack" type="start_device_IO" device="labjacku6"></action>
                     <action type="report" message="**** In First Task State"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                     <transition type="conditional" tag="If Condition is True, Transition to ..." condition="counter >= nScans1" target="Task State Two"></transition>
                 </task_system_state>
-                <task_system_state tag="Task State Two" interruptable="YES">
+                <task_system_state tag="Task State Two" interruptible="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                     <action type="report" message="**** In Second Task State"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                     <action type="assignment" tag="Set tempCount1" variable="tempCount1" value="counter"></action>
                     <transition type="conditional" tag="If Condition is True, Transition to ..." condition="(counter - tempCount1) >= nScans2" target="Task State Three"></transition>
                 </task_system_state>
-                <task_system_state tag="Task State Three" interruptable="YES">
+                <task_system_state tag="Task State Three" interruptible="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                     <action type="report" message="**** In Third Task State"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                     <action type="assignment" tag="Set tempCount2" variable="tempCount2" value="counter"></action>
                     <transition type="conditional" tag="If Condition is True, Transition to ..." condition="(counter - tempCount2) >= nScans3" target="Exit State System"></transition>
                 </task_system_state>
-                <task_system_state tag="Exit State System" interruptable="YES">
+                <task_system_state tag="Exit State System" interruptible="YES">
                     <action type="report" message="**** Exiting Task State"></action>
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                     <action tag="Stop labjack" type="stop_device_IO" device="labjacku6"></action>
