@@ -111,8 +111,8 @@ for imouse = 1:nMice;
 %     CatchsR= zeros(1,max(bins,[],2))
     
     
-%      avgA = [];
-%      semA = [];
+     avgA = [];
+     semA = [];
 %     avglevelone= [];
 %     stdlevelone= [];
     
@@ -121,15 +121,15 @@ for imouse = 1:nMice;
     binThree = find(measured_all <= edges(4) & measured_all > edges(3));
   
     
-    TotalFA =  zeros(1,max(bins,[],2));
-    TotalCR=  zeros(1,max(bins,[],2));
-    TotalSuccessOne= zeros(1,max(bins,[],2));
-    TotalIgnoreOne=  zeros(1,max(bins,[],2));
+    TotalFA = [];
+    TotalCR= [];
+    TotalSuccessOne=[];
+    TotalIgnoreOne= [];
     
-    TotalTargetReactmean =  zeros(1,max(bins,[],2));
-    TotalTargetReactstd =  zeros(1,max(bins,[],2));
-    TotalCatchReactmean=  zeros(1,max(bins,[],2));
-    TotalCatchReactstd=  zeros(1,max(bins,[],2));
+    TotalTargetReactmean = [];
+    TotalTargetReactstd = [];
+    TotalCatchReactmean= [];
+    TotalCatchReactstd= [];
     
     FAs = [];
     CRs= [];
@@ -141,13 +141,13 @@ for imouse = 1:nMice;
     
     IndexOne = indexes(binOne)
     if length(IndexOne) == 0
-        avgA(1) = 0;
-        semA(1) = 0;
+        avgA = avgA;
+        semA = semA;
         TRs = {0,0,0};
         CatchsR= 0;
     end   
         
-    if length(IndexOne) > 0
+    if length(IndexOne) > 1
         for x = 1:max(length(IndexOne))
             
             ind = IndexOne(x)
@@ -199,23 +199,23 @@ for imouse = 1:nMice;
             
         end
         
-        TotalFA(1) = sum(FAs)
-        TotalCR(1) =  sum(CRs)
-        TotalSuccessOne(1) =  sum(SuccessOne)
-        TotalIgnoreOne(1) = sum(IgnoreOne)
+        TotalFA = [TotalFA sum(FAs)]
+        TotalCR = [TotalCR sum(CRs)]
+        TotalSuccessOne = [TotalSuccessOne sum(SuccessOne)]
+        TotalIgnoreOne = [TotalIgnoreOne sum(IgnoreOne)]
         
-        avgA(1)=  mean(measured(binOne));
-        semA(1)=  std(measured(binOne))./sqrt(length(binOne));
+        avgA=  [avgA mean(measured(binOne))];
+        semA = [semA std(measured(binOne))./sqrt(length(binOne))];
   
         
     end
     
     
     
-    TotalTargetReactmean(1) =  mean(cell2mat_padded(TRs));
-    TotalTargetReactstd(1) = std(cell2mat_padded(TRs)/ sqrt(length(TRs)));
-    TotalCatchReactmean(1)=  mean(CatchsR);
-    TotalCatchReactstd(1)=  std(CatchsR)/ sqrt(length(CatchsR));    
+    TotalTargetReactmean = [TotalTargetReactmean mean(cell2mat_padded(TRs))];
+    TotalTargetReactstd = [ TotalTargetReactstd std(cell2mat_padded(TRs)/ sqrt(length(TRs)))];
+    TotalCatchReactmean= [ TotalCatchReactmean mean(CatchsR)];
+    TotalCatchReactstd= [TotalCatchReactstd std(CatchsR)/ sqrt(length(CatchsR))];    
     
     
     
@@ -231,13 +231,13 @@ for imouse = 1:nMice;
     
        
     if length(IndexTwo) == 0
-        avgA(2) = 0;
-        semA(2)= 0;
+        avgA = avgA;
+        semA= semA;
         TRs = {0,0,0}
         CatchsR= 0;
     end   
         
-    if length(IndexTwo) > 0
+    if length(IndexTwo) > 1
         for y = 1:max(length(IndexTwo))
             ind = IndexTwo(y);
             uniquedegrees = mouse(imouse).input(ind).uniqueDeg;
@@ -287,22 +287,18 @@ for imouse = 1:nMice;
             CatchReactday = mouse(imouse).input(ind).CatchReactday;
             CatchsR = [CatchsR CatchReactday(FAind)];
         end
-        TotalFA(2) = sum(FAs)
-        TotalCR(2) =  sum(CRs)
-        TotalSuccessOne(2) =  sum(SuccessOne)
-        TotalIgnoreOne(2) = sum(IgnoreOne)
-        
-        avgA(2)=   mean(measured(binTwo));
-        semA(2) =  std(measured(binTwo)) ./ sqrt(length(binTwo));
+        TotalFA = [TotalFA sum(FAs)]
+        TotalCR = [TotalCR sum(CRs)]
+        TotalSuccessOne = [TotalSuccessOne sum(SuccessOne)]
+        TotalIgnoreOne = [TotalIgnoreOne sum(IgnoreOne)]
+        avgA=  [avgA mean(measured(binTwo))];
+        semA = [semA std(measured(binTwo)) ./ sqrt(length(binTwo))];
     end
     
-    
-    
-    TotalTargetReactmean(2) =  mean(cell2mat_padded(TRs));
-    TotalTargetReactstd(2) = std(cell2mat_padded(TRs)/ sqrt(length(TRs)));
-    TotalCatchReactmean(2)=  mean(CatchsR);
-    TotalCatchReactstd(2)=  std(CatchsR)/ sqrt(length(CatchsR));    
-       
+    TotalTargetReactmean = [TotalTargetReactmean mean(cell2mat_padded(TRs))];
+    TotalTargetReactstd = [TotalTargetReactstd std(cell2mat_padded(TRs)/ sqrt(length(TRs)))];
+    TotalCatchReactmean= [ TotalCatchReactmean mean(CatchsR)];
+    TotalCatchReactstd= [TotalCatchReactstd std(CatchsR)/ sqrt(length(CatchsR))];    
     
     
     FAs = [];
@@ -317,13 +313,13 @@ for imouse = 1:nMice;
     
     IndexThree = indexes(binThree)
     if length(IndexThree) == 0
-        avgA(3) = 0;
-        semA(3)= 0;
+        avgA = avgA;
+        semA= semA;
         TRs = {0,0,0}
         CatchsR= 0;
     end   
         
-    if length(IndexThree) > 0
+    if length(IndexThree) > 1
         for y = 1:max(length(IndexThree))
             ind = IndexThree(y)
             
@@ -363,11 +359,11 @@ for imouse = 1:nMice;
             
             
             TargetReactday = mouse(imouse).input(ind).reactTimeMs;
-           
-            if length(TargetReactday(Successind)) == 0
+            
+            if length(TRs) == 0
                 TRs = {0,0,0}
             else
-                
+                TargetReactday = mouse(imouse).input(ind).reactTimeMs;
                 TRs= [TRs TargetReactday(Successind)];
             end
             
@@ -376,22 +372,18 @@ for imouse = 1:nMice;
             CatchReactday = mouse(imouse).input(ind).CatchReactday;
             CatchsR = [CatchsR CatchReactday(FAind)];
         end
-        TotalFA(3) = sum(FAs)
-        TotalCR(3) =  sum(CRs)
-        TotalSuccessOne(3) =  sum(SuccessOne)
-        TotalIgnoreOne(3) = sum(IgnoreOne)
-        
-        avgA(3)=  mean(measured(binThree));
-        semA(3) =  std(measured(binThree)) ./ sqrt(length(binThree));
+        TotalFA = [TotalFA sum(FAs)]
+        TotalCR = [TotalCR sum(CRs)]
+        TotalSuccessOne = [TotalSuccessOne sum(SuccessOne)]
+        TotalIgnoreOne = [TotalIgnoreOne sum(IgnoreOne)]
+        avgA= [avgA mean(measured(binThree))];
+        semA = [semA std(measured(binThree)) ./ sqrt(length(binThree))];
     end
     
-    
-    
-    TotalTargetReactmean(3) =  mean(cell2mat_padded(TRs));
-    TotalTargetReactstd(3) = std(cell2mat_padded(TRs)/ sqrt(length(TRs)));
-    TotalCatchReactmean(3)=  mean(CatchsR);
-    TotalCatchReactstd(3)=  std(CatchsR)/ sqrt(length(CatchsR));    
-       
+    TotalTargetReactmean = [TotalTargetReactmean mean(cell2mat_padded(TRs))];
+    TotalTargetReactstd = [TotalTargetReactstd std(cell2mat_padded(TRs)/ sqrt(length(TRs)))];
+    TotalCatchReactmean= [ TotalCatchReactmean mean(CatchsR)];
+    TotalCatchReactstd= [TotalCatchReactstd std(CatchsR)/ sqrt(length(CatchsR))];    
     
      [HR_ori, ci95_HR_ori] = binofit(TotalSuccessOne, TotalIgnoreOne+ TotalSuccessOne);
     [FR_ori, ci95_FR_ori] = binofit(TotalFA, TotalFA+TotalCR);
@@ -410,12 +402,11 @@ figure;
     
 
  figure;
-%  if length(avgA) <length(TotalTargetReactmean)
-%     TotalTargetReactmean = TotalTargetReactmean( find(TotalTargetReactmean >0));
-%     TotalTargetReactstd = TotalTargetReactstd( find(TotalTargetReactstd >0));
-%     TotalCatchReactmean = TotalCatchReactmean( find(TotalCatchReactmean >0));
-%     TotalCatchReactstd = TotalCatchReactstd( find(TotalCatchReactstd >0));
-%  end
+ 
+    TotalTargetReactmean = TotalTargetReactmean( find(TotalTargetReactmean >0));
+    TotalTargetReactstd = TotalTargetReactstd( find(TotalTargetReactstd >0));
+    TotalCatchReactmean = TotalCatchReactmean( find(TotalCatchReactmean >0));
+    TotalCatchReactstd = TotalCatchReactstd( find(TotalCatchReactstd >0));
     errorbarxy(avgA, TotalTargetReactmean, semA, TotalTargetReactstd,{'ok', 'k', 'k'})
     hold on
     errorbarxy(avgA, TotalCatchReactmean, semA, TotalCatchReactstd,{'oc', 'c', 'c'})
@@ -425,7 +416,7 @@ figure;
     xlabel('Actual % of Invalid trials')
     ylabel('RT') 
     
-   
+    
     
 %     for ibin = 1:max(edgesA,[],2)
 %         
