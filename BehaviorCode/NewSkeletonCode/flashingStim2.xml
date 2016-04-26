@@ -1410,7 +1410,7 @@
                                       <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
                                       <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
                                       
-                                      <action type="if" condition="sendElectrophysSync">
+                                      <action type="if" condition="sendElectrophysSync &amp;&amp; doPulseLength == 0">
                                         <action type="assignment" variable="MIO0" value="1"/>
                                       </action>
                                       
