@@ -33,17 +33,22 @@
       <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="itiIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="checkMovementMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
-      <variable tag="playVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
-      <variable tag="frames_per_second" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/>
-      <variable tag="movie_ended" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
-      <variable tag="movieStartMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
-      <variable tag="repeats" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1"/>
+      <variable tag="DoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="VStimTotalMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="MaxVSDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="MinVSDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="MaxVSDelayMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="DoSoundStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="DoTactileStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
     </folder>
     <folder tag="NFrames">
       <variable tag="itiNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="postSoundPauseNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="TStimNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="checkNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="VSDelayNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="VSOnNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="VSOffNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
     <folder tag="ImagingVars">
       <variable tag="frameImagingDurationMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1"/>
@@ -54,6 +59,7 @@
       <variable tag="BinTimeUS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="requiredPulseperBin" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="DoCerebellarStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="DoVisualStim_running" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
     </folder>
     <folder tag="Task Status">
       <variable tag="soundstimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
@@ -81,12 +87,17 @@
     <folder tag="Internal Variables">
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTactileStimulusDurationUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tTactileStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="frameCountN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tVisualStimOnMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tVisualStimOffMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tVisualStimDelayMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tVisualStimTurnedOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tVisualStimTurnedOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -102,17 +113,13 @@
     <sound tag="sound1000ms" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/sound-1k-1000ms.wav"/>
   </sounds>
   <stimuli tag="Stimuli">
-    <stimulus_group tag="images">
-            <range_replicator tag="New Replicator" from="1" to="11" step="1" variable="index">
-                <stimulus type="image_file" tag="circle_${index}" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/images/CerebellarStim_Images/circle_${index}.png" x_size="40" y_size="40" x_position="0.0" y_position="0.0" rotation="0.0" alpha_multiplier="1.0" deferred="NO"></stimulus>
-            </range_replicator>
-    </stimulus_group>
-    <stimulus type="movie" tag="movie" stimulus_group="images" frames_per_second="frames_per_second" ended="movie_ended" repeats="repeats"></stimulus>
+    <stimulus type="circle" tag="Ellipse" color="1,1,1" x_size="35" y_size="35" x_position="0" y_position="0" rotation="0" alpha_multiplier="1"></stimulus>"
     <stimulus type="blank_screen" tag="background" color="0,0,0"></stimulus>
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
       <action type="queue_stimulus" stimulus="background"></action>
+      <action type="update_stimulus_display"></action>
       
       <!-- init actions before running trials after any press of start-->
       <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
@@ -136,18 +143,11 @@
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
      
       <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
-    <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+    <task_system tag="TS" full_name="TS" description="" interruptible="YES">
       <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
-          
-          <action type="if" condition="playVisualStim == 1 &amp;&amp; tTrialsDoneSinceStart == 0">
-            <action tag="Queue movie" type="queue_stimulus" stimulus="movie"></action>
-            <action tag="Update stimulus display" type="update_stimulus_display"></action>
-            <action tag="Start movie" stimulus="movie" type="play_dynamic_stimulus"></action>
-            <action type="assignment" tag="Record start time" variable="movieStartMS" value="now()/1000"></action>
-          </action>
           
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
@@ -200,12 +200,46 @@
           <action type="assignment" tag="Clear stimulusOn" variable="soundstimulusOn" value="0"></action>
           <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action>
 
+          <action type="assignment" variable="tVisualStimOnMS" value="disc_rand(MinVSDurationMS, MaxVSDurationMS)"></action>
+          <action type="assignment" variable="tVisualStimDelayMS" value="disc_rand(0, MaxVSDelayMS)"></action>
+          <action type="assignment" variable="tVisualStimOffMS" value="VStimTotalMS-tVisualStimOnMS-tVisualStimDelayMS"></action>
+          <action type="assignment" tag="Calculate nFramesVSDelay" variable="VSDelayNFrames" value="ceil(tVisualStimDelayMS/frameImagingDurationMs)"/>
+          <action type="assignment" tag="Calculate nFramesVSOn" variable="VSOnNFrames" value="ceil(tVisualStimOnMS/frameImagingDurationMs)"/>
+          <action type="assignment" tag="Calculate nFramesVSOff" variable="VSOffNFrames" value="ceil((tVisualStimOffMS)/frameImagingDurationMs)"/>
+
           <action type="report" message="In Inter-Trial Interval, waiting..."></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" tag="If $itiNFrames is scanned,, move to CheckCriteria" condition="counter-tCounter >= itiNFrames &amp;&amp; DoCerebellarStim == 1" target="CheckCriteria" ></transition>
-          <transition type="conditional" tag="If $itiNFrames is scanned,, move to PlaySound" condition="counter-tCounter >= itiNFrames &amp;&amp; DoCerebellarStim == 0" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If $itiNFrames is scanned,, move to PlaySound" condition="counter-tCounter >= itiNFrames &amp;&amp; DoSoundStim == 1" target="PlaySound" ></transition>
+          <transition type="conditional" tag="If $itiNFrames is scanned,, move to VisualStimDelay" condition="counter-tCounter >= itiNFrames &amp;&amp; DoVisualStim == 1" target="VisualStimDelay" ></transition>
       </task_system_state>
 
+      <task_system_state tag="VisualStimDelay" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" variable="tCounter" value="counter"></action>
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="conditional" tag="If $VSDelayNFrames is scanned,, move to VisualStimOn" condition="counter-tCounter >= VSDelayNFrames" target="VisualStimOn" ></transition>
+      </task_system_state>
+
+      <task_system_state tag="VisualStimOn" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" variable="tCounter" value="counter"></action>
+          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="Ellipse"></action>
+          <action type="update_stimulus_display"></action>
+          <action type="assignment" variable="tVisualStimTurnedOnMs" value="now()/1000"></action>
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="conditional" tag="If $VSOnNFrames is scanned,, move to VisualStimOff" condition="counter-tCounter >= VSOnNFrames" target="VisualStimOff" ></transition>
+      </task_system_state>
+
+      <task_system_state tag="VisualStimOff" interruptible="YES">
+          <action_marker _unmoveable="1" tag="Actions"></action_marker>
+          <action type="assignment" variable="tCounter" value="counter"></action>
+          <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="Ellipse"></action>
+          <action type="update_stimulus_display"></action>
+          <action type="assignment" variable="tVisualStimTurnedOffMs" value="now()/1000"></action>
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="conditional" tag="If $VSOffNFrames is scanned,, move to EndTrial" condition="counter-tCounter >= VSOffNFrames" target="EndTrial" ></transition>
+      </task_system_state>
 
       <task_system_state tag="PlaySound" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
@@ -264,11 +298,17 @@
       <task_system_state tag="SendStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tCounter" value="counter"></action>
+              <action type="if" condition="DoTactileStim == 1">
+                <action type="report" message="*** Sending Tactile Stimulus -- Staying in Post-Stim State for $TStimNFrames scans."></action>
+                <action type="assignment" variable="tTactileStimTurnedOn" value="now()/1000"/>
+                <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
+              </action>
 
-              <action type="report" message="*** Sending Tactile Stimulus -- Staying in Post-Stim State for $TStimNFrames scans."></action>
-              <action type="assignment" variable="tStimTurnedOn" value="now()/1000"/>
-              <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
-
+              <action type="if" condition="DoVisualStim_running == 1">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="Ellipse"></action>
+                <action type="update_stimulus_display"></action>
+              </action> 
+                  
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If $TStimNFrames, move to EndTrial" condition="(counter - tCounter) >= TStimNFrames" target="EndTrial" ></transition>
@@ -279,6 +319,10 @@
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" variable="checkRunState" value="0"></action>
             <action type="assignment" variable="startStimulus" value="0"/>
+            <action type="if" condition="DoVisualStim == 1">
+                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="Ellipse"></action>
+                <action type="update_stimulus_display"></action>
+            </action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
