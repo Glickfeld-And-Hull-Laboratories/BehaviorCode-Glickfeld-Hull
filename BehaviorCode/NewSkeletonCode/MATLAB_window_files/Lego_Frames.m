@@ -51,6 +51,8 @@ varsOneValEachTrial = { ...
     'cStimOn',...
     'cStimOff',...
     'cDecision',...
+    'stimTimestampMs', ...
+    'qStimOn', ...
   };
 
 exptSetupBridge;
@@ -102,6 +104,14 @@ try
 catch
     input.counterTimesUs{trN} = NaN;
     input.counterValues{trN} = NaN;
+end
+
+try
+    input.quadratureTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
+    input.quadratureValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1) ;
+catch
+    input.quadratureTimesUs{trN} = NaN;
+    input.quadratureValues{trN} = NaN;
 end
 
 fprintf(1,'Contrast: T=%0.2f, D=%0.2f, %s, %s, React: %0.0f ms, Rew: %2.0f\n ', input.tGratingContrast{trN}, input.dGratingContrast{trN}, tLeftStr, outcomeStr, decisionTime, rewS)

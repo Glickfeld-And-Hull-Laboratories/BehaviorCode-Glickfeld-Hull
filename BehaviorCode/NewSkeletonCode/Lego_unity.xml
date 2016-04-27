@@ -177,6 +177,7 @@
         <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="trialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="float"/>
         <variable tag="stimTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="qStimOn" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       </folder>
       <folder tag="Online Display">
@@ -937,6 +938,7 @@
                         <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
                         <action tag="Update Display" type="update_stimulus_display"></action>
                         <action type="assignment" variable="stimTimestampMs" value="now()/1000"/>
+                        <action type="assignment" variable="qStimOn" value="quadrature"/>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="stimOnTimerMs" target="StimOff"></transition>
