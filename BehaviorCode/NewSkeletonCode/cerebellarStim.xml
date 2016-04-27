@@ -41,6 +41,19 @@
       <variable tag="DoSoundStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="DoTactileStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
     </folder>
+    <folder tag="MovingDot">
+      <variable tag="DoMovingDot" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="DotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="DotDensity" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="DotSizeDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="setDotCoherence" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="setDotSpeed" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="DotFieldRadius" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="Dot_x" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="Dot_y" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="setDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+    </folder>
+
     <folder tag="NFrames">
       <variable tag="itiNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="postSoundPauseNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -115,6 +128,11 @@
   <stimuli tag="Stimuli">
     <stimulus type="circle" tag="Ellipse" color="1,1,1" x_size="35" y_size="35" x_position="0" y_position="0" rotation="0" alpha_multiplier="1"></stimulus>"
     <stimulus type="blank_screen" tag="background" color="0,0,0"></stimulus>
+    <stimulus type="moving_dots" tag="moving_dots"  direction="DotDirectionDeg"
+              dot_density="DotDensity" dot_size="DotSizeDeg" coherence="setDotCoherence" 
+              speed="setDotSpeed" field_radius="DotFieldRadius" 
+              field_center_x="Dot_x" field_center_y="Dot_y" 
+              alpha_multiplier="setDotContrast"></stimulus>              
   </stimuli>    
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
@@ -224,8 +242,15 @@
       <task_system_state tag="VisualStimOn" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" variable="tCounter" value="counter"></action>
-          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="Ellipse"></action>
-          <action type="update_stimulus_display"></action>
+          <action type="if" condition="DoMovingDot == 0">
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="Ellipse"></action>
+            <action type="update_stimulus_display"></action>
+          </action>
+          <action type="if" condition="DoMovingDot == 1">
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots"></action>    
+            <action type="play_dynamic_stimulus" stimulus="moving_dots" tag="start"></action>
+            <action type="update_stimulus_display"></action>
+          </action>
           <action type="assignment" variable="tVisualStimTurnedOnMs" value="now()/1000"></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
           <transition type="conditional" tag="If $VSOnNFrames is scanned,, move to VisualStimOff" condition="counter-tCounter >= VSOnNFrames" target="VisualStimOff" ></transition>
@@ -305,8 +330,15 @@
               </action>
 
               <action type="if" condition="DoVisualStim_running == 1">
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="Ellipse"></action>
-                <action type="update_stimulus_display"></action>
+                <action type="if" condition="DoMovingDot == 0">
+                  <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="Ellipse"></action>
+                  <action type="update_stimulus_display"></action>
+                </action>
+                <action type="if" condition="DoMovingDot == 1">
+                  <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots"></action>    
+                  <action type="play_dynamic_stimulus" stimulus="moving_dots" tag="start"></action>
+                  <action type="update_stimulus_display"></action>
+                </action>
               </action> 
                   
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
@@ -321,6 +353,7 @@
             <action type="assignment" variable="startStimulus" value="0"/>
             <action type="if" condition="DoVisualStim == 1">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="Ellipse"></action>
+                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
                 <action type="update_stimulus_display"></action>
             </action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
