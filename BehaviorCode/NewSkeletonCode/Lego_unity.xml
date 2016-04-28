@@ -177,7 +177,6 @@
         <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="trialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="float"/>
         <variable tag="stimTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-        <variable tag="qStimOn" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       </folder>
       <folder tag="Online Display">
@@ -218,6 +217,10 @@
 
         <variable tag="isNotTooFast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="stimIsOff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+
+        <variable tag="qStimOn" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="qTrialStart" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="qStartReact" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
         <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
@@ -320,6 +323,7 @@
                           <action type="assignment" variable="tLeftTrial" value="0" />
 
                           <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000" />
+                          <action type="assignment" variable="qTrialStart" value="quadrature" />
 
                           <action type="if" condition="tLastTrialCorrect == 1">
                             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
@@ -960,6 +964,7 @@
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="assignment" tag="tag tooFast" variable="isNotTooFast" value="1"/>
                         <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+                        <action type="assignment" variable="qStartReact" value="quadrature" />
                         <action type="report" message="**** Quad zeroed *****"></action>
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
