@@ -926,7 +926,12 @@
                 <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
                 <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>  
                 <action type="if" condition="doTrialLaser">
-                  <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
+                    <action type="if" condition="optic_device == 'led' ">
+                        <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
+                    </action>
+                    <action type="if" condition="optic_device != 'led' ">
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
+                    </action>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
                   <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
                 </action>
@@ -938,7 +943,12 @@
               </action>
 
               <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
-                <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
+                <action type="if" condition="optic_device == 'led' ">
+                    <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
+                </action>
+                <action type="if" condition="optic_device != 'led' ">
+                    <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
+                </action>
                 <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
                 <action type="assignment" variable="tTrialLaserOffTimeMs" value="block2TrialLaserOffTimeMs"></action>
                 <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
@@ -1146,10 +1156,10 @@
                               variable="tItiWaitTimeMs" 
                               value="itiTimeMs"></action>
 
-                              <action type="if" condition="(block2TrialLaserPowerMw_track != block2TrialLaserPowerMw)">
-                                <action type="report" message="Laser Power is Changed"></action>
-                                <action type="assignment" variable="block2TrialLaserPowerMw_track" value="block2TrialLaserPowerMw"></action>
-                              </action>
+                            <!-- Increase ITI time by 5s if the laser power is changed and by 15s if the very first time-->
+                            <action type="if" condition="(success+ignore+failure == 0) &amp;&amp; (optic_device != 'led')">
+                                <action type="assignment" variable="tItiWaitTimeMs" value="tItiWaitTimeMs + 10000"></action>
+                            </action>
 
                               <!-- if asked for, extend ITI based on previous hold and max stim time, also takes TOs and extra cycles into account -->
                               <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
@@ -1275,8 +1285,13 @@
                                         </action>
 
                                         <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == 1)">
-                                          <action type="assignment" variable="laserTrigger" value="1"></action> 
-                                          <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action> 
+                                            <action type="if" condition="optic_device == 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                                <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+                                            </action>
+                                            <action type="if" condition="optic_device != 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                            </action>
                                           <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
                                           <action type="report" message="-----Laser Duration is to $laserDuration"/>
                                           <action type="report" message="********* SENDING LASER TRIGGER *********"/>
@@ -1457,7 +1472,9 @@
                                     <task_system_state tag="EarlyRelease" interruptible="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                       <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-                                      <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                      <action type="if" condition="optic_device == 'led' ">
+                                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                      </action>
                                       <action type="assignment" variable="MIO0" value="0"/>
                                       <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
                                       <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
@@ -1528,7 +1545,9 @@
                                   <task_system_state tag="Missed" interruptible="YES">
                                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                     <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-                                    <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                    <action type="if" condition="optic_device == 'led' ">
+                                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                    </action>
                                     <action type="assignment" variable="MIO0" value="0"/>
                                     <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
                                     <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
@@ -1590,7 +1609,9 @@
                                 <task_system_state tag="Reward" interruptible="YES">
                                   <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                   <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-                                  <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                  <action type="if" condition="optic_device == 'led' ">
+                                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                  </action>
                                   <action type="assignment" variable="MIO0" value="0"/>
                                   <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
                                   <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
@@ -1833,7 +1854,9 @@
             <task_system_state tag="EndTrial" interruptible="YES">
               <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
               <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-              <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+              <action type="if" condition="optic_device == 'led' ">
+                    <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+              </action>
               <action type="report" message="Trial Ended"/>
               <action type="assignment" variable="trials" value="trials+1"/>
               <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
@@ -1846,7 +1869,9 @@
         <action type="dequeue_stimulus" stimulus="base_grating"></action>
         <action tag="Update Stimulus" type="update_stimulus_display"></action>
         <action type="assignment" tag="" variable="laserTrigger" value="0"/>
-        <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
+        <action type="if" condition="optic_device == 'led' ">
+            <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+        </action>
         <action type="assignment" tag="" variable="MIO0" value="0"/>
         <action type="assignment" tag="" variable="juice" value="0"/>
         <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
