@@ -4,7 +4,7 @@
     <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
               pulse_duration="juice" pulse_on="juice" 
               lever1="FIO1"
-              lever1_solenoid="MIO0"
+              lever1_solenoid="lever_solenoid"
               quadrature="quadrature"
               laser_trigger="laserTrigger"
               optic_device="optic_device"
@@ -14,6 +14,7 @@
               running_criteria="running_Bincriteria"
               Qbin_size="binSize"
               start_CB="startStimulus"
+              start_CB_running="startResistance"
               Qpulse_criteria="pulse_criteria"
               doCB="docerebellarStim"
               checkrun="checkRunState"/>
@@ -40,6 +41,7 @@
       <variable tag="MaxVSDelayMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="DoSoundStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="DoTactileStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="DoSolenoid" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
     </folder>
     <folder tag="MovingDot">
       <variable tag="DoMovingDot" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
@@ -83,7 +85,7 @@
     </folder>
     <folder tag="Hardware variables">
       <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
-      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="lever_solenoid" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
       <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -340,7 +342,9 @@
                   <action type="update_stimulus_display"></action>
                 </action>
               </action> 
-                  
+              <action type="if" condition="startResistance == 1 &amp;&amp; DoSolenoid == 1">
+                <action type="assignment" variable="lever_solenoid" value="1"/>
+              </action>
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If $TStimNFrames, move to EndTrial" condition="(counter - tCounter) >= TStimNFrames" target="EndTrial" ></transition>
@@ -355,6 +359,9 @@
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="Ellipse"></action>
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
                 <action type="update_stimulus_display"></action>
+            </action>
+            <action type="if" condition="DoSolenoid == 1">
+                <action type="assignment" variable="lever_solenoid" value="0"/>
             </action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
