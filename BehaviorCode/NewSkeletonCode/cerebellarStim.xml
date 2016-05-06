@@ -95,6 +95,7 @@
       <variable tag="running_Bincriteria" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="binTimeUS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="startStimulus" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="startResistance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="docerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="pulse_criteria" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="checkRunState" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -113,6 +114,7 @@
       <variable tag="tVisualStimDelayMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tVisualStimTurnedOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tVisualStimTurnedOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tResistanceStartMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -344,6 +346,7 @@
               </action> 
               <action type="if" condition="startResistance == 1 &amp;&amp; DoSolenoid == 1">
                 <action type="assignment" variable="lever_solenoid" value="1"/>
+                <action type="assignment" variable="tResistanceStartMS" value="now()/1000"/>
               </action>
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
