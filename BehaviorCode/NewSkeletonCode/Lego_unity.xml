@@ -1044,10 +1044,12 @@
                       <task_system_state tag="Reward" interruptible="YES">
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
-                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
-
-                        <action type="update_stimulus_display"></action>
+                        <action type="if" condition="doFeedbackMotion==0">
+                        	<action type="dequeue_stimulus" stimulus="targetGrating"></action>
+                        	<action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+							<action type="update_stimulus_display"></action>
+						</action>	
+						<action type="start_timer" timer="stimTimer" timebase="" duration="2000" duration_units="ms"/>
                         <action type="play_sound" sound="correctSound"/>
                         <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
                         <action type="assignment" tag="" variable="tConsecErrors" value="0"/>
@@ -1104,14 +1106,19 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="timer_expired" timer="rewardTimerUs" target="EndTrial"></transition>
+                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="EndTrial"></transition>
+                        <transition type="timer_expired" timer="stimTimer" target="EndTrial"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Incorrect" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
-                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+                        <action type="if" condition="doFeedbackMotion==0">
+                        	<action type="dequeue_stimulus" stimulus="targetGrating"></action>
+                        	<action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+							<action type="update_stimulus_display"></action>
+						</action>	
+						<action type="start_timer" timer="stimTimer" timebase="" duration="2000" duration_units="ms"/>
 
                         <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
@@ -1154,7 +1161,8 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="timer_expired" timer="incorrectTimeoutTimer" target="EndTrial"></transition>
+                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="EndTrial"></transition>
+                        <transition type="timer_expired" timer="stimTimer" target="EndTrial"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Ignore" interruptible="YES">
