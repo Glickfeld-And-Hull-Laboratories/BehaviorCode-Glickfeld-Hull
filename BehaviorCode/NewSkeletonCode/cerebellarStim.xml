@@ -30,6 +30,7 @@
     <folder tag="StimulusSpecs">
       <variable tag="stopAfterNTrials" scope="local" logging="when_changed" default_value="90" type="integer" persistant="1"/>      
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1"/>
+      <variable tag="solenoidStimulusDurationMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="postSoundPauseDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="itiIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
@@ -153,7 +154,13 @@
       
       <action type="assignment" tag="Calculate nFramesITI" variable="itiNFrames" value="ceil(itiIntervalMs/frameImagingDurationMs)"/>
       <action type="assignment" tag="Calculate nFramesPostSound" variable="postSoundPauseNFrames" value="ceil(postSoundPauseDurationMs/frameImagingDurationMs)"/>
-      <action type="assignment" tag="Calculate nFramesTStim" variable="TStimNFrames" value="ceil(tactileStimulusDurationUs/1000/frameImagingDurationMs)"/>
+      <action type="if" condition="DoSolenoid == 0">
+        <action type="assignment" tag="Calculate nFramesTStim" variable="TStimNFrames" value="ceil(tactileStimulusDurationUs/1000/frameImagingDurationMs)"/>
+      </action>
+      <action type="if" condition="DoSolenoid == 1">
+        <action type="assignment" tag="Calculate nFramesTStim" variable="TStimNFrames" value="ceil(solenoidStimulusDurationMs/frameImagingDurationMs)"/>
+      </action>
+
       <action type="assignment" tag="Calculate nFramesCheck" variable="checkNFrames" value="ceil(checkMovementMs/frameImagingDurationMs)"/>
 
       <action type="assignment" variable="binSize" value="BinSize"/>
@@ -358,6 +365,7 @@
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
             <action type="assignment" variable="checkRunState" value="0"></action>
             <action type="assignment" variable="startStimulus" value="0"/>
+            <action type="assignment" variable="startResistance" value="0"/>
             <action type="if" condition="DoVisualStim == 1">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="Ellipse"></action>
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
