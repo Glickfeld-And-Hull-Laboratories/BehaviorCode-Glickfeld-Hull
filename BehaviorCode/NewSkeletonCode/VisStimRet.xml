@@ -27,7 +27,7 @@
         <variable tag="nScansOff" scope="global" logging="when_changed" default_value="200" type="integer" persistant="1" groups="ExptStruct"/>
         <variable tag="doMatrix" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/> 
         <variable tag="doRand" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
-        <variable tag="doLEDStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>   
+        <variable tag="doLEDStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>    
         <variable tag="backgroundLuminance" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Background"/> 
         <variable tag="doBackgroundStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="ExptStruct"/>
         <variable tag="backgroundLuminanceStepLog" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Background"/>
@@ -107,7 +107,7 @@
         <variable tag="LEDPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="LEDSpecs"/>
         <variable tag="LEDPowerStepMw" scope="global" logging="when_changed" default_value="0.01" type="float" persistant="1" groups="LEDSpecs"/>
         <variable tag="LEDPowerStepN" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="LEDSpecs"/>
-
+        <variable tag="LaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="LaserSpecs"/>
 
         <variable tag="baseDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="DotSpecs"/>
         <variable tag="baseDotSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="DotSpecs"/>
@@ -170,7 +170,7 @@
       <folder tag="Hardware variables">
         <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed" groups="Hardware"/>
         <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
-        <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed" groups="Hardware"/>
+        <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" groups="Hardware"/>
         <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
         <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
         <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="SpeedCounters"></variable>
@@ -605,6 +605,9 @@
                </action>
              </action>
 
+               <action type="if" condition="LaserPowerMw > 0 &amp;&amp; optic_device != 'led'">
+                    <action type="assignment" variable="tTrialLaserPowerMw" value="LaserPowerMw"/>
+               </action>
              <!--Select features if IN matrix mode -->
              <action type="if" condition="doMatrix = 1">
               <!-- Make SFxTF Matrix-->	
@@ -715,9 +718,15 @@
                 <action type="report" message="Speed is $tGratingSpeedDPS"/>
               </action>
 
+              <action type="if" condition="tTrialLaserPowerMw_trigger > 0 &amp;&amp; optic_device != 'led'"> 
+                    <action type="assignment" variable="tTrialLaserPowerMw_trigger" value= "LaserPowerMw"/>
+              </action>
+
               <!-- Zero the LED port-->
               <action type="assignment" variable="laserTrigger" value="0"/>
-              <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
+              <action type="if" condition="optic_device == 'led'">
+                <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
+              </action>
               <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
                 <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
                 <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
@@ -759,10 +768,15 @@
               <!-- update display, finalize variables -->
               <action tag="Update Display" type="update_stimulus_display"></action>
               <action type="report" message="Visual Stim ON, presenting for $nScansOn scans."></action>
-
+              <action type="report" message="Laser trial and power is $tTrialLaserPowerMw_trigger"/>
               <action type="if" condition="tTrialLaserPowerMw_trigger &gt; 0">
-                <action type="assignment" variable="laserTrigger" value="1"/>
-                <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"/>
+                <action type="report" message="Laser trial and power is $tTrialLaserPowerMw_trigger"/>
+                <action type="if" condition="tTrialsDoneSinceStart > 10">
+                    <action type="assignment" variable="laserTrigger" value="1"/>
+                </action>
+                <action type="if" condition="optic_device == 'led'">
+                    <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"/>
+                </action>
               </action>
               
               <action type="assignment" tag="Log Number of Wheel-pulses received during ITI" variable="tITIWheelCounter" value="counter2 - tCounter2"></action>
@@ -1020,8 +1034,9 @@
               <action type="assignment" variable="tNStimAccepted" value="0"></action>
             </action>
 
-            
-            <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            <action type="if" condition="optic_device == 'led'">
+                <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            </action>
             <action type="assignment" variable="laserTrigger" value="0"></action>
 
             
