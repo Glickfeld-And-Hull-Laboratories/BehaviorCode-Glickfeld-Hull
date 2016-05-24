@@ -707,13 +707,13 @@ if nStims == 1
   
   hold on;
   p1H = plot(smooth(double(winReal), ceil(nTrial/10), 'lowess'));
-  set(p1H, 'LineWidth', 2, 'Color', [0.25 0.3 0.9]);
+  set(p1H, 'LineWidth', 3, 'Color', [0.25 0.3 0.9]);
   nSm = 5;
   v1 = smooth(double(winReal), ceil(nTrial./nSm), 'lowess');
   v2 = smooth(double(winBefore), ceil(nTrial./nSm), 'lowess');
   v0 = v1 ./ (v1+v2);
   p2H = plot(v0, 'k');
-  set(p2H, 'LineWidth', 3);
+  set(p2H, 'LineWidth', 1, 'LineStyle', '--');
   %p2H = plot(smooth(double(winBefore), ceil(nTrial/10), 'lowess'));
   %p3H = plot(smooth(double(winAfter), ceil(nTrial/10), 'lowess'));
 
