@@ -393,17 +393,18 @@
                                 <action type="report" message="tStimProbAvgLeft  is $tStimProbAvgLeft"/>
                             </action>
 
-                            <action type="if" condition="doRandProb == 1 &amp;&amp; tNTrialsCompleted != 0 &amp;&amp; (tNTrialsCompleted%(RandProbTrialperBlock) == 0)">
-                                <action type="if" condition="tNTrialsCompleted == 0 || tNTrialsCompleted%(RandProbTrialperBlock) == 0">
+                            <action type="if" condition="doRandProb == 1 &amp;&amp; tNTrialsCompleted > 0 &amp;&amp; (tNTrialsCompleted%(RandProbTrialperBlock+1) == 0)">
+                                <!---<action type="if" condition="tNTrialsCompleted == 0 || tNTrialsCompleted%(RandProbTrialperBlock) == 0">
                                     <action type="assignment" variable="tRandProbIndex" value="disc_rand(0,2)"/>
-                                </action>
+                                </action> -->
+
                                 <action type="if" condition="tNTrialsCompleted != 0">
                                     <action type="if" condition="tRandProbIndexLast == 0">
                                         <action type="assignment" variable="tRandProbIndex" value="disc_rand(1,2)"/>
                                     </action>
-                                    <action type="if" condition="tRandProbIndexLast == 1">
+                                    <action type="if" condition="tRandProbIndexLast == 1 || tStimProbAvgLeft == 0.5">
                                         <action type="assignment" variable="tRandProbIndex" value="disc_rand(0,1)"/>
-                                        <action type="if" condition="tRandProbIndex == 1">
+                                        <action type="if" condition="tRandProbIndex == 1 || tStimProbAvgLeft == 0.5">
                                             <action type="assignment" variable="tRandProbIndex" value="2"/>
                                         </action>
                                     </action>
@@ -415,7 +416,7 @@
                                 <action type="assignment" variable="tStimProbAvgLeft" value="ProbList[tRandProbIndex]"/>
                                 <action type="report" message="tStimProbAvgLeft  is $tStimProbAvgLeft"/>
                            </action>
-                           <action type="if" condition="doRandProb == 1 &amp;&amp; !(tNTrialsCompleted == 0 || tNTrialsCompleted%(RandProbTrialperBlock) == 0)">
+                           <action type="if" condition="doRandProb == 1 &amp;&amp; !(tNTrialsCompleted == 0 || tNTrialsCompleted%(RandProbTrialperBlock+1) == 0)">
                                 <action type="assignment" variable="tStimProbAvgLeft" value="tStimProbAvgLeft"/>
                            </action>
 
