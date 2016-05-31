@@ -1,4 +1,4 @@
-function str = formatBlock2ParamsFromConstsInStruct(ds, b2Num, side)
+function str = formatBlock2ParamsFromConstsInStruct(ds, b2Num)
 
 assert(isempty(b2Num) || b2Num == 1 || b2Num == 2, 'invalid b2Num');
 
@@ -62,8 +62,7 @@ if (~isfield(ds, 'doBlock2') ... % backward compat
         end
     end
     if isfield(ds,'tLeftDecisionThreshold')
-        sides = strvcat('right', 'left', 'both');
-        str = [' ' sides(side,:) ' side'];
+        str = ' 2AFC';
         return
     end
     
