@@ -10,7 +10,7 @@ switch tHostname
         rc.dataPat = 'data-i%03d-%s.mat';
         
         if tUsername(1:5) == 'linds'
-            rc.name = 'lindsey';
+            rc.name = 'linds';
             rootDir = '\\CRASH.dhe.duke.edu\data\home\lindsey\Analysis';
             rc.indexFilename = fullfile(rootDir, 'Behavior\experimentIndexes\av-subj-days-lg.xls');
             rc.fitOutputFilename = fullfile(rootDir, 'Behavior\experimentIndexes\av-subj-fits-lg.xls');
@@ -18,11 +18,11 @@ switch tHostname
             rc.fitOutputPdfDir = fullfile(rootDir, 'Behavior\output\pdfFits');
             rc.fitOutputMatDir = fullfile(rootDir, 'Behavior\output\fitMatStats');
             rc.eyeOutputDir = fullfile(rootDir,'Behavior\EyeTracking');
-            rc.eyeInputDir = fullfile(rootDir,'Behavior\EyeTracking');
+            rc.eyeInputDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis\';
             rc.caOutputDir = fullfile(rootDir,'2P');
             rc.ashleyAnalysis = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis';
         elseif tUsername(1:5) == 'ashle'
-            rc.name = 'ashley';
+            rc.name = 'ashle';
             rootDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis';
             rc.indexFilename = fullfile(rootDir, '\Behavior\experimentIndexes\av-subj-days-lg.xls');
             rc.fitOutputFilename = fullfile(rootDir, '\Behavior\experimentIndexes\av-subj-fits-lg.xls');

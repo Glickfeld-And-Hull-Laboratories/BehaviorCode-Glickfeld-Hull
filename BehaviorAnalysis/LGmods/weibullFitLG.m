@@ -16,6 +16,7 @@ if nargin <5, inputWeightsIn = ones(size(fractCorr)); end
 %% process args
 assert(length(intensityV) == length(fractCorr));
 assert(all(fractCorr >= 0 & fractCorr <= 1));
+
 % error checking
 if length(intensityV) < 3
     error('Must have at least 3 intensity pts');
@@ -66,7 +67,6 @@ startingVals = [midVal, 1, fractCorr(end), fractCorr(1)];
 optSet = optimset('Display', 'none');
 inputWeights = inputWeights ./ sum(inputWeights);
 outS.fitWeights = inputWeights;
-
 if clampAtZero == 1
     modelFun = @(p,xs) (p(3) .* (1 - exp( -(xs./p(1)) .^ p(2))));    
     optFun = @(p) (modelFun(p,intensityV) - fractCorr).*inputWeights;
@@ -79,7 +79,7 @@ if clampAtZero == 1
                     optSet);
 
     coefEsts(4) = 0;
-elseif clampAtZero == 0.5
+elseif use50Thresh == 1
      modelFun = @(p,xs) (0.5+ (p(3)-0.5) .* (1 - exp( -(xs./p(1)) .^ p(2))));    
     optFun = @(p) (modelFun(p,intensityV) - fractCorr).*inputWeights;
     startingVals = [midVal, 1, fractCorr(end)];

@@ -111,8 +111,12 @@ if uo.DoPlot
             labelStr = 'power (mW)';
             intensScaleF = 1;
         elseif bs.is2AFC
+            if bs.do2AFCdetect
+                labelStr = 'Contrast Difference';
+            elseif bs.do2AFCdiscrim
+                labelStr = 'Contrast Ratio';
+            end
             unitStr = '';
-            labelStr = 'Right Contrast/Left Contrast';
             intensScaleF = 1;
             isContrast = true;
         elseif bs.doContrast(:,iblock)
@@ -173,9 +177,6 @@ if uo.DoPlot
     set(gca, 'XTickLabel', xTL);
     xlabel(labelStr);
     ylabel('fraction correct');
-    if bs.is2AFC
-        ylabel('fraction right choice')
-    end
 
 end
 
@@ -214,7 +215,7 @@ if uo.DoBootstrap
         tPctCorr(tPctCorr == 0) = 0+10*eps;
         
         % do the fit
-        bootFitS = weibullFitLG(intensV, tPctCorr, uo.DoClampAtZero, false, ...
+        bootFitS = weibullFitLG(intensV, tPctCorr, uo.DoClampAtZero, use50Thresh, ...
             {'nTrials', nTotB });  
         % 120710 - I choose to allow the weights to be recalculated from the
         % pctCorr on each bootstrap trial.  It probably yields tighter

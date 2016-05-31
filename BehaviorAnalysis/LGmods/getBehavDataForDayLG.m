@@ -195,12 +195,21 @@ if outS.is2AFC
     end
 
     reqHoldTimesMs = tTotalReqHoldTimeMs;
-    gratingContrast = rightGratingContrast./leftGratingContrast;
+    if max(dGratingContrast,[],2)<0.1
+        gratingContrast = abs(rightGratingContrast-leftGratingContrast);
+        outS.do2AFCdetect = 1;
+        outS.do2AFCdiscrim = 0;
+    else
+        gratingContrast = rightGratingContrast./leftGratingContrast;
+        outS.do2AFCdetect = 0;
+        outS.do2AFCdiscrim = 1;
+    end
     rightTrials = rightGratingContrast>leftGratingContrast;
     leftTrials = leftGratingContrast>rightGratingContrast;
     
     %this is hard coded for now:
     nContrastTrials = sum(find(gratingContrast>=0));
+    nGratingTrials = nContrastTrials;
     doContrast = [true true];
     nOriTrials = 0;
     doOri = [false false];
@@ -209,13 +218,11 @@ if outS.is2AFC
     doAuditory = [false false];
 end
 
-
 if nOriTrials>0 & nContrastTrials>0 || nGratingTrials>0 & nAuditoryTrials>0
     doSepB2Mode = 1;
 else
     doSepB2Mode = 0;
 end
-
 if doSepB2Mode == 0
     if intensityIsChr2 
         intensityV_b1b2 = [laserPowerMw; laserPowerMw];
@@ -352,12 +359,15 @@ if ~outS.is2AFC
     missedIx = strcmp(trialOutcomeCell, 'ignore');
     successIx = strcmp(trialOutcomeCell, 'success');
 elseif outS.is2AFC
-    %using same names, but this successIx == wentRight, and missedIx == went left
-    correctIx = strcmp(trialOutcomeCell, 'success');
-    incorrectIx = strcmp(trialOutcomeCell, 'incorrect');
+%     %using same names, but this successIx == wentRight, and missedIx == went left
+%     correctIx = strcmp(trialOutcomeCell, 'success');
+%     incorrectIx = strcmp(trialOutcomeCell, 'incorrect');
+%     earlyIx = strcmp(trialOutcomeCell, 'ignore'); %not right, but can figure out a different solution later
+%     successIx = and(correctIx,rightTrials) + and(incorrectIx, leftTrials);
+%     missedIx = and(incorrectIx,rightTrials) + and(correctIx, leftTrials);
+    successIx = strcmp(trialOutcomeCell, 'success');
+    missedIx = strcmp(trialOutcomeCell, 'incorrect');
     earlyIx = strcmp(trialOutcomeCell, 'ignore'); %not right, but can figure out a different solution later
-    successIx = and(correctIx,rightTrials) + and(incorrectIx, leftTrials);
-    missedIx = and(incorrectIx,rightTrials) + and(correctIx, leftTrials);
 end
 
 %% consts 
@@ -391,7 +401,6 @@ for iB = 1:nBlock2Indices
         outS.reactTimeSEM(iI,iB) = std(tV) ./ sqrt(length(tV));
 
         outS.intensityNums(iIx) = iI;
-
     end
     nCorrPlusMissC{iB} = nCorr(iB,1:nIntensities(iB)) + nMiss(iB,1:nIntensities(iB));
 end

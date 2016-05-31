@@ -86,7 +86,7 @@ for iB = 1:bs.nBlock2Indices
         % for now, format from the index - at some point I should pull this
         % from the datafile and verify it all works
         title(formatBlock2ParamsFromIndex(x1d, iB));
-    else
+    elseif ~bs.is2AFC
         title(formatBlock2ParamsFromConstsInStruct(ds, iB));
     end
 end
