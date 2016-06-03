@@ -11,8 +11,8 @@ av = behavParamsAV;
 mice = unique(xd.Subject);
 nMice = length(mice);
 
-fn = fullfile(rc.fitOutputSummary, [date '_CatchSummary.mat']);
-% fn = fullfile(rc.fitOutputSummary, ['17-Nov-2015_i613_i614_i616_CatchSummary.mat']);
+% fn = fullfile(rc.fitOutputSummary, [date '_CatchSummary.mat']);
+fn = fullfile(rc.fitOutputSummary, ['16-May-2016_CatchSummary.mat']);
 load(fn)
 
 AFig = figure;
@@ -20,7 +20,7 @@ VFig = figure;
 
 for imouse = 1:nMice;
     mouse_name = mice(imouse);
-    ms_ind = find(mice == mice(imouse))
+    ms_ind = find(mice == mice(imouse));
     if earlyLT50 
         early_ind = find(mouse(imouse).early_mat<0.5);
     else
@@ -33,6 +33,7 @@ for imouse = 1:nMice;
     end
     
     use_ind = intersect(early_ind,lapse_ind);
+    disp(size(use_ind))
     input = mouse(imouse).input(use_ind);
     input = concatenateStructures(input');
     
@@ -456,8 +457,6 @@ audMiceInd = intersect(find(~isnan(nanmean(cell2mat(rct_amp_each'),2))),find(~is
 %% use bins across all mice
 tarDeg_all = cat(2,cell2mat(tarDeg(visMiceInd)));
 cDeg_all = cat(2,cell2mat(cDeg(visMiceInd)));
-tarAmp_all = cat(2,cell2mat(tarAmp(audMiceInd)));
-cAmp_all = cat(2,cell2mat(cAmp(audMiceInd)));
 sIx = cat(2,cell2mat(sIx_all(visMiceInd)));
 mIx = cat(2,cell2mat(mIx_all(visMiceInd)));
 faIx = cat(2,cell2mat(faIx_all(visMiceInd)));
@@ -466,6 +465,17 @@ eIx = cat(2,cell2mat(eIx_all(visMiceInd)));
 tarRct_all = cat(2,cell2mat(tarRct(visMiceInd)));
 cRct_all = cat(2,cell2mat(cRct(visMiceInd)));
 eRct_all = cat(2,cell2mat(eRct(visMiceInd)));
+
+tarAmp_all = cat(2,cell2mat(tarAmp(audMiceInd)));
+cAmp_all = cat(2,cell2mat(cAmp(audMiceInd)));
+sIx_A = cat(2,cell2mat(sIx_all(audMiceInd)));
+mIx_A = cat(2,cell2mat(mIx_all(audMiceInd)));
+faIx_A = cat(2,cell2mat(faIx_all(audMiceInd)));
+crIx_A = cat(2,cell2mat(crIx_all(audMiceInd)));
+eIx_A = cat(2,cell2mat(eIx_all(audMiceInd)));
+tarRct_A_all = cat(2,cell2mat(tarRct(audMiceInd)));
+cRct_A_all = cat(2,cell2mat(cRct(audMiceInd)));
+eRct_A_all = cat(2,cell2mat(eRct(audMiceInd)));
 
 [h_ori, bin_ori_all] = histc(tarDeg_all, ori_edges);
 [h_oric, bin_oric_all] = histc(cDeg_all, ori_edges);
@@ -505,13 +515,13 @@ for ibin = 1:max(amp_bins,[],2);
     ind = find(bin_amp_all == ibin);
     avg_amp_all(ibin) = mean(tarAmp_all(ind),2);
     sem_amp_all(ibin) = std(tarAmp_all(ind),[],2)./sqrt(length(ind));
-    rct_amp_all(ibin) = mean(tarRct_all(intersect(find(sIx),ind)),2);
-    rctsem_amp_all(ibin) = std(tarRct_all(intersect(find(sIx),ind)),[],2)./sqrt(length(ind));
+    rct_amp_all(ibin) = mean(tarRct_A_all(intersect(find(sIx_A),ind)),2);
+    rctsem_amp_all(ibin) = std(tarRct_A_all(intersect(find(sIx_A),ind)),[],2)./sqrt(length(ind));
     indc = find(bin_ampc_all == ibin);
     avg_ampc_all(ibin) = mean(cAmp_all(indc),2);
     sem_ampc_all(ibin) = std(cAmp_all(indc),[],2)./sqrt(length(indc));
-    rct_ampc_all(ibin) = mean(cRct_all(intersect(find(faIx),indc)),2);
-    rctsem_ampc_all(ibin) =  std(cRct_all(intersect(find(faIx),indc)),[],2)./sqrt(length(indc));
+    rct_ampc_all(ibin) = mean(cRct_A_all(intersect(find(faIx_A),indc)),2);
+    rctsem_ampc_all(ibin) =  std(cRct_A_all(intersect(find(faIx_A),indc)),[],2)./sqrt(length(indc));
 end
 
 
@@ -522,12 +532,12 @@ crAll_V = zeros(1,max(ori_bins,[],2));
 n_ori = zeros(1,max(ori_bins,[],2));
 for ibin = 1:max(ori_bins,[],2)
     ind = find(bin_ori_all == ibin);
-    if sum(sIx(ind)) + sum(mIx(ind)) > 10
+    if sum(sIx(ind)) + sum(mIx(ind)) > minTrNall
     hitsAll_V(ibin) = sum(sIx(ind));
     missAll_V(ibin)= sum(mIx(ind));
     end
     indc = find(bin_oric_all == ibin);
-    if sum(faIx(indc)) + sum(crIx(indc)) > 10
+    if sum(faIx(indc)) + sum(crIx(indc)) > minTrNall
     faAll_V(ibin) = sum(faIx(indc));
     crAll_V(ibin) = sum(crIx(indc));
     end
@@ -538,20 +548,22 @@ end
 [HR_ori_all, ci95_HR_ori_all] = binofit(hitsAll_V, missAll_V + hitsAll_V);
 [FR_ori_all, ci95_FR_ori_all] = binofit(faAll_V, faAll_V + crAll_V);
 
+n_amp = zeros(1,max(amp_bins,[],2));
+n_ampc = zeros(1,max(amp_bins,[],2));
 hitsAll_A = zeros(1,max(amp_bins,[],2));
 missAll_A= zeros(1,max(amp_bins,[],2));
 faAll_A = zeros(1,max(amp_bins,[],2));
 crAll_A= zeros(1,max(amp_bins,[],2));
 for ibin = 1:max(amp_bins,[],2)
     ind = find(bin_amp_all == ibin);
-    if  sum(sIx(ind)) + sum(mIx(ind)) >10
-    hitsAll_A(ibin) = sum(sIx(ind));
-    missAll_A(ibin)= sum(mIx(ind));
+    if  sum(sIx_A(ind)) + sum(mIx_A(ind)) >minTrNall
+    hitsAll_A(ibin) = sum(sIx_A(ind));
+    missAll_A(ibin)= sum(mIx_A(ind));
     end
     indc = find(bin_ampc_all == ibin);
-    if  sum(faIx(indc)) + sum(crIx(indc)) >10
-    faAll_A(ibin) = sum(faIx(indc));
-    crAll_A(ibin) = sum(crIx(indc));
+    if  sum(faIx_A(indc)) + sum(crIx_A(indc)) >minTrNall
+    faAll_A(ibin) = sum(faIx_A(indc));
+    crAll_A(ibin) = sum(crIx_A(indc));
     end
     n_amp(ibin) = hitsAll_A(ibin)+missAll_A(ibin);
     n_ampc(ibin) = faAll_A(ibin)+crAll_A(ibin);
@@ -570,6 +582,22 @@ xVis = [min(avg_ori_all)/2 100];
 yHR = [0 1];
 yRT = [0 550];
 
+xV1 = [floor(log10(xVis(1))) ceil(log10(xVis(end)))];
+xVTick = 10.^(xV1(1):1:xV1(2));
+XVTick = xVTick(xVTick>=xVis(1) & xVTick <=xVis(end));
+if length(xVTick) == 0
+    xVTick = chop(xVis,2);
+end
+xVLabel = cellstr(num2str(xVTick(:)));
+
+xA1 = [floor(log10(xAud(1))) ceil(log10(xAud(end)))];
+xATick = 10.^(xA1(1):1:xA1(2));
+XVTick = xATick(xATick>=xAud(1) & xATick <=xAud(end));
+if length(xATick) == 0
+    xATick = chop(xAud,2);
+end
+xALabel = cellstr(num2str(xATick(:)));
+
 %visual trials
 for imouse = 1:nMice
     figure(uniHRFig)
@@ -585,7 +613,7 @@ for imouse = 1:nMice
 %     errorbarxy(avg_ori_all, HR_ori_each{imouse}, sem_ori_all, sem_ori_all, HR_ori_each{imouse} - ci95_HR_ori_each{imouse}(:,1)', ci95_HR_ori_each{imouse}(:,2)' - HR_ori_each{imouse}, {['o' 'k'], 'k', 'k'});
 %     hold on
 %     errorbarxy(avg_oric_all, FR_ori_each{imouse}, sem_oric_all, sem_oric_all, FR_ori_each{imouse} - ci95_FR_ori_each{imouse}(:,1)', ci95_FR_ori_each{imouse}(:,2)' - FR_ori_each{imouse}, {['o' 'c'], 'c', 'c'});
-    set(gca, 'xscale', 'log');
+%     set(gca, 'xscale', 'log');
     title(['visual trials'])
     xlabel('Orientation change (deg)')
     ylabel('Hit rate')
@@ -596,9 +624,14 @@ for imouse = 1:nMice
 end
 figure(uniHRFig)
 subplot(2,1,1)
-set(gca,'XTick',ori_edges)
-xlim(xVis)
-ylim(yHR)
+set(gca, 'YLim', yHR, ...
+       'XLim', xVis, ...
+       'XScale', 'log', ...
+       'XTick', xVTick, ...
+       'XTickLabel', xVLabel);
+% xlim(xVis)
+% ylim(yHR)
+% set(gca,'XScale','log')
 hold on
 errorbarxy(avg_ori_all, HR_ori_all, sem_ori_all, sem_ori_all, HR_ori_all - ci95_HR_ori_all(:,1)', ci95_HR_ori_all(:,2)' - HR_ori_all, {['o' 'g'], 'g', 'g'});
 hold on
@@ -630,7 +663,7 @@ for imouse = 1:nMice
 %     errorbarxy(avg_ori_all, rct_ori_each{imouse}, sem_ori_all, sem_ori_all, rct_ori_each{imouse} - rctsem_ori_each{imouse}, rctsem_ori_each{imouse} - rct_ori_each{imouse}, {['o' 'k'], 'k', 'k'});
 %     hold on
 %     errorbarxy(avg_oric_all, rct_oric_each{imouse}, sem_oric_all, sem_oric_all, rct_oric_each{imouse} - rctsem_ori_each{imouse}, rctsem_oric_each{imouse} - rct_oric_each{imouse}, {['o' 'c'], 'c', 'c'});
-    set(gca, 'xscale', 'log');
+%     set(gca, 'xscale', 'log');
     title(['visual trials'])
     xlabel('Orientation change (deg)')
     ylabel('RT')
@@ -639,9 +672,13 @@ for imouse = 1:nMice
 end
 figure(uniRTFig)
 subplot(2,1,1)
-set(gca,'XTick',ori_edges)
-xlim(xVis)
-ylim(yRT)
+set(gca, 'YLim', yRT, ...
+       'XLim', xVis, ...
+       'XScale', 'log', ...
+       'XTick', xVTick, ...
+       'XTickLabel', xVLabel);
+% xlim(xVis)
+% ylim(yRT)
 hold on
 errorbarxy(avg_ori_all, rct_ori_all, sem_ori_all, sem_ori_all, rct_ori_all - rctsem_ori_all, rctsem_ori_all - rct_ori_all, {['o' 'g'], 'g', 'g'});
 hold on
@@ -678,7 +715,7 @@ for imouse = 1:nMice
 %     errorbarxy(avg_amp_all, HR_amp_each{imouse}, sem_amp_all, sem_amp_all, HR_amp_each{imouse} - ci95_HR_amp_each{imouse}(:,1)', ci95_HR_amp_each{imouse}(:,2)' - HR_amp_each{imouse}, {['o' 'k'], 'k', 'k'});
 %     hold on
 %     errorbarxy(avg_ampc_all, FR_amp_each{imouse}, sem_ampc_all, sem_ampc_all, FR_amp_each{imouse} - ci95_FR_amp_each{imouse}(:,1)', ci95_FR_amp_each{imouse}(:,2)' - FR_amp_each{imouse}, {['o' 'c'], 'c', 'c'});
-    set(gca, 'xscale', 'log');
+%     set(gca, 'xscale', 'log');
     title(['auditory trials'])
     xlabel('Target Sound Amplitude')
     ylabel('Hit rate')
@@ -689,9 +726,14 @@ for imouse = 1:nMice
 end
 figure(uniHRFig)
 subplot(2,1,2)
-set(gca,'XTick',amp_edges)
-xlim(xAud)
-ylim(yHR)
+set(gca, 'YLim', yHR, ...
+       'XLim', xAud, ...
+       'XScale', 'log', ...
+       'XTick', xATick, ...
+       'XTickLabel', xALabel);
+% set(gca,'XTick',amp_edges)
+% xlim(xAud)
+% ylim(yHR)
 hold on
 errorbarxy(avg_amp_all, HR_amp_all, sem_amp_all, sem_amp_all, HR_amp_all - ci95_HR_amp_all(:,1)', ci95_HR_amp_all(:,2)' - HR_amp_all, {['o' 'k'], 'k', 'k'});
 hold on
@@ -727,7 +769,7 @@ for imouse = 1:nMice
 %     errorbarxy(avg_ori_all, rct_ori_each{imouse}, sem_ori_all, sem_ori_all, rct_ori_each{imouse} - rctsem_ori_each{imouse}, rctsem_ori_each{imouse} - rct_ori_each{imouse}, {['o' 'k'], 'k', 'k'});
 %     hold on
 %     errorbarxy(avg_oric_all, rct_oric_each{imouse}, sem_oric_all, sem_oric_all, rct_oric_each{imouse} - rctsem_ori_each{imouse}, rctsem_oric_each{imouse} - rct_oric_each{imouse}, {['o' 'c'], 'c', 'c'});
-    set(gca, 'xscale', 'log');
+%     set(gca, 'xscale', 'log');
     title(['auditory trials'])
     xlabel('target sound amplitude')
     ylabel('RT')
@@ -736,9 +778,14 @@ for imouse = 1:nMice
 end
 figure(uniRTFig)
 subplot(2,1,2)
-set(gca,'XTick',amp_edges)
-xlim(xAud)
-ylim(yRT)
+set(gca, 'YLim', yRT, ...
+       'XLim', xAud, ...
+       'XScale', 'log', ...
+       'XTick', xATick, ...
+       'XTickLabel', xALabel);
+% set(gca,'XTick',amp_edges)
+% xlim(xAud)
+% ylim(yRT)
 hold on
 errorbarxy(avg_amp_all, rct_amp_all, sem_amp_all, sem_amp_all, rct_amp_all - rctsem_amp_all, rctsem_amp_all - rct_amp_all, {['o' 'k'], 'k', 'k'});
 hold on
