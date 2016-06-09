@@ -59,16 +59,16 @@ def get_targetCorrect():
 	if reactToWindow >= 0.3 and (getvar('achievedTierRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 200)
 
+	elif reactToWindow >= 0.5 and (getvar('achievedTierRandom') == 1 and (getvar('achievedMaxRandom') == 0):
+		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 400)
+
 	elif reactToWindow <= 0.3 and randReqHoldMaxMs >= 200:
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
 
-	elif reactToWindow >= 0.55 and (getvar('achievedMaxRandom') == 0):
-		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 400)
+	elif (reactToWindow + reactToWindow_last40)/2 <= 0.4 and (tTrialsDoneSinceStart%80 == 0) and randReqHoldMaxMs >= 1200:
+		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 400)
 
-	elif (reactToWindow + reactToWindow_last40)/2 <= 0.4 and (tTrialsDoneSinceStart%80 == 0) and randReqHoldMaxMs >= 200:
-		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
-
-	if getvar('randReqHoldMaxMs') == 1200:
+	if getvar('randReqHoldMaxMs') >= 1200:
 		setvar('achievedTierRandom', 1)
 
 	elif getvar('randReqHoldMaxMs') == 4000:
@@ -78,14 +78,20 @@ def get_targetCorrect():
 		setvar('reactToWindow_last40', reactToWindow)
 
 
-def updateReactTime():
+def updateReactTime():	
 
-	if getvar('mouseHolder') == 1:
+	if getvar('mouseHolder') == 1 and getvar('reactTimeMs') >= 2000:
 		reactTimeMs = getvar('reactTimeMs')
 		setvar('reactTimeMs', reactTimeMs - 1000)
 
-	if (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 0 and getvar('reactTimeMs') != 600:
+	if (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 0 and reactToWindow >= 0.6 and getvar('reactTimeMs') != 600:
 		setvar('reactTimeMs', 600)
 
-	elif (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 1 and getvar('reactTimeMs') != 720:
+	elif(getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 1 and reactToWindow >= 0.6 and getvar('reactTimeMs') != 720:
 		setvar('reactTimeMs', 720)
+
+	elif (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 0 and reactToWindow >= 0.45 and getvar('reactTimeMs') != 1000:
+		setvar('reactTimeMs', 1000)
+
+	elif (getvar('achievedMaxRandom') == 1) and getvar('mouseSpeed') == 1 and reactToWindow >= 0.45 and getvar('reactTimeMs') != 1200:
+		setvar('reactTimeMs', 1200)
