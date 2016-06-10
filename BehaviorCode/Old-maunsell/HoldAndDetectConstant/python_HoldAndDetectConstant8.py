@@ -59,7 +59,7 @@ def get_targetCorrect():
 	if reactToWindow >= 0.3 and (getvar('achievedTierRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 200)
 
-	elif reactToWindow >= 0.5 and (getvar('achievedTierRandom') == 1 and (getvar('achievedMaxRandom') == 0):
+	elif reactToWindow >= 0.5 and (getvar('achievedTierRandom') == 1) and (getvar('achievedMaxRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 400)
 
 	elif reactToWindow <= 0.3 and randReqHoldMaxMs >= 200:
