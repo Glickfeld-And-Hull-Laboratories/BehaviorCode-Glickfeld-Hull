@@ -55,6 +55,8 @@
       <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Reward"/>
       <variable tag="rewardEveryNCorrect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
       <variable tag="rewardOmissionPercent" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Reward"/>
+      <variable tag="rewardDelayPercent" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Reward"/>
+      <variable tag="RewardDelayDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Reward"/>
 
     </folder>
     <folder tag="Stimuli">
@@ -268,7 +270,9 @@
       <variable tag="cLeverUp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
       <variable tag="tRewardOmissionTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-
+      <variable tag="tRewardDelayTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tRewardDelayDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
                 selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
@@ -334,7 +338,7 @@
       </action>
 
       <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
-        <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES">
+        <task_system tag="TS" full_name="TS" description="" interruptible="YES">
           <task_system_state tag="Intertrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
@@ -379,6 +383,8 @@
             <action type="assignment" variable="tDoNoStimulusChange" value="doNoStimulusChange"></action>
             <action type="assignment" variable="tDoAllCorrects" value="doAllCorrects"></action>
             <action type="assignment" variable="cTrialStart" value="counter"></action>
+            <action type="assignment" variable="tRewardDelayTrial" value="0"></action>
+            <action type="assignment" variable="tRewardDelayDurationMs" value="0"></action>
             <action type="assignment" tag="reset too fast time over" variable="isTooFast" value="1"/>
 
             <!-- choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 -->
@@ -1192,8 +1198,16 @@
           <task_system_state tag="GiveReward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
+            <action type="if" condition="rewardDelayPercent != 0 &amp;&amp; tNRewards > -1">
+              <action type="assignment" variable="tRewardDelayTrial" value="(int)(disc_rand(0,100) &lt; rewardDelayPercent*100)"/>
+              <action type="report" message="the tRewardDelayTrial is $tRewardDelayTrial"/>
+              <action type="if" condition="tRewardDelayTrial != 0">
+                <action type="assignment" variable="tRewardDelayDurationMs" value="RewardDelayDurationMs"/>
+              </action>
+            </action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="if rewards remain, go to SingleReward (note must be -1)" condition="tNRewards > -1" target="SingleReward"></transition>
+            <transition type="conditional" tag="if rewards remain, go to SingleReward (note must be -1)" condition="tNRewards > -1 &amp;&amp; tRewardDelayTrial == 0" target="SingleReward"></transition>
+            <transition type="conditional" tag="if rewards remain, go to DelayReward (note must be -1)" condition="tNRewards > -1 &amp;&amp; tRewardDelayTrial != 0" target="DelayReward"></transition>
             <transition type="direct" tag="Always Go to PRP" target="PostRewardPause"></transition>
           </task_system_state>
 
@@ -1204,28 +1218,38 @@
             <transition type="timer_expired" target="PossibleEndTimeout" timer="postRewardTimer"></transition>
           </task_system_state>
 
+          <task_system_state tag="DelayReward">
+            <action type="start_timer" tag="StartTimer" timer="DelayRewardTimer" timebase="" duration="tRewardDelayDurationMs" duration_units="ms"></action>
+            <action type="report" message="Delay Reward for $tRewardDelayDurationMs ms."/>
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" target="SingleReward" timer="DelayRewardTimer"></transition>
+          </task_system_state>
+
           <task_system_state tag="SingleReward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="interRewardInterval minimum to juiceTime" variable="tInterRewardIntervalMs" value="interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )"></action>
             <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
+
             <action type="if" condition="rewardOmissionPercent != 0">
-              <action type="assignment" variable="tRewardOmissionTrial" value="(int)(rand(0, rewardOmissionPercent*100) &lt; rewardOmissionPercent*10)"/>
+              <action type="assignment" variable="tRewardOmissionTrial" value="(int)(disc_rand(0,100) &lt; rewardOmissionPercent*100)"/>
               <action type="report" message="the tRewardOmissionTrial is $tRewardOmissionTrial"/>
             </action>
-            <action type="report" message="the tRewardOmissionTrial is $tRewardOmissionTrial"/>
+
             <action type="if" condition="tRewardOmissionTrial == 0">
               <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
             </action>
+
             <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
             <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
             <action type="if" condition= "tempNCorrect == 0">
-            <action type="report" tag="Report" message="juice = $juice"></action>	
-			</action>
-			<action type="if" condition= "tempNCorrect &gt; 0">
-			<action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
-            <action type="report" tag="Report" message="juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect"></action>	
-			</action>
-			</action>
+              <action type="report" tag="Report" message="juice = $juice"></action>	
+			      </action>
+			      <action type="if" condition= "tempNCorrect &gt; 0">
+			         <action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+                <action type="report" tag="Report" message="juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect"></action>	
+			         </action>
+			       </action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
           </task_system_state>
