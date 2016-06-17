@@ -73,6 +73,7 @@
       </folder>
       <folder tag="Stimuli">
         <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="goSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
         <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
         <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
 
@@ -257,6 +258,7 @@
         </variables>
         <sounds tag="Sounds">
           <sound tag="startSound" type="wav_file" path="wavs/10000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
+          <sound tag="goSound" type="wav_file" path="wavs/10000Hz_.3s.wav" amplitude="goSoundVolume"></sound>
           <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="correctSoundVolume"></sound>
           <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>
         </sounds>
@@ -1005,6 +1007,7 @@
                         <action type="assignment" variable="qStartReact" value="quadrature" />
                         <action type="report" message="**** Quad zeroed *****"></action>
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
+                        <action type="play_sound" sound="goSound"/>
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="direct" target="Reaction"></transition>
                       </task_system_state>
