@@ -1,4 +1,4 @@
-%New cerebellarFrameAnalyzer for updated data collection program.
+%New cerebellarFrameAnalyzer for visual flashing stimulus.
 
 dataStruct = struct;
 %% formatting assumes "input1" is a cerebellarStim data set
@@ -28,22 +28,24 @@ normal = pulseDiff(~pulsePauseIx);
 avgFrame = mean(normal);
 howManyMissed = round((problematic./avgFrame)-1);
 
-
 %create index for when stimulus was delivered
-%{
-input1.tStimTurnedOn{1} = double(input1.tStimTurnedOn{1});
-stimOnFrame = cell2mat(input1.tStimTurnedOn);
-stimOnIx = zeros(1, length(totalTimes)+sum(howManyMissed));
-for ii=1:length(stimOnFrame)
-    stimOn = find((totalTimes/stimOnFrame(ii)) < 1.001 & (totalTimes/stimOnFrame(ii))> 0.999);  %creates a logical array that indexes which frames were stimulus frames, according to their timestamp.
-    if length(stimOn)>1
-        stimOnIx(stimOn(1))=1;
-    else
-        stimOnIx(stimOn)=1;
-    end
-    
+input1.movieStartMS{1} = double(input1.movieStartMS{1});
+flashTimes = zeros(1,200);
+flashTimes(1) = input1.movieStartMS{1}+11000;       %Movie starts before first frame, so the first "real" stimulus is the second one in the movie. (11 seconds between the start of each flash)
+for ii=2:200
+    flashTimes(ii) = flashTimes(ii-1)+11000;
 end
-%}
+stimOnIx = zeros(1, length(totalTimes)+sum(howManyMissed));
+stimStartStopIx = zeros(1,length(totalTimes) + sum(howManyMissed));
+for ii=1:length(flashTimes)
+    flashOn = find(totalTimes<flashTimes(ii),1,'last');  %Finds the frame at which the visual movie began in order to index all subsequent stimuli
+    if flashTimes(ii)>totalTimes(end)
+        break
+    end
+    stimOnIx(flashOn) = 1;
+    stimStartStopIx(flashOn) = 1; stimStartStopIx(flashOn+10)=1;
+end
+
 %% Check that counter was not reset mid-trial
 assert(ismonotonic(totalTimes), 'Counter times are not monotonically increasing. Was experiment reset?');
 assert(ismonotonic(totalVals), ' Counter values are not monotonically increasing. Was experiment reset?');
@@ -81,8 +83,8 @@ end
 
 %% Replicate graphing to allow frame skipping feedback
 %Copied from original cerebellarFrameAnalyzer to check for dropped frames.
-if length(problemFrameNumbers)>0,
-    [a b c] = plotyy(1:length(pulseDiff), pulseDiff, problemFrameNumbers, howManyMissed)
+if isempty(problemFrameNumbers)==0,
+    [a, b, c] = plotyy(1:length(pulseDiff), pulseDiff, problemFrameNumbers, howManyMissed);
     title('Estimates of Missed Frames')
     set(a(1), 'Ylim', [0 max(pulseDiff)])
     set(a(2), 'Ylim', [0 max(howManyMissed)])
@@ -99,20 +101,17 @@ else
 end
 
 %% Generate the good frames index
-
 shift = 0;
 blankIx = ones(1,length(totalVals)+sum(howManyMissed));
-
 for i = 1:length(problemFrameNumbers)
     insertFrames = howManyMissed(i);
     startFrame = problemFrameNumbers(i)+1; %to correct for 1 frame "diff" offset
     blankIx(startFrame+shift+1) = 0;     
-    locoMat = cat(2, locoMat(1:[problemFrameNumbers(i)+shift]), NaN(1,insertFrames), locoMat([problemFrameNumbers(i)+shift+1]:end));
+    locoMat = cat(2, locoMat(1:problemFrameNumbers(i)+shift), NaN(1,insertFrames), locoMat(problemFrameNumbers(i)+shift+1:end));
     shift = shift+insertFrames;
-    end
-
+end
 dataStruct.goodFramesIx = boolean(blankIx);
-%dataStruct.stimOnIx = boolean(stimOnIx);
+dataStruct.stimOnIx = boolean(stimOnIx);
 dataStruct.locomotionMatFrames = locoMat;
 
 %% Create run/not-run matrices
@@ -130,7 +129,8 @@ for ii = 1:length(runMat)
         stillMat(ii) = 1;
     end
 end
-%puffRun = and(runMat,dataStruct.stimOnIx);
-%puffStill = and(stillMat,dataStruct.stimOnIx);
-%dataStruct.puffRun = puffRun;
-%dataStruct.puffStill = puffStill;
+puffRun = and(runMat,dataStruct.stimOnIx);
+puffStill = and(stillMat,dataStruct.stimOnIx);
+dataStruct.puffRun = puffRun;
+dataStruct.puffStill = puffStill;
+dataStruct.stimStartStopIx = stimStartStopIx;

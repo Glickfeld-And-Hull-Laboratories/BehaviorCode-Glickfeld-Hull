@@ -1,4 +1,4 @@
-%New cerebellarFrameAnalyzer for updated data collection program.
+%New cerebellarFrameAnalyzer for moving dots stimulus.
 
 dataStruct = struct;
 %% formatting assumes "input1" is a cerebellarStim data set
@@ -28,22 +28,62 @@ normal = pulseDiff(~pulsePauseIx);
 avgFrame = mean(normal);
 howManyMissed = round((problematic./avgFrame)-1);
 
-
-%create index for when stimulus was delivered
-%{
-input1.tStimTurnedOn{1} = double(input1.tStimTurnedOn{1});
-stimOnFrame = cell2mat(input1.tStimTurnedOn);
-stimOnIx = zeros(1, length(totalTimes)+sum(howManyMissed));
-for ii=1:length(stimOnFrame)
-    stimOn = find((totalTimes/stimOnFrame(ii)) < 1.001 & (totalTimes/stimOnFrame(ii))> 0.999);  %creates a logical array that indexes which frames were stimulus frames, according to their timestamp.
-    if length(stimOn)>1
-        stimOnIx(stimOn(1))=1;
-    else
-        stimOnIx(stimOn)=1;
+%create index for when stimulus was delivered (brake)
+if input1.DoSolenoid==1
+    brake_times = input1.tResistanceStartMS; brake_times = cell2mat(brake_times);
+    if brake_times(1)==0;
+        brake_times(1)=[];
     end
-    
+    brake_dur = input1.solenoidStimulusDurationMs/100;
+    stimOnIx = zeros(1,length(totalTimes)+sum(howManyMissed));
+    stimStartStopIx = zeros(1,length(totalTimes)+sum(howManyMissed));
+    for ii=1:length(brake_times)
+        brake_on = find(totalTimes<brake_times(ii),1,'last');
+        if brake_times(ii)>totalTimes(end)
+            break
+        end
+        stimOnIx(brake_on:brake_on+brake_dur-1) = 1;
+        stimStartStopIx(brake_on) = 1; stimStartStopIx(brake_on+brake_dur-1) = 1;
+    end
+end    
+
+%create index for when stimulus was delivered (optical flow reversal)
+if input1.DoMovingDot==1 && input1.DoCerebellarStim==1
+    reverse_times = input1.tReverseVStimTimeMs; reverse_times = cell2mat(reverse_times);
+    if reverse_times(1)==0;
+        reverse_times(1)=[];
+    end
+    reverse_dur = input1.ReverseDurationMS/100;
+    stimOnIx = zeros(1,length(totalTimes)+sum(howManyMissed));
+    stimStartStopIx = zeros(1,length(totalTimes)+sum(howManyMissed));
+    for ii=1:length(reverse_times)
+        rev_on = find(totalTimes<reverse_times(ii),1,'last');
+        if reverse_times(ii)>totalTimes(end)
+            break
+        end
+        stimOnIx(rev_on:rev_on+reverse_dur-1) = 1;
+        stimStartStopIx(rev_on) = 1; stimStartStopIx(rev_on+reverse_dur-1) = 1;
+    end
 end
-%}
+
+%create index for when stimulus was delivered (moving dots)
+if input1.DoMovingDot==1 && input1.DoCerebellarStim==0;
+    visOn = cell2mat(input1.tVisualStimTurnedOnMs);
+    visOff = cell2mat(input1.tVisualStimTurnedOffMs);
+    visDuration = (visOff./1000) - (visOn./1000); visDuration = round(visDuration.*10);
+
+    stimOnIx = zeros(1, length(totalTimes)+sum(howManyMissed));
+    stimStartStopIx = zeros(1, length(totalTimes) + sum(howManyMissed));
+    for ii=1:length(visOn)
+        dotsOn = find(totalTimes<visOn(ii),1,'last');  
+        if visOn(ii)>totalTimes(end)
+            break
+        end
+        stimOnIx(dotsOn:dotsOn+visDuration(ii)-1) = 1;
+        stimStartStopIx(dotsOn) = 1; stimStartStopIx(dotsOn+visDuration(ii)-1)=1;
+    end
+end
+
 %% Check that counter was not reset mid-trial
 assert(ismonotonic(totalTimes), 'Counter times are not monotonically increasing. Was experiment reset?');
 assert(ismonotonic(totalVals), ' Counter values are not monotonically increasing. Was experiment reset?');
@@ -78,11 +118,10 @@ for ii=1:length(quadTimes)
     locoMat(quadInd(ii)) = locoMat(quadInd(ii))+ quadDiff(ii);
 end
 
-
 %% Replicate graphing to allow frame skipping feedback
 %Copied from original cerebellarFrameAnalyzer to check for dropped frames.
-if length(problemFrameNumbers)>0,
-    [a b c] = plotyy(1:length(pulseDiff), pulseDiff, problemFrameNumbers, howManyMissed)
+if isempty(problemFrameNumbers)==0,
+    [a, b, c] = plotyy(1:length(pulseDiff), pulseDiff, problemFrameNumbers, howManyMissed);
     title('Estimates of Missed Frames')
     set(a(1), 'Ylim', [0 max(pulseDiff)])
     set(a(2), 'Ylim', [0 max(howManyMissed)])
@@ -99,20 +138,17 @@ else
 end
 
 %% Generate the good frames index
-
 shift = 0;
 blankIx = ones(1,length(totalVals)+sum(howManyMissed));
-
 for i = 1:length(problemFrameNumbers)
     insertFrames = howManyMissed(i);
     startFrame = problemFrameNumbers(i)+1; %to correct for 1 frame "diff" offset
     blankIx(startFrame+shift+1) = 0;     
-    locoMat = cat(2, locoMat(1:[problemFrameNumbers(i)+shift]), NaN(1,insertFrames), locoMat([problemFrameNumbers(i)+shift+1]:end));
+    locoMat = cat(2, locoMat(1:problemFrameNumbers(i)+shift), NaN(1,insertFrames), locoMat(problemFrameNumbers(i)+shift+1:end));
     shift = shift+insertFrames;
-    end
-
+end
 dataStruct.goodFramesIx = boolean(blankIx);
-%dataStruct.stimOnIx = boolean(stimOnIx);
+dataStruct.stimOnIx = boolean(stimOnIx);
 dataStruct.locomotionMatFrames = locoMat;
 
 %% Create run/not-run matrices
@@ -120,8 +156,8 @@ dataStruct.locomotionMatFrames = locoMat;
 %value of locoMat values due to possibility of negative velocity.
 stillMat = zeros(size(dataStruct.goodFramesIx));
 runMat = zeros(size(dataStruct.goodFramesIx));
-runThresh = 5;
-stillThresh = 4;
+runThresh = 3;
+stillThresh = 2;
 for ii = 1:length(runMat)
     if abs(dataStruct.locomotionMatFrames(ii)) >= runThresh;
         runMat(ii) = 1;
@@ -130,7 +166,8 @@ for ii = 1:length(runMat)
         stillMat(ii) = 1;
     end
 end
-%puffRun = and(runMat,dataStruct.stimOnIx);
-%puffStill = and(stillMat,dataStruct.stimOnIx);
-%dataStruct.puffRun = puffRun;
-%dataStruct.puffStill = puffStill;
+puffRun = and(runMat,dataStruct.stimOnIx);
+puffStill = and(stillMat,dataStruct.stimOnIx);
+dataStruct.puffRun = puffRun;
+dataStruct.puffStill = puffStill;
+dataStruct.stimStartStopIx = stimStartStopIx;
