@@ -45,8 +45,12 @@
         <variable tag="doSFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
         <variable tag="doTFStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>      
         <variable tag="doSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
+        <variable tag="doAnnulusStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
+        <variable tag="doAnnulusSizeStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
         <variable tag="doPhaseStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
         <variable tag="doLoomStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
+        <variable tag="doGaussianMask" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
+        <variable tag="doEllipseMask" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
 
         <variable tag="doMovingDots" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="DotsExptStruct"/> 
         <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="DotsExptStruct"/> 
@@ -63,6 +67,8 @@
         <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="baseGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
+
+        <variable tag="target_mask" scope="global" logging="when_changed" default_value="none" type="string" persistant="1" groups="GratingSpecs"/>
 
         <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="20" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingElevationStepDeg" scope="global" logging="when_changed" default_value="-20" type="float" persistant="1" groups="GratingSpecs"/>
@@ -97,6 +103,8 @@
         <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingStartingPhaseStepDeg" scope="global" logging="when_changed" default_value="45" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingStartingPhaseStepN" scope="global" logging="when_changed" default_value="8" type="float" persistant="1" groups="GratingSpecs"/>
+
+        <variable tag="innermask_size" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 
         <variable tag="loomSpeedDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="maxLoomDiameterDeg" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
@@ -220,6 +228,7 @@
         <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tAnnulusGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
         <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -266,14 +275,27 @@
         x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
         rotation="tBaseGratingDirectionDeg" 
         alpha_multiplier="tBaseGratingContrast"></stimulus>
-        <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="tGratingStartingPhaseDeg"
-          spatial_frequency="tGratingSpatialFreqCPD" 
-          speed="tGratingSpeedDPS" 
-          grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
-          x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg" 
-          x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
-          rotation="tGratingDirectionDeg" 
-          alpha_multiplier="tGratingContrast"></stimulus>
+        <stimulus type="circle" tag="inner_mask" color="tBackgroundLuminance,tBackgroundLuminance,tBackgroundLuminance" 
+            x_size="innermask_size" y_size="innermask_size" 
+            x_position="0.0" y_position="0.0" rotation="0" alpha_multiplier="1.0"></stimulus>
+        <stimulus type="drifting_grating" tag="target_grating_annulus"  direction="0" starting_phase="tGratingStartingPhaseDeg"
+            spatial_frequency="tGratingSpatialFreqCPD" 
+            speed="tGratingSpeedDPS" 
+            grating_type="sinusoid" mask="ellipse" std_dev="0.3" mean="0.1" 
+            x_size="tAnnulusGratingDiameterDeg" y_size="tAnnulusGratingDiameterDeg" 
+            x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
+            rotation="tGratingDirectionDeg" 
+            alpha_multiplier="tGratingContrast"></stimulus>
+        <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="target_mask">
+            <stimulus type="drifting_grating" tag="target_grating_$target_mask"  direction="0" starting_phase="tGratingStartingPhaseDeg"
+            spatial_frequency="tGratingSpatialFreqCPD" 
+            speed="tGratingSpeedDPS" 
+            grating_type="sinusoid" mask="$target_mask" std_dev="0.3" mean="0.1" 
+            x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg" 
+            x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
+            rotation="tGratingDirectionDeg" 
+            alpha_multiplier="tGratingContrast"></stimulus>
+        </list_replicator>
           <stimulus type="moving_dots" tag="moving_dots"  direction="setDotDirectionDeg"
             dot_density="setDotDensity" dot_size="setDotSizeDeg" coherence="setDotCoherence" 
             speed="setDotSpeedDPS" field_radius="tDotFieldSizeDeg/2" 
@@ -318,7 +340,7 @@
                   <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
                     <trial tag="New List" nsamples="9999" sampling_method="samples" selection="random_without_replacement">
                       <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
-                      <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+                      <task_system tag="TS" full_name="TS" description="" interruptible="YES" >
                         <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
                           <action_marker _unmoveable="1" tag="Actions"></action_marker>
                           <action type="assignment" tag="set tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
@@ -335,6 +357,7 @@
                           <action type="assignment" variable="tDotElevationDeg" value="dotElevationDeg"></action>
                           <action type="assignment" variable="tBaseGratingDiameterDeg" value="gratingDiameterDeg"></action>
                           <action type="assignment" variable="tGratingDiameterDeg" value="gratingDiameterDeg"></action>
+                          <action type="assignment" variable="tAnnulusGratingDiameterDeg" value="gratingDiameterDeg+20"></action>
                           <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                           <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
 
@@ -761,8 +784,25 @@
 
               <action type="if" condition="doMovingDots != 1">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
-                <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
+                <action type="if" condition="doAnnulusStim == 0">
+                    <action type="if" condition="doGaussianMask == 1">
+                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_gaussian"></action>
+                        <action type="play_dynamic_stimulus" stimulus="target_grating_gaussian" tag="start"></action>
+                    </action>
+                    <action type="if" condition="doEllipseMask == 1">
+                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_ellipse"></action>
+                        <action type="play_dynamic_stimulus" stimulus="target_grating_ellipse" tag="start"></action>
+                    </action>
+                </action>
+                <action type="if" condition="doAnnulusStim == 1">
+                    <action type="if" condition="doEllipseMask == 1">
+                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_annulus"></action>
+                        <action type="play_dynamic_stimulus" stimulus="target_grating_annulus" tag="start"></action>
+                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="inner_mask"></action>
+                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_ellipse"></action>
+                        <action type="play_dynamic_stimulus" stimulus="target_grating_ellipse" tag="start"></action>
+                    </action>
+                </action>
               </action>
 
               <!-- update display, finalize variables -->
@@ -826,8 +866,27 @@
           <task_system_state tag="LoomState" interruptible="YES">
             <action type="start_timer" tag="Start refresh timer" timer="refreshTimer" timebase="" duration="30" duration_units="ms"></action>
             <action type="assignment" tag="set new stimulus size" variable="tGratingDiameterDeg" value="tGratingDiameterDeg + tGratingLoomSpeedDPS*.03"></action>
-            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
-            <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
+            <action type="if" condition="doAnnulusStim == 0">
+                <action type="if" condition="doGaussianMask == 1">
+                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_gaussian"></action>
+                    <action type="play_dynamic_stimulus" stimulus="target_grating_gaussian" tag="start"></action>
+                </action>
+                <action type="if" condition="doEllipseMask == 1">
+                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_ellipse"></action>
+                    <action type="play_dynamic_stimulus" stimulus="target_grating_ellipse" tag="start"></action>
+                </action>
+            </action>
+
+            <action type="if" condition="doAnnulusStim == 1">
+                <action type="if" condition="doEllipseMask == 1">
+                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_annulus"></action>
+                    <action type="play_dynamic_stimulus" stimulus="target_grating_annulus" tag="start"></action>
+                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="inner_mask"></action>
+                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_ellipse"></action>
+                    <action type="play_dynamic_stimulus" stimulus="target_grating_ellipse" tag="start"></action>
+                </action>
+            </action>
+
             <action tag="Update Display" type="update_stimulus_display"></action>
             <!-- <action type="report" message="Diameter is $tGratingDiameterDeg"/> -->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -1008,7 +1067,21 @@
             </action>
 
             <action type="if" condition="doMovingDots != 1">
-                <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
+                <action type="if" condition="doAnnulusStim == 0">
+                    <action type="if" condition="doGaussianMask == 1">
+                        <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating_gaussian"></action>
+                    </action>
+                    <action type="if" condition="doEllipseMask == 1">
+                        <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating_ellipse"></action>
+                    </action>
+                </action>
+                <action type="if" condition="doAnnulusStim == 1">
+                    <action type="if" condition="doEllipseMask == 1">
+                        <action tag="Deueue Stimulus" type="dequeue_stimulus" stimulus="target_grating_annulus"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="inner_mask"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_ellipse"></action>
+                    </action>
+                </action>
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
               <action tag="Update Stimulus" type="update_stimulus_display"></action>
