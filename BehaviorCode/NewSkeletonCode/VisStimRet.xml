@@ -357,7 +357,12 @@
                           <action type="assignment" variable="tDotElevationDeg" value="dotElevationDeg"></action>
                           <action type="assignment" variable="tBaseGratingDiameterDeg" value="gratingDiameterDeg"></action>
                           <action type="assignment" variable="tGratingDiameterDeg" value="gratingDiameterDeg"></action>
-                          <action type="assignment" variable="tAnnulusGratingDiameterDeg" value="gratingDiameterDeg+20"></action>
+                          <action type="if" condition="doAnnulusSizeStim == 1">
+                            <action type="assignment" variable="tAnnulusGratingDiameterDeg" value="disc_rand(-innermask_size, innermask_size) + innermask_size"></action>
+                          </action>
+                          <action type="if" condition="doAnnulusSizeStim == 0">
+                            <action type="assignment" variable="tAnnulusGratingDiameterDeg" value="innermask_size + 10"></action>
+                          </action>
                           <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                           <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
 
