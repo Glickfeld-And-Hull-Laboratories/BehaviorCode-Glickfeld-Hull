@@ -104,7 +104,11 @@
         <variable tag="gratingStartingPhaseStepDeg" scope="global" logging="when_changed" default_value="45" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingStartingPhaseStepN" scope="global" logging="when_changed" default_value="8" type="float" persistant="1" groups="GratingSpecs"/>
 
-        <variable tag="innermask_size" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
+        <variable tag="greymaskDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
+
+        <variable tag="AnnulusgratingDiameterStepN" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="GratingSpecs"/>
+        <variable tag="AnnulusgratingDiameterMinN" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
+        <variable tag="AnnulusgratingDiameterMaxN" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 
         <variable tag="loomSpeedDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="maxLoomDiameterDeg" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
@@ -229,6 +233,7 @@
         <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tAnnulusGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tgreymaskDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
         <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -276,8 +281,8 @@
         rotation="tBaseGratingDirectionDeg" 
         alpha_multiplier="tBaseGratingContrast"></stimulus>
         <stimulus type="circle" tag="inner_mask" color="tBackgroundLuminance,tBackgroundLuminance,tBackgroundLuminance" 
-            x_size="innermask_size" y_size="innermask_size" 
-            x_position="0.0" y_position="0.0" rotation="0" alpha_multiplier="1.0"></stimulus>
+            x_size="greymaskDiameterDeg" y_size="greymaskDiameterDeg" 
+            x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" rotation="0" alpha_multiplier="1.0"></stimulus>
         <stimulus type="drifting_grating" tag="target_grating_annulus"  direction="0" starting_phase="tGratingStartingPhaseDeg"
             spatial_frequency="tGratingSpatialFreqCPD" 
             speed="tGratingSpeedDPS" 
@@ -357,12 +362,8 @@
                           <action type="assignment" variable="tDotElevationDeg" value="dotElevationDeg"></action>
                           <action type="assignment" variable="tBaseGratingDiameterDeg" value="gratingDiameterDeg"></action>
                           <action type="assignment" variable="tGratingDiameterDeg" value="gratingDiameterDeg"></action>
-                          <action type="if" condition="doAnnulusSizeStim == 1">
-                            <action type="assignment" variable="tAnnulusGratingDiameterDeg" value="disc_rand(-innermask_size, innermask_size) + innermask_size"></action>
-                          </action>
-                          <action type="if" condition="doAnnulusSizeStim == 0">
-                            <action type="assignment" variable="tAnnulusGratingDiameterDeg" value="innermask_size + 10"></action>
-                          </action>
+                          
+                          <action type="assignment" variable="tgreymaskDiameterDeg" value="greymaskDiameterDeg"></action>
                           <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                           <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
 
@@ -479,6 +480,11 @@
                          <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDiameterStepN"/>
                          <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))"/>
                          <action type="report" message="Diameter is $tGratingDiameterDeg"/>
+                       </action>
+                        <action type="if" condition="doAnnulusSizeStim == 1">   
+                         <action type="assignment" variable="tTempStim" value= "tStimulusNumber % AnnulusgratingDiameterStepN"/>
+                         <action type="assignment" variable="tAnnulusGratingDiameterDeg" value= "AnnulusgratingDiameterMinN * greymaskDiameterDeg + (AnnulusgratingDiameterMaxN * greymaskDiameterDeg / AnnulusgratingDiameterStepN * (tTempStim))"/>
+                         <action type="report" message="Annulus Diameter is $tAnnulusGratingDiameterDeg"/>
                        </action>		
                        <action type="if" condition="doSizeStim == 0">
                          <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
