@@ -1179,7 +1179,7 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
             <action type="if" condition="rewardDelayPercent != 0 &amp;&amp; tNRewards > -1">
-              <action type="assignment" variable="tRewardDelayTrial" value="(int)(disc_rand(0,100) &lt; rewardDelayPercent*100)"/>
+              <action type="assignment" variable="tRewardDelayTrial" value="(int)(disc_rand(0,100) &lt; rewardDelayPercent)"/>
               <action type="report" message="the tRewardDelayTrial is $tRewardDelayTrial"/>
               <action type="if" condition="tRewardDelayTrial != 0">
                 <action type="assignment" variable="tRewardDelayDurationMs" value="RewardDelayDurationMs"/>
@@ -1212,12 +1212,11 @@
             <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
 
             <action type="if" condition="rewardOmissionPercent != 0">
-              <action type="assignment" variable="tRewardOmissionTrial" value="(int)(disc_rand(0,100) &lt; rewardOmissionPercent*100)"/>
+              <action type="assignment" variable="tRewardOmissionTrial" value="(int)(disc_rand(0,100) &lt; rewardOmissionPercent)"/>
               <action type="report" message="the tRewardOmissionTrial is $tRewardOmissionTrial"/>
             </action>
 
             <action type="if" condition="tRewardOmissionTrial == 0">
-
               <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
             </action>
 
