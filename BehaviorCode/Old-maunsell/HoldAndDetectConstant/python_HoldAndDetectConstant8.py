@@ -52,9 +52,11 @@ def get_targetCorrect():
 
 	reactToWindow = getvar('reactToWindow')
 	
-	reactToWindow_last40 = getvar('reactToWindow_last40')
+	reactToWindow_lastN = getvar('reactToWindow_lastN')
 
 	tTrialsDoneSinceStart = getvar('tTrialsDoneSinceStart')
+
+	evaluationWindow = getvar('evaluationWindow')
 
 	if reactToWindow >= 0.3 and (getvar('achievedTierRandom') == 0):
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 200)
@@ -66,7 +68,7 @@ def get_targetCorrect():
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs)
 	#	setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
 
-	elif (reactToWindow + reactToWindow_last40)/2 <= 0.4 and (tTrialsDoneSinceStart%80 == 0) and randReqHoldMaxMs >= 1200:
+	elif (reactToWindow + reactToWindow_lastN)/2 <= 0.4 and (tTrialsDoneSinceStart%80 == 0) and randReqHoldMaxMs >= 1200:
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs)
 		#setvar('randReqHoldMaxMs',randReqHoldMaxMs - 400)
 
@@ -76,8 +78,8 @@ def get_targetCorrect():
 	elif getvar('randReqHoldMaxMs') == 4000:
 		setvar('achievedMaxRandom', 1)
 
-	if tTrialsDoneSinceStart % 40 == 0:
-		setvar('reactToWindow_last40', reactToWindow)
+	if tTrialsDoneSinceStart % evaluationWindow == 0:
+		setvar('reactToWindow_lastN', reactToWindow)
 
 
 def updateReactTime():	

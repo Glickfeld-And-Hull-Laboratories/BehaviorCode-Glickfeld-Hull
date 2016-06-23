@@ -35,6 +35,11 @@
         <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
         <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
 
+        <variable tag="doTraining" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Training"/>
+        <variable tag="nTrialsAdjustRandom" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Training"/>
+        <variable tag="nTrialsAdjustRT" scope="global" logging="when_changed" default_value="160" type="integer" persistant="1" groups="Training"/>
+        <variable tag="evaluationWindow" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Training"/>
+
         <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="randReqHoldMaxMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="fixedReqHoldTimeMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1" groups="Trial Structure"/>
@@ -192,7 +197,7 @@
         <variable tag="mouseHolder" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="targetCorrect" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="reactToWindow" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-        <variable tag="reactToWindow_last40" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="reactToWindow_lastN" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
     <folder tag="Online Display">
         <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -342,7 +347,9 @@
               <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
               <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
-              <action type="run_python_file" tag="Load script" path="python_HoldAndDetectConstant8.py"></action>
+              <action type="if" condition="doTraining == 1">
+                <action type="run_python_file" tag="Load script" path="python_HoldAndDetectConstant8.py"></action>
+              </action>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -706,7 +713,7 @@
               <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>              
               
               <!-- Turn on laser driver at the beginning -->
-              <action type="if" condition="optic_device == 'laser' ">  
+              <action type="if" condition="optic_device != 'led' ">  
                 <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
               </action>
 
@@ -725,7 +732,7 @@
             <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"></action>
             
             <!-- Turn on laser driver at the beginning -->
-            <action type="if" condition="optic_device == 'laser' ">  
+            <action type="if" condition="optic_device != 'led' ">  
                 <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"></action>
             </action>
 
@@ -779,7 +786,7 @@
     <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
 
     <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>
-    <action type="if" condition="optic_device == 'laser' ">
+    <action type="if" condition="optic_device != 'led' ">
         <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
     </action>
     <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
@@ -1388,17 +1395,19 @@
             <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
             
             <action type="report" message="the tTrialsDoneSinceStart is $tTrialsDoneSinceStart"/>
-            <action type="report" message="the reactToWindow is $reactToWindow"/>
-            <action type="if" condition="(int)(tTrialsDoneSinceStart % 20) &lt; 1">
-                <action type="run_python_string" tag="find median react time" code="find_median()"></action>
-                <action type="run_python_string" tag="get targetCorrect" code="get_targetCorrect()"></action>
-                <action type="report" message="the median reactTimeMs is $medianReactTimesMs"></action>
-                <action type="report" message="The mouseSpeed of subject is $mouseSpeed"></action>
-                <action type="report" message="The mouseHolder of subject is $mouseHolder"></action>
-            </action>
-            <action type="if" condition="(int)(tTrialsDoneSinceStart % 160) &lt; 1">
-                <action type="run_python_string" tag="update react time" code="updateReactTime()"></action>
-                <action type="report" message="the updated react time is $reactTimeMs"></action>
+            <action type="if" condition="doTraining == 1">
+                <action type="report" message="the reactToWindow is $reactToWindow"/>
+                <action type="if" condition="(int)(tTrialsDoneSinceStart % nTrialsAdjustRandom) &lt; 1">
+                    <action type="run_python_string" tag="find median react time" code="find_median()"></action>
+                    <action type="run_python_string" tag="get targetCorrect" code="get_targetCorrect()"></action>
+                    <action type="report" message="the median reactTimeMs is $medianReactTimesMs"></action>
+                    <action type="report" message="The mouseSpeed of subject is $mouseSpeed"></action>
+                    <action type="report" message="The mouseHolder of subject is $mouseHolder"></action>
+                </action>
+                <action type="if" condition="(int)(tTrialsDoneSinceStart % nTrialsAdjustRT) &lt; 1">
+                    <action type="run_python_string" tag="update react time" code="updateReactTime()"></action>
+                    <action type="report" message="the updated react time is $reactTimeMs"></action>
+                </action>
             </action>
 
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
