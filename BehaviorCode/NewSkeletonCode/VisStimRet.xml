@@ -483,7 +483,7 @@
                        </action>
                         <action type="if" condition="doAnnulusSizeStim == 1">   
                          <action type="assignment" variable="tTempStim" value= "tStimulusNumber % AnnulusgratingDiameterStepN"/>
-                         <action type="assignment" variable="tAnnulusGratingDiameterDeg" value= "AnnulusgratingDiameterMinN * tGreymaskDiameterDeg + (AnnulusgratingDiameterMaxN * tGreymaskDiameterDeg / AnnulusgratingDiameterStepN * (tTempStim))"/>
+                         <action type="assignment" variable="tAnnulusGratingDiameterDeg" value= "AnnulusgratingDiameterMinN * tGreymaskDiameterDeg + ((AnnulusgratingDiameterMaxN - AnnulusgratingDiameterMinN) * tGreymaskDiameterDeg/(AnnulusgratingDiameterStepN-1)*(tTempStim))"/>
                          <action type="report" message="Annulus Diameter is $tAnnulusGratingDiameterDeg"/>
                        </action>		
                        <action type="if" condition="doSizeStim == 0">
