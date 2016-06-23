@@ -63,10 +63,12 @@ def get_targetCorrect():
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs + 400)
 
 	elif reactToWindow <= 0.3 and randReqHoldMaxMs >= 200:
-		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
+		setvar('randReqHoldMaxMs',randReqHoldMaxMs)
+	#	setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
 
 	elif (reactToWindow + reactToWindow_last40)/2 <= 0.4 and (tTrialsDoneSinceStart%80 == 0) and randReqHoldMaxMs >= 1200:
-		setvar('randReqHoldMaxMs',randReqHoldMaxMs - 400)
+		setvar('randReqHoldMaxMs',randReqHoldMaxMs)
+		#setvar('randReqHoldMaxMs',randReqHoldMaxMs - 400)
 
 	if getvar('randReqHoldMaxMs') >= 1200:
 		setvar('achievedTierRandom', 1)
