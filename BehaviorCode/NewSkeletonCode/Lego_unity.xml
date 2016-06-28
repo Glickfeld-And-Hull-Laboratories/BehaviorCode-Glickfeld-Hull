@@ -906,15 +906,15 @@
                     <!-- calculate target threshold-->
 
                     <action type="if" condition="tLeftTrial == 0">
-                      <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
-                      <action type="assignment" variable="dGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
+                      <action type="assignment" variable="tGratingEccentricityDeg" value="gratingTargetEccentricity+gratingEccentricityDeg"/>
+                      <action type="assignment" variable="dGratingEccentricityDeg" value="gratingTargetEccentricity-gratingEccentricityDeg"/>
                       <action type="assignment" variable="rightDecisionThreshold" value="gratingTargetEccentricity"/>
                       <action type="assignment" variable="leftDecisionThreshold" value="tGratingEccentricityDeg+(tGratingEccentricityDeg-gratingTargetEccentricity)"/>
                     </action>
 
                     <action type="if" condition="tLeftTrial == 1">
-                      <action type="assignment" variable="tGratingEccentricityDeg" value="0-gratingEccentricityDeg"/>
-                      <action type="assignment" variable="dGratingEccentricityDeg" value="gratingEccentricityDeg"/>
+                      <action type="assignment" variable="tGratingEccentricityDeg" value="gratingTargetEccentricity-gratingEccentricityDeg"/>
+                      <action type="assignment" variable="dGratingEccentricityDeg" value="gratingTargetEccentricity+gratingEccentricityDeg"/>
                       <action type="assignment" variable="leftDecisionThreshold" value="gratingTargetEccentricity"/>
                       <action type="assignment" variable="rightDecisionThreshold" value="tGratingEccentricityDeg+(tGratingEccentricityDeg-gratingTargetEccentricity)"/>
                     </action>
