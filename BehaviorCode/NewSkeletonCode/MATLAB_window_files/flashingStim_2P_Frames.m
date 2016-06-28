@@ -11,7 +11,7 @@ if nargin < 2,
 end
 
 ds = data_struct;
-addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/MatlabSharedCode');
+addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/MatlabSharedCode');
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
 
 varsOneValEachTrial = {...
@@ -181,6 +181,22 @@ try
 catch
     input.counterTimesUs{trN} = NaN;
     input.counterValues{trN} = NaN;
+end
+
+try
+    input.quadratureTimesUs{trN} = mwGetEventTime(ds.events, ds.event_codec, 'quadrature', 'all', [], 1);
+    input.quadratureValues{trN} = mwGetEventValue(ds.events, ds.event_codec, 'quadrature', 'all', 1) ;
+catch
+    input.quadratureTimesUs{trN} = NaN;
+    input.quadratureValues{trN} = NaN;
+end
+
+try
+    input.wheelSpeedTimesUs{trN} = mwGetEventTime(ds.events, ds.event_codec, 'wheelSpeed', 'all', [], 1);
+    input.wheelSpeedValues{trN} = mwGetEventValue(ds.events, ds.event_codec, 'wheelSpeed', 'all', 1) ;
+catch
+    input.wheelSpeedTimesUs{trN} = NaN;
+    input.wheelSpeedValues{trN} = NaN;
 end
 
 %% disp status
