@@ -38,7 +38,17 @@ switch tHostname
         rc.fitOutputMatDir = fullfile(rootDir, 'output/fitMatStats');
         
     case {'nuke'}
-        if tUsername(1:6) == 'lindse'
+        if tUsername(1:5) == 'aiwei'
+            rc.pathStr = 'Y:\home\andrew\Behavior\Data';
+            rc.dataPat = 'data-i%03d-%s.mat';
+            rootDir = 'Y:\home\aiwei\Analysis\Behavior_data';
+            rc.indexFilename = fullfile(rootDir, 'experimentIndexes\subj-days-ay.xls');
+            rc.fitOutputFilename = fullfile(rootDir, 'experimentIndexes\subj-fits-ay.xls');
+            rc.fitOutputSummary = fullfile(rootDir, 'output\analysis\summary');
+            rc.fitOutputPdfDir = fullfile(rootDir, 'output\pdfFits');
+            rc.fitOutputMatDir = fullfile(rootDir, 'output\fitMatStats');
+            
+        elseif tUsername(1:6) == 'lindse'
             rc.pathStr = 'Z:\home\andrew\Behavior\Data';
             rc.dataPat = 'data-i%03d-%s.mat';
             rootDir = 'Z:\home\lindsey\Analysis\Behavior';
@@ -65,6 +75,7 @@ switch tHostname
             rc.fitOutputSummary = fullfile(rootDir, 'output\analysis\summary');
             rc.fitOutputPdfDir = fullfile(rootDir, 'output\pdfFits');
             rc.fitOutputMatDir = fullfile(rootDir, 'output\fitMatStats');
+      
         end
         
 end
