@@ -28,7 +28,7 @@ if ~input.doMovingDots
   el_mat = [input.gratingElevationDeg:input.gratingElevationStepDeg:input.gratingElevationDeg+(input.gratingElevationStepDeg*(input.gratingElevationStepN-1))];
   dir_mat = [input.gratingDirectionDeg:input.gratingDirectionStepDeg:input.gratingDirectionDeg+(input.gratingDirectionStepDeg*(input.gratingDirectionStepN-1))];
   diam_mat = [input.gratingDiameterDeg:input.gratingDiameterStepDeg:input.gratingDiameterDeg+(input.gratingDiameterStepDeg*(input.gratingDiameterStepN-1))];
-  sf_mat = [input.gratingSpatialFreqCPD.*(input.gratingSpatialFreqStepLog.^(double(input.gratingSpatialFreqStepDir).*((1:input.gratingSpatialFreqStepN)-1)))];
+  sf_mat = [double(input.gratingSpatialFreqCPD).*double(input.gratingSpatialFreqStepLog).^(double(input.gratingSpatialFreqStepDir).*((1:double(input.gratingSpatialFreqStepN)-1)))];
   tf_mat = [double(input.gratingTemporalFreqCPS).*double(input.gratingTemporalFreqStepLog).^(double(input.gratingTemporalFreqStepDir).*((1:double(input.gratingTemporalFreqStepN))-1))];
   con_mat = [double(input.gratingContrast).*(double(input.gratingContrastStepLog).^(double(input.gratingContrastStepDir).*(0:double(input.gratingContrastStepN)-1)))];
 
