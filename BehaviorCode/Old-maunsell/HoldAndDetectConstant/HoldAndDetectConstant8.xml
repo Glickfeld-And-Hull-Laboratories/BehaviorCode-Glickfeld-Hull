@@ -341,12 +341,12 @@
     </action>
 
     <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
-        <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" 
-           _error="Task Systems must contain >=1 transition that yields to parent">
+        <task_system tag="TS" full_name="TS" description="" interruptible="YES">
            <task_system_state tag="Intertrial" interruptible="YES">
               <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
               <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+              <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
               <action type="if" condition="doTraining == 1">
                 <action type="run_python_file" tag="Load script" path="python_HoldAndDetectConstant8.py"></action>
               </action>
@@ -371,9 +371,6 @@
                 <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
 
-
-
-                <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
                 <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
                 <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
                 <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
@@ -1137,7 +1134,9 @@
     <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
 
     <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
-    <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+    <action type="if" condition="doTraining == 1">
+        <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+    </action>
     <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
     <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
     <!-- update running variables -->
@@ -1190,8 +1189,10 @@
 
     <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
     <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
-    <action type="run_python_string" tag="Add to reactTimesMsCorrect" code="add_to_reactTimesCorrect()"></action>
-    <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+    <action type="if" condition="doTraining == 1">
+        <action type="run_python_string" tag="Add to reactTimesMsCorrect" code="add_to_reactTimesCorrect()"></action>
+        <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+    </action>
     <!-- accept stim selection -->
     <action type="accept_selections" selection="svStimNumber"></action>
     <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
@@ -1307,7 +1308,9 @@
     <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
     <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
     <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
-    <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+    <action type="if" condition="doTraining == 1">
+        <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+    </action>
     <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
     <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
     <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
