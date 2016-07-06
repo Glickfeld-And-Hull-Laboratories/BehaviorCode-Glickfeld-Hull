@@ -76,6 +76,7 @@
         <variable tag="goSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
         <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
         <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="whiteNoiseSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
 
         <variable tag="gratingMaxContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
@@ -260,7 +261,8 @@
           <sound tag="startSound" type="wav_file" path="wavs/10000Hz_.3s.wav" amplitude="startSoundVolume"></sound>
           <sound tag="goSound" type="wav_file" path="wavs/10000Hz_.3s.wav" amplitude="goSoundVolume"></sound>
           <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="correctSoundVolume"></sound>
-          <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>        
+          <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>
+          <sound tag="whiteNoiseSound" type="wav_file" path="wavs/whitenoise2.wav" amplitude="whiteNoiseSoundVolume"></sound>
         </sounds>
         <stimuli tag="Stimuli">
           <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -1170,6 +1172,7 @@
                         <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect: Time-Out for $incorrectTimeoutMs **"></action>
                         <action type="update_stimulus_display"></action>
                         <action type="play_sound" sound="incorrectSound"/>
+                        <action type="play_sound" sound="whiteNoiseSound"/>
                         <action type="start_timer" timer="incorrectTimeoutTimer" timebase="" duration="incorrectTimeoutMs" duration_units="ms"/>
                         <action type="assignment" tag="Incorrects++" variable="incorrect" value="incorrect+1"/>
                         <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
@@ -1221,6 +1224,7 @@
                         <action type="update_stimulus_display"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
                         <action type="play_sound" sound="incorrectSound"/>
+                        <action type="play_sound" sound="whiteNoiseSound"/>
                         <action type="start_timer" timer="ignoreTimeoutTimer" timebase="" duration="ignoreTimeoutMs" duration_units="ms"/>
                         <action type="assignment" tag="Ignore++" variable="ignore" value="ignore+1"/>
                         <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
