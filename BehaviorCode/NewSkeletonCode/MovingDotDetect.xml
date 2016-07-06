@@ -28,6 +28,11 @@
       <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doTrialLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
+      <variable tag="doTraining" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Training"/>
+      <variable tag="nTrialsAdjustRandom" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Training"/>
+      <variable tag="nTrialsAdjustRT" scope="global" logging="when_changed" default_value="160" type="integer" persistant="1" groups="Training"/>
+      <variable tag="evaluationWindow" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Training"/>
+
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoSpeedDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoDirDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>            
@@ -195,6 +200,16 @@
       <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="reactTimesMsTotal" scope="global" logging="when_changed" default_value="0" type="list" persistant="0"/>
+      <variable tag="reactTimesMsCorrect" scope="global" logging="when_changed" default_value="0" type="list" persistant="0"/>
+      <variable tag="medianReactTimesMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="achievedTierRandom" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="achievedMaxRandom" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="mouseSpeed" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="mouseHolder" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="targetCorrect" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="reactToWindow" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="reactToWindow_lastN" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
     <folder tag="Online Display">
       <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -321,10 +336,14 @@
           <action type="assignment" variable="tNStimAccepted" value="0"></action> 
         </action>
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
-        <task_system tag="TS" full_name="TS" interruptable="YES" description="" interruptible="YES" _error="Task Systems must contain >=1 transition that yields to parent">
+        <task_system tag="TS" full_name="TS" description="" interruptible="YES">
           <task_system_state tag="Initialization" interruptible="YES">
             <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+            <action type="if" condition="doTraining == 1">
+                <action type="run_python_file" tag="Load script" path="python_Training.py"></action>
+            </action>
+
             <action type="assignment" variable="laserTrigger" value="0"></action>  
             <action type="queue_stimulus" stimulus="background"></action>
             <action type="update_stimulus_display" tag="-"></action> 
@@ -1018,7 +1037,7 @@
           </task_system_state>
 
 
-          <task_system_state tag="StimOn" interruptble="YES">
+          <task_system_state tag="StimOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="start_timer" tag="Start Too Fast Timer" timer="tooFastTimer" timebase="" duration="tooFastTimeMs" duration_units="ms"></action>
             <action type="start_timer" tag="Start React Timer" timer="reactTimeTimer" timebase="" duration="reactTimeMs" duration_units="ms"></action>
@@ -1053,6 +1072,9 @@
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
+            <action type="if" condition="doTraining == 1">
+              <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+            </action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
             <action type="assignment" tag="Turn off LED" variable="laserTrigger" value="0"></action>
@@ -1093,6 +1115,9 @@
             <action type="assignment" tag="Set release time" variable="tLeverReleaseTimeMs" value="(now()/1000)"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
+            <action type="if" condition="doTraining == 1">
+              <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+            </action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
@@ -1167,6 +1192,10 @@
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success"></action>
+            <action type="if" condition="doTraining == 1">
+              <action type="run_python_string" tag="Add to reactTimesMsCorrect" code="add_to_reactTimesCorrect()"></action>
+              <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+            </action>
             <!-- update running variables -->
             <action type="assignment" tag="success++" variable="success" value="success+1"></action>
             <action type="assignment" variable="tConsecErrors" value="0"></action>
@@ -1259,11 +1288,26 @@
             <transition type="timer_expired" target="EndTrial" timer="consecErrorTimer"></transition>
           </task_system_state>
           
-          <task_system_state tag="EndTrial" interruptble="YES">
+          <task_system_state tag="EndTrial" interruptible="YES">
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="Turn off LED" variable="laserTrigger" value="0"></action>
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>
+            <action type="report" message="the trials is $trials"/>
+            <action type="if" condition="doTraining == 1">
+                <action type="report" message="the reactToWindow is $reactToWindow"/>
+                <action type="if" condition="(int)(trials % nTrialsAdjustRandom) &lt; 1">
+                    <action type="run_python_string" tag="find median react time" code="find_median()"></action>
+                    <action type="run_python_string" tag="get targetCorrect" code="get_targetCorrect()"></action>
+                    <action type="report" message="the median reactTimeMs is $medianReactTimesMs"></action>
+                    <action type="report" message="The mouseSpeed of subject is $mouseSpeed"></action>
+                    <action type="report" message="The mouseHolder of subject is $mouseHolder"></action>
+                </action>
+                <action type="if" condition="(int)(trials % nTrialsAdjustRT) &lt; 1">
+                    <action type="run_python_string" tag="update react time" code="updateReactTime()"></action>
+                    <action type="report" message="the updated react time is $reactTimeMs"></action>
+                </action>
+            </action>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="yield" tag="return to parent task system"></transition>
