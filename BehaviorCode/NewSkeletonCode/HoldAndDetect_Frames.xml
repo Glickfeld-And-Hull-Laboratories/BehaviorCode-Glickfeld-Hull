@@ -33,6 +33,11 @@
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnEarly" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
       
+      <variable tag="doTraining" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Training"/>
+      <variable tag="nTrialsAdjustRandom" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Training"/>
+      <variable tag="nTrialsAdjustRT" scope="global" logging="when_changed" default_value="160" type="integer" persistant="1" groups="Training"/>
+      <variable tag="evaluationWindow" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Training"/>
+
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="randReqHoldMaxMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="fixedReqHoldTimeMs" scope="global" logging="when_changed" default_value="400" type="integer" persistant="1" groups="Trial Structure"/>
@@ -185,7 +190,16 @@
       <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>'
-      
+      <variable tag="reactTimesMsTotal" scope="global" logging="when_changed" default_value="0" type="list" persistant="0"/>
+      <variable tag="reactTimesMsCorrect" scope="global" logging="when_changed" default_value="0" type="list" persistant="0"/>
+      <variable tag="medianReactTimesMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="achievedTierRandom" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="achievedMaxRandom" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="mouseSpeed" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="mouseHolder" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="targetCorrect" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="reactToWindow" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="reactToWindow_lastN" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
     <folder tag="Online Display">
       <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -202,6 +216,7 @@
       <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
+      <variable tag="trials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDoAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -326,6 +341,7 @@
         <task_system tag="TS" full_name="TS" description="" >
           <task_system_state tag="Intertrial">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
 
             <action type="assignment" tag="reset counter" variable="counter" value="0"></action>
             <action type="if" condition="doLED==1">
@@ -351,10 +367,10 @@
            
             <action type="assignment" tag="Encode TimestampEnd" variable="strobedDigitalWord" value="201"/>
 
+            <action type="if" condition="doTraining == 1">
+                <action type="run_python_file" tag="Load script" path="python_Training.py"></action>
+            </action>
 
-
-
-            <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="1"></action>
             <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
@@ -1053,6 +1069,9 @@
             <action type="assignment" tag="Encode LeverReleaseEarly" variable="strobedDigitalWord" value="8"></action>
 
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
+            <action type="if" condition="doTraining == 1">
+              <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+            </action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
             <!-- update running variables -->
@@ -1117,6 +1136,10 @@
 
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
+            <action type="if" condition="doTraining == 1">
+              <action type="run_python_string" tag="Add to reactTimesMsCorrect" code="add_to_reactTimesCorrect()"></action>
+              <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+            </action>
             <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success"></action>
             <!-- update running variables -->
             <action type="assignment" tag="success++" variable="success" value="success+1"></action>
@@ -1242,6 +1265,9 @@
               <action type="assignment" variable="cLeverUp" value="counter"></action>
             </action>
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
+            <action type="if" condition="doTraining == 1">
+              <action type="run_python_string" tag="Add to reactTimesMsTotal" code="add_to_reactTimesTotal()"></action>
+            </action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
@@ -1324,6 +1350,24 @@
             <!-- trigger serial param dump to cyberkinetics -->
             <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="1"></action>
             <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="0"></action>
+
+            <action type="assignment" variable="trials" value="trials+1"/>
+            
+            <action type="report" message="the trial number is $trials"/>
+            <action type="if" condition="doTraining == 1">
+                <action type="report" message="the reactToWindow is $reactToWindow"/>
+                <action type="if" condition="(int)(trials % nTrialsAdjustRandom) &lt; 1">
+                    <action type="run_python_string" tag="find median react time" code="find_median()"></action>
+                    <action type="run_python_string" tag="get targetCorrect" code="get_targetCorrect()"></action>
+                    <action type="report" message="the median reactTimeMs is $medianReactTimesMs"></action>
+                    <action type="report" message="The mouseSpeed of subject is $mouseSpeed"></action>
+                    <action type="report" message="The mouseHolder of subject is $mouseHolder"></action>
+                </action>
+                <action type="if" condition="(int)(trials % nTrialsAdjustRT) &lt; 1">
+                    <action type="run_python_string" tag="update react time" code="updateReactTime()"></action>
+                    <action type="report" message="the updated react time is $reactTimeMs"></action>
+                </action>
+            </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="yield" tag="return to parent task system"></transition>
