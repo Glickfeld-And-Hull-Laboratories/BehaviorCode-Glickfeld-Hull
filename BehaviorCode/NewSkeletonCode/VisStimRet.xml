@@ -99,7 +99,10 @@
         <variable tag="gratingDiameterDeg" scope="global" logging="when_changed" default_value="40" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingDiameterStepDeg" scope="global" logging="when_changed" default_value="-5" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingDiameterStepN" scope="global" logging="when_changed" default_value="6" type="float" persistant="1" groups="GratingSpecs"/>
-
+		<variable tag="doSizeStepLog" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingSpecs"/>
+		<variable tag="gratingDiameterStepLog" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="GratingSpecs"/>
+        <variable tag="gratingDiameterStepDir" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="GratingSpecs"/>
+        
         <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingStartingPhaseStepDeg" scope="global" logging="when_changed" default_value="45" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingStartingPhaseStepN" scope="global" logging="when_changed" default_value="8" type="float" persistant="1" groups="GratingSpecs"/>
@@ -476,9 +479,14 @@
                        <!--Select features if not in matrix mode -->
                        <action type="if" condition="doMatrix == 0">	
                         <!--Select size -->
-                        <action type="if" condition="doSizeStim = 1">	
-                         <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDiameterStepN"/>
-                         <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))"/>
+                        <action type="if" condition="doSizeStim = 1">
+                        	<action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDiameterStepN"/>
+                        	<action type="if" condition="doSizeStepLog = 0">	
+                         		<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))"/>
+                         	</action>
+                         	<action type="if" condition="doSizeStepLog = 2">	
+                         		<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg * (pow(gratingDiameterStepLog,(gratingDiameterStepDir*(tTempStim))))"/>
+                         	</action>
                          <action type="report" message="Diameter is $tGratingDiameterDeg"/>
                        </action>
                         <action type="if" condition="doAnnulusSizeStim == 1">   
@@ -710,6 +718,31 @@
               <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"/>
             </action>
 
+			<!-- Make Size x Contrast Matrix-->	
+              <action type="if" condition="(doSizeStim == 1) &amp;&amp; (doConStim == 1)">
+               <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingContrastStepN * gratingDiameterStepN)"/>
+               <action type="if" condition="tTempStim &lt; gratingContrastStepN">
+                 <action type="assignment" variable="tGratingContrast" value= "gratingContrast *(pow(gratingContrastStepLog,(gratingContrastStepDir*tTempStim)))"/>
+                 <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
+                 <action type="report" message="Contrast is $tGratingContrast ; Size is $tGratingDiameterDeg"/>
+               </action>
+               <action type="if" condition="tTempStim &gt;= gratingContrastStepN">
+                 <action type="assignment" variable="tGratingContrast" value= "gratingContrast * (pow(gratingContrastStepLog, (gratingContrastStepDir*(tTempStim % gratingContrastStepN))))"/>
+                 <action type="if" condition="doSizeStepLog = 1">
+                 	<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg * (pow(gratingDiameterStepLog, (gratingDiameterStepDir*(floor(tTempStim / gratingContrastStepN)))))"/>
+                 </action>
+                 <action type="if" condition="doSizeStepLog = 0">
+                 	<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (floor(tTempStim / gratingContrastStepN)))"/>
+                 </action>
+                 <action type="report" message="Contrast is $tGratingContrast ; Size is $tGratingDiameterDeg"/>
+               </action>
+               <action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
+               <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg"/>
+               <action type="assignment" variable="tGratingTemporalFreqCPS" value= "gratingTemporalFreqCPS"/>
+               <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
+               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+             </action>
+             
             <!-- Make LEDpower x Dir Matrix -->
             <action type="if" condition="(doDirStim == 1) &amp;&amp; (doLEDStim == 1)">
              <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (LEDPowerStepN * gratingDirectionStepN)"/>
