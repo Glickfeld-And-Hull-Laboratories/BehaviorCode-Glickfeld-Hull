@@ -8,6 +8,7 @@
               laser_trigger="laserTrigger"
               optic_device="optic_device"
               strobed_digital_word="strobedDigitalWord"
+              quadrature="quadrature"
               counter="counter"
               counter2="counter2"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -18,6 +19,7 @@
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
+      <variable tag="doAnalogLever" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
@@ -193,6 +195,8 @@
       <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="counter2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Lever"/>
+      <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -934,8 +938,6 @@
             <action type="if" tag="if fakeMouse" condition="!doLever">
               <action type="assignment" variable="tFakeMousePressMs" value="rand(0, fakeMouseMaxPressMs)"></action>
             </action>
-
-            <action type="report" message="In ITI, waiting $tItiWaitFrames, then wait for press"></action>
       
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="WaitForLeverPress"></transition>
@@ -970,7 +972,8 @@
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; doAnalogLever == 0 &amp;&amp; FIO1 == 1" target="HoldLever"></transition>
+            <transition type="conditional" tag="If Lever Down, Go To TrialStimOn" condition="doLever &amp;&amp; doAnalogLever &amp;&amp; (quadrature &gt; leverThreshold)" target="HoldLever"></transition>
             <transition type="conditional" tag="If fakeMouse elapsed, go to TrialStimOn" 
                         condition="!doLever &amp;&amp; ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 100" target="HoldLever"></transition>
             <transition type="conditional" tag="If waiting here too long (120s), go to TrialStimOn" 
@@ -1003,7 +1006,8 @@
 
             <action tag="Report LeverDown" full_name="ReportDigital" type="report" message="LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever &amp;&amp; quadrature &lt; leverThreshold &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
             <transition type="conditional" tag="Target Stimulus Presentation" condition="counter  &gt;= cLeverDown + tTotalReqHoldFrames" target="StimOn"></transition>
           </task_system_state>
@@ -1038,7 +1042,8 @@
 
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+              <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
               <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
               <transition type="conditional" tag="if nFramesTooFast elapsed, go to React"  condition="(counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
               <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff"></transition>
@@ -1056,9 +1061,11 @@
                 <action type="assignment" variable="tStimTurnedOn" value="0"></action>
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>      
-            <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and too fast Go To EarlyRelease" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames)) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
             <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames))&amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
             <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
             <transition type="conditional" tag="Go to Missed" condition="(counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
@@ -1069,7 +1076,8 @@
             <action type="assignment" tag="set too fast time over" variable="isTooFast" value="0"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If Lever Up" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
+            <transition type="conditional" tag="If Lever Up" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="!doLever &amp;&amp; (counter &gt;= (cLeverDown + tFakeMouseReactFrames))" target="Reward"></transition>
             <transition type="conditional" tag="Go to Missed" condition="(counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
             <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff" ></transition>
@@ -1084,7 +1092,7 @@
 
             <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - pressTimestampMs"></action>
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
-            <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
+            <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release **"></action>
             <!-- update running variables -->
             <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
