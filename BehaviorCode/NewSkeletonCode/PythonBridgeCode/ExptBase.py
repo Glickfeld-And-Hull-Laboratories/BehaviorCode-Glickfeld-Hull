@@ -68,25 +68,21 @@ elif thisHostname == "test-rig-2":
     PORT = 9994
     HOST = "neuroPi1.local"
     doTransmitCodesToBlackrock = False
-elif thisHostname == "hullglick12":
-    PORT = 9991
-    HOST = "neuroPi12.local"
-    doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick11":
-    PORT = 9991
+    PORT = 9995
     HOST = "neuroPi11.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick12":
-    PORT = 9991
+    PORT = 9996
     HOST = "neuroPi12.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick13":
-    PORT = 9992
+    PORT = 9997
     PORT2 = 1  # use same as rig 4
     HOST = "neuroPi13.local"
     doTransmitCodesToBlackrock = False
 elif thisHostname == "hullglick14":
-    PORT = 9993
+    PORT = 9998
     HOST = "neuroPi14.local"
     doTransmitCodesToBlackrock = False
 else:
