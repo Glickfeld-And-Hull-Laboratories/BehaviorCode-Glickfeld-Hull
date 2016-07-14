@@ -294,7 +294,7 @@
               <experiment tag="Experiment" full_name="">
                 <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
                   <action type="queue_stimulus" stimulus="background"/>
-                  <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+                  
                   <!-- init actions before running trials after any press of start-->
                   <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
                   <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
@@ -317,7 +317,8 @@
                       <task_system tag="TS" full_name="TS" description="" interruptible="YES">
                         <task_system_state tag="InterTrialInterval" interruptible="YES">
                           <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
+                          <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+                          <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
                           <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms ****"></action>
                           <action type="start_timer" timer="itiTimerMs" timebase="" duration="itiTimeMs" duration_units="ms"/>
                           <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
@@ -325,7 +326,7 @@
                           <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
                           <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
                           <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
-                          <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+                          
                           <action type="assignment" variable="stimulusOn" value="0"/>
                           <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
                           <action type="assignment" tag="set isNotTooFast to 0" variable="isNotTooFast" value="0"/>
@@ -1281,6 +1282,7 @@
                             <action type="assignment" variable="tNBlockRightTrsCompleted" value="tNBlockRightTrsCompleted+1"/>
                           </action>
                         </action>
+                        <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
                         <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
