@@ -1,0 +1,15 @@
+Thread 19 Crashed:
+0   com.yourcompany.yourcocoabundle	0x000000010c1540a6 mw::LabJackU6Device::interp1(std::__1::vector<double, std::__1::allocator<double> > const&, std::__1::vector<double, std::__1::allocator<double> > const&, std::__1::vector<double, std::__1::allocator<double> > const&) + 920 (LabJackU6Device.cpp:1406)
+1   com.yourcompany.yourcocoabundle	0x000000010c150177 mw::LabJackU6Device::ljU6WriteLaser(void*, double) + 233 (vector:1497)
+2   com.yourcompany.yourcocoabundle	0x000000010c150069 mw::LabJackU6Device::laserDO(double) + 61 (LabJackU6Device.cpp:453)
+3   com.yourcompany.yourcocoabundle	0x000000010c158666 mw::LabJackU6DeviceLTNotification::notify(mw::Datum const&, long long) + 86 (LabJackU6Device.h:340)
+4   org.mworks-project.MWorksCore 	0x0000000108e3f727 mw::Variable::performNotifications(mw::Datum, long long) + 111
+5   org.mworks-project.MWorksCore 	0x0000000108e70a32 mw::GlobalVariable::setSilentValue(mw::Datum, long long) + 108
+6   org.mworks-project.MWorksCore 	0x0000000108e3f957 mw::Variable::setValue(mw::Datum, long long) + 69
+7   org.mworks-project.MWorksCore 	0x0000000108ec3590 mw::Assignment::execute() + 250
+8   org.mworks-project.MWorksCore 	0x0000000108ecbcd2 mw::If::execute() + 150
+9   org.mworks-project.ZenStateSystemPlugin	0x000000010c68a755 mw::StandardStateSystem::run() + 855
+10  org.mworks-project.ZenStateSystemPlugin	0x000000010c68a0c9 mw::StandardStateSystem::runStateSystem(void*) + 99
+11  libsystem_pthread.dylib       	0x00007fff88373c13 _pthread_body + 131
+12  libsystem_pthread.dylib       	0x00007fff88373b90 _pthread_start + 168
+13  libsystem_pthread.dylib       	0x00007fff88371375 thread_start + 13
