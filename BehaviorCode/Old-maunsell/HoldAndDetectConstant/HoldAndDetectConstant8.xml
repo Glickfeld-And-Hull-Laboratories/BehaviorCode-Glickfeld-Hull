@@ -214,6 +214,7 @@
         <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
         <variable tag="quadrature" full_name="quadrature" default_value="0" scope="GLOBAL" type="integer" editable="never" logging="when_changed" groups="Lever"/>
       <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
+        <variable tag="sendElectrophysSync" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Lever"/>
         <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
         <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" groups="Reward"/>
         <variable tag="sendLaserParams" full_name="sendLaserParams" scope="GLOBAL" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -1007,6 +1008,9 @@
 
             <task_system_state tag="HoldLever" interruptible="YES">
                 <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                <action type="if" condition="sendElectrophysSync == 1">
+                    <action type="assignment" variable="laserTrigger" value="1"/>
+                </action>
                 <action tag="p" type="play_sound" sound="louderPressSound"></action>
                 <action type="play_sound" sound="basePressSound"/>
                 <action type="play_sound" sound="cueSound"/>
@@ -1194,6 +1198,7 @@
 
 <task_system_state tag="Reward" interruptible="YES">
     <action_marker _unmoveable="1" tag="Actions"></action_marker>
+    <action type="assignment" variable="laserTrigger" value="0"></action>
     <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
 
     <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
@@ -1202,7 +1207,6 @@
         <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="13"></action>
     </action>
 
-    <action type="assignment" variable="laserTrigger" value="0"></action>
     <action type="if" condition="optic_device == 'led'">
         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
     </action>
