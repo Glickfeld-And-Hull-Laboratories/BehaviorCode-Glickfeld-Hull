@@ -29,7 +29,7 @@ if nargin == 1 || ~isfield(input, 'trialSinceReset')
     disp('First trial, initializing input');
     input.trialSinceReset = 1;
     input.startDateVec = datevec(now);
-    input.savedEvents = {};
+    %%input.savedEvents = {};
     input.eventCodecs = {};
     input.trialOutcomeCell = {};
 
@@ -95,7 +95,7 @@ events = events(~asIx);
 
 
 %% save event stream
-input.savedEvents{thisTrialN} = events;
+%%input.savedEvents{thisTrialN} = events;
 
 
 %% are constants here?  if so, extract
