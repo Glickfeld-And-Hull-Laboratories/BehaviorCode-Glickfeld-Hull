@@ -306,13 +306,18 @@
                   <action type="assignment" variable="tConsecErrors" value="0"/>
                   <action type="assignment" variable="tNTrialsCompleted" value="0"/>
                   <action type="assignment" variable="tLastTrialWasLeft" value="0"/>
-                  <action type="assignment" variable="tNStimAccepted" value="0" />
-                  <action type="assignment" variable="tNStimAccepted2" value="0" />
-
+                  
+                  <action type="if" condition="success+ignore+incorrect == 0">
+                    <!-- reset selection var -->
+                    <action type="reset_selection" selection="svStimNumber"></action>
+                    <action type="reset_selection" selection="svStimNumber2"></action>
+                    <action type="assignment" variable="tNStimAccepted" value="0"/>
+                    <action type="assignment" variable="tNStimAccepted2" value="0"/>
+                </action>
 
 
                   <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="10000" sampling_method="cycles">
-                    <trial tag="New List" nsamples="9999" sampling_method="samples" selection="random_without_replacement">
+                    
                       <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
                       <task_system tag="TS" full_name="TS" description="" interruptible="YES">
                         <task_system_state tag="InterTrialInterval" interruptible="YES">
@@ -1289,7 +1294,6 @@
                         <transition type="yield" tag="return to parent task system"></transition>
                       </task_system_state>
                     </task_system>
-                  </trial>
                 </trial>
                 <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
               </protocol>
