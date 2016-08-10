@@ -395,14 +395,29 @@ vy = smooth(noMissDecTimesMs, 25, 'rloess');
 decMax = input.reactionTimeMs/1000;
 
 if ~isempty(vy)
-    hyH = plot(axH, xYVals, vy);
-    
-    c2 = 'b';
-    set(hyH, 'Color', c2);
-    set(hyH, 'LineWidth', 2);
-    
-    set(axH, 'YLim', [0 decMax]);
-    ylabel(axH, 'Decision time');
+    if input.stationaryPeriodMs>0
+        startTimes = double(cell2mat(input.tThisTrialStartTimeMs))./1000;
+        stimOnMs = double(cell2mat(input.stimTimestampMs))./1000;
+        itiTime = (input.itiTimeMs +input.stationaryPeriodMs)./1000;
+        delayTime = stimOnMs-startTimes-double(itiTime);
+        [axH h1 h2] = plotyy(xYVals, vy,1:nTrial, delayTime);
+        set(h1, 'Color', c2);
+        set(h1, 'LineWidth', 2);
+        set(axH(1), 'YLim', [0 decMax]);
+        ylabel(axH(1), 'Decision time');
+        
+        set(h2, 'LineStyle', 'none', ...
+           'Marker', 'x', 'color', 'k');
+        ylabel(axH(2), 'Stationary period (s)');
+    else
+        hyH = plotyy(axH, xYVals, vy);
+        c2 = 'b';
+        set(hyH, 'Color', c2);
+        set(hyH, 'LineWidth', 2);
+
+        set(axH, 'YLim', [0 decMax]);
+        ylabel(axH, 'Decision time');
+    end
     axis tight;
     xlim([1 nTrial]);
 end
