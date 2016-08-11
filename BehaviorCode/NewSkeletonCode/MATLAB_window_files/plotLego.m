@@ -410,7 +410,7 @@ if ~isempty(vy)
            'Marker', 'x', 'color', 'k');
         ylabel(axH(2), 'Stationary period (s)');
     else
-        hyH = plotyy(axH, xYVals, vy);
+        hyH = plot(axH, xYVals, vy);
         c2 = 'b';
         set(hyH, 'Color', c2);
         set(hyH, 'LineWidth', 2);
