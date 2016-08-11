@@ -401,7 +401,7 @@ if ~isempty(vy)
         itiTime = (input.itiTimeMs +input.stationaryPeriodMs)./1000;
         delayTime = stimOnMs-startTimes-double(itiTime);
         [axH h1 h2] = plotyy(xYVals, vy,1:nTrial, delayTime);
-        set(h1, 'Color', c2);
+        set(h1, 'Color', 'b');
         set(h1, 'LineWidth', 2);
         set(axH(1), 'YLim', [0 decMax]);
         ylabel(axH(1), 'Decision time');
