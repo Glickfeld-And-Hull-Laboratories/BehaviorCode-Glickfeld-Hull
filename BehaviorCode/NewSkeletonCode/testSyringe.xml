@@ -1,12 +1,12 @@
 <?xml version="1.0" standalone="no"?>
 <monkeyml version="1.0">
     <io_devices tag="IO Devices">
-        <iodevice type="labjacku6" tag="labjacku6" pulse_duration="juice" pulse_on="juice" lever1="lever1" lever1_solenoid="lever1_solenoid" laser_trigger="laser_trigger" quadrature="quadrature" counter="counter1" counter2="counter2" optic_device="optic_device" do2led="do2led" led_seq="led_seq" led1_status="led1_status" led2_status="led2_status"></iodevice>
+        <iodevice type="labjacku6" tag="labjacku6" pulse_duration="juice" pulse_on="juice" lever1="lever1" lever1_solenoid="lever1_solenoid" laser_trigger="laser_trigger" quadrature="quadrature" counter="counter1" counter2="counter2" optic_device="optic_device" do2led="do2led" led_seq="led_seq" led1_status="led1_status" led2_status="led2_status" Qbin_size="stepSize"></iodevice>
     </io_devices>
     <variables tag="Variables">
         <variable tag="juice" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
         <variable tag="juice_input" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
-        <variable tag="nstep" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="stepSize" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
         <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean"></variable>
         <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean"></variable>
         <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean"></variable>
@@ -27,6 +27,10 @@
         <variable tag="nScans1" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
         <variable tag="nScans2" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
         <variable tag="nScans3" scope="global" logging="when_changed" default_value="200" type="integer"></variable>
+        <variable tag="pulse_interval" scope="global" logging="when_changed" default_value="20000" type="float"/>
+        <variable tag="num_pulses" scope="global" logging="when_changed" default_value="10" type="integer"/>
+        <variable tag="pulse_sent" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+        <variable tag="pulse_count" scope="global" logging="when_changed" default_value="0" type="integer"/>
     </variables>
     <sounds tag="Sounds"></sounds>
     <stimuli tag="Stimuli"></stimuli>
@@ -35,20 +39,48 @@
     <experiment tag="New Experiment" full_name="" description="">
         <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential" interruptible="YES">
             
-            <trial tag="Trial 01" nsamples="120" sampling_method="cycles" selection="sequential">
-                <action tag="Start labjack" type="start_device_IO" device="labjacku6"></action>
+            <trial tag="Trial 01" nsamples="1" sampling_method="cycles" selection="sequential">
+                
                 <task_system tag="TS" full_name="TS" description="" interruptible="YES">
                 <task_system_state tag="Intertrial" interruptible="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                    
-                    <action type="assignment" variable="juice" value="juice_input"></action>
-                    <action type="report" message="trial is "></action>
-                    <action tag="Stop IO Device" type="stop_device_IO" device="labjacku6"></action>
-                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                    <transition type="yield" tag="return to parent task system"></transition>
+                    <action tag="Start labjack" type="start_device_IO" device="labjacku6"></action>
+                    <action type="assignment" tag="Reset pulse_count" variable="pulse_count" value="0"/>
+                    <action type="schedule" tag="Schedule pulses" delay="pulse_interval" duration="pulse_interval" repeats="num_pulses">
+                        <action type="report" tag="Report 2" message="Sending pulse"/>
+                        <action type="assignment" variable="lever1_solenoid" value="1"></action>
+                        <action type="assignment" tag="Set pulse_sent" variable="pulse_sent" value="1"/>
+                    </action>
+                    <transition_marker _unmoveable="1" tag="Transitions"/>
+                    <transition tag="Go to Wait for pulse" type="direct" target="Wait for pulse"/>
                 </task_system_state>
+                <task_system_state tag="Wait for pulse" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"/>
+                    <action type="report" tag="Report 3" message="Waiting for next pulse"/>
+                    <transition_marker _unmoveable="1" tag="Transitions"/>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="pulse_sent" target="Record pulse"/>
+                </task_system_state>
+                <task_system_state tag="Record pulse" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"/>
+                    <action type="assignment" tag="Reset pulse_sent" variable="pulse_sent" value="0"/>
+                    <action type="assignment" variable="lever1_solenoid" value="0"></action>
+                    <action type="assignment" tag="Update pulse_count" variable="pulse_count" value="pulse_count + 1"/>
+                    <action type="report" tag="Report" message="Recorded pulse $pulse_count"/>
+                    <transition_marker _unmoveable="1" tag="Transitions"/>
+                    <transition type="conditional" tag="If Condition is True, Transition to ... 2" condition="pulse_count == num_pulses" target="Exit State System"/>
+                    <transition type="direct" tag="Always Go to ..." target="Wait for pulse"/>
+                </task_system_state>
+                <task_system_state tag="Exit State System" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"/>
+                    <action type="report" tag="Report 4" message="Done"/>
+                    <action tag="Stop labjack" type="stop_device_IO" device="labjacku6"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"/>
+                    <transition tag="Return to parent task system" type="yield"/>
+                </task_system_state>
+                
             </task_system>
         </trial>
+        
         </protocol>
     </experiment>
 </monkeyml>
