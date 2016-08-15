@@ -9,7 +9,12 @@
       trial_laser_powerMw="tTrialLaserPowerMw"
       optic_device="optic_device"
       strobed_digital_word="strobedDigitalWord"
-      laser_duration="laserDuration"/>
+      quadrature="quadrature"
+      laser_duration="laserDuration"
+      do_wheelspeed="DoWheelSpeed"
+      ws_durationUS="speedIntervalUS"
+      wheel_speed="wheelSpeed"
+      doCB="doCerebellarStim"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
       <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
     </io_devices>
@@ -34,6 +39,9 @@
         <variable tag="doNoResponse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doPairedPulse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doPulseLength" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+
+        <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+        <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
         <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
         <variable tag="block2DoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
@@ -347,6 +355,10 @@
         <variable tag="catchCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tFalseAlarm" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tCatchTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+        <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="quadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
         <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
@@ -1202,6 +1214,13 @@
                                       <action type="assignment" variable="MIO0" value="0"></action>
                                       <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
                                     </action>
+
+                                    <action type="if" condition="doWheelSpeed == 1">
+                                        <action type="assignment" variable="doCerebellarStim" value="0"/>
+                                        <action type="assignment" variable="DoWheelSpeed" value="doWheelSpeed"/>
+                                        <action type="assignment" variable="speedIntervalUS" value="speedIntervalMS*1000"/>
+                                    </action>
+                                    
                                     <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>                        
 
                                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
