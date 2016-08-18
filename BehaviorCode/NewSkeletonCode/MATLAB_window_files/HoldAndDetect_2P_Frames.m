@@ -143,6 +143,14 @@ catch
     input.counterValues{trN} = NaN;
 end
 
+try
+    input.quadratureTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'quadrature', 'all', [], 1);
+    input.quadratureValues{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'quadrature', 'all', 1) ;
+catch
+    input.quadratureTimesUs{trN} = NaN;
+    input.quadratureValues{trN} = NaN;
+end
+
 %% Mati's Lever Tracking Addition -- Polls for all lever changes (high or low)
 try
     input.leverTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'FIO1', 'all', [], 1);
