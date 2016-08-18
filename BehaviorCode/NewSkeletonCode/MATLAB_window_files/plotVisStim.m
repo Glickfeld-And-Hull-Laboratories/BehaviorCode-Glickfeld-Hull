@@ -24,13 +24,13 @@ end
 nTrial = length(input.tNStimAccepted);
 tTrialN = input.trialSinceReset;
 if ~input.doMovingDots
-  az_mat = [input.gratingAzimuthDeg:input.gratingAzimuthStepDeg:input.gratingAzimuthDeg+(input.gratingAzimuthStepDeg*(input.gratingAzimuthStepN-1))];
-  el_mat = [input.gratingElevationDeg:input.gratingElevationStepDeg:input.gratingElevationDeg+(input.gratingElevationStepDeg*(input.gratingElevationStepN-1))];
-  dir_mat = [input.gratingDirectionDeg:input.gratingDirectionStepDeg:input.gratingDirectionDeg+(input.gratingDirectionStepDeg*(input.gratingDirectionStepN-1))];
-  diam_mat = [input.gratingDiameterDeg:input.gratingDiameterStepDeg:input.gratingDiameterDeg+(input.gratingDiameterStepDeg*(input.gratingDiameterStepN-1))];
-  sf_mat = [double(input.gratingSpatialFreqCPD).*double(input.gratingSpatialFreqStepLog).^(double(input.gratingSpatialFreqStepDir).*((1:double(input.gratingSpatialFreqStepN)-1)))];
-  tf_mat = [double(input.gratingTemporalFreqCPS).*double(input.gratingTemporalFreqStepLog).^(double(input.gratingTemporalFreqStepDir).*((1:double(input.gratingTemporalFreqStepN))-1))];
-  con_mat = [double(input.gratingContrast).*(double(input.gratingContrastStepLog).^(double(input.gratingContrastStepDir).*(0:double(input.gratingContrastStepN)-1)))];
+  az_mat = unique(celleqel2mat_padded(input.tGratingAzimuthDeg));
+  el_mat = unique(celleqel2mat_padded(input.tGratingElevationDeg));
+  dir_mat = unique(celleqel2mat_padded(input.tGratingDirectionDeg));
+  diam_mat = chop(unique(celleqel2mat_padded(input.tGratingDiameterDeg)),2); 
+  sf_mat = unique(celleqel2mat_padded(input.tGratingSpatialFreqCPD)); 
+  tf_mat = unique(celleqel2mat_padded(input.tGratingTemporalFreqCPS));
+  con_mat = unique(celleqel2mat_padded(input.tGratingContrast));
 
   if input.doRetStim
   azs = az_mat;

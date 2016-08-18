@@ -351,6 +351,14 @@
                       <task_system tag="TS" full_name="TS" description="" interruptible="YES" >
                         <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
                           <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                          <!-- reset selection var -->
+                          <action type="if" condition="tTrialsDoneSinceStart == 0">  
+                            <action type="reset_selection" selection="svRandStimNumber"></action>
+                            <action type="reset_selection" selection="svSeqStimNumber"></action>
+                            <action type="assignment" variable="tNStimAccepted" value="0"></action>
+                          </action> 
+                           
                           <action type="assignment" tag="set tCounter2 to counter2" variable="tCounter2" value="counter2"></action>
 
                           <action type="assignment" variable="setDotSpeedDPS" value="baseDotSpeedDPS"></action>
@@ -484,7 +492,7 @@
                         	<action type="if" condition="doSizeStepLog = 0">	
                          		<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))"/>
                          	</action>
-                         	<action type="if" condition="doSizeStepLog = 2">	
+                         	<action type="if" condition="doSizeStepLog = 1">	
                          		<action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg * (pow(gratingDiameterStepLog,(gratingDiameterStepDir*(tTempStim))))"/>
                          	</action>
                          <action type="report" message="Diameter is $tGratingDiameterDeg"/>
