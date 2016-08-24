@@ -530,7 +530,7 @@ def initializeStandardVariableCallbacks(client, state):
     try:
         state.clientAccessLock.acquire()
 
-        client.register_callback_for_name('sendLaserParams', cbSendLaserParams)
+        #client.register_callback_for_name('sendLaserParams', cbSendLaserParams)
         if doTransmitCodesToBlackrock:
             client.register_callback_for_name('sendSerialParams', cbSendSerialParams)
             client.register_callback_for_name('strobedDigitalWord', cbSendDigitalWordSerial)
