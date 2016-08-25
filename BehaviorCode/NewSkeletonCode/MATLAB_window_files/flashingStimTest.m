@@ -185,11 +185,11 @@ if input.tBlock2TrialNumber{trN} == 0
         end
     end
     if input.doPairedPulse
-        stimStr = [stimStr sprintf('stimOffMs %g%ms ', input.tStimOffTimeMs{trN})];
+        stimStr = [stimStr ', ' sprintf('stimOffMs %g%ms ', input.tStimOffTimeMs{trN})];
     end
     if input.doAuditoryStim
         if input.doAuditoryDetect
-            stimStr = [stimStr sprintf(' tone vol %g%% ', chop(abs(double(input.tSoundTargetAmplitude{trN})*100),2))];
+            stimStr = [stimStr ', ' sprintf(' tone vol %g%% ', chop(abs(double(input.tSoundTargetAmplitude{trN})*100),2))];
         end
     end
     if input.doLaserStim
@@ -210,7 +210,7 @@ else
     end
     if input.block2DoAuditoryStim
         if input.block2DoAuditoryDetect
-            stimStr = [stimStr sprintf(' tone vol %g%% ', chop(abs(double(input.tSoundTargetAmplitude{trN})*100),2))];
+            stimStr = [stimStr sprintf(' tone vol %g%%, ', chop(abs(double(input.tSoundTargetAmplitude{trN})*100),2))];
         end
     end
 end
