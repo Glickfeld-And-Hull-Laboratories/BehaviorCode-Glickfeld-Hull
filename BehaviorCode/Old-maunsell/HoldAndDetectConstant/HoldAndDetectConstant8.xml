@@ -333,6 +333,7 @@
           </action>
       </action>
       <action type="update_stimulus_display" tag="-"></action>
+      <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
       <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
       <action type="assignment" tag="tempNCorrect = 0" variable="tempNCorrect" value="0"></action>
       <action type="assignment" variable="tConsecErrors" value="0"></action>
@@ -356,7 +357,7 @@
            <task_system_state tag="Intertrial" interruptible="YES">
               <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
-              <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+              
               <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
               <action type="if" condition="doTraining == 1">
                 <action type="run_python_file" tag="Load script" path="python_HoldAndDetectConstant8.py"></action>
@@ -1421,7 +1422,7 @@
               <action type="if" condition="optic_device == 'led'">
                 <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
             </action>
-            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+            
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
             <action type="if" condition="doITIStim == 0">
@@ -1472,6 +1473,7 @@
 </trial>
 <action type="dequeue_stimulus" stimulus="base_grating"></action>
 <action tag="Update Stimulus" type="update_stimulus_display"></action>
+<action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
 </protocol>
 </experiment>
 </monkeyml>
