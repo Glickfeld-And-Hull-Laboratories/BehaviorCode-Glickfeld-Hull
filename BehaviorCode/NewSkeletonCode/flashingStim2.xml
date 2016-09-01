@@ -1882,11 +1882,12 @@
             </task_system_state>
 
             <task_system_state tag="EndTrial" interruptible="YES">
-              <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+              
               <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
               <action type="if" condition="optic_device == 'led' ">
                     <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
               </action>
+              <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
               <action type="report" message="Trial Ended"/>
               <action type="assignment" variable="trials" value="trials+1"/>
               <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
