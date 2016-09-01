@@ -324,7 +324,6 @@
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
              <!-- init actions run only on first trial after loading experiment -->
-        <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
         <action type="if" condition="success+ignore+failure == 0">
           <action type="report" message="**** First trial since experiment load - initializing"></action>
 
@@ -339,7 +338,7 @@
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
         <task_system tag="TS" full_name="TS" description="" interruptible="YES">
           <task_system_state tag="Initialization" interruptible="YES">
-            
+            <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
             <action type="if" condition="doTraining == 1">
                 <action type="run_python_file" tag="Load script" path="python_Training.py"></action>
@@ -1290,7 +1289,7 @@
           </task_system_state>
           
           <task_system_state tag="EndTrial" interruptible="YES">
-            
+            <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="Turn off LED" variable="laserTrigger" value="0"></action>
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>
@@ -1318,7 +1317,6 @@
       </trial>
       <action type="dequeue_stimulus" stimulus="moving_dots"></action>
       <action tag="Update Stimulus" type="update_stimulus_display"></action>
-      <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
     </protocol>
   </experiment>
 </monkeyml>
