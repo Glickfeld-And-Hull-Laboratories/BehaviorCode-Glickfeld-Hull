@@ -1128,6 +1128,12 @@
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
               <action type="assignment" variable="cLeverUp" value="counter"></action>
 
+            <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
+            <!-- Raise solenoid after correct trial for any solenoid -->
+              <action type="assignment" tag="lever Solenoid On" variable="MIO0" value="1"></action>
+              <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="13"></action>
+            </action>
+            
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
 
             <!-- accept stim selection -->
