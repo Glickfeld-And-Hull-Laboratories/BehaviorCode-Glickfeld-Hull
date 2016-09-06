@@ -77,6 +77,7 @@
         <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
         <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
         <variable tag="whiteNoiseSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="stationaryPeriodSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
 
         <variable tag="gratingMaxContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
@@ -222,6 +223,7 @@
 
         <variable tag="isNotTooFast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="stimIsOff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="stationaryReset" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
         <variable tag="qStimOn" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="qTrialStart" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -263,6 +265,7 @@
           <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="correctSoundVolume"></sound>
           <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>
           <sound tag="whiteNoiseSound" type="wav_file" path="wavs/whitenoise2.wav" amplitude="whiteNoiseSoundVolume"></sound>
+          <sound tag="stationaryPeriodSound" type="wav_file" path="wavs/whitenoise2.wav" amplitude="stationaryPeriodSoundVolume"></sound>
         </sounds>
         <stimuli tag="Stimuli">
           <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -331,6 +334,7 @@
                           <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
                           <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
                           <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+                          <action type="assignment" tag="Stationary untriggered" variable="stationaryReset" value="0"/>
                           
                           <action type="assignment" variable="stimulusOn" value="0"/>
                           <action type="assignment" tag="juice = 0" variable="juice" value="0"/>
@@ -984,9 +988,12 @@
 
                       <task_system_state tag="WaitForInitiate" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="if" condition="stationaryReset==1">
+                            <action type="play_sound" sound="stationaryPeriodSound"/>
+                        </action>
                         <action type="start_timer" timer="stationaryTimerMs" timebase="" duration="stationaryPeriodMs" duration_units="ms"/>
                         <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
-
+                        <action type="assignment" tag="Stationary triggered" variable="stationaryReset" value="1"/>    
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="stationaryTimerMs" target="TrialStart"></transition>
                         <transition type="conditional" condition="abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="WaitForInitiate"></transition>
