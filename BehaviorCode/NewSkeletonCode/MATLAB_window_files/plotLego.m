@@ -431,11 +431,11 @@ axH = subplot(spSz{:},7);
 hold on;
 
 if nCorr>0 && input.doTestRobot==0,
-  %if isfield(input, 'dGratingContrastDiff')
-  %  contDiffV = round(cell2matpad(input.tGratingContrast) ./ cell2matpad(input.dGratingContrast),2);
-  %else
+  if input.gratingContrastDiffSPO<10
+    contDiffV = round(cell2matpad(input.tGratingContrast) ./ cell2matpad(input.dGratingContrast),2);
+  else
     contDiffV = round(cell2matpad(input.tGratingContrast) - cell2matpad(input.dGratingContrast),2);
-  %end
+  end
     corrDiffV = contDiffV(correctIx);
     uqDiff = unique(corrDiffV);
     nLevels = length(uqDiff);
@@ -493,21 +493,28 @@ if nCorr>0 && input.doTestRobot==0,
     hold on
     xLimm = [minX maxX];
     uqDiff = uqDiff;
-    pH = plot((100 * uqDiff), cell2mat(corrDiffCell));
+
+    if input.gratingContrastDiffSPO<10
+      sc_num = 1;
+    else
+      sc_num = 100;
+    end 
+    
+    pH = plot((sc_num * uqDiff), cell2mat(corrDiffCell));
     if nLeft>0,
-      pH1 = plot((100 * uqDiffL), cell2mat(corrDiffCellL));
+      pH1 = plot((sc_num * uqDiffL), cell2mat(corrDiffCellL));
     end
     if nRight>0,
-      pH2 = plot((100 * uqDiffR), cell2mat(corrDiffCellR));
+      pH2 = plot((sc_num * uqDiffR), cell2mat(corrDiffCellR));
     end
     if ~(xLimm(1)==0),
       xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
     else
       xL1 = [0 ceil(log10(xLimm(2)))];
     end
-    %xTickL = 10.^(xL1(1):1:xL1(2));
-    %xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
-    %xTLabelL = cellstr(num2str(xTickL(:)));
+    xTickL = 10.^(xL1(1):1:xL1(2));
+    xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
+    xTLabelL = cellstr(num2str(xTickL(:)));
     
 
     minX = 0;
@@ -518,13 +525,6 @@ if nCorr>0 && input.doTestRobot==0,
     else
       xL1 = [0 ceil(log10(xLimm(2)))];
     end
-    xTickL = 10.^(xL1(1):1:xL1(2));
-    xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
-    xTLabelL = cellstr(num2str(xTickL(:)));
-    set(pH, ...
-        'LineWidth', 1.5, ...
-        'Marker', '.', ...
-        'MarkerSize', 9);
     set(gca, 'XLim', [minX maxX], ...
            'XScale', 'log', ...
            'XGrid', 'on');
@@ -551,25 +551,14 @@ if nCorr>0 && input.doTestRobot==0,
           'MarkerSize', 9, ...
           'Color', [0.8 0.8 0]);
     end
-    %if isnan(minD)|isnan(maxD)
-    %  axis tight
-    %else
-     % ylim([minD-100 maxD+100])
-    %end
-    %if isnan(minX)|isnan(maxX)
-    %  axis tight
-    %elseif minX == maxX
-    %  xlim([minX-100 maxX+100])
-    %elseif minX<maxX
-    %  xlim([minX maxX])
-    %end   
 
-    set(gca,'XScale', 'log', ...
-           'XGrid', 'on');
-       %set(gca, 'XTick', xTickL);
-       %set(gca, 'XTickLabel', xTLabelL);
+     axis tight  
        ylabel('Decision Time (ms)')
-       xlabel('Contrast Difference')
+       if input.gratingContrastDiffSPO<10
+         xlabel('Contrast Difference (R/L)')
+       else
+         xlabel('Contrast Difference (R-L)')
+      end
        title('Decision Time by Contrast Difference')
 end
 %%%%%%%%%%%%%%%%%
@@ -591,7 +580,7 @@ if nCorr>0 && input.doTestRobot==0,
         corrNTrialsVal = sum(contDiffV(valIx&correctIx));
         percentCell{jj} = corrNTrialsVal/totalNTrialsValB1;
     end
-    pH = plot((100 * uqDiff), cell2mat(percentCell));
+    pH = plot((sc_num * uqDiff), cell2mat(percentCell));
     set(pH, ...
         'LineWidth', 1.5, ...
         'Marker', '.', ...
@@ -607,7 +596,11 @@ if nCorr>0 && input.doTestRobot==0,
        elseif minX<maxX
          xlim([minX maxX])
        end
-       xlabel('Contrast Difference')
+       if input.gratingContrastDiffSPO<10
+         xlabel('Contrast Difference (R/L)')
+       else
+         xlabel('Contrast Difference (R-L)')
+      end
        title('Percent Correct by Contrast Difference')
 end
 
