@@ -3,16 +3,24 @@ function outS = concatenateDataBlocks(blockC)
 
     fNames = fieldnames(blockC(1));
     nF = length(fNames);
-    outS = struct([]);
-    trs = blockC(1).trialSinceReset;
-    outS(1).trialsSinceReset = blockC(1).trialSinceReset;
-    for iblock = 2:size(blockC,2)
-        outS.trialsSinceReset = [outS.trialsSinceReset blockC(iblock).trialSinceReset];
+    outS = struct;
+    
+    for iblock = 1:size(blockC,2)
+        if isfield(blockC, 'trialOutcomeCell')
+            trs = length(blockC(iblock).trialOutcomeCell);
+        elseif isfield(blockC, 'tGratingContrast')
+            trs = length(blockC(iblock).tGratingContrast);
+        end
+        if iblock == 1
+            outS.trialsSinceReset = trs;
+        else
+            outS.trialsSinceReset = [outS.trialsSinceReset trs];
+        end
     end
     for iF = 1:nF
         fN = cell2mat(fNames(iF,:));
         outS(1).(fN) = blockC(1).(fN);
-        if size(blockC(1).(fN),2) == trs;
+        if size(blockC(1).(fN),2) == outS.trialsSinceReset(1);
             for iblock = 2:size(blockC,2)
                 outS.(fN) = [outS.(fN) blockC(iblock).(fN)];
             end

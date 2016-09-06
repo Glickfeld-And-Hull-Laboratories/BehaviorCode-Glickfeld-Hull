@@ -29,7 +29,11 @@ ds = input;
 outputStruct = ds;
 fieldNames = fieldnames(ds);
 nFNs = length(fieldNames);
-nTrs = length(ds.trialOutcomeCell);
+if isfield(ds, 'trialOutcomeCell')
+    nTrs = length(ds.trialOutcomeCell);
+elseif isfield(ds, 'tGratingContrast')
+    nTrs = length(ds.tGratingContrast);
+end
 
 for i=1:nFNs,
     a = strcat('input.', fieldNames(i));
