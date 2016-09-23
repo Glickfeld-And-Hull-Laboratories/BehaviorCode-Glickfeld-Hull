@@ -3,7 +3,7 @@ function input = exptSaveMatlabState(data_struct, input)
 cs = exptConstants;
 
 % compute whether to do export on this trial
-nTrialsToSkip = 10;
+nTrialsToSkip = 1;
 maxSToSkip = 120;
 
 %% initialize variables
@@ -77,7 +77,7 @@ if doSave
 
   input.lastTimeSavedMs = thisTimeMs;
   input.didASave = true;
-  disp(sprintf('Saved matlab variables to disk'));
+  %disp(sprintf('Saved matlab variables to disk'));
 end
 
 
