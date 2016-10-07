@@ -100,7 +100,7 @@ end
 
 % leftStr formatting
 if input.doLeftSeparateOdds == 0
-  leftStr = sprintf('leftTrPer80: Matched \n');
+  leftStr = sprintf('leftTrPer80: Matched');
 else
   leftStr= sprintf('leftTrPer80: %s \n', leftTrPer80Str);
 end
