@@ -243,6 +243,24 @@
         <variable tag="tRandProbIndex" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tRandProbIndexLast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
+        <variable tag="tTrPer80Level1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTrPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTrPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTrPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTrPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTrPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tTrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+        <variable tag="tLeftTrPer80Level1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLeftTrPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLeftTrPer80Level3" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLeftTrPer80Level4" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLeftTrPer80Level5" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLeftTrPer80Level6" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLeftTrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tLeftTrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
         <!-- Shadow Vars From Mark -->
         
         <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -412,21 +430,8 @@
                                     </action>
                                 </action>
                                 <action type="assignment" variable="tRandProbIndexLast" value="tRandProbIndex"/>
+                                <action type="assignment" variable="stimProbAvgLeft" value="ProbList[tRandProbIndex]"/>
                                 <action type="assignment" variable="tStimProbAvgLeft" value="ProbList[tRandProbIndex]"/>
-                                <action type="if" condition="tStimProbAvgLeft == 0.5">
-                                    <action type="assignment" variable="doLeftSeparateOdds" value="0"/>
-                                </action>
-                                <action type="if" condition="tStimProbAvgLeft != 0.5">
-                                    <action type="assignment" variable="doLeftSeparateOdds" value="1"/>
-                                    <action type="assignment" variable="leftTrPer80Level1" value="tStimProbAvgLeft * trPer80Level1"/>
-                                    <action type="assignment" variable="leftTrPer80Level2" value="tStimProbAvgLeft * trPer80Level2"/>
-                                    <action type="assignment" variable="leftTrPer80Level3" value="tStimProbAvgLeft * trPer80Level3"/>
-                                    <action type="assignment" variable="leftTrPer80Level4" value="tStimProbAvgLeft * trPer80Level4"/>
-                                    <action type="assignment" variable="leftTrPer80Level5" value="tStimProbAvgLeft * trPer80Level5"/>
-                                    <action type="assignment" variable="leftTrPer80Level6" value="tStimProbAvgLeft * trPer80Level6"/>
-                                    <action type="assignment" variable="leftTrPer80Level7" value="tStimProbAvgLeft * trPer80Level7"/>
-                                    <action type="assignment" variable="leftTrPer80Level8" value="tStimProbAvgLeft * trPer80Level8"/>
-                                </action>
                                 <action type="report" message="tStimProbAvgLeft  is $tStimProbAvgLeft"/>
                            </action>
 
@@ -434,13 +439,13 @@
                                 <action type="assignment" variable="tStimProbAvgLeft" value="tStimProbAvgLeft"/>
                            </action>
 
-                          <!-- If choosing L/R by markov based on left, switch, and last trial state. -->
-                          <action type="if" condition="doMarkovLR">
-
-                           <!-- Calculate left/right according to bias staircase -->
+                            <!-- Calculate left/right according to bias staircase -->
                            <action type="if" condition="doBiasStaircase == 1 ">
                              <action type="assignment" variable="tStimProbAvgLeft" value="1 - tLeftBias"/>
                            </action>
+                           
+                          <!-- If choosing L/R by markov based on left, switch, and last trial state. -->
+                          <action type="if" condition="doMarkovLR">
 
                            <!-- Calculate left/right by  to bias staircase -->
                            <action type="if" condition="doBiasStaircase == 0 &amp;&amp; doRandProb == 0">
@@ -495,11 +500,52 @@
                           <action type="assignment" variable="tLeftTrial" value="tLastTrialWasLeft" />
                         </action>
 
+                            <action type="assignment" variable="tTrPer80Level1" value="trPer80Level1"/>
+                            <action type="assignment" variable="tTrPer80Level2" value="trPer80Level2"/>
+                            <action type="assignment" variable="tTrPer80Level3" value="trPer80Level3"/>
+                            <action type="assignment" variable="tTrPer80Level4" value="trPer80Level4"/>
+                            <action type="assignment" variable="tTrPer80Level5" value="trPer80Level5"/>
+                            <action type="assignment" variable="tTrPer80Level6" value="trPer80Level6"/>
+                            <action type="assignment" variable="tTrPer80Level7" value="trPer80Level7"/>
+                            <action type="assignment" variable="tTrPer80Level8" value="trPer80Level8"/>
+
+                            <action type="assignment" variable="tLeftTrPer80Level1" value="leftTrPer80Level1"/>
+                            <action type="assignment" variable="tLeftTrPer80Level2" value="leftTrPer80Level2"/>
+                            <action type="assignment" variable="tLeftTrPer80Level3" value="leftTrPer80Level3"/>
+                            <action type="assignment" variable="tLeftTrPer80Level4" value="leftTrPer80Level4"/>
+                            <action type="assignment" variable="tLeftTrPer80Level5" value="leftTrPer80Level5"/>
+                            <action type="assignment" variable="tLeftTrPer80Level6" value="leftTrPer80Level6"/>
+                            <action type="assignment" variable="tLeftTrPer80Level7" value="leftTrPer80Level7"/>
+                            <action type="assignment" variable="tLeftTrPer80Level8" value="leftTrPer80Level8"/>
+
+                        <!-- Deal with changing tLeftProb when left odds are separate -->
+                        <action type="if" condition="tStimProbAvgLeft != 0.5 &amp;&amp; doLeftSeparateOdds">
+                            <action type="if" condition="trPer80Level1+trPer80Level2+trPer80Level3+trPer80Level4+trPer80Level5+trPer80Level6+trPer80Level7+trPer80Level8 ==  leftTrPer80Level1+leftTrPer80Level2+leftTrPer80Level3+leftTrPer80Level4+leftTrPer80Level5+leftTrPer80Level6+leftTrPer80Level7+leftTrPer80Level8">
+                                <action type="assignment" variable="tTrPer80Level1" value="(1-tStimProbAvgLeft) * (2 * trPer80Level1)"/>
+                                <action type="assignment" variable="tTrPer80Level2" value="(1-tStimProbAvgLeft) * (2 * trPer80Level2)"/>
+                                <action type="assignment" variable="tTrPer80Level3" value="(1-tStimProbAvgLeft) * (2 * trPer80Level3)"/>
+                                <action type="assignment" variable="tTrPer80Level4" value="(1-tStimProbAvgLeft) * (2 * trPer80Level4)"/>
+                                <action type="assignment" variable="tTrPer80Level5" value="(1-tStimProbAvgLeft) * (2 * trPer80Level5)"/>
+                                <action type="assignment" variable="tTrPer80Level6" value="(1-tStimProbAvgLeft) * (2 * trPer80Level6)"/>
+                                <action type="assignment" variable="tTrPer80Level7" value="(1-tStimProbAvgLeft) * (2 * trPer80Level7)"/>
+                                <action type="assignment" variable="tTrPer80Level8" value="(1-tStimProbAvgLeft) * (2 * trPer80Level8)"/>
+
+                                <action type="assignment" variable="tLeftTrPer80Level1" value="tStimProbAvgLeft * (2 * leftTrPer80Level1)"/>
+                                <action type="assignment" variable="tLeftTrPer80Level2" value="tStimProbAvgLeft * (2 * leftTrPer80Level2)"/>
+                                <action type="assignment" variable="tLeftTrPer80Level3" value="tStimProbAvgLeft * (2 * leftTrPer80Level3)"/>
+                                <action type="assignment" variable="tLeftTrPer80Level4" value="tStimProbAvgLeft * (2 * leftTrPer80Level4)"/>
+                                <action type="assignment" variable="tLeftTrPer80Level5" value="tStimProbAvgLeft * (2 * leftTrPer80Level5)"/>
+                                <action type="assignment" variable="tLeftTrPer80Level6" value="tStimProbAvgLeft * (2 * leftTrPer80Level6)"/>
+                                <action type="assignment" variable="tLeftTrPer80Level7" value="tStimProbAvgLeft * (2 * leftTrPer80Level7)"/>
+                                <action type="assignment" variable="tLeftTrPer80Level8" value="tStimProbAvgLeft * (2 * leftTrPer80Level8)"/>
+                            </action>
+                        </action>
+
                         <!-- level 1 -->                         
-                        <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))"> 
+                        <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tTrPer80Level1))"> 
                           <action type="assignment" variable="tStimulusNumber" value="0"/>
                           <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-                            <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level1-1)/2))"/>
+                            <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)tTrPer80Level1-1)/2))"/>
                           </action>
                           <action type="if" condition="!doBlock2">
                             <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -507,25 +553,25 @@
                           <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
                            <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
                          </action>
-                         <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+                         <action type="if" condition="doLeftSeparateOdds">
                            <action type="assignment" variable="tLeftTrial" value="0"/>
                          </action>
                        </action>
-                       <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level1))"> 
+                       <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tTrPer80Level1))"> 
                         <action type="assignment" variable="tStimulusNumber2" value="0"/>
                       </action>
-                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
+                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tTrPer80Level1"/>
                       <!-- level 1: left sep odds on --> 
-                      <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
-                       <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level1))">
+                      <action type="if" condition="doLeftSeparateOdds">
+                       <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level1))">
                         <action type="assignment" variable="tStimulusNumber" value="0"/>
                         <action type="assignment" variable="tLeftTrial" value="1"/>
                         <action type="report" message="tLeftrial should be $tLeftrial"/>
                       </action>
-                      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level1))"> 
+                      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level1))"> 
                         <action type="assignment" variable="tStimulusNumber2" value="0"/>
                       </action>
-                      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level1"/>		 
+                      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tLeftTrPer80Level1"/>		 
                     </action>
                     <!-- level 1: b2 sep odds on -->
                     <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -540,10 +586,10 @@
                     </action>
 
                     <!-- level 2 -->                         
-                    <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level2))"> 
+                    <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tTrPer80Level2))"> 
                       <action type="assignment" variable="tStimulusNumber" value="1"/>
                       <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-                        <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level2-1)/2))"/>
+                        <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)tTrPer80Level2-1)/2))"/>
                       </action>
                       <action type="if" condition="!doBlock2">
                         <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -551,24 +597,24 @@
                       <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
                        <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
                      </action>
-                      <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+                      <action type="if" condition="doLeftSeparateOdds">
                        <action type="assignment" variable="tLeftTrial" value="0"/>
                      </action>
                    </action>
-                   <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level2))"> 
+                   <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tTrPer80Level2))"> 
                     <action type="assignment" variable="tStimulusNumber2" value="1"/>
                   </action>
-                    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level2"/>
+                    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tTrPer80Level2"/>
                   <!-- level 2: left sep odds on --> 
-                  <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
-                   <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level2))">
+                  <action type="if" condition="doLeftSeparateOdds">
+                   <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level2))">
                     <action type="assignment" variable="tStimulusNumber" value="1"/>
                     <action type="assignment" variable="tLeftTrial" value="1"/>
                   </action>
-                  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level2))"> 
+                  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level2))"> 
                     <action type="assignment" variable="tStimulusNumber2" value="1"/>
                   </action>
-                  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level2"/>		 
+                  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tLeftTrPer80Level2"/>		 
                 </action>
                 <!-- level 2: b2 sep odds on -->                          
                 <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -584,10 +630,10 @@
 
 
                 <!-- level 3 -->                         
-                <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level3))"> 
+                <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tTrPer80Level3))"> 
                   <action type="assignment" variable="tStimulusNumber" value="2"/>
                   <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-                    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level3-1)/2))"/>
+                    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)tTrPer80Level3-1)/2))"/>
                   </action>
                   <action type="if" condition="!doBlock2">
                     <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -595,24 +641,24 @@
                   <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
                    <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
                  </action>
-                 <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+                 <action type="if" condition="doLeftSeparateOdds">
                     <action type="assignment" variable="tLeftTrial" value="0"/>
                  </action>
                </action>
-               <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level3))"> 
+               <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tTrPer80Level3))"> 
                 <action type="assignment" variable="tStimulusNumber2" value="2"/>
               </action>
-                <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level3"/>
+                <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tTrPer80Level3"/>
               <!-- level 3: left sep odds on --> 
-              <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
-              	<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level3))">
+              <action type="if" condition="doLeftSeparateOdds">
+              	<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level3))">
               		<action type="assignment" variable="tStimulusNumber" value="2"/>
               		<action type="assignment" variable="tLeftTrial" value="1"/>
               	</action>
-              	<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level3))"> 
+              	<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level3))"> 
               		<action type="assignment" variable="tStimulusNumber2" value="2"/>
                </action>
-               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level3"/>		 
+               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tLeftTrPer80Level3"/>		 
              </action>
              <!-- level 3: b2 sep odds on -->                          
              <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -628,10 +674,10 @@
 
 
             <!-- level 4 -->                         
-            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level4))"> 
+            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tTrPer80Level4))"> 
               <action type="assignment" variable="tStimulusNumber" value="3"/>
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level4-1)/2))"/>
+                <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)tTrPer80Level4-1)/2))"/>
               </action>
               <action type="if" condition="!doBlock2">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -639,24 +685,24 @@
               <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
               	<action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
               </action>
-              <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+              <action type="if" condition="doLeftSeparateOdds">
                <action type="assignment" variable="tLeftTrial" value="0"/>
              </action>
             </action>
-            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level4))"> 
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tTrPer80Level4))"> 
               <action type="assignment" variable="tStimulusNumber2" value="3"/>
             </action>
-              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level4"/>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tTrPer80Level4"/>
             <!-- level 4: left sep odds on --> 
-            <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
-             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level4))">
+            <action type="if" condition="doLeftSeparateOdds">
+             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level4))">
               <action type="assignment" variable="tStimulusNumber" value="3"/>
               <action type="assignment" variable="tLeftTrial" value="1"/>
             </action>
-            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level4))"> 
+            <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level4))"> 
               <action type="assignment" variable="tStimulusNumber2" value="3"/>
             </action>
-            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level4"/>		 
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tLeftTrPer80Level4"/>		 
           </action>
           <!-- level 4: b2 sep odds on -->                          
           <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -672,10 +718,10 @@
 
 
          <!-- level 5 -->                         
-         <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level5))"> 
+         <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tTrPer80Level5))"> 
           <action type="assignment" variable="tStimulusNumber" value="4"/>
           <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-            <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level5-1)/2))"/>
+            <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)tTrPer80Level5-1)/2))"/>
           </action>
           <action type="if" condition="!doBlock2">
             <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -683,24 +729,24 @@
           <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
            <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
          </action>
-         <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+         <action type="if" condition="doLeftSeparateOdds">
            <action type="assignment" variable="tLeftTrial" value="0"/>
          </action>
        </action>
-       <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level5))"> 
+       <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tTrPer80Level5))"> 
         <action type="assignment" variable="tStimulusNumber2" value="4"/>
       </action>
-        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level5"/>
+        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tTrPer80Level5"/>
       <!-- level 5: left sep odds on --> 
-      <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
-       <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level5))">
+      <action type="if" condition="doLeftSeparateOdds">
+       <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level5))">
         <action type="assignment" variable="tStimulusNumber" value="4"/>
         <action type="assignment" variable="tLeftTrial" value="1"/>
       </action>
-      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level5))"> 
+      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level5))"> 
         <action type="assignment" variable="tStimulusNumber2" value="4"/>
       </action>
-      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level5"/>		 
+      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tLeftTrPer80Level5"/>		 
     </action>
     <!-- level 5: b2 sep odds on -->                          
     <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -716,10 +762,10 @@
 
 
     <!-- level 6 -->                         
-    <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level6))"> 
+    <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tTrPer80Level6))"> 
       <action type="assignment" variable="tStimulusNumber" value="5"/>
       <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-        <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level6-1)/2))"/>
+        <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)tTrPer80Level6-1)/2))"/>
       </action>
       <action type="if" condition="!doBlock2">
         <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -727,24 +773,24 @@
       <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
        <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
      </action>
-     <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+     <action type="if" condition="doLeftSeparateOdds">
        <action type="assignment" variable="tLeftTrial" value="0"/>
      </action>
    </action>
-   <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level6))"> 
+   <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tTrPer80Level6))"> 
     <action type="assignment" variable="tStimulusNumber2" value="5"/>
   </action>
-    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level6"/>
+    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tTrPer80Level6"/>
   <!-- level 6: left sep odds on --> 
-  <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
-   <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level6))">
+  <action type="if" condition="doLeftSeparateOdds">
+   <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level6))">
     <action type="assignment" variable="tStimulusNumber" value="5"/>
     <action type="assignment" variable="tLeftTrial" value="1"/>
   </action>
-  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level6))"> 
+  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level6))"> 
     <action type="assignment" variable="tStimulusNumber2" value="5"/>
   </action>
-  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level6"/>		 
+  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tLeftTrPer80Level6"/>		 
 </action>
 <!-- level 6: b2 sep odds on -->                          
 <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -760,10 +806,10 @@
 
 
 <!-- level 7 -->                         
-<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level7))"> 
+<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tTrPer80Level7))"> 
   <action type="assignment" variable="tStimulusNumber" value="6"/>
   <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level7-1)/2))"/>
+    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)tTrPer80Level7-1)/2))"/>
   </action>
   <action type="if" condition="!doBlock2">
     <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -771,24 +817,24 @@
   <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
    <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
  </action>
- <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+ <action type="if" condition="doLeftSeparateOdds">
    <action type="assignment" variable="tLeftTrial" value="0"/>
  </action>
 </action>
-<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level7))"> 
+<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tTrPer80Level7))"> 
   <action type="assignment" variable="tStimulusNumber2" value="6"/>
 </action>
-    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level7"/>
+    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tTrPer80Level7"/>
 <!-- level 7: left sep odds on --> 
-<action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
- <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level7))">
+<action type="if" condition="doLeftSeparateOdds">
+ <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level7))">
   <action type="assignment" variable="tStimulusNumber" value="6"/>
   <action type="assignment" variable="tLeftTrial" value="1"/>
 </action>
-<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level7))"> 
+<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level7))"> 
   <action type="assignment" variable="tStimulusNumber2" value="6"/>
 </action>
-<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level7"/>		 
+<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tLeftTrPer80Level7"/>		 
 </action>
 <!-- level 7: b2 sep odds on -->                          
 <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -804,10 +850,10 @@
 
 
 <!-- level 8 -->                         
-<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level8))"> 
+<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tTrPer80Level8))"> 
   <action type="assignment" variable="tStimulusNumber" value="7"/>
   <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)trPer80Level8-1)/2))"/>
+    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)tTrPer80Level8-1)/2))"/>
   </action>
   <action type="if" condition="!doBlock2">
     <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
@@ -815,24 +861,24 @@
   <action type="if" condition="!doMarkovLR &amp;&amp; !doLeftSeparateOdds">
    <action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
  </action>
- <action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
+ <action type="if" condition="doLeftSeparateOdds">
 <action type="assignment" variable="tLeftTrial" value="0"/>
 </action>
 </action>
-<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+trPer80Level8))"> 
+<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tTrPer80Level8))"> 
   <action type="assignment" variable="tStimulusNumber2" value="7"/>
 </action>
-    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level8"/>
+    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tTrPer80Level8"/>
 <!-- level 8: left sep odds on --> 
-<action type="if" condition="!doMarkovLR &amp;&amp; doLeftSeparateOdds">
- <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+leftTrPer80Level8))">
+<action type="if" condition="doLeftSeparateOdds">
+ <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level8))">
   <action type="assignment" variable="tStimulusNumber" value="7"/>
   <action type="assignment" variable="tLeftTrial" value="1"/>
 </action>
-<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+leftTrPer80Level8))"> 
+<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level8))"> 
   <action type="assignment" variable="tStimulusNumber2" value="7"/>
 </action>
-<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + leftTrPer80Level8"/>		 
+<action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + tLeftTrPer80Level8"/>		 
 </action>
 <!-- level 8: b2 sep odds on -->                          
 <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
