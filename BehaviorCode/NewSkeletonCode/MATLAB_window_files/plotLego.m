@@ -438,9 +438,9 @@ hold on;
 
 if nCorr>0 && input.doTestRobot==0,
   if input.gratingContrastDiffSPO<10
-    contDiffV = round(cell2matpad(input.tGratingContrast) ./ cell2matpad(input.dGratingContrast),2);
+    contDiffV = chop(cell2matpad(input.tGratingContrast) ./ cell2matpad(input.dGratingContrast),2);
   else
-    contDiffV = round(cell2matpad(input.tGratingContrast) - cell2matpad(input.dGratingContrast),2);
+    contDiffV = chop(cell2matpad(input.tGratingContrast) - cell2matpad(input.dGratingContrast),2);
   end
     corrDiffV = contDiffV(correctIx);
     uqDiff = unique(corrDiffV);
@@ -669,12 +669,12 @@ axH  = subplot(spSz{:},10);
 hold on
 
 if isfield(input, 'dGratingContrastDiff')
-  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
+  contrastDifferenceRight =chop(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
 end
 if input.gratingContrastDiffSPO > 10
-  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+  contrastDifferenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
-  contrastDifferenceRight = round(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+  contrastDifferenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 end
 
 plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
