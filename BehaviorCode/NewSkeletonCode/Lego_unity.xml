@@ -39,14 +39,18 @@
 
         <variable tag="doCorrectiveTrials" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Corrective Trials"/>
 
-        <variable tag="doRewardStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Reward Staircase"/>
-        <variable tag="rewardStaircaseWindowWidth" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Reward Staircase"/>
-        <variable tag="rewardStaircaseMinReward" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward Staircase"/>
-        <variable tag="rewardStaircaseMaxReward" scope="global" logging="when_changed" default_value="200000" type="integer" persistant="1" groups="Reward Staircase"/>
+        <variable tag="rewardTimeUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1" groups="Reward"/> 
+        <variable tag="doRewardGrating" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="rewardGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/> 
 
-        <variable tag="doConsecCorrectReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Consecutive Corrects Reward"/>
-        <variable tag="consecCorrRewardInterval" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Consecutive Corrects Reward"/>
-        <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Consecutive Corrects Reward"/>
+        <variable tag="doConsecCorrectReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Reward"/>
+        <variable tag="consecCorrRewardInterval" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="maxConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Reward"/>
+
+        <variable tag="doRewardStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Reward"/>
+        <variable tag="rewardStaircaseWindowWidth" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="rewardStaircaseMinReward" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
+        <variable tag="rewardStaircaseMaxReward" scope="global" logging="when_changed" default_value="200000" type="integer" persistant="1" groups="Reward"/>
 
         <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
         <variable tag="incorrectTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
@@ -92,7 +96,6 @@
         <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
-        <variable tag="rewardGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
 
         <variable tag="trPer80Level1" scope="global" logging="when_changed" default_value="80" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="trPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
@@ -364,42 +367,44 @@
                           <action type="assignment" variable="qTrialStart" value="quadrature" />
 
                           <action type="if" condition="tLastTrialCorrect == 1">
-                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
-                            <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
-                            <action tag="Update Display" type="update_stimulus_display"></action>
+                            <action type="if" condition="doRewardGrating == 1">
+                                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+                                <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+                                <action tag="Update Display" type="update_stimulus_display"></action>
 
-                            <action type="schedule" delay="125 ms" duration="1" repeats="1">
-                              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
-                              <action tag="Update Display" type="update_stimulus_display"></action>
-                            </action>
-                            <action type="schedule" delay="250 ms" duration="1" repeats="1">
-                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
-                              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
-                              <action tag="Update Display" type="update_stimulus_display"></action>
-                            </action>
-                            <action type="schedule" delay="375 ms" duration="1" repeats="1">
-                              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
-                              <action tag="Update Display" type="update_stimulus_display"></action>
-                              <action type="report" message="RewardGrating Dequeued"/>
-                            </action>
-                            <action type="schedule" delay="500 ms" duration="1" repeats="1">
-                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
-                              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
-                              <action tag="Update Display" type="update_stimulus_display"></action>
-                            </action>
-                            <action type="schedule" delay="625 ms" duration="1" repeats="1">
-                              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
-                              <action tag="Update Display" type="update_stimulus_display"></action>
-                            </action>
-                            <action type="schedule" delay="750 ms" duration="1" repeats="1">
-                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
-                              <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
-                              <action tag="Update Display" type="update_stimulus_display"></action>
-                            </action>
-                            <action type="schedule" delay="875 ms" duration="1" repeats="1">
-                              <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
-                              <action tag="Update Display" type="update_stimulus_display"></action>
-                              <action type="report" message="RewardGrating Dequeued"/>
+                                <action type="schedule" delay="125 ms" duration="1" repeats="1">
+                                  <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+                                  <action tag="Update Display" type="update_stimulus_display"></action>
+                                </action>
+                                <action type="schedule" delay="250 ms" duration="1" repeats="1">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+                                  <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+                                  <action tag="Update Display" type="update_stimulus_display"></action>
+                                </action>
+                                <action type="schedule" delay="375 ms" duration="1" repeats="1">
+                                  <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+                                  <action tag="Update Display" type="update_stimulus_display"></action>
+                                  <action type="report" message="RewardGrating Dequeued"/>
+                                </action>
+                                <action type="schedule" delay="500 ms" duration="1" repeats="1">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+                                  <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+                                  <action tag="Update Display" type="update_stimulus_display"></action>
+                                </action>
+                                <action type="schedule" delay="625 ms" duration="1" repeats="1">
+                                  <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+                                  <action tag="Update Display" type="update_stimulus_display"></action>
+                                </action>
+                                <action type="schedule" delay="750 ms" duration="1" repeats="1">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="rewardGrating"></action>
+                                  <action type="play_dynamic_stimulus" stimulus="rewardGrating" tag="start"></action>
+                                  <action tag="Update Display" type="update_stimulus_display"></action>
+                                </action>
+                                <action type="schedule" delay="875 ms" duration="1" repeats="1">
+                                  <action type="dequeue_stimulus" stimulus="rewardGrating"></action>
+                                  <action tag="Update Display" type="update_stimulus_display"></action>
+                                  <action type="report" message="RewardGrating Dequeued"/>
+                                </action>
                             </action>
                           </action>
 
@@ -443,7 +448,7 @@
                            <action type="if" condition="doBiasStaircase == 1 ">
                              <action type="assignment" variable="tStimProbAvgLeft" value="1 - tLeftBias"/>
                            </action>
-                           
+
                           <!-- If choosing L/R by markov based on left, switch, and last trial state. -->
                           <action type="if" condition="doMarkovLR">
 
