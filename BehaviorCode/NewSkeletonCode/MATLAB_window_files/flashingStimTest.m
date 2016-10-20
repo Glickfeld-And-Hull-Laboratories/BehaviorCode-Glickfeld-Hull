@@ -12,6 +12,7 @@ end
 
 ds = data_struct;
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/MatlabSharedCode');
+addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
 
 varsOneValEachTrial = {...
     'tTotalRewardTimeUs', ...
@@ -161,6 +162,14 @@ if input.tShortCatchTrial{trN}
     end
 else
     input.catchTrialOutcomeCell{trN} = 'NaN';
+end
+
+try
+    input.wheelSpeedTimesUs{trN} = mwGetEventTime(ds.events, ds.event_codec, 'wheelSpeed', 'all', [], 1);
+    input.wheelSpeedValues{trN} = mwGetEventValue(ds.events, ds.event_codec, 'wheelSpeed', 'all', 1) ;
+catch
+    input.wheelSpeedTimesUs{trN} = NaN;
+    input.wheelSpeedValues{trN} = NaN;
 end
 
 %Andrew's Post-Hoc Reaction Time Method
