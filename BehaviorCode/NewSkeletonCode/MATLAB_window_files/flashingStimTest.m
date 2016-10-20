@@ -11,7 +11,7 @@ if nargin < 2,
 end
 
 ds = data_struct;
-addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/MatlabSharedCode');
+addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/Old-maunsell/MatlabSharedCode');
 addpath('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorAnalysis');
 
 varsOneValEachTrial = {...
