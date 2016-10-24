@@ -59,7 +59,8 @@
       <variable tag="rewardOmissionPercent" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Reward"/>
       <variable tag="rewardDelayPercent" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Reward"/>
       <variable tag="RewardDelayDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Reward"/>
-
+      <variable tag="rewardUnexpectPercent" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Reward"/>
+      
     </folder>
     <folder tag="Stimuli">
       <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
@@ -837,6 +838,11 @@
             <action type="assert" condition="abs(tBaseGratingDirectionDeg-tGratingDirectionDeg) &lt;= 360" stop_on_failure="1" 
                     message="Maximum direction step is 360 degrees"/>
 
+            <action type="if" condition="rewardUnexpectPercent != 0">
+              <action type="assignment" variable="tDoNoStimulusChange" value="(int)(disc_rand(0,100) &lt; rewardUnexpectPercent)"/>
+              <action type="report" message="the tDoNoStimulusChange is $tDoNoStimulusChange"/>
+            </action>
+
             <!-- send laser params to controller -->
             <action type="if" condition="doLaserStim">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
@@ -1022,7 +1028,7 @@
                 <action type="assignment" variable="cTargetOn" value="counter"></action>
 
               <!-- vis stim on -->
-              <action type="if" condition="doVisualStim &amp;&amp; doNoStimulusChange==0">
+              <action type="if" condition="doVisualStim &amp;&amp; tDoNoStimulusChange==0">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                 <action tag="Update Display" type="update_stimulus_display"></action>
                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
@@ -1081,6 +1087,7 @@
             <transition type="conditional" tag="If Lever Up" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="!doLever &amp;&amp; (counter &gt;= (cLeverDown + tFakeMouseReactFrames))" target="Reward"></transition>
+            <transition type="conditional" tag="If Unexpected Reward" condition="tDoNoStimulusChange == 1" target="Reward"></transition>
             <transition type="conditional" tag="Go to Missed" condition="(counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
             <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff" ></transition>
           </task_system_state>
