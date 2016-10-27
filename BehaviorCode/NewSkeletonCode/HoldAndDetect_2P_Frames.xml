@@ -42,6 +42,9 @@
       <variable tag="geomHoldMeanMs" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>        
       <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="750" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="doRandItiTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+      <variable tag="itiRangeMaxTimeMs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="itiRangeMinTimeMs" scope="global" logging="when_changed" default_value="25000" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
       
       <variable tag="doSolenoidOnTimeout" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Timeouts"/>
@@ -352,13 +355,6 @@
             <action type="if" condition="success+ignore+failure > 0">
               <action type="assignment" variable="isFirstTrial" value="0"></action>
             </action>  
-
-            <action type="if" condition="doLED==1">
-            <action type="assignment" variable="laserTrigger" value="1"/>
-            <action type="schedule" delay="125 ms" duration="1" repeats="1">
-              <action type="assignment" variable="laserTrigger" value="0"></action>
-            </action>
-          </action>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -873,9 +869,18 @@
 
             <!-- compute ITI time -->
             <!-- initialize with a const value -->
-            <action type="assignment" 
-                    variable="tItiWaitTimeMs" 
-                    value="itiTimeMs"></action>
+            <action type="if" condition="doRandItiTime == 0">
+          <action type="assignment" 
+              variable="tItiWaitTimeMs" 
+              value="itiTimeMs"></action>
+          </action>
+
+          <action type="if" condition="doRandItiTime == 1">
+          <action type="assignment" 
+              variable="tItiWaitTimeMs" 
+              value="disc_rand(itiRangeMinTimeMs/100, itiRangeMaxTimeMs/100)*100"></action>
+          </action>
+          <action type="report" message="-------The randomization of ITI is $tItiWaitTimeMs"></action>
             
             <!-- extend based on previous hold and max stim time, if asked for -->
             <action type="if" condition="!isFirstTrial"> 
@@ -990,6 +995,7 @@
 
           <task_system_state tag="HoldLever" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" variable="laserTrigger" value="1"></action> 
             <action tag="p" type="play_sound" sound="louderPressSound"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
