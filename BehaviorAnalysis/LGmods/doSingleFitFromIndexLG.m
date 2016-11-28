@@ -60,7 +60,7 @@ fitParams = { ...
 %% do fit and plot
 block2IndexList = [0 1];
 figH = figure('Tag', 'doSingleFitFromIndex');%(53);
-spSz = {bs.nBlock2Indices,1};
+spSz = {bs.nBlock2Indices,bs.nside};
 clear fitS bootS
 
 bs.ds = ds;
@@ -68,26 +68,35 @@ bs.x1d = x1d;
 for iB = 1:bs.nBlock2Indices
     tBN = block2IndexList(iB);
     whichTrials = bs.whichTrials(find(bs.block2V == tBN));
-    
-    axH(iB) = subplot(spSz{:}, iB); cla; hold on;
-    
-    bs0 = behavDataExtractOneBlock(bs, iB);
-    bs0.block = iB;
-    [fitS(iB) bootS(iB)] = weibullFitWithBootstrapLG(...
-        'BehavDataStruct', bs0, ...
-        'DoPlot', true, ...
-        fitParams{:}, ...
-        'DoBootstrap', true, ...
-        'NBootstrapReps', uo.NBootstrapReps);
 
-    if x1d.MergeBlock1And2 == true
-        title('merged block 1 and 2');
-    elseif bs.intensityIsChr2 && x1d.DoTakeParamsFromMatFile ~= 1
-        % for now, format from the index - at some point I should pull this
-        % from the datafile and verify it all works
-        title(formatBlock2ParamsFromIndex(x1d, iB));
-    elseif ~bs.is2AFC
-        title(formatBlock2ParamsFromConstsInStruct(ds, iB));
+    for iS = 1:size(bs.nCorr,3)
+        axH(iB) = subplot(spSz{:}, iS+((iB-1)*bs.nside)); cla; hold on;
+        bs0 = behavDataExtractOneBlock(bs, iB, iS);
+        bs0.block = iB;
+        [fitS(iB, iS) bootS(iB, iS)] = weibullFitWithBootstrapLG(...
+            'BehavDataStruct', bs0, ...
+            'DoPlot', true, ...
+            fitParams{:}, ...
+            'DoBootstrap', true, ...
+            'NBootstrapReps', uo.NBootstrapReps);
+
+        if x1d.MergeBlock1And2 == true
+            title('merged block 1 and 2');
+        elseif bs.intensityIsChr2 && x1d.DoTakeParamsFromMatFile ~= 1
+            % for now, format from the index - at some point I should pull this
+            % from the datafile and verify it all works
+            title(formatBlock2ParamsFromIndex(x1d, iB));
+        elseif ~bs.is2AFC
+            title(formatBlock2ParamsFromConstsInStruct(ds, iB));
+        elseif bs.is2AFC
+            if iS == 1
+                title('All trials')
+            elseif iS == 2
+                title('Left trials')
+            elseif iS == 3
+                title('Right trials')
+            end
+        end
     end
 end
 
@@ -119,16 +128,16 @@ save(outMatName, 'fitS', 'bootS');
 outName = fullfile(rc.fitOutputPdfDir, ...
     sprintf('subj%03d-%s-%s.pdf', subjNum, dateStr, dbStr));
 for iB = 1:bs.nBlock2Indices
-    fitXd.(sprintf('Threshold%d', iB))(desN) = fitS(iB).thresh;
-    fitXd.(sprintf('Slope%d', iB))(desN) = fitS(iB).slope;
-    fitXd.(sprintf('Threshold%dCi95Low', iB))(desN) = fitS(iB).bootStats.ci95(1);
-    fitXd.(sprintf('Threshold%dCi95High', iB))(desN) = fitS(iB).bootStats.ci95(2);
-    fitXd.(sprintf('Threshold%dCi99Low', iB))(desN) = fitS(iB).bootStats.ci99(1);
-    fitXd.(sprintf('Threshold%dCi99High', iB))(desN) = fitS(iB).bootStats.ci99(2);
-    fitXd.(sprintf('Slope%dCi95Low', iB))(desN) = fitS(iB).bootStats.slopeCi95(1);
-    fitXd.(sprintf('Slope%dCi95High', iB))(desN) = fitS(iB).bootStats.slopeCi95(2);
-    fitXd.(sprintf('Slope%dCi99Low', iB))(desN) = fitS(iB).bootStats.slopeCi99(1);
-    fitXd.(sprintf('Slope%dCi99High', iB))(desN) = fitS(iB).bootStats.slopeCi99(2);
+    fitXd.(sprintf('Threshold%d', iB))(desN) = fitS(iB,1).thresh;
+    fitXd.(sprintf('Slope%d', iB))(desN) = fitS(iB,1).slope;
+    fitXd.(sprintf('Threshold%dCi95Low', iB))(desN) = fitS(iB,1).bootStats.ci95(1);
+    fitXd.(sprintf('Threshold%dCi95High', iB))(desN) = fitS(iB,1).bootStats.ci95(2);
+    fitXd.(sprintf('Threshold%dCi99Low', iB))(desN) = fitS(iB,1).bootStats.ci99(1);
+    fitXd.(sprintf('Threshold%dCi99High', iB))(desN) = fitS(iB,1).bootStats.ci99(2);
+    fitXd.(sprintf('Slope%dCi95Low', iB))(desN) = fitS(iB,1).bootStats.slopeCi95(1);
+    fitXd.(sprintf('Slope%dCi95High', iB))(desN) = fitS(iB,1).bootStats.slopeCi95(2);
+    fitXd.(sprintf('Slope%dCi99Low', iB))(desN) = fitS(iB,1).bootStats.slopeCi99(1);
+    fitXd.(sprintf('Slope%dCi99High', iB))(desN) = fitS(iB,1).bootStats.slopeCi99(2);
     fitXd.PdfFigFilename{desN} = outName;
     fitXd.MatFilename{desN} = outMatName;
     fitXd.DateTimeStarted{desN} = datestr(now);
