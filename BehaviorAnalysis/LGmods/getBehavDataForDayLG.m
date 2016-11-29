@@ -401,8 +401,8 @@ for iB = 1:nBlock2Indices
             tV = reactTimesMs(iIx & successIx & b2Ix & iSx);
 
             if length(tV) == 0, 
-                assert( sum(iIx & b2Ix) > 0 );
-                assert( sum(iIx & b2Ix & successIx) == 0);
+                assert( sum(iIx & b2Ix & iSx) > 0 );
+                assert( sum(iIx & b2Ix & successIx & iSx) == 0);
                 tV = NaN; 
             end 
             outS.reactTimesByPower{iI,iB,iS} = tV;
