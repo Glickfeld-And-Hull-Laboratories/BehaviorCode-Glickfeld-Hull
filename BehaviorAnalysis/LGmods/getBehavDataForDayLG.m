@@ -200,7 +200,7 @@ if outS.is2AFC
         outS.do2AFCdetect = 1;
         outS.do2AFCdiscrim = 0;
     else
-        gratingContrast = rightGratingContrast./leftGratingContrast;
+        gratingContrast = tGratingContrast./dGratingContrast;
         outS.do2AFCdetect = 0;
         outS.do2AFCdiscrim = 1;
     end
