@@ -56,6 +56,7 @@ leftTrialIx = logical(leftTrialIx);
 nLeft = sum(leftTrialIx);
 nRight = sum(rightTrialIx);
 block2Ix = cell2matpad(input.tBlock2TrialNumber);
+noGoIx = celleqel2mat_padded(input.isNoGo);
 
 leftOutcomes = input.trialOutcomeCell(leftTrialIx);
 leftCorr = strcmp(leftOutcomes, 'success');
@@ -393,6 +394,9 @@ set(gca, 'XLim', trXLim);
 axH = subplot(spSz{:}, 6);
 hold on;
 
+correctIx = correctIx & ~noGoIx;
+incorrectIx = incorrectIx & ~noGoIx;
+
 noMissIx = correctIx|incorrectIx;
 xYVals = find(noMissIx);
 decTimes = cell2matpad(input.tDecisionTimeMs);
@@ -436,7 +440,7 @@ xlabel('Trials');
 axH = subplot(spSz{:},7);
 hold on;
 
-if nCorr>0 && input.doTestRobot==0,
+if nCorr>0  && input.doTestRobot==0,
   if input.gratingContrastDiffSPO<10
     contDiffV = chop(cell2matpad(input.tGratingContrast) ./ cell2matpad(input.dGratingContrast),2);
   else
@@ -668,14 +672,14 @@ xlabel('Time');
 axH  = subplot(spSz{:},10);
 hold on
 
-if isfield(input, 'dGratingContrastDiff')
-  contrastDifferenceRight =chop(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
-end
 if input.gratingContrastDiffSPO > 10
   contrastDifferenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
 elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
   contrastDifferenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+elseif isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
+  contrastDifferenceRight =chop(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
 end
+
 
 plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
 nLevelsB1 = unique(plotTrsB1);
@@ -728,9 +732,22 @@ if sum(block2Ix)>0
             percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
         end
     end
-end
+  end
 end
 
+if input.doNoGo
+  didNoGoIx = celleqel2mat_padded(input.didNoGo);
+  didNoGoIx
+  plotTrsNoGo = contrastDifferenceRight(noGoIx|didNoGoIx);
+  nLevelsNoGo = unique(plotTrsNoGo);
+  for kk=1:length(nLevelsNoGo)
+    valNoGo = nLevelsNoGo(kk);
+    valIx = contrastDifferenceRight==valNoGo;
+    totalNTrialsVal = sum(valIx);
+    totalNTrialsValNoGo = sum(valIx & didNoGoIx);
+    percentContCellNoGo{kk} = totalNTrialsValNoGo/totalNTrialsVal;
+  end
+end
 
 if min(contrastDifferenceRight) < 0
     minX = min(contrastDifferenceRight);
@@ -754,6 +771,9 @@ pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '
 if sum(block2Ix)>= 1
   pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
+if input.doNoGo
+  pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+end
 if input.gratingContrastDiffSPO <= 100
   vH = plot([1 1],[0 1]);
 else
@@ -774,7 +794,13 @@ else
             'XTick', xTickL,...
             'XTickLabel', xTLabelL);
 end
+
 ylabel('% Right')
+
+if input.doNoGo
+  ylabel('% Right / % NoGo')
+end
+
 grid on
 
 maxCell = length(nLevelsB1);

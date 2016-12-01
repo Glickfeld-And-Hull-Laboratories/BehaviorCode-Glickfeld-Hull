@@ -74,6 +74,7 @@
         <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Test Robot"/>
         <variable tag="robotLeftProb" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Test Robot"/>
         <variable tag="robotGoLeft" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Test Robot"/>
+        <variable tag="maxRobotReactTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Test Robot"/>
 
         <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
         <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -248,6 +249,8 @@
         <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="tNBlockLeftTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
         <variable tag="tNBlockRightTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
+        <variable tag="tRobotReactTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
         
         <variable tag="tRandProbIndex" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tRandProbIndexLast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -878,31 +881,31 @@
 
 <!-- Nogo level -->                         
 <action type="if" condition="doNoGo"> 
-<action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+noGoTrPer80))"> 
-  <action type="assignment" variable="tStimulusNumber" value="8"/>
-  <action type="assignment" variable="tLeftTrial" value="0"/>
-  <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
-    <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)noGoTrPer80-1)/2))"/>
-  </action>
-  <action type="if" condition="!doBlock2">
-    <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
-  </action>
-</action>
-<action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+noGoTrPer80))"> 
-  <action type="assignment" variable="tStimulusNumber2" value="8"/>
-</action>
-    <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + noGoTrPer80"/>
-<!-- level 8: b2 sep odds on -->                          
-<action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
-  <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2NoGoTrPer80))"> 
-    <action type="assignment" variable="tStimulusNumber" value="8"/> 
-    <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-    <action type="assignment" variable="tLeftTrial" value="0"/>         
-  </action>
-  <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2NoGoTrPer80))"> 
-    <action type="assignment" variable="tStimulusNumber2" value="8"/>
-  </action>
-  <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2NoGoTrPer80"/>
+    <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+noGoTrPer80))"> 
+      <action type="assignment" variable="tStimulusNumber" value="8"/>
+      <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+        <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)noGoTrPer80-1)/2))"/>
+      </action>
+      <action type="if" condition="!doBlock2">
+        <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+      </action>
+    </action>
+    <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+noGoTrPer80))"> 
+      <action type="assignment" variable="tStimulusNumber2" value="8"/>
+    </action>
+        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + noGoTrPer80"/>
+    <!-- level 8: b2 sep odds on -->                          
+    <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+      <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2NoGoTrPer80))"> 
+        <action type="assignment" variable="tStimulusNumber" value="8"/> 
+        <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+        <action type="assignment" variable="tLeftTrial" value="0"/>         
+      </action>
+      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2NoGoTrPer80))"> 
+        <action type="assignment" variable="tStimulusNumber2" value="8"/>
+      </action>
+      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2NoGoTrPer80"/>
+    </action>
 </action>
 
 <action type="report" message="tLeftTrial is $tLeftTrial!!!!"></action>
@@ -942,12 +945,14 @@
 
                   <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber == 8">
                     <action type="assignment" variable="isNoGo" value="1"></action>
-                    <action type="assignment" variable="tGratingContrast" value="0"></action>
-                    <action type="assignment" variable="dGratingContrast" value="0"></action>
+                    <action type="report" message="This is a NoGo trial"></action>
+                    <action type="assignment" variable="tGratingContrast" value="0.00001"></action>
+                    <action type="assignment" variable="dGratingContrast" value="0.00001"></action>
                     <action type="assignment" variable="dGratingContrastDiff" value="1"></action>
+                    <action type="assignment" variable="tLeftTrial" value="round(rand(0,1))"></action>
                   </action>
 
-                  <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber &lt; 8">
+                  <action type="if" condition="tStimulusNumber &lt; 8">
                     <action type="assignment" variable="isNoGo" value="0"></action>
                   </action>
 
@@ -1080,6 +1085,12 @@
                         <action type="play_sound" sound="startSound"/>
                         <action type="start_timer" timer="delayTimerMs" timebase="" duration="delayTimeMs" duration_units="ms"/>
 
+                        <action type="if" condition="doTestRobot &amp;&amp; doAllCorrects==0">
+                          <action type="assignment" tag="set robotGoLeft" variable="robotGoLeft" value="robotLeftProb >= rand(0,1)"/>
+                          <action type="assignment" tag="set robotGoLeft" variable="tRobotReactTimeMs" value="rand(0,maxRobotReactTimeMs)"/>
+                          <action type="start_timer" timer="robotTimerMs" timebase="" duration="tRobotReactTimeMs" duration_units="ms"/>
+                        </action>
+
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="delayTimerMs" target="StimOn"></transition>
                       </task_system_state>
@@ -1153,10 +1164,6 @@
                           <action tag="Update Display" type="update_stimulus_display"/>
                         </action>
 
-                        <action type="if" condition="doTestRobot &amp;&amp; doAllCorrects==0">
-                          <action type="assignment" tag="set robotGoLeft" variable="robotGoLeft" value="robotLeftProb >= rand(0,1)"/>
-                        </action>
-
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" condition="timerExpired(stimOnTimerMs) &amp;&amp; !stimIsOff" target="StimOff"></transition>
                         <transition type="conditional" condition="timerExpired(reactionTimerMs) &amp;&amp; !isNoGo" target="Ignore"></transition>
@@ -1174,12 +1181,12 @@
                         <transition type="conditional" condition="doTestRobot==0 &amp;&amp; isNoGo &amp;&amp; tLeftTrial==1 &amp;&amp; !invertDirection &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
                         <transition type="conditional" condition="doTestRobot==0 &amp;&amp; isNoGo &amp;&amp; tLeftTrial==0 &amp;&amp; !invertDirection &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
                         <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==1" target="Reward"></transition>
-                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
-                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
-                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; !isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Reward"></transition>
-                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; !isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Reward"></transition>
-                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
-                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
+                        <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
+                        <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
+                        <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; !isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Reward"></transition>
+                        <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; !isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Reward"></transition>
+                        <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
+                        <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
                         <transition type="direct" target="Reaction"></transition>
                       </task_system_state>
 
