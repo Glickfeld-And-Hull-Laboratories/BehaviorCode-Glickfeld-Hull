@@ -9,7 +9,8 @@
       trial_laser_powerMw="tTrialLaserPowerMw"
       optic_device="optic_device"
       strobed_digital_word="strobedDigitalWord"
-      counter="counter"/>
+      counter="counter"
+      puff_duration="tPuffDurationMs"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
       <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
     </io_devices>
@@ -78,6 +79,10 @@
 
         <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
         <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+        <variable tag="doPuffIncorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Air Puff"/>
+        <variable tag="puffDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+
       </folder>
       <folder tag="Stimuli">
         <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
@@ -254,6 +259,8 @@
         
         <variable tag="tRandProbIndex" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tRandProbIndexLast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+
+        <variable tag="tPuffDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
         <variable tag="tTrPer80Level1" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tTrPer80Level2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -1282,6 +1289,9 @@
                         <action type="update_stimulus_display"></action>
                         <action type="play_sound" sound="incorrectSound"/>
                         <action type="play_sound" sound="whiteNoiseSound"/>
+                        <action type="if" condition="doPuffIncorrect == 1 &amp;&amp; tGratingContrast == 1">
+                            <action type="assignment" variable="tPuffDurationMs" value="puffDurationMs"/>
+                        </action>
                         <action type="start_timer" timer="incorrectTimeoutTimer" timebase="" duration="incorrectTimeoutMs" duration_units="ms"/>
                         <action type="assignment" tag="Incorrects++" variable="incorrect" value="incorrect+1"/>
                         <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors+1"/>
