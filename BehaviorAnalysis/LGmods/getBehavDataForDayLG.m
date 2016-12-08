@@ -200,7 +200,7 @@ if outS.is2AFC
         outS.do2AFCdetect = 1;
         outS.do2AFCdiscrim = 0;
     else
-        gratingContrast = rightGratingContrast./leftGratingContrast;
+        gratingContrast = tGratingContrast./dGratingContrast;
         outS.do2AFCdetect = 0;
         outS.do2AFCdiscrim = 1;
     end
@@ -358,6 +358,7 @@ if ~outS.is2AFC
     earlyIx = strcmp(trialOutcomeCell, 'failure');
     missedIx = strcmp(trialOutcomeCell, 'ignore');
     successIx = strcmp(trialOutcomeCell, 'success');
+    outS.nside = 1;
 elseif outS.is2AFC
 %     %using same names, but this successIx == wentRight, and missedIx == went left
 %     correctIx = strcmp(trialOutcomeCell, 'success');
@@ -368,6 +369,7 @@ elseif outS.is2AFC
     successIx = strcmp(trialOutcomeCell, 'success');
     missedIx = strcmp(trialOutcomeCell, 'incorrect');
     earlyIx = strcmp(trialOutcomeCell, 'ignore'); %not right, but can figure out a different solution later
+    outS.nside = 3;
 end
 
 %% consts 
@@ -383,26 +385,35 @@ for iB = 1:nBlock2Indices
     for iI = 1:nIntensities(iB)
         tI = intensitiesC{iB}(iI);
         iIx = intensityV == tI;
+        
+        for iS = 1:outS.nside
+            if iS == 1
+                iSx = iIx;
+            elseif iS == 2
+                iSx = leftTrials;
+            elseif iS == 3
+                iSx = rightTrials;
+            end
+            nCorr(iB, iI, iS) = sum(iIx & successIx & b2Ix & iSx);
+            nEarly(iB, iI, iS) = sum(iIx & earlyIx & b2Ix & iSx);
+            nMiss(iB, iI, iS) = sum(iIx & missedIx & b2Ix & iSx);
+            nRawTot(iB, iI, iS) = sum(iIx & b2Ix & iSx);
+            tV = reactTimesMs(iIx & successIx & b2Ix & iSx);
 
-        nCorr(iB, iI) = sum(iIx & successIx & b2Ix);
-        nEarly(iB, iI) = sum(iIx & earlyIx & b2Ix);
-        nMiss(iB, iI) = sum(iIx & missedIx & b2Ix);
-        nRawTot(iB, iI) = sum(iIx & b2Ix);
-
-        tV = reactTimesMs(iIx & successIx & b2Ix);
-        if length(tV) == 0, 
-            assert( sum(iIx & b2Ix) > 0 );
-            assert( sum(iIx & b2Ix & successIx) == 0);
-            tV = NaN; 
-        end 
-        outS.reactTimesByPower{iI,iB} = tV;
-        outS.reactTimeMean(iI,iB) = mean(tV);
-        outS.reactTimeStd(iI,iB) = std(tV);
-        outS.reactTimeSEM(iI,iB) = std(tV) ./ sqrt(length(tV));
-
+            if length(tV) == 0, 
+                assert( sum(iIx & b2Ix & iSx) > 0 );
+                assert( sum(iIx & b2Ix & successIx & iSx) == 0);
+                tV = NaN; 
+            end 
+            outS.reactTimesByPower{iI,iB,iS} = tV;
+            outS.reactTimeMean(iI,iB,iS) = mean(tV);
+            outS.reactTimeStd(iI,iB,iS) = std(tV);
+            outS.reactTimeSEM(iI,iB,iS) = std(tV) ./ sqrt(length(tV));
+        end
         outS.intensityNums(iIx) = iI;
     end
-    nCorrPlusMissC{iB} = nCorr(iB,1:nIntensities(iB)) + nMiss(iB,1:nIntensities(iB));
+    nCorrPlusMissC{iB} = nCorr(iB,1:nIntensities(iB),:) + nMiss(iB,1:nIntensities(iB),:);
+    
 end
 nCorrPlusMiss = nCorr+nMiss;
 
@@ -511,11 +522,14 @@ if doContrast & ~outS.is2AFC
         end
     end
 end
+if outS.is2AFC
+    intensitiesC = repmat(intensitiesC, [1 1 outS.nside]);
+end
     
 %% make cells
-outS.percentsCorrectC{1} = pctCorr(1,~isnan(pctCorr(1,:)));
+outS.percentsCorrectC{1} = pctCorr(1,:,:);
 if nBlock2Indices == 2
-    outS.percentsCorrectC{2} = pctCorr(2,~isnan(pctCorr(2,:)));
+    outS.percentsCorrectC{2} = pctCorr(2,:,:);
 end
 
 %% output

@@ -5,7 +5,7 @@ function [outS] = behavDataExtractOneBlock(bs, block2N, side)
 
 outS = bs;
 
-if bs.nBlock2Indices == 1 && block2N == 1
+if bs.nBlock2Indices == 1 && bs.nside == 1
     outS = bs; 
     return
 end
@@ -23,15 +23,37 @@ cellExtractFields = {};
 for iF = 1:length(matFields)
     tFN = matFields{iF};
     tF = bs.(tFN);
-    desDim = find(size(tF) == 2);
+    desDim = size(tF);
+    
+    if length(desDim)<3
+        bs.(tFN) = tF{block2N};
+        tF = bs.(tFN);
+        desDim = size(tF);
+    end
+    
     assert(~isempty(desDim), ['bug: field #' num2str(iF) ' not found']);
     
-    if desDim == 1
-        outS.(tFN) = bs.(tFN)(block2N,:);
-    elseif desDim == 2
-        outS.(tFN) = bs.(tFN)(:,block2N);
-    elseif desDim == 3
-        outS.(tFN) = bs.(tFN)(:,block2N, side);
+    if bs.nBlock2Indices > 1 && bs.nside == 1
+        ind = find(desDim == 2);
+        if ind == 1
+        	outS.(tFN) = bs.(tFN)(block2N,:);
+        else
+            outS.(tFN) = bs.(tFN)(:,block2N);
+        end
+    elseif bs.nBlock2Indices == 1 && bs.nside > 1
+        ind = find(desDim == 1);
+        if ind == 1
+            outS.(tFN) = bs.(tFN)(block2N,:,side);
+        else
+            outS.(tFN) = bs.(tFN)(:,block2N,side);
+        end
+    elseif bs.nBlock2Indices > 1 && bs.nside > 1 %check orientation of these matrices
+        ind = find(desDim == 2);
+        if ind == 1
+            outS.(tFN) = bs.(tFN)(block2N,:,side);
+        else
+            outS.(tFN) = bs.(tFN)(:,block2N,side);
+        end
     else
         error('bug: too many dims?');
     end
