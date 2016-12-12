@@ -51,6 +51,7 @@
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Trial Structure"/>
+      <variable tag="targetOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Trial Structure"/>
@@ -174,6 +175,7 @@
 
       <variable tag="block2StimOnTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2StimOffTimeMs" scope="global" logging="when_changed" default_value="250" type="integer" persistant="1" groups="Block2 Stimulus"/>
+      <variable tag="block2TargetOnTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2MinCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2MaxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Block2 Stimulus"/>
 
@@ -284,6 +286,7 @@
 
       <variable tag="tStimOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimOffTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tTargetOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tMinCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tMaxCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
@@ -312,6 +315,7 @@
       <variable tag="tDoAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="doCustomTargetTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
@@ -767,6 +771,7 @@
             <action type="if" condition="!doBlock2">
                   <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
                   <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                  <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
                   <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
                   <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
@@ -817,6 +822,7 @@
                 <action type="if" condition="tBlock2TrialNumber == 0">
                   <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
                   <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                  <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
                   <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
                   <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
@@ -845,6 +851,7 @@
                   <action type="if" condition="block2MatchB1VisStim == 0">
                     <action type="assignment" variable="tStimOnTimeMs" value="block2StimOnTimeMs"></action>
                     <action type="assignment" variable="tStimOffTimeMs" value="block2StimOffTimeMs"></action>
+                    <action type="assignment" variable="tTargetOnTimeMs" value="block2TargetOnTimeMs"></action>
                     <action type="assignment" variable="tMinCyclesOn" value="block2MinCyclesOn"></action>
                     <action type="assignment" variable="tMaxCyclesOn" value="block2MaxCyclesOn"></action>
                     <action type="assignment" variable="tBaseGratingDirectionDeg" value="block2BaseGratingDirectionDeg"></action>
@@ -863,6 +870,7 @@
                   <action type="if" condition="block2MatchB1VisStim == 1">
                     <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
                     <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                    <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
                     <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
                     <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
                     <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
@@ -945,6 +953,7 @@
                 <!-- in both cases -->  
                 <action type="assignment" variable="tStimOnTimeMs" value="stimOnTimeMs"></action>
                 <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
+                <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
                 <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
                 <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>                     
                 <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                           
@@ -1300,6 +1309,8 @@
 
             <action type="report" message="Lever Down - Trial Started - Stim Off"/>
 
+            
+
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
@@ -1336,7 +1347,13 @@
             <action type="assignment" variable="cTargetOn" value="counter"/>
             <action type="assignment" variable="stimTag" value= "2"/>
             <action type="assignment" tag="set Stim on time" variable="tStimOnMs" value="now()/1000"/>
-            <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
+
+            <action type="if" condition="(doCustomTargetTime==0) &amp;&amp; (tCyclesOn &gt;= nCyclesOn)">
+              <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
+            </action>
+            <action type="if" condition="(doCustomTargetTime==1) &amp;&amp; (tCyclesOn &gt;= nCyclesOn)">
+              <action type="assignment" tag="set Target Stim on time" variable="tTargetOnTimeMs" value="now()/1000"/>
+            </action>
         
             <action type="report" message="Grating Contrast is $tGratingContrast"></action>
             <action type="report" message="Grating Orientation is $tGratingDirectionDeg"></action>
