@@ -63,6 +63,7 @@
         <variable tag="doBiasStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Markov/Bias"/>
         <variable tag="doRandProb" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Markov/Bias"/>
         <variable tag="RandProbTrialperBlock" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Markov/Bias"/>
+        <variable tag="RandProbPreBlockTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Markov/Bias"/>
         <variable tag="ProbList" scope="global" logging="when_changed" default_value="0.1, 0.5, 0.9" type="list" persistant="1" groups="Markov/Bias"/>
         <variable tag="tLeftBias" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="0" groups="Markov/Bias"/>
         <variable tag="stimProbAvgLeft" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Markov/Bias"/>
@@ -239,6 +240,7 @@
 
         <variable tag="isNoGo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="didNoGo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="inPreBlock" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
         <variable tag="qStimOn" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="qTrialStart" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -432,6 +434,7 @@
 
                           <action type="if" condition="doRandProb == 1">
                             <action type="run_python_string" tag="set tStimProbAvgLeft" code="calc_tStimProbAvgLeft()"></action>
+                            <action type="report" message="tStimProbAvgLeft is $tStimProbAvgLeft"/>
                             </action>   
 
                             <!-- Calculate left/right according to bias staircase -->
@@ -942,6 +945,11 @@
                   </action>
 
                   <action type="report" tag="" message="tBlock2TrialNumber is $tBlock2TrialNumber"/>
+
+                  <action type="if" condition="inPreBlock">
+                        <action type="assignment" variable="tStimulusNumber" value="0"/>
+                  </action>
+                        
                   <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))"/>
 
                   <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff / (pow(2, 1.0*tStimulusNumber2/gratingContrastDiffSPO)) + 1"></action>
@@ -958,7 +966,7 @@
                     <action type="assignment" variable="dGratingContrastDiff" value="1"></action>
                     <action type="assignment" variable="tLeftTrial" value="round(rand(0,1))"></action>
                   </action>
-
+                    
                   <action type="if" condition="tStimulusNumber &lt; 8">
                     <action type="assignment" variable="isNoGo" value="0"></action>
                   </action>
