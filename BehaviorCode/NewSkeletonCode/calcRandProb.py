@@ -39,6 +39,8 @@ def calc_tStimProbAvgLeft():
 				setvar('tStimProbAvgLeft', 0)
 			if probList[tempval] > 0.5:
 				setvar('tStimProbAvgLeft', 1)
+			if probList[tempval] == 0.5:
+				setvar('tStimProbAvgLeft', probList[tempval])
 		elif preblock == 0:
 			setvar('inPreBlock', 0)
 			setvar('tStimProbAvgLeft', probList[tempval])
@@ -50,6 +52,8 @@ def calc_tStimProbAvgLeft():
 				setvar('tStimProbAvgLeft', 0)
 			if probList[lastIndex] > 0.5:
 				setvar('tStimProbAvgLeft', 1)
+			if probList[lastIndex] == 0.5:
+				setvar('tStimProbAvgLeft', probList[lastIndex])
 		if compTrials%nTrialPerBlock > preblock:
 			setvar('inPreBlock', 0)	
 			setvar('tStimProbAvgLeft', probList[lastIndex])
