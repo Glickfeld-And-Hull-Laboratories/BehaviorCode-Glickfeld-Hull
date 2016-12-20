@@ -47,7 +47,11 @@ nIg = sum(ignoreIx);
 nTrials = length(input.trialOutcomeCell);
 decisionV = celleqel2mat_padded(input.tDecisionTimeMs);
 trPer80Str = regexprep(['[' num2str(input.trPer80V, '%3d') ']'], '[ *', '[');
-leftTrPer80Str = ['[' num2str([input.leftTrPer80Level1 input.leftTrPer80Level2 input.leftTrPer80Level3 input.leftTrPer80Level4 input.leftTrPer80Level5 input.leftTrPer80Level6 input.leftTrPer80Level7 input.leftTrPer80Level8]) ']' ];
+if isfield(input, 'leftTrPer80Level1')
+  leftTrPer80Str = ['[' num2str([input.leftTrPer80Level1 input.leftTrPer80Level2 input.leftTrPer80Level3 input.leftTrPer80Level4 input.leftTrPer80Level5 input.leftTrPer80Level6 input.leftTrPer80Level7 input.leftTrPer80Level8]) ']' ];
+else
+  leftTrPer80Str = [];
+end
 leftTrialIx = cell2matpad(input.tLeftTrial);
 leftTrNs = find(leftTrialIx);
 rightTrialIx = ~leftTrialIx;
@@ -56,7 +60,11 @@ leftTrialIx = logical(leftTrialIx);
 nLeft = sum(leftTrialIx);
 nRight = sum(rightTrialIx);
 block2Ix = cell2matpad(input.tBlock2TrialNumber);
-noGoIx = celleqel2mat_padded(input.isNoGo);
+if isfield(input,'isNoGo')
+  noGoIx = celleqel2mat_padded(input.isNoGo);
+else
+  noGoIx = zeros(size(block2Ix));   
+end
 
 leftOutcomes = input.trialOutcomeCell(leftTrialIx);
 leftCorr = strcmp(leftOutcomes, 'success');
@@ -100,10 +108,14 @@ if input.gratingSpeedDPS > 0,
 end
 
 % leftStr formatting
-if input.doLeftSeparateOdds == 0
-  leftStr = sprintf('leftTrPer80: Matched');
+if isfield(input,'doLeftSeparateOdds')
+  if input.doLeftSeparateOdds == 0
+    leftStr = sprintf('leftTrPer80: Matched');
+  else
+    leftStr= sprintf('leftTrPer80: %s \n', leftTrPer80Str);
+  end
 else
-  leftStr= sprintf('leftTrPer80: %s \n', leftTrPer80Str);
+  leftStr = '';
 end
 % blockStr formatting
 if input.doBlocks==0,
@@ -735,17 +747,19 @@ if sum(block2Ix)>0
   end
 end
 
-if input.doNoGo
-  didNoGoIx = celleqel2mat_padded(input.didNoGo);
-  didNoGoIx
-  plotTrsNoGo = contrastDifferenceRight(noGoIx|didNoGoIx);
-  nLevelsNoGo = unique(plotTrsNoGo);
-  for kk=1:length(nLevelsNoGo)
-    valNoGo = nLevelsNoGo(kk);
-    valIx = contrastDifferenceRight==valNoGo;
-    totalNTrialsVal = sum(valIx);
-    totalNTrialsValNoGo = sum(valIx & didNoGoIx);
-    percentContCellNoGo{kk} = totalNTrialsValNoGo/totalNTrialsVal;
+if isfield(input,'doNoGo')
+  if input.doNoGo
+    didNoGoIx = celleqel2mat_padded(input.didNoGo);
+    didNoGoIx
+    plotTrsNoGo = contrastDifferenceRight(noGoIx|didNoGoIx);
+    nLevelsNoGo = unique(plotTrsNoGo);
+    for kk=1:length(nLevelsNoGo)
+      valNoGo = nLevelsNoGo(kk);
+      valIx = contrastDifferenceRight==valNoGo;
+      totalNTrialsVal = sum(valIx);
+      totalNTrialsValNoGo = sum(valIx & didNoGoIx);
+      percentContCellNoGo{kk} = totalNTrialsValNoGo/totalNTrialsVal;
+    end
   end
 end
 
@@ -771,8 +785,10 @@ pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '
 if sum(block2Ix)>= 1
   pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
-if input.doNoGo
-  pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+if isfield(input, 'doNoGo')
+  if input.doNoGo
+    pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+  end
 end
 if input.gratingContrastDiffSPO <= 100
   vH = plot([1 1],[0 1]);
@@ -797,8 +813,10 @@ end
 
 ylabel('% Right')
 
-if input.doNoGo
-  ylabel('% Right / % NoGo')
+if isfield(input,'doNoGo')
+  if input.doNoGo
+    ylabel('% Right / % NoGo')
+  end
 end
 
 grid on

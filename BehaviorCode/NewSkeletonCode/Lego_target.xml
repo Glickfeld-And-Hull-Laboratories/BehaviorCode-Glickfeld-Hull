@@ -197,6 +197,8 @@
 
         <variable tag="leftDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="rightDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="leftDecisionBoundary" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="rightDecisionBoundary" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="trackMotion" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="tGratingEccentricityStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -505,7 +507,7 @@
               <action type="if" condition="!doBlock2">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
               </action>
-              <action type="if" condition="!doMarkovLRs">
+              <action type="if" condition="!doMarkovLR">
               	<action type="assignment" variable="tLeftTrial" value="((tSvStimNumber-tTempStimOdds) % 2)"/>
               </action>
             </action>
@@ -923,7 +925,7 @@
                         <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; trackMotion &gt;= rightDecisionThreshold" target="Reaction"></transition>
                         <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; trackMotion &lt;= leftDecisionThreshold" target="Reaction"></transition>
 
-                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==1" target="Hold"></transition>
+                        <transition type="conditional" condition="doTestRobot==1 &amp;&amp; doAllCorrects==1" target="Reward"></transition>
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Reward"></transition>
