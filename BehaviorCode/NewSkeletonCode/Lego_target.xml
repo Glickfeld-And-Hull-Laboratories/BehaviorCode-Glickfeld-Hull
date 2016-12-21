@@ -25,7 +25,6 @@
         <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Task Control"/>
-        <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="holdTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="doOnlyMaxDiff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
@@ -212,7 +211,6 @@
         <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
 
         <variable tag="isNotTooFast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-        <variable tag="stimIsOff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="stationaryReset" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
         <variable tag="qStimOn" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -833,10 +831,8 @@
                         </action>
                         <action type="report" message="*****-=STIMULI ON=-*****"></action>
                         <action type="assignment" variable="stimulusOn" value="1"/>
-                        <action type="assignment" tag="set stimIsOff to 0" variable="stimIsOff" value="0"/>
                         <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
                         <action type="start_timer" timer="tooFastTimerMs" timebase="" duration="tooFastTimeMs" duration_units="ms"/>
-                        <action type="start_timer" timer="stimOnTimerMs" timebase="" duration="stimOnTimeMs" duration_units="ms"/>
                         <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs" duration_units="ms"/>
 
                         <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
@@ -848,21 +844,9 @@
                         <action type="assignment" variable="qStimOn" value="quadrature"/>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="timer_expired" timer="stimOnTimerMs" target="StimOff"></transition>
                         <transition type="timer_expired" timer="tooFastTimerMs" target="ZeroQuad"></transition>
                       </task_system_state>
-
-                      <task_system_state tag="StimOff" interruptible="YES">
-                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        <action type="assignment" tag="tag stimOff" variable="stimIsOff" value="1"/>
-                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractorGrating"></action>
-                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="targetGrating"></action>
-                        <action tag="Update Display" type="update_stimulus_display"></action>
-                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="isNotTooFast" target="Reaction"></transition>
-                        <transition type="conditional" condition="!isNotTooFast &amp;&amp; timerExpired(tooFastTimerMs)" target="ZeroQuad"></transition>
-                      </task_system_state>
-
+                      
                       <task_system_state tag="ZeroQuad" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="assignment" tag="tag tooFast" variable="isNotTooFast" value="1"/>
@@ -894,7 +878,6 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="timerExpired(stimOnTimerMs) &amp;&amp; !stimIsOff" target="StimOff"></transition>
                         <transition type="conditional" condition="timerExpired(reactionTimerMs)" target="Ignore"></transition>
                         <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==0 &amp;&amp; trackMotion &gt;= leftDecisionThreshold" target="Incorrect"></transition>
                         <transition type="conditional" condition="doTestRobot==0 &amp;&amp; tLeftTrial==1 &amp;&amp; trackMotion &lt;= rightDecisionThreshold" target="Incorrect"></transition>
