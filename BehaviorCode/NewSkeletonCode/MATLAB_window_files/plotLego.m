@@ -753,7 +753,6 @@ end
 if isfield(input,'doNoGo')
   if input.doNoGo
     didNoGoIx = celleqel2mat_padded(input.didNoGo);
-    didNoGoIx
     plotTrsNoGo = contrastDifferenceRight(noGoIx|didNoGoIx);
     nLevelsNoGo = unique(plotTrsNoGo);
     for kk=1:length(nLevelsNoGo)
