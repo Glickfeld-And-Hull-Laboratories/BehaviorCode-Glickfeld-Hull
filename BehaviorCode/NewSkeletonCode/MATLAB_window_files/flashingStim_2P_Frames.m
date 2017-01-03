@@ -91,6 +91,9 @@ varsOneValEachTrial = {...
     'tSoundCatchAmplitude',...
     'tStimOnTimeMs',...
     'tStimOffTimeMs',...
+    'nFramesOff',...
+    'nFramesOn',...
+    'tTotalStimFrames',...
 };
 
 exptSetupBridge;
@@ -110,13 +113,31 @@ leverDownUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 1, 1);
 leverUpUs = mwGetEventTime(eventsTrial, ds.event_codec, 'leverResult', 2, 0);
 
 %calculate cycle duration
-totalCycleTimeMs = ((input.nFramesOn + input.nFramesOff)./double(input.frameRateHz)).*1000;
-numberCyclesOn = input.nCyclesOn{trN};
-
-reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
-
 holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
-reactTimeMs = (holdTimeMs - reqHoldTimeMs);
+
+if isfield(input, 'doRandStimOffTime') 
+    if input.doRandStimOffTime == 1
+        tempTimes = mwGetEventValue(eventsTrial, ds.event_codec, 'nFramesOff', 'all', 1);
+        input.tFramesOff{trN} = tempTimes(2:end);
+        totalStimTimeMs= (input.tTotalStimFrames{trN}./double(input.frameRateHz)).*1000;
+        numberCyclesOn = input.nCyclesOn{trN};
+        nCyclesRemaining = numberCyclesOn - input.tCyclesOn{trN};
+        avgCycleTime = ((input.stimOffTimeMs+input.minStimOffTimeMs)./2) + input.stimOnTimeMs;
+        reqHoldTimeMs = totalStimTimeMs + (nCyclesRemaining*avgCycleTime);
+        reactTimeMs = double(holdTimeMs - reqHoldTimeMs);
+    else
+        totalCycleTimeMs = ((input.nFramesOn{1} + input.nFramesOff{1})./double(input.frameRateHz)).*1000;
+        numberCyclesOn = input.nCyclesOn{trN};
+        reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
+        holdTimeMs = double((leverUpUs - leverDownUs)) / 1000;
+        reactTimeMs = (holdTimeMs - reqHoldTimeMs);
+    end
+else
+    totalCycleTimeMs = ((input.nFramesOn + input.nFramesOff)./double(input.frameRateHz)).*1000;
+    numberCyclesOn = input.nCyclesOn{trN};
+    reqHoldTimeMs = double(totalCycleTimeMs*numberCyclesOn);
+    reactTimeMs = (holdTimeMs - reqHoldTimeMs);
+end
 
 %find StimOn frames
 stimOnFrames = zeros(1, input.maxCyclesOn);

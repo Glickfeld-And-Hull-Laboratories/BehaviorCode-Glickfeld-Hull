@@ -58,6 +58,9 @@
       <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="doLongCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+      <variable tag="doRandStimOffTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+      <variable tag="minStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="stimOffTimeIntervalMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
 
       <variable tag="doShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
       <variable tag="doShortCatchReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
@@ -247,6 +250,7 @@
     <folder tag="Internal Variables">
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tTotalStimFrames" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tFakeMouseReactFrames" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tStartTrialWaitForPressTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -341,7 +345,7 @@
       <variable tag="isTooFast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
       <variable tag="isEndState" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="isCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-	  <variable tag="isFirstTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+	    <variable tag="isFirstTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="catchCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tFalseAlarm" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -349,8 +353,8 @@
       <!-- frame conversion -->
       <variable tag="tItiWaitFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTotalReqHoldFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="nFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="nFramesOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="nFramesOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="nFramesTooFast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesReact" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesEarlyTimeout" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -471,7 +475,8 @@
             <action type="assignment" tag="Reset End state" variable="isEndState" value="0"/>  
             <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/> 
             <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
-            <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>  
+            <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>
+            <action type="assignment" tag="Reset total cycle time" variable="tTotalStimFrames" value="0"/>   
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -1271,6 +1276,13 @@
 
             <action type="update_stimulus_display" tag="justincase"></action>
 
+            <action type="if" condition="doRandStimOffTime">
+              <action type="assignment" tag="Set tStimOffTime between min and stimOffTime" variable="tStimOffTimeMs" value="((int)rand(0, 1+ceil((stimOffTimeMs-minStimOffTimeMs)/stimOffTimeIntervalMs))*stimOffTimeIntervalMs)+minStimOffTimeMs"/>
+              <action type="assignment" tag="convert to frames" variable="nFramesOff" value="ceil((tStimOffTimeMs/1000)*frameRateHz)"/>
+            </action>
+
+            <action type="assignment" tag="Count total cycle time" variable="tTotalStimFrames" value="tTotalStimFrames + nFramesOn"/>
+
             <action type="if" condition="tCyclesOn &lt; 1">
               <action type="assignment" variable="cFirstStim" value="counter" />
               <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>  
@@ -1290,7 +1302,7 @@
              <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cFirstStim + nFramesOn + ((tCyclesOn-1)*(nFramesOn+nFramesOff)))" target="TrialStimOff"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cFirstStim + tTotalStimFrames)" target="TrialStimOff"></transition>
           </task_system_state>
 
           <task_system_state tag="TrialStimOff" interruptible="YES">
@@ -1309,13 +1321,13 @@
 
             <action type="report" message="Lever Down - Trial Started - Stim Off"/>
 
-            
+            <action type="assignment" tag="Count total cycle time" variable="tTotalStimFrames" value="tTotalStimFrames + nFramesOff"/>            
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cFirstStim + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TrialStimOn"></transition>
-            <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; counter  &gt;= cFirstStim + (tCyclesOn*(nFramesOn+nFramesOff))" target="TargetStimOn"></transition>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; counter  &gt;= (cFirstStim + tTotalStimFrames)" target="TrialStimOn"></transition>
+            <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; counter  &gt;= (cFirstStim + tTotalStimFrames)" target="TargetStimOn"></transition>
           </task_system_state>
 
           <task_system_state tag="TargetStimOn" interruptible="YES">
@@ -1361,6 +1373,10 @@
             <action type="report" message="Catch is $isCatchTrial"></action>
 
             <action type="assignment" variable="tStimTurnedOn" value="1"></action>
+
+            <action type="if" tag="if doFakeMouseSuccess" condition="doFakeMouseSuccessOnly">
+                <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactFrames" value="tTotalStimFrames + nFramesTooFast + ceil(0.1*frameRateHz)"></action>
+            </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
@@ -1625,6 +1641,11 @@
             <action type="assignment" variable="cEndOn" value="counter"></action>
             <action type="report" message="End of Trial - Stim On"/>
             <action type="assignment" variable="stimTag" value="1"></action>
+
+            <action type="if" condition="doRandStimOffTime">
+              <action type="assignment" tag="Set tStimOffTime between min and stimOffTime" variable="tStimOffTimeMs" value="((int)rand(0, 1+ceil((stimOffTimeMs-minStimOffTimeMs)/stimOffTimeIntervalMs))*stimOffTimeIntervalMs)+minStimOffTimeMs"/>
+              <action type="assignment" tag="convert to frames" variable="nFramesOff" value="ceil((tStimOffTimeMs/1000)*frameRateHz)"/>
+            </action>
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
