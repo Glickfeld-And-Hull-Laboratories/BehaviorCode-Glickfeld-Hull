@@ -52,19 +52,24 @@ if isfield(input, 'leftTrPer80Level1')
 else
   leftTrPer80Str = [];
 end
+
+block2Ix = cell2matpad(input.tBlock2TrialNumber);
+
+if isfield(input,'isNoGo')
+noGoIx = celleqel2mat_padded(input.isNoGo);
+else
+noGoIx = zeros(size(block2Ix));
+end
+
 leftTrialIx = cell2matpad(input.tLeftTrial);
+leftTrialIx(find(noGoIx)) = 0;
 leftTrNs = find(leftTrialIx);
 rightTrialIx = ~leftTrialIx;
+rightTrialIx(find(noGoIx)) = 0;
 rightTrNs = find(rightTrialIx);
 leftTrialIx = logical(leftTrialIx);
 nLeft = sum(leftTrialIx);
 nRight = sum(rightTrialIx);
-block2Ix = cell2matpad(input.tBlock2TrialNumber);
-if isfield(input,'isNoGo')
-  noGoIx = celleqel2mat_padded(input.isNoGo);
-else
-  noGoIx = zeros(size(block2Ix));   
-end
 
 leftOutcomes = input.trialOutcomeCell(leftTrialIx);
 leftCorr = strcmp(leftOutcomes, 'success');
@@ -84,15 +89,12 @@ nRightInc = sum(rightInc);
 
 % Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
-left_incorrect_ind = intersect(find(leftTrialIx==0), find(incorrectIx==1));
-tLeftResponse = zeros(size(correctIx));
-tLeftResponse([left_correct_ind left_incorrect_ind]) = 1;
+tLeftResponse = celleqel2mat_padded(input.tLeftResponse);
 tLeftResponse(find(ignoreIx)) = NaN;
-input.tLeftResponse = tLeftResponse;
+tLeftResponse(find(noGoIx)) = NaN;
 
 %Right decision time indexing
 right_correct_ind = find((double(rightTrialIx)+double(correctIx))==2);
-
 
 %  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
 juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
