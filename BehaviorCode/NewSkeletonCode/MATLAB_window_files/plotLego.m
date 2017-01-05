@@ -56,7 +56,7 @@ end
 block2Ix = cell2matpad(input.tBlock2TrialNumber);
 
 if isfield(input,'isNoGo')
-noGoIx = celleqel2mat_padded(input.isNoGo);
+noGoIx = cell2mat_padded(input.isNoGo);
 else
 noGoIx = zeros(size(block2Ix));
 end
@@ -70,6 +70,8 @@ rightTrNs = find(rightTrialIx);
 leftTrialIx = logical(leftTrialIx);
 nLeft = sum(leftTrialIx);
 nRight = sum(rightTrialIx);
+noGoIx = logical(noGoIx);
+nNoGo = sum(noGoIx);
 
 leftOutcomes = input.trialOutcomeCell(leftTrialIx);
 leftCorr = strcmp(leftOutcomes, 'success');
@@ -79,7 +81,7 @@ nLeftIgn = sum(leftIgn);
 leftInc = strcmp(leftOutcomes, 'incorrect');
 nLeftInc = sum(leftInc);
 
-rightOutcomes = input.trialOutcomeCell(~leftTrialIx);
+rightOutcomes = input.trialOutcomeCell(rightTrialIx);
 rightCorr = strcmp(rightOutcomes, 'success');
 nRightCorr = sum(rightCorr);
 rightIgn = strcmp(rightOutcomes, 'ignore');
@@ -87,11 +89,24 @@ nRightIgn = sum(rightIgn);
 rightInc = strcmp(rightOutcomes, 'incorrect');
 nRightInc = sum(rightInc);
 
+noGoOutcomes = input.trialOutcomeCell(noGoIx);
+noGoCorr = strcmp(noGoOutcomes, 'success');
+nNoGoCorr = sum(noGoCorr);
+noGoInc = strcmp(noGoOutcomes, 'incorrect');
+nNoGoInc = sum(noGoInc);
+
 % Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
 tLeftResponse = celleqel2mat_padded(input.tLeftResponse);
+tRightResponse = celleqel2mat_padded(input.tRightResponse);
+tLeftNoGo = nan(size(tLeftResponse));
+leftNoGo = intersect(find(noGoIx),find(tLeftResponse));
+rightNoGo = intersect(find(noGoIx),find(tRightResponse));
+tLeftNoGo(leftNoGo) = 1;
+tLeftNoGo(rightNoGo) = 0;
 tLeftResponse(find(ignoreIx)) = NaN;
 tLeftResponse(find(noGoIx)) = NaN;
+
 
 %Right decision time indexing
 right_correct_ind = find((double(rightTrialIx)+double(correctIx))==2);
@@ -190,12 +205,12 @@ end
 	t2H(3) = text(0.65, 0.8, {'Right', sprintf('%d', nRight), sprintf('%d', nRightCorr), ...
 				sprintf('%d', nRightInc), sprintf('%d', nRightIgn), ...
                 sprintf('%5.0f', median(decisionV(right_correct_ind)))});
-    t2H(4) = text(0.9, 0.8, {'Total', sprintf('%d', nTrial), sprintf('%d', nCorr), ...
+    t2H(4) = text(0.9, 0.8, {'NoGo', sprintf('%d', nNoGo), sprintf('%d', nNoGoCorr), ...
+                sprintf('%d', nNoGoInc), sprintf(''), ...
+                sprintf('%5.0f', median(decisionV(noGoInc)))});
+    t2H(5) = text(1.15, 0.8, {'Total', sprintf('%d', nTrial), sprintf('%d', nCorr), ...
                 sprintf('%d', nInc), sprintf('%d', nIg), ...
                 sprintf('%5.0f', median(decisionV(correctIx)))});
-    t2H(5) = text(1.15, 0.8, {'  ', '  ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
-				sprintf('%.0f%%', nInc / numTrials * 100.0), ...
-				sprintf('%.0f%%', nIg / numTrials * 100.0)});
         set(t2H, 'VerticalAlignment', 'top', ...
                  'HorizontalAlignment', 'left');
 
@@ -344,10 +359,13 @@ set(lh1, 'Color', 'k', 'LineWidth', 2);
 lh2 = plot(smooth(double(tLeftResponse), amtSmooth, smoothType));
 set(lh2,'Color', 'r', 'LineWidth', 2);
 
-lh3 = refline(0,0.5);
-set(lh3, 'LineStyle', '--');
+lh3 = plot(smooth(double(tLeftNoGo), amtSmooth, smoothType));
+set(lh3,'Color', 'b', 'LineWidth', 2);
+
+lh4= refline(0,0.5);
+set(lh4, 'LineStyle', '--');
     
-title('Bias Plot: Red = Responses, Black = Presentations');
+title('Bias Plot: Red = Resp, Black = Pres, Blue = NoGo');
 ylabel('Left (%)');
 set(gca, 'YLim', [0 1], ...
          'YTick', [0,0.25,0.5,0.75,1]);
