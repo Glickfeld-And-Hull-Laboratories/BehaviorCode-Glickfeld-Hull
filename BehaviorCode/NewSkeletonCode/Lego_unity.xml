@@ -241,6 +241,7 @@
         <variable tag="stationaryReset" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
         <variable tag="isNoGo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="wasNoGo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="didNoGo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="inPreBlock" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
@@ -493,10 +494,6 @@
                             <action type="assignment" variable="tLeftTrial" value="1"/>
                             <action type="assignment" variable="tNBlockLeftTrsCompleted" value="0"/>
                           </action>
-                        </action>
-
-                        <action type="if" condition="(doCorrectiveTrials == 1) &amp;&amp; (tConsecErrors &gt; 0)">
-                          <action type="assignment" variable="tLeftTrial" value="tLastTrialWasLeft" />
                         </action>
 
                             <action type="assignment" variable="tTrPer80Level1" value="trPer80Level1"/>
@@ -976,6 +973,14 @@
                  <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
                  <action type="report" message="Distractor contrast this trial is $dGratingContrast"></action>>
 
+                 <action type="if" condition="(doCorrectiveTrials == 1) &amp;&amp; (tConsecErrors &gt; 0)">
+                    <action type="if" condition="wasNoGo">
+                        <action type="assignment" variable="isNoGo" value="1" />
+                    </action>
+                    <action type="if" condition="wasNoGo">    
+                        <action type="assignment" variable="tLeftTrial" value="tLastTrialWasLeft" />
+                    </action>    
+                </action>
 
                  <action type="if" condition="doBlock2">
                   <action type="assert" stop_on_failure="1"
@@ -1415,6 +1420,7 @@
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
                         <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
+                        <action type="assignment" variable="wasNoGo" value="isNoGo"/>
                         
                         <action type="if" condition="trackMotion &gt;= leftDecisionThreshold">
                             <action type="if" condition="invertDirection">
