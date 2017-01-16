@@ -94,6 +94,11 @@ noGoCorr = strcmp(noGoOutcomes, 'success');
 nNoGoCorr = sum(noGoCorr);
 noGoInc = strcmp(noGoOutcomes, 'incorrect');
 nNoGoInc = sum(noGoInc);
+noGoCorrIx = NaN(size(noGoIx));
+noGoInd = find(noGoIx);
+noGoCorrIx(noGoInd(noGoCorr)) = 1;
+noGoCorrIx(noGoInd(noGoInc)) = 0;
+
 
 % Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
@@ -278,6 +283,11 @@ set(lH3, 'Color', 'm', ...
 lH4 = plot(smooth(double(incorrectIx), nTrials/5, smoothType));
   set(lH4, 'Color', 'g', ...
            'LineWidth', 2);
+
+lH5 = plot(smooth(double(noGoCorrIx), nTrials/5, smoothType));
+set(lH5, 'Color', 'b', ...
+    'LineWidth', 2);
+
   anystack(lH4, 'bottom');
 
   anystack(lH3, 'bottom');
