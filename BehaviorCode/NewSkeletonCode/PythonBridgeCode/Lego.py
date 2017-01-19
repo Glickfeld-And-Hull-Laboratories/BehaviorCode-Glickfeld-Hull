@@ -66,7 +66,8 @@ def cbEndOfTrial():
     assert (not varD.has_key('subjectNum')), 'should never be called for constant dump: bug'
     npTrialOutcomes = np.array(cs.trialOutcomes)
     foundIx = futureIn1d(npTrialOutcomes, varD.keys())
-    if sum(foundIx) != 1:
+
+    if sum(foundIx) == 0:
         print foundIx
         print varD.keys()
         raise RuntimeError, 'no outcome found for this trial: bug'
@@ -114,8 +115,8 @@ def cbEndOfTrial():
     respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'incorrect')] = 1
     respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'success')] = 0
     respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'incorrect')] = 0
-    respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'isNoGo')] = 0
-    respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'isNoGo')] = 0
+    respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'isNoGo')] = np.nan
+    respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'isNoGo')] = np.nan
     # compute bias
     respDirOnlyResp = respDirLeft[~np.isnan(respDirLeft)]
     nTrToUse = np.min((len(varVects['outcomeList']),biasNPts))

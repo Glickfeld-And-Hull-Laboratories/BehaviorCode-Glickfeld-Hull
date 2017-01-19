@@ -64,7 +64,7 @@ elif thisHostname == "hullglick4":
 elif thisHostname == "test-rig":
     PORT = 50007
     doTransmitCodesToBlackrock = False
-elif thisHostname == "test-rig-2":
+elif thisHostname == "test-rig-2.local":
     PORT = 9994
     HOST = "neuroPi1.local"
     doTransmitCodesToBlackrock = False
