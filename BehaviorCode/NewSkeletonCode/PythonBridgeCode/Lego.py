@@ -114,7 +114,8 @@ def cbEndOfTrial():
     respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'incorrect')] = 1
     respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'success')] = 0
     respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'incorrect')] = 0
-
+    respDirLeft[np.logical_and(varArr['tLeftTrial']==0, varArr['outcomeList'] == 'isNoGo')] = 0
+    respDirLeft[np.logical_and(varArr['tLeftTrial']==1, varArr['outcomeList'] == 'isNoGo')] = 0
     # compute bias
     respDirOnlyResp = respDirLeft[~np.isnan(respDirLeft)]
     nTrToUse = np.min((len(varVects['outcomeList']),biasNPts))

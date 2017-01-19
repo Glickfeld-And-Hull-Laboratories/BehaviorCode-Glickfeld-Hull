@@ -32,7 +32,8 @@ trialOutcomes = [
     'ignore', 
     'failure', 
     'incorrect', 
-    'dualrelease' ];
+    'dualrelease', 
+    'isNoGo'];
 
 reverseExperimentXmlTrialIds = dict(zip(experimentXmlTrialIds.values(), experimentXmlTrialIds.keys()))
 
