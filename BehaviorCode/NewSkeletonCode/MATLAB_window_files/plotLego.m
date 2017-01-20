@@ -112,7 +112,6 @@ tLeftNoGo(rightNoGo) = 0;
 tLeftResponse(find(ignoreIx)) = NaN;
 tLeftResponse(find(noGoIx)) = NaN;
 
-
 %Right decision time indexing
 right_correct_ind = find((double(rightTrialIx)+double(correctIx))==2);
 
@@ -243,7 +242,7 @@ end
                          'Too-Fast Time: %d ms;  Reward: %s ms \n', ...
                          'Timeouts (ign,inc):\t%4.1f, %4.1f s\n', ...
                          'trPer80: %s\n', ...
-                         'MaxCon: %d ; SPO: %d ; MaxDiff: %d ; SPO: %d \n', ... 
+                         'MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n', ... 
                          leftStr, ...
                          'Stim: %s \n', ...
                          blockStr, ...
@@ -365,7 +364,9 @@ else
     amtSmooth = 10;
 end
 
-lh1 = plot(smooth(double(leftTrialIx), amtSmooth, smoothType));
+leftTrialIxDouble = double(leftTrialIx);
+leftTrialIxDouble(find(noGoIx)) = NaN;
+lh1 = plot(smooth(leftTrialIxDouble, amtSmooth, smoothType));
 set(lh1, 'Color', 'k', 'LineWidth', 2);
 
 lh2 = plot(smooth(double(tLeftResponse), amtSmooth, smoothType));
