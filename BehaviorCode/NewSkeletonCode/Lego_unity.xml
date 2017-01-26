@@ -1360,8 +1360,8 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="EndTrial"></transition>
-                        <transition type="timer_expired" timer="stimTimer" target="EndTrial"></transition>
+                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="PossibleEndTimeout"></transition>
+                        <transition type="timer_expired" timer="stimTimer" target="PossibleEndTimeout"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Ignore" interruptible="YES">
@@ -1416,7 +1416,7 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="timer_expired" timer="ignoreTimeoutTimer" target="EndTrial"></transition>
+                        <transition type="timer_expired" timer="ignoreTimeoutTimer" target="PossibleEndTimeout"></transition>
                       </task_system_state>
 					  
 					  <task_system_state tag="PossibleEndTimeout" interruptible="YES">    
