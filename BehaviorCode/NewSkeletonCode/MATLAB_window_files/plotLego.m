@@ -35,7 +35,7 @@ input.savedDataName = sprintf('~/Documents/MWorks/Data/data-i%03d-%s.mat', ...
 
 % some data processing
 nTrial = length(input.trialOutcomeCell);
-block2Ix = cell2matpad(input.tBlock2TrialNumber);
+block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
 
 correctIx = strcmp(input.trialOutcomeCell, 'success');
 incorrectIx = strcmp(input.trialOutcomeCell, 'incorrect');
@@ -53,7 +53,7 @@ else
   leftTrPer80Str = [];
 end
 
-block2Ix = cell2matpad(input.tBlock2TrialNumber);
+block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
 
 if isfield(input,'isNoGo')
 noGoIx = cell2mat_padded(input.isNoGo);
@@ -61,7 +61,7 @@ else
 noGoIx = zeros(size(block2Ix));
 end
 
-leftTrialIx = cell2matpad(input.tLeftTrial);
+leftTrialIx = celleqel2mat_padded(input.tLeftTrial);
 leftTrialIx(find(noGoIx)) = 0;
 leftTrNs = find(leftTrialIx);
 rightTrialIx = ~leftTrialIx;
@@ -447,7 +447,7 @@ incorrectIx = incorrectIx & ~noGoIx;
 
 noMissIx = correctIx|incorrectIx;
 xYVals = find(noMissIx);
-decTimes = cell2matpad(input.tDecisionTimeMs);
+decTimes = celleqel2mat_padded(input.tDecisionTimeMs);
 noMissDecTimesMs = double(decTimes(noMissIx));
 vy = smooth(noMissDecTimesMs, 25, 'rloess');
 decMax = input.reactionTimeMs/1000;
@@ -490,15 +490,15 @@ hold on;
 
 if nCorr>0  && input.doTestRobot==0,
   if input.gratingContrastDiffSPO<10
-    contDiffV = chop(cell2matpad(input.tGratingContrast) ./ cell2matpad(input.dGratingContrast),2);
+    contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ celleqel2mat_padded(input.dGratingContrast),2);
   else
-    contDiffV = chop(cell2matpad(input.tGratingContrast) - cell2matpad(input.dGratingContrast),2);
+    contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - celleqel2mat_padded(input.dGratingContrast),2);
   end
     corrDiffV = contDiffV(correctIx);
     uqDiff = unique(corrDiffV);
     nLevels = length(uqDiff);
     corrDiffCell = cell(1,nLevels);
-    decTimes = cell2matpad(input.tDecisionTimeMs);
+    decTimes = celleqel2mat_padded(input.tDecisionTimeMs);
     corrDecTimes = decTimes(correctIx);
 
     for ii = 1:length(uqDiff),
@@ -888,7 +888,7 @@ axH = subplot(spSz{:},11);
 hold on;
 
 if nCorr>0 && input.doTestRobot==0,
-    contTargetV = cell2matpad(input.tGratingContrast).*100;
+    contTargetV = celleqel2mat_padded(input.tGratingContrast).*100;
     plotTrsB1 = contTargetV((correctIx|incorrectIx)&~block2Ix);
     uqTargetB1 = unique(plotTrsB1);
     nLevelsB1 = length(uqTargetB1);
@@ -948,8 +948,8 @@ if input.doBlocks==1
 %% Block Performance
 %% Indexing and pre-analysis
 tLeftTrial = leftTrialIx;
-leftBlockN = cell2matpad(input.tNBlockLeftTrsCompleted);
-rightBlockN = cell2matpad(input.tNBlockRightTrsCompleted);
+leftBlockN = celleqel2mat_padded(input.tNBlockLeftTrsCompleted);
+rightBlockN = celleqel2mat_padded(input.tNBlockRightTrsCompleted);
 as = struct;
 
 %% Left Analysis
