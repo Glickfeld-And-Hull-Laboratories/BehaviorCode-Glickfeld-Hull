@@ -822,7 +822,9 @@ if sum(block2Ix)>= 1
 end
 if isfield(input, 'doNoGo')
   if input.doNoGo
-    pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+    if sum(noGoIx)>0
+      pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+    end
   end
 end
 if input.gratingContrastDiffSPO <= 100
