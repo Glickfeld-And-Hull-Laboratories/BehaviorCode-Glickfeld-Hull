@@ -61,7 +61,6 @@
 		<variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Timeouts"/>
 	    <variable tag="consecErrorTimeoutS" scope="global" logging="when_changed" default_value="120" type="integer" persistant="1" groups="Timeouts"/>
 
-		
         <variable tag="doMarkovLR" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Markov/Bias"/>
         <variable tag="doBiasStaircase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Markov/Bias"/>
         <variable tag="doRandProb" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Markov/Bias"/>
@@ -1230,15 +1229,8 @@
                         	<action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 							<action type="update_stimulus_display"></action>
 						</action>	
-						<action type="start_timer" timer="stimTimer" timebase="" duration="2000" duration_units="ms"/>
                         <action type="play_sound" sound="correctSound"/>
                         <action type="assignment" tag="" variable="tConsecCorrects" value="tConsecCorrects+1"/>
-                        <action type="if" condition="!didNoGo">
-                        	<action type="assignment" tag="" variable="tConsecErrors" value="0"/>
-                        </action>	
-                        <action type="if" condition="didNoGo">
-                        	<action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors"/>
-                        </action>	
                         <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
                         <action type="report" tag="Report" message="Decision Time = $tDecisionTimeMs"></action>
                         <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success!!! **"></action>
@@ -1264,10 +1256,15 @@
                         <action type="if" condition="!isNoGo">
                             <action type="assignment" variable="didNoGo" value="0"/>
                         </action>
+                        <action type="if" condition="!didNoGo">
+                            <action type="assignment" tag="" variable="tConsecErrors" value="0"/>
+                        </action>   
+                        <action type="if" condition="didNoGo">
+                            <action type="assignment" tag="" variable="tConsecErrors" value="tConsecErrors"/>
+                        </action>   
 
                         <action type="assignment" variable="juice" value="tRewardTimeUs"></action>
-                        <action type="start_timer" timer="rewardTimerUs" timebase="" duration="rewardTimeUs" duration_units="us"/>
-
+                        <action type="start_timer" timer="postRewardTimerUs" timebase="" duration="100000" duration_units="us"/>
                         <!-- accept stim selection -->
                         <action type="accept_selections" selection="svStimNumber"></action>
                         <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
@@ -1299,8 +1296,7 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="EndTrial"></transition>
-                        <transition type="timer_expired" timer="stimTimer" target="EndTrial"></transition>
+                        <transition type="conditional" condition="timerExpired(postRewardTimerUs)" target="EndTrial"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Incorrect" interruptible="YES">
@@ -1311,7 +1307,6 @@
                         	<action type="dequeue_stimulus" stimulus="distractorGrating"></action>
 							<action type="update_stimulus_display"></action>
 						</action>	
-						<action type="start_timer" timer="stimTimer" timebase="" duration="2000" duration_units="ms"/>
 
                         <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
@@ -1360,8 +1355,7 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="PossibleEndTimeout"></transition>
-                        <transition type="timer_expired" timer="stimTimer" target="PossibleEndTimeout"></transition>
+                        <transition type="conditional" condition="timerExpired(incorrectTimeoutTimer)" target="PossibleEndTimeout"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Ignore" interruptible="YES">
