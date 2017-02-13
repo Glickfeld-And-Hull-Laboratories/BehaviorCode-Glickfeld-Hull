@@ -257,6 +257,7 @@
         <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
         <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
         <variable tag="tLastTrialCorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="tLastTrialIgnore" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -437,6 +438,12 @@
                           <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
                           <action type="assignment" variable="tSvStimNumber2" value="svStimNumber2"/>
                           <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
+
+
+                        <!-- exception for previous trial ignore to not give NoGo trial -->
+                        <action type="if" condition="tSvStimNumber >= 80-noGoTrPer80  &amp;&amp; doNoGo &amp;&amp; tLastTrialIgnore">
+                            <action type="assignment" variable="tSvStimNumber" value="disc_rand(0,79-noGoTrPer80)"/>
+                        </action> 
 
                           <action type="if" condition="doRandProb == 1">
                             <action type="run_python_string" tag="set tStimProbAvgLeft" code="calc_tStimProbAvgLeft()"></action>
@@ -1245,6 +1252,7 @@
                         <!-- update running variables -->
                         <action type="assignment" tag="success++" variable="success" value="success+1"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="1"></action>
+                        <action type="assignment" variable="tLastTrialIgnore" value="0"></action>
                         <action type="if" condition="doConsecCorrectReward==1">
                           <action type="if" condition="tConsecCorrects &lt; maxConsecCorrects">
                             <action type="assignment" variable="tRewardTimeUs" value="tConsecCorrects*consecCorrRewardInterval"/>
@@ -1315,6 +1323,7 @@
 
                         <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
+                        <action type="assignment" variable="tLastTrialIgnore" value="0"></action>
                         <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect: Time-Out for $incorrectTimeoutMs **"></action>
                         <action type="update_stimulus_display"></action>
                         <action type="play_sound" sound="incorrectSound"/>
@@ -1360,8 +1369,7 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="PossibleEndTimeout"></transition>
-                        <transition type="timer_expired" timer="stimTimer" target="PossibleEndTimeout"></transition>
+                        <transition type="timer_expired" timer="incorrectTimeoutTimer" target="PossibleEndTimeout"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Ignore" interruptible="YES">
@@ -1374,6 +1382,7 @@
                         <action tag="Report Ignore" full_name="ReportDigital" type="report" message="** Ignore: Time-Out for $ignoreTimeoutMs **"></action>
                         <action type="update_stimulus_display"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
+                        <action type="assignment" variable="tLastTrialIgnore" value="1"></action>
                         <action type="play_sound" sound="incorrectSound"/>
                         <action type="play_sound" sound="whiteNoiseSound"/>
                         <action type="start_timer" timer="ignoreTimeoutTimer" timebase="" duration="ignoreTimeoutMs" duration_units="ms"/>
