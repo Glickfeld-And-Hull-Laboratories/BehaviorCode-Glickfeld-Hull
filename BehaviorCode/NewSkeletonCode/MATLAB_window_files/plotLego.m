@@ -681,18 +681,22 @@ else
 end
 
 if sum(block2Ix)== 0
-  pH = cdfplot([input.tDecisionTimeMs{:}]);
+  pH = cdfplot([input.tDecisionTimeMs{~noGoIx}]);
     set(pH, 'Color', 'g');
   if nLeft>0,
-    pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 1}]);
+    pH1 = cdfplot([input.tDecisionTimeMs{leftTrialIx}]);
       set(pH1, 'Color', 'b');
   end
   if nRight>0,
-    pH2 = cdfplot([input.tDecisionTimeMs{leftTrialIx == 0}]);
+    pH2 = cdfplot([input.tDecisionTimeMs{rightTrialIx}]);
       set(pH2, 'Color', [0.8 0.8 0]);
   set(gca, 'XLim', [0 decMax], ...
           'YLim', [0 1], ...
           'XTick', [0:decisionInterval:decMax]);
+  end
+  if nNoGo>0,
+    pH1 = cdfplot([input.tDecisionTimeMs{noGoIx}]);
+      set(pH1, 'Color', 'c');
   end
 elseif sum(block2Ix)>0
   pH1 = cdfplot([input.tDecisionTimeMs{block2Ix == 0 & leftTrialIx == 1}]);
