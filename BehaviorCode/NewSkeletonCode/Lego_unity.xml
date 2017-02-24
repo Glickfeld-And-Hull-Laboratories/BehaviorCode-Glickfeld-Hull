@@ -444,6 +444,9 @@
                         <action type="if" condition="tSvStimNumber >= 80-noGoTrPer80  &amp;&amp; doNoGo &amp;&amp; tLastTrialIgnore">
                             <action type="assignment" variable="tSvStimNumber" value="disc_rand(0,79-noGoTrPer80)"/>
                         </action> 
+                        <action type="if" condition="tSvStimNumber >= 80-noGoTrPer80  &amp;&amp; doNoGo &amp;&amp; tNTrialsCompleted &lt; 10">
+                            <action type="assignment" variable="tSvStimNumber" value="disc_rand(0,79-noGoTrPer80)"/>
+                        </action> 
 
                           <action type="if" condition="doRandProb == 1">
                             <action type="run_python_string" tag="set tStimProbAvgLeft" code="calc_tStimProbAvgLeft()"></action>
