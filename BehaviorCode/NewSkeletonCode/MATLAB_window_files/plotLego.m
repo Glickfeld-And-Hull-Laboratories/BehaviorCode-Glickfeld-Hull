@@ -787,20 +787,18 @@ if sum(block2Ix)>0
   end
 end
 
-if isfield(input,'doNoGo')
-  if input.doNoGo
-    didNoGoIx = celleqel2mat_padded(input.didNoGo);
-    plotTrsNoGo = contrastDifferenceRight(noGoIx|didNoGoIx);
-    nLevelsNoGo = unique(plotTrsNoGo);
-    for kk=1:length(nLevelsNoGo)
-      valNoGo = nLevelsNoGo(kk);
-      valIx = contrastDifferenceRight==valNoGo;
-      totalNTrialsVal = sum(valIx);
-      totalNTrialsValNoGo = sum(valIx & didNoGoIx);
-      percentContCellNoGo{kk} = totalNTrialsValNoGo/totalNTrialsVal;
-    end
-  end
+
+didNoGoIx = celleqel2mat_padded(input.didNoGo);
+plotTrsNoGo = contrastDifferenceRight(noGoIx|didNoGoIx);
+nLevelsNoGo = unique(plotTrsNoGo);
+for kk=1:length(nLevelsNoGo)
+  valNoGo = nLevelsNoGo(kk);
+  valIx = contrastDifferenceRight==valNoGo;
+  totalNTrialsVal = sum(valIx);
+  totalNTrialsValNoGo = sum(valIx & didNoGoIx);
+  percentContCellNoGo{kk} = totalNTrialsValNoGo/totalNTrialsVal;
 end
+
 
 if min(contrastDifferenceRight) < 0
     minX = min(contrastDifferenceRight);
@@ -824,13 +822,11 @@ pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '
 if sum(block2Ix)>= 1
   pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
-if isfield(input, 'doNoGo')
-  if input.doNoGo
-    if sum(noGoIx)>0
-      pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
-    end
-  end
+
+if sum(didNoGoIx)>0
+  pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
+
 if input.gratingContrastDiffSPO <= 100
   vH = plot([1 1],[0 1]);
 else
