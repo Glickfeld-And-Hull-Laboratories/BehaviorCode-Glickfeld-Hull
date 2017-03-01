@@ -28,6 +28,9 @@
       <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
+      <variable tag="doIncorrectSound" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doRewardSound" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
+
       <variable tag="doLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="LED Debug"/>
       
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
@@ -1113,7 +1116,9 @@
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             
-            <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
+            <action type="if" condition="doIncorrectSound == 1">
+              <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
+            </action>
 
             <!-- reject stim selection -->
             <action type="reject_selections" selection="svStimNumber"></action>
@@ -1270,7 +1275,11 @@
             </action>
 
             <action type="assignment" tag="Encode Reward" variable="strobedDigitalWord" value="10"></action>
-            <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
+
+            <action type="if" condition="doRewardSound == 1">
+              <action tag="Play reward sound" type="play_sound" sound="rewardSound"></action>
+            </action>
+
             <action type="if" condition= "tempNCorrect == 0">
               <action type="report" tag="Report" message="juice = $juice"></action>	
 			      </action>
@@ -1294,7 +1303,10 @@
             <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
             <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
             <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
-            <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
+
+            <action type="if" condition="doIncorrectSound == 1">
+              <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
+            </action>
 
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
