@@ -680,6 +680,10 @@ else
     decMax = 10000;
 end
 
+if find(isnan(block2Ix))
+  block2Ix(find(isnan(block2Ix))) = 0;
+end
+
 if sum(block2Ix)== 0
   pH = cdfplot([input.tDecisionTimeMs{~noGoIx}]);
     set(pH, 'Color', 'g');
@@ -731,7 +735,6 @@ elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <=
 elseif isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
   contrastDifferenceRight =chop(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
 end
-
 
 plotTrsB1 = contrastDifferenceRight((correctIx|incorrectIx)&~block2Ix);
 nLevelsB1 = unique(plotTrsB1);
