@@ -113,6 +113,7 @@
         <variable tag="AnnulusgratingDiameterMinN" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="AnnulusgratingDiameterMaxN" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 
+        <variable tag="doLoomDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingSpecs"/>
         <variable tag="loomSpeedDPS" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="maxLoomDiameterDeg" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="loomSpeedStepLog" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="GratingSpecs"/>
@@ -242,6 +243,8 @@
         <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingLoomSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tLoomDir" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tTargetLoomDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
@@ -569,13 +572,25 @@
                   <action type="assignment" variable="tTempStim" value= "tStimulusNumber % loomSpeedStepN"/>
                   <action type="assignment" variable="tGratingLoomSpeedDPS" value= "loomSpeedDPS * (pow(loomSpeedStepLog,(loomSpeedStepDir*(tTempStim))))"/>
                   <action type="report" message="Speed is $tGratingLoomSpeedDPS"/>
-                </action>   
+                  <action type="if" condition="doLoomDir">
+                    <action type="assignment" variable="tGratingLoomSpeedDPS" value= "abs(gratingDiameterDeg-maxLoomDiameterDeg)/(nScansOn*(frameImagingRateMs/1000))" />
+                     <action type="assignment" variable="tLoomDir" value= "1"/>
+                     <action type="assignment" variable="tGratingDiameterDeg" value= "gratingDiameterDeg"/>
+                     <action type="assignment" variable="tTargetLoomDiameterDeg" value= "maxLoomDiameterDeg"/>
+                    <action type="if" condition="tStimulusNumber &lt; 45">
+                         <action type="assignment" variable="tLoomDir" value= "-1"/>
+                         <action type="assignment" variable="tTargetLoomDiameterDeg" value= "gratingDiameterDeg"/>
+                         <action type="assignment" variable="tGratingDiameterDeg" value= "maxLoomDiameterDeg"/>
+                         <action type="report" message="tStimulusNumber is $tStimulusNumber ; Stimulus is NOT looming"/>
+                    </action>       
+                </action> 
+                </action> 
                 <action type="if" condition="doLoomStim == 0">
                   <action type="assignment" variable="tGratingLoomSpeedDPS" value= "loomSpeedDPS"/>
                 </action>
 
                 <!--Select speed- for moving dots only --> 
-                <action type="if" condition="!doMatrix &amp;&amp; doDotsSpeedStim == 1">  
+                <action type="if" condition="!doMatrix &amp;&amp;  doDotsSpeedStim == 1">  
                   <action type="assignment" variable="tTempStim" value= "tStimulusNumber % dotSpeedStepN"/>
                   <action type="assignment" variable="tDotSpeedDPS" value= "dotSpeedDPS * (pow(dotSpeedStepLog,(dotSpeedStepDir*(tTempStim))))"/>
                   <action type="report" message="Speed is $tDotSpeedDPS"/>
@@ -963,7 +978,12 @@
 
           <task_system_state tag="LoomState" interruptible="YES">
             <action type="start_timer" tag="Start refresh timer" timer="refreshTimer" timebase="" duration="30" duration_units="ms"></action>
-            <action type="assignment" tag="set new stimulus size" variable="tGratingDiameterDeg" value="tGratingDiameterDeg + tGratingLoomSpeedDPS*.03"></action>
+            <action type="if" condition="tLoomDir == 1 ">
+                <action type="assignment" tag="set new stimulus size" variable="tGratingDiameterDeg" value="tGratingDiameterDeg + tGratingLoomSpeedDPS*.03"></action>
+            </action> 
+            <action type="if" condition="tLoomDir == -1">
+                <action type="assignment" tag="set new stimulus size" variable="tGratingDiameterDeg" value="tGratingDiameterDeg - tGratingLoomSpeedDPS*.03"></action>
+            </action>   
             <action type="if" condition="doAnnulusStim == 0">
                 <action type="if" condition="doGaussianMask == 1">
                     <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_gaussian"></action>
@@ -988,8 +1008,16 @@
             <action tag="Update Display" type="update_stimulus_display"></action>
             <!-- <action type="report" message="Diameter is $tGratingDiameterDeg"/> -->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
-            <transition type="conditional" tag="If timer expired and not yet max size, recycle" condition="timerExpired(refreshTimer) &amp;&amp; tGratingDiameterDeg &lt; maxLoomDiameterDeg" target="LoomState" ></transition>
+            <transition type="conditional" tag="If timer expired and not yet max size, recycle" condition="timerExpired(refreshTimer) &amp;&amp; tLoomDir == 1 &amp;&amp; tGratingDiameterDeg &gt;= tTargetLoomDiameterDeg" target="LoomPause" ></transition>
+            <transition type="conditional" tag="If timer expired and not yet max size, recycle" condition="timerExpired(refreshTimer) &amp;&amp; tLoomDir == -1 &amp;&amp; tGratingDiameterDeg &lt;= tTargetLoomDiameterDeg" target="LoomPause" ></transition>
+            <transition type="conditional" tag="If timer expired and not yet max size, recycle" condition="timerExpired(refreshTimer) &amp;&amp; tLoomDir == 1 &amp;&amp; tGratingDiameterDeg &lt; tTargetLoomDiameterDeg" target="LoomState" ></transition>
+            <transition type="conditional" tag="If timer expired and not yet max size, recycle" condition="timerExpired(refreshTimer) &amp;&amp; tLoomDir == -1 &amp;&amp; tGratingDiameterDeg &gt; tTargetLoomDiameterDeg" target="LoomState" ></transition>
+          </task_system_state>
+
+          <task_system_state tag="LoomPause" interruptible="YES">
+          <action type="start_timer" tag="Start refresh timer" timer="refreshTimer" timebase="" duration="300" duration_units="ms"></action>
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+          <transition type="conditional" tag="If timer expired and not yet max size, recycle" condition="timerExpired(refreshTimer)" target="EndTrial" ></transition>
           </task_system_state>
 
           <task_system_state tag="RunFeedback" interruptible="YES">
