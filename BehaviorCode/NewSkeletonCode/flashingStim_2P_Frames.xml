@@ -476,7 +476,8 @@
             <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/> 
             <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
             <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>
-            <action type="assignment" tag="Reset total cycle time" variable="tTotalStimFrames" value="0"/>   
+            <action type="assignment" tag="Reset total cycle time" variable="tTotalStimFrames" value="0"/>
+            <action type="assignment" tag="Reset total extra ITI time" variable="tempMs" value="0"></action>
 
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
@@ -1156,10 +1157,6 @@
                       value="(maxCyclesOn*(tStimOnTimeMs+tStimOffTimeMs))-lastActualHoldTimeMs"></action> 
               </action>
             </action>
-            
-            <action type="if" condition="isFirstTrial">
-              <action type="assignment" variable="tempMs" value="0"></action>   
-            </action>  
               
             <action type="if" condition="tempMs &gt;= 0"> 
                 <!--add to ITI-->
