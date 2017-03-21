@@ -38,6 +38,7 @@
       <variable tag="doPulseLength" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doLinearTargetSpacing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="block2MatchB1VisStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
@@ -1045,15 +1046,29 @@
                 <action type="report" message="tBaseGratingDirectionDeg is $tBaseGratingDirectionDeg"/>
               </action>
               <action type="if" condition="tDoOriDetect">
-                <action type="assignment" variable="tGratingDirectionDeg" 
-                        value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action>
-                <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                <action type="if" condition="!tDoLinearTargetSpacing">
+                  <action type="assignment" variable="tGratingDirectionDeg" 
+                          value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action>
+                  <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                </action>
+                <action type="if" condition="!tDoLinearTargetSpacing">
+                  <action type="assignment" variable="tGratingDirectionDeg" 
+                          value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg * ((8-tStimulusNumber)/8))"></action>
+                  <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"/>
+                </action>
               </action>
               <action type="if" condition="tDoContrastDetect">
-                <action type="assignment" variable="tGratingContrast" 
-                        value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> tD
-                <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
-              </action>
+                <action type="if" condition="!doLinearTargetSpacing">
+                  <action type="assignment" variable="tGratingContrast" 
+                          value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> tD
+                  <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                </action>
+                <action type="if" condition="!doLinearTargetSpacing">
+                  <action type="assignment" variable="tGratingContrast" 
+                          value="tBaseGratingContrast + (tGratingMaxContrastStep * ((8-tStimulusNumber)/8))"></action>
+                  <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+                </action>
+              </action>  
               <action type="if" condition="!tDoContrastDetect &amp;&amp; !tDoOriDetect">
                 <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast"></action> 
                 <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
