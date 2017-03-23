@@ -71,6 +71,8 @@
         <variable tag="stimOffTimeIntervalMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
 
         <variable tag="doShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
+        <variable tag="minShortCatchCycle" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="minShortCatchTrial" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
         <variable tag="doShortCatchReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
         <variable tag="catchTrPerB2Level1" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
         <variable tag="catchTrPerB2Level2" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
@@ -300,6 +302,7 @@
         <variable tag="tTargetOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tMinCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tMaxCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tMinShortCatchCycle" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
         <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -1004,15 +1007,23 @@
 
           <!-- setting nCyclesOn -->
           <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
-          <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(tMinCyclesOn-1, nCyclesOn)"/>
-          <action type="if" condition="doShortCatchTrial">
-            <action type="assert" condition="tMinCyclesOn &gt; 2" stop_on_failure="1"
-              message="When doShortCatchTrial, minCyclesOn must be greater than 2"/>
+          
+            <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn">
+              <action type="assignment" variable="tMinShortCatchCycle" value="nCyclesOn-1"/> 
+            </action>
+            <action type="if" condition="minShortCatchCycle &lt; nCyclesOn">
+             <action type="assignment" variable="tMinShortCatchCycle" value="minShortCatchCycle"/> 
             </action>
 
-            <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == tMaxCyclesOn">
-             <action type="assignment" variable="isCatchTrial" value="1"/> 
-           </action>
+            <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(tMinShortCatchCycle, nCyclesOn)"/>
+
+        <action type="if" condition="trials &lt; minShortCatchTrial">
+         <action type="assignment" variable="tShortCatchTrial" value="0"/> 
+        </action>
+
+        <action type="if" condition="doLongCatchTrial &amp;&amp; nCyclesOn == tMaxCyclesOn">
+         <action type="assignment" variable="isCatchTrial" value="1"/> 
+       </action>
 
            <!-- for paired pulse experiments -->
           <action type="if" condition="doPairedPulse">

@@ -296,6 +296,7 @@
       <variable tag="tTargetOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tMinCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tMaxCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tMinShortCatchCycle" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -1007,10 +1008,15 @@
             </action>
 
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
-            
-            <action type="if" condition="doShortCatchTrial">
-              <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(minShortCatchCycle, nCyclesOn)"/>
+
+            <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn">
+             <action type="assignment" variable="tMinShortCatchCycle" value="nCyclesOn-1"/> 
             </action>
+            <action type="if" condition="minShortCatchCycle &lt; nCyclesOn">
+             <action type="assignment" variable="tMinShortCatchCycle" value="minShortCatchCycle"/> 
+            </action>
+
+            <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(tMinShortCatchCycle, nCyclesOn)"/>
 
             <action type="if" condition="trials &lt; minShortCatchTrial">
              <action type="assignment" variable="tShortCatchTrial" value="0"/> 
