@@ -100,6 +100,7 @@
         <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingContrastDiffSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="minDiscrimTarget" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
 
         <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>    
@@ -965,9 +966,15 @@
                   <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))"/>
 
                   <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff / (pow(2, 1.0*tStimulusNumber2/gratingContrastDiffSPO)) + 1"></action>
+                 
                   <action type="if" condition="doOnlyMaxDiff">
                    <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff"></action>
                  </action>
+                 
+                 <action type="if" condition="tGratingContrast &lt; minDiscrimTarget">
+                    <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxDiff"></action>
+                 </action>
+                    
                  <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
 
                   <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber == 8">
