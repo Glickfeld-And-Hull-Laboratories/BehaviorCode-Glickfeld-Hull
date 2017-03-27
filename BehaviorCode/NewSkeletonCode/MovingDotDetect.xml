@@ -291,6 +291,7 @@
       <variable tag="block2DoGratingAppearance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
 
       <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -660,7 +661,7 @@
 
                   
                   <action type="if" condition="doTrialLaser">
-                  	<action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+                  	<action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>
                   	<action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
                   	<action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
                   </action>
@@ -684,7 +685,7 @@
               <action type="if" condition="block2DoVisualStim || block2DoAuditoryStim">
 
                 <!-- same for both types of block2 trials -->
-                <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>      
+                <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>      
 
                 <action type="if" condition="tBlock2TrialNumber == 0">
                   <action type="assignment" variable="setDotCoherence" value="baseDotCoherence"/>
@@ -779,7 +780,13 @@
                 </action>
                 	
                 <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
+                  <action type="if" condition="optic_device == 'led' ">
+                    <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
+                </action>
+                <action type="if" condition="optic_device != 'led' ">
+                    <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
+                    <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
+                </action>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
                   <action type="assignment" variable="tTrialLaserOffTimeMs" value="block2TrialLaserOffTimeMs"></action>
                   <action type="assignment" variable="tDotMaxSpeedStepDPS" value="block2DotMaxSpeedStepDPS"/>
@@ -924,7 +931,7 @@
             </action> 
 
             <!-- if trialLaser, send params to controller -->
-                    <action type="if" condition="tTrialLaserPowerMw > 0">
+                    <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
                       <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
               <action type="assignment" tag="Send laser paramsto controller" variable="sendLaserParams" value="0"></action>
               <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
@@ -1014,7 +1021,12 @@
 
             <!-- turn on trial laser if requested -->
             <action type="if" condition="tTrialLaserPowerMw > 0">
-              <action type="assignment" variable="laserTrigger" value="1"></action>  
+              <action type="if" condition="optic_device == 'led' ">
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+              </action>
+              <action type="if" condition="optic_device != 'led' ">
+                  <action type="assignment" variable="laserTrigger" value="1"></action>
+              </action>
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -1078,6 +1090,9 @@
             <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
             <action tag="ReportEarlyRelease" full_name="ReportDigital" type="report" message="** Early Release (FIO1 = $FIO1 )"></action>
             <action type="assignment" tag="Turn off LED" variable="laserTrigger" value="0"></action>
+            <action type="if" condition="optic_device == 'led' ">
+                <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            </action>
 
             <action type="if" condition="doITIStim == 0">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
@@ -1126,6 +1141,10 @@
             <action tag="Play incorrectSound 2" type="play_sound" sound="incorrectSound"></action>
             <action type="assignment" tag="Turn off LED" variable="laserTrigger" value="0"></action>
             
+            <action type="if" condition="optic_device == 'led' ">
+              <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            </action>
+
             <action type="if" condition="doITIStim == 0">
             	<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
             	<action type="update_stimulus_display" tag="justincase"></action>
@@ -1166,7 +1185,9 @@
             <action type="assignment" tag="Encode LeverReleaseCorrect" variable="strobedDigitalWord" value="9"></action>
             <action type="assignment" tag="Turn off LED" variable="laserTrigger" value="0"></action>
 
-            
+            <action type="if" condition="optic_device == 'led' ">
+                <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            </action>
             <action type="if" condition="doITIStim == 0">
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
@@ -1291,6 +1312,9 @@
           <task_system_state tag="EndTrial" interruptible="YES">
             <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
             <action type="assignment" tag="Turn off LED" variable="laserTrigger" value="0"></action>
+            <action type="if" condition="optic_device == 'led' ">
+                <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+            </action>
             <action type="report" message="Trial Ended"/>
             <action type="assignment" variable="trials" value="trials+1"/>
             <action type="report" message="the trials is $trials"/>
