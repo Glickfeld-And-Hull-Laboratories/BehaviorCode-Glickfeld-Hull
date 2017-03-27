@@ -6,6 +6,7 @@
               lever1="FIO1"
               lever1_solenoid="MIO0"
               laser_trigger="laserTrigger"
+              trial_laser_powerMw="tTrialLaserPowerMw"
               optic_device="optic_device"
               strobed_digital_word="strobedDigitalWord"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
@@ -833,8 +834,8 @@
 
               <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
 
-              <action type="assert" condition="tTrialLaserPowerMw == 0" stop_on_failure="1" 
-                      message="bug: tLaserPowerMw and tTrialLaserPowerMw != 0"/>
+              <action type="assert" condition="tTrialLaserPowerMw_trigger == 0" stop_on_failure="1" 
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw_trigger != 0"/>
             </action>
             <action type="if" condition="!doLaserStim">
               <action type="assignment" variable="tLaserPowerMw" value="0"/>
@@ -1020,7 +1021,7 @@
             </action>
 
             <!-- turn on trial laser if requested -->
-            <action type="if" condition="tTrialLaserPowerMw > 0">
+            <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
               <action type="if" condition="optic_device == 'led' ">
                   <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
               </action>
