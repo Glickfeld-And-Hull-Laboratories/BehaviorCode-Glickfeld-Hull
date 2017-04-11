@@ -286,6 +286,9 @@
       <variable tag="tRewardDelayTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tRewardDelayDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
+      <variable tag="rewardOmissionEveryN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="rewardUnexpectEveryN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
                 selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
@@ -401,19 +404,27 @@
             <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
 
             <!-- choose reward omission and unexpected reward randomly-->
-            <action type="if" condition="rewardOmissionPercent != 0 &amp;&amp; (success % rewardOmissionPercent == 0)  ">
-              <action type="assignment" variable="tOmissionRewardNum" value="(int)(disc_rand(1,rewardOmissionPercent)) + success"/>
+            <action type="if" condition="rewardOmissionPercent != 0">
+              <action type="assignment" variable="rewardOmissionEveryN" value="round(100/rewardOmissionPercent)"/>
+            </action>
+
+            <action type="if" condition="rewardUnexpectPercent != 0">
+              <action type="assignment" variable="rewardUnexpectEveryN" value="round(100/rewardUnexpectPercent)"/>
+            </action>
+
+            <action type="if" condition="rewardOmissionPercent != 0 &amp;&amp; (success % rewardOmissionEveryN == 0)  ">
+              <action type="assignment" variable="tOmissionRewardNum" value="(int)(disc_rand(1,rewardOmissionEveryN)) + success"/>
               <action type="report" message="the tOmissionRewardNum is $tOmissionRewardNum"/>
             </action>
 
-            <action type="if" condition="doLever==0 &amp;&amp; rewardUnexpectPercent != 0 &amp;&amp; ((success+ignore+failure+1) % (rewardUnexpectPercent) == 0) ">
-              <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectPercent-1)) + (success+ignore+failure)"/>
+            <action type="if" condition="doLever==0 &amp;&amp; rewardUnexpectPercent != 0 &amp;&amp; ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ">
+              <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectEveryN-1)) + (success+ignore+failure)"/>
               <action type="report" message="the tUnexpectRewardNum is $tUnexpectRewardNum"/>
             </action>
 
 
             <action type="if" condition="doLever==0 &amp;&amp; rewardUnexpectPercent != 0 &amp;&amp; success+ignore+failure == 0 ">
-              <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectPercent-1))"/>
+              <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectEveryN-1))"/>
               <action type="report" message="the tUnexpectRewardNum is $tUnexpectRewardNum"/>
             </action>
 
