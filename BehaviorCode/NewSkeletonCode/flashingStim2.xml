@@ -27,6 +27,7 @@
         <variable tag="doITIStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
         <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+        <variable tag="doLaserStimSteps" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doRandBaseOri" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
@@ -140,33 +141,23 @@
         <variable tag="gratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="gratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
 
-        <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTransitionRampUpDownMs" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTransitionDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>  <!-- 0: do not do baseline -->
-        <variable tag="laserBaselinePostStimTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Laser"/> 
+        <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser Stim"/>  <!-- 0: do not do baseline -->
 
-        <variable tag="laserDoLinearRamp" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Laser"/>
-        <variable tag="laserRampLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserRampExtraConstantLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserRampDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserDoLinearRamp" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserRampLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser Stim"/>
 
-        <variable tag="laserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserPulseLengthMs" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserPulsePeriodMs" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTrainLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTrainRandomNPulses" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTrainRandomType" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/> 
+        <variable tag="laserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserPulseLengthMs" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserPulsePeriodMs" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserTrainLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser Stim"/>
 
-        <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
-        <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
-        <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
-        <variable tag="forceMinStimStepTo" scope="global" logging="when_changed" default_value="-1" type="float" persistant="1" groups="Laser"/>
-
-        <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Laser"/>
-        <variable tag="laserDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
+        <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
+        <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
+        <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Trial Laser"/>
+        <variable tag="laserDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Laser"/>
         <!-- block 2 control -->
 
         <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Stimulus"/>
@@ -348,6 +339,7 @@
         <variable tag="trials" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
         <variable tag="nCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tCycleLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -1007,6 +999,7 @@
 
           <!-- setting nCyclesOn -->
           <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
+          <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,nCyclesOn+6)"/>
           
             <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn">
               <action type="assignment" variable="tMinShortCatchCycle" value="nCyclesOn-1"/> 
@@ -1049,23 +1042,29 @@
 
             <!-- choose laser power -->
             <action type="if" condition="doLaserStim">
-              <action type="assignment" variable="tLaserPowerMw" 
-                value="tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)"></action> 
+                <action type="if" condition="!doLaserStimSteps">
+                  <action type="assignment" variable="tLaserPowerMw" value="tLaserPeakMaxMw"></action> 
+                </action>  
+                <action type="if" condition="doLaserStimSteps">
+                    <action type="assignment" variable="tLaserPowerMw" 
+                        value="tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)"></action>
+                </action>          
 
                 <!-- adjust from baseline -->
                 <action type="if" condition="tLaserBaselinePowerMw > 0">
                   <action type="assignment" variable="tLaserPowerMw" 
                     value="tLaserPowerMw + tLaserBaselinePowerMw"/>
-                  </action>
+                </action>
 
-                  <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
+                <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
 
-                  <action type="assert" condition="tTrialLaserPowerMw_trigger == 0" stop_on_failure="1" 
-                    message="bug: tLaserPowerMw and tTrialLaserPowerMw_trigger != 0"/>
-                  </action>
-                  <action type="if" condition="!doLaserStim">
-                    <action type="assignment" variable="tLaserPowerMw" value="0"/>
-                  </action>
+                <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="tLaserPowerMw"></action>
+
+            </action>
+
+              <action type="if" condition="!doLaserStim">
+                <action type="assignment" variable="tLaserPowerMw" value="0"/>
+              </action>
 
                   <!-- choose vis stim ori/dir -->
                   <action type="if" condition="tDoVisualStim">
@@ -1325,7 +1324,21 @@
                                           <action type="assignment" variable="MIO0" value="1"/>
                                         </action>
 
-                                        <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == 1)">
+                                        <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == 1) &amp;&amp; (!doLaserStim)">
+                                            <action type="if" condition="optic_device == 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                                <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+                                            </action>
+                                            <action type="if" condition="optic_device != 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                            </action>
+                                          <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                                          <action type="report" message="-----Laser Duration is to $laserDuration"/>
+                                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+                                        </action>
+
+                                        <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == tCycleLaser) &amp;&amp; (doLaserStim)">
                                             <action type="if" condition="optic_device == 'led' ">
                                                 <action type="assignment" variable="laserTrigger" value="1"></action>
                                                 <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
@@ -1393,6 +1406,19 @@
                                         <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                                         <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                                       </action>
+
+                                      <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                                            <action type="if" condition="optic_device == 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="0"></action>
+                                                <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                            </action>
+                                            <action type="if" condition="optic_device != 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="0"></action>
+                                            </action>
+                                          
+                                          <action type="report" message="********* Turning off LASER TRIGGER *********"/>
+
+                                        </action>
 
                                       <action type="if" condition="sendElectrophysSync==1">
                                         <action type="assignment" variable="MIO0" value="0"/>
@@ -1467,6 +1493,20 @@
                                       <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
                                       <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
                                       
+                                      <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == tCycleLaser) &amp;&amp; (doLaserStim)">
+                                            <action type="if" condition="optic_device == 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                                <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+                                            </action>
+                                            <action type="if" condition="optic_device != 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                            </action>
+                                          <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                                          <action type="report" message="-----Laser Duration is to $laserDuration"/>
+                                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+                                        </action>
+
                                       <action type="if" condition="sendElectrophysSync &amp;&amp; doPulseLength == 0">
                                         <action type="assignment" variable="MIO0" value="1"/>
                                       </action>
@@ -1851,6 +1891,19 @@
                               <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                               <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                               
+                              <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                                <action type="if" condition="optic_device == 'led' ">
+                                    <action type="assignment" variable="laserTrigger" value="0"></action>
+                                    <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                    </action>
+                                    <action type="if" condition="optic_device != 'led' ">
+                                         <action type="assignment" variable="laserTrigger" value="0"></action>
+                                     </action>
+                                          
+                                    <action type="report" message="********* Turning off LASER TRIGGER *********"/>
+
+                              </action>
+
                               <action type="if" condition="sendElectrophysSync">
                                 <action type="assignment" variable="MIO0" value="0"/>
                               </action>
