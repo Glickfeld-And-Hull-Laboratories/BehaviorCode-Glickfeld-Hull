@@ -241,7 +241,7 @@ end
 %stimFrames = cellfun(@length,input.announceStimulusTimes.driftStimulus)
 
 % misc error checking
-assert(~input.doLaserStim || all(tLaserDoLinearRampV | tLaserDoPulseTrainV));
+%assert(~input.doLaserStim || all(tLaserDoLinearRampV | tLaserDoPulseTrainV));
 
 % figure out block2 stim levels
 showBlock2 = input.doBlock2;
@@ -1517,6 +1517,8 @@ elseif input.laserDoPulseTrain
   outStr = [ sprintf('train, pulse %d, period %d, dur %d', ...
                          input.laserPulseLengthMs, input.laserPulsePeriodMs, ...
                          input.laserTrainLengthMs) ];
+else
+  outStr = [ sprintf('not doing ramp or train')];
 end
 
 

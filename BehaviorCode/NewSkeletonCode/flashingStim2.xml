@@ -1035,10 +1035,7 @@
           <!-- setting total required hold time -->
           <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="((tStimOnTimeMs+tStimOffTimeMs)*nCyclesOn)+tStimOnTimeMs"/> 
 
-          <!-- !doBlock2 error checking -->
-          <action type="assert" stop_on_failure="1"
-            condition="!doLaserStim || (laserDoLinearRamp || laserDoPulseTrain)" 
-            message="When doLaserStim, ramp or train must be set"/>
+          
 
             <!-- choose laser power -->
             <action type="if" condition="doLaserStim">
