@@ -999,7 +999,11 @@
 
           <!-- setting nCyclesOn -->
           <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
-          <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,nCyclesOn+3)"/>
+          <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(nCyclesOn-1,nCyclesOn+3)"/>
+
+          <action type="if" condition="nCyclesOn == 2">
+            <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,5)"/>
+          </action>  
           
             <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn">
               <action type="assignment" variable="tMinShortCatchCycle" value="nCyclesOn-1"/> 
