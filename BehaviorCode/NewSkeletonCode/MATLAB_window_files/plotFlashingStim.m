@@ -365,11 +365,8 @@ if length(holdStarts) > 2
              'VerticalAlignment', 'top', ...
              'HorizontalAlignment', 'left');
 
-        if input.laserRampDoExpRamp == 0, 
-          rampShapeStr = 'lin'; 
-        else
-          rampShapeStr = 'exp';
-        end
+        rampShapeStr = 'lin'; 
+        
         
         trPer80Str = regexprep(['[' num2str(input.trPer80V, '%3d') ']'], '[ *', '[');
         if input.doBlock2SeparateOdds
@@ -1508,11 +1505,8 @@ end
 
 function outStr = subPpLaser(input)
 
-if input.laserRampDoExpRamp == 0, 
-  rampShapeStr = 'lin'; 
-else
-  rampShapeStr = 'exp';
-end
+rampShapeStr = 'lin'; 
+
 
 if input.laserDoLinearRamp
   outStr = [ sprintf('ramp %d (%s)+ const %d ms', ...
