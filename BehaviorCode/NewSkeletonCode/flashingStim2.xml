@@ -999,7 +999,7 @@
 
           <!-- setting nCyclesOn -->
           <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
-          <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,nCyclesOn+6)"/>
+          <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,nCyclesOn+3)"/>
           
             <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn">
               <action type="assignment" variable="tMinShortCatchCycle" value="nCyclesOn-1"/> 
@@ -1042,6 +1042,7 @@
 
             <!-- choose laser power -->
             <action type="if" condition="doLaserStim">
+                <action type="assignment" variable="tLaserPeakMaxMw" value="laserPeakMaxMw"/>
                 <action type="if" condition="!doLaserStimSteps">
                   <action type="assignment" variable="tLaserPowerMw" value="tLaserPeakMaxMw"></action> 
                 </action>  
@@ -1208,8 +1209,7 @@
                                 <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
                                   <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
                                   <action type="assignment" tag="Send laser paramsto controller" variable="sendLaserParams" value="0"></action>
-                                  <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
-                                    message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/>
+                                  
                                     <action type="assert" stop_on_failure="1"
                                       condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
                                       message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
@@ -1493,7 +1493,7 @@
                                       <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
                                       <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
                                       
-                                      <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == tCycleLaser) &amp;&amp; (doLaserStim)">
+                                      <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; ((tCyclesOn+1) == tCycleLaser) &amp;&amp; (doLaserStim)">
                                             <action type="if" condition="optic_device == 'led' ">
                                                 <action type="assignment" variable="laserTrigger" value="1"></action>
                                                 <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
