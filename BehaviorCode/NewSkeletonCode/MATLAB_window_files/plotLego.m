@@ -119,9 +119,14 @@ right_correct_ind = find((double(rightTrialIx)+double(correctIx))==2);
 juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
 
-% stimulus str            
-stimStr = strcat(mat2str(input.gratingMaxDiameterDeg), ' deg, ', ...
+% stimulus str 
+if isfield(input,'gratingMaxDiameterDeg')           
+  stimStr = strcat(mat2str(input.gratingMaxDiameterDeg), ' deg, ', ...
     num2str(input.gratingSpatialFreqCPD), ' cpd, ', mat2str(input.gratingEccentricityDeg), ' deg');
+else
+  stimStr = strcat(mat2str(input.gratingWidthDeg), ' deg, ', ...
+    num2str(input.gratingSpatialFreqCPD), ' cpd, ', mat2str(input.gratingEccentricityDeg), ' deg');
+end
 
 if input.gratingSpeedDPS > 0,
     stimStr = strcat(stimStr, ', ', mat2str(input.gratingSpeedDPS), ' dps, ', ...
@@ -236,12 +241,20 @@ if ~isfield(input, 'stimOnTimeMs')
 input.stimOnTimeMs = input.reactionTimeMs;
 end
 
-if input.doContrastDiscrim
+if isfield(input,'gratingMaxDiff')
+  input.gratingMaxContrastDiff = input.gratingMaxDiff;
+end
+if isfield(input,'doContrastDiscrim')
+  if input.doContrastDiscrim
+    taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
+      input.gratingMaxContrast, input.gratingContrastSPO, input.gratingMaxContrastDiff, input.gratingContrastDiffSPO);
+  elseif input.doSizeDiscrim
+    taskStr = sprintf(['MaxSize: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
+      input.gratingMaxDiameterDeg, input.gratingDiameterSPO, input.gratingMaxDiameterDiff, input.gratingDiameterDiffSPO);
+  end
+else
   taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
-    input.gratingMaxContrast, input.gratingContrastSPO, input.gratingMaxContrastDiff, input.gratingContrastDiffSPO);
-elseif input.doSizeDiscrim
-  taskStr = sprintf(['MaxSize: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
-    input.gratingMaxDiameterDeg, input.gratingDiameterSPO, input.gratingMaxDiameterDiff, input.gratingDiameterDiffSPO);
+      input.gratingMaxContrast, input.gratingContrastSPO, input.gratingMaxContrastDiff, input.gratingContrastDiffSPO);
 end
 
         tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
@@ -496,19 +509,28 @@ axH = subplot(spSz{:},7);
 hold on;
 
 if nCorr>0  %&& input.doTestRobot==0,
-  if input.doContrastDiscrim
+  if isfield(input,'doContrastDiscrim')
+    if input.doContrastDiscrim
+      if input.gratingContrastDiffSPO<10
+        contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ celleqel2mat_padded(input.dGratingContrast),2);
+      else
+        contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - celleqel2mat_padded(input.dGratingContrast),2);
+      end
+    elseif input.doSizeDiscrim
+      if input.gratingDiameterDiffSPO<10
+        contDiffV = chop(celleqel2mat_padded(input.tGratingDiameterDeg) ./ celleqel2mat_padded(input.dGratingDiameterDeg),2);
+      else
+        contDiffV = chop(celleqel2mat_padded(input.tGratingDiameterDeg) - celleqel2mat_padded(input.dGratingDiameterDeg),2);
+      end
+    end
+  else
     if input.gratingContrastDiffSPO<10
       contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ celleqel2mat_padded(input.dGratingContrast),2);
     else
       contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - celleqel2mat_padded(input.dGratingContrast),2);
     end
-  elseif input.doSizeDiscrim
-    if input.gratingDiameterDiffSPO<10
-      contDiffV = chop(celleqel2mat_padded(input.tGratingDiameterDeg) ./ celleqel2mat_padded(input.dGratingDiameterDeg),2);
-    else
-      contDiffV = chop(celleqel2mat_padded(input.tGratingDiameterDeg) - celleqel2mat_padded(input.dGratingDiameterDeg),2);
-    end
   end
+
 
     corrDiffV = contDiffV(correctIx);
     uqDiff = unique(corrDiffV);
@@ -550,7 +572,24 @@ if nCorr>0  %&& input.doTestRobot==0,
 
 
     lev = double(find(input.trPer80V>0)-1);
-    if input.doContrastDiscrim
+    if isfield(input,'doContrastDiscrim')
+      if input.doContrastDiscrim
+        if isfield(input, 'dGratingContrastDiff')
+          possDiffV = double(input.gratingMaxContrastDiff) ./ (2 .^ (lev./double(input.gratingContrastDiffSPO)))+1;
+
+          minX = min(possDiffV,[],2);
+          maxX = max(possDiffV,[],2);
+        else
+          possDiffV = input.gratingMaxContrastDiff ./ (2 .^ (lev./input.gratingContrastSPO));
+          minX = min(possDiffV,[],2);
+          maxX = max(possDiffV,[],2);
+        end
+      elseif input.doSizeDiscrim
+        possDiffV = double(input.gratingMaxDiameterDiff) ./ (2 .^ (lev./double(input.gratingDiameterDiffSPO)))+1;
+        minX = min(possDiffV,[],2);
+        maxX = max(possDiffV,[],2);
+      end
+    else
       if isfield(input, 'dGratingContrastDiff')
         possDiffV = double(input.gratingMaxContrastDiff) ./ (2 .^ (lev./double(input.gratingContrastDiffSPO)))+1;
 
@@ -561,11 +600,8 @@ if nCorr>0  %&& input.doTestRobot==0,
         minX = min(possDiffV,[],2);
         maxX = max(possDiffV,[],2);
       end
-    elseif input.doSizeDiscrim
-      possDiffV = double(input.gratingMaxDiameterDiff) ./ (2 .^ (lev./double(input.gratingDiameterDiffSPO)))+1;
-      minX = min(possDiffV,[],2);
-      maxX = max(possDiffV,[],2);
     end
+
 
     minD = min(cell2mat(corrDiffCell));
     maxD = max(cell2mat(corrDiffCell));
@@ -634,21 +670,30 @@ if nCorr>0  %&& input.doTestRobot==0,
 
      axis tight  
        ylabel('Decision Time (ms)')
-       if input.doContrastDiscrim
-         if input.gratingContrastDiffSPO<10
-           xlabel('Contrast Difference (R/L)')
-         else
-           xlabel('Contrast Difference (R-L)')
-          end
-         title('Decision Time by Contrast Difference')
-      elseif input.doSizeDiscrim
-        if input.gratingDiameterDiffSPO<10
-           xlabel('Size Difference (R/L)')
-         else
-           xlabel('Size Difference (R-L)')
-          end
-         title('Decision Time by Size Difference')
-      end
+       if isfield(input,'doContrastDiscrim')
+         if input.doContrastDiscrim
+           if input.gratingContrastDiffSPO<10
+             xlabel('Contrast Difference (R/L)')
+           else
+             xlabel('Contrast Difference (R-L)')
+            end
+           title('Decision Time by Contrast Difference')
+        elseif input.doSizeDiscrim
+          if input.gratingDiameterDiffSPO<10
+             xlabel('Size Difference (R/L)')
+           else
+             xlabel('Size Difference (R-L)')
+            end
+           title('Decision Time by Size Difference')
+        end
+      else
+        if input.gratingContrastDiffSPO<10
+         xlabel('Contrast Difference (R/L)')
+        else
+         xlabel('Contrast Difference (R-L)')
+        end
+      title('Decision Time by Contrast Difference')
+      end     
 end
 %%%%%%%%%%%%%%%%%
 
@@ -685,20 +730,30 @@ if nCorr>0 %&& input.doTestRobot==0,
        elseif minX<maxX
          xlim([minX maxX])
        end
-       if input.doContrastDiscrim
-         if input.gratingContrastDiffSPO<10
-           xlabel('Contrast Difference (R/L)')
-         else
-           xlabel('Contrast Difference (R-L)')
-          end
-         title('Percent Correct by Contrast Difference')
-      elseif input.doSizeDiscrim
-        if input.gratingDiameterDiffSPO<10
-           xlabel('Size Difference (R/L)')
-         else
-           xlabel('Size Difference (R-L)')
-          end
-         title('Percent Correctby Size Difference')
+
+       if isfield(input,'doContrastDiscrim')
+         if input.doContrastDiscrim
+           if input.gratingContrastDiffSPO<10
+             xlabel('Contrast Difference (R/L)')
+           else
+             xlabel('Contrast Difference (R-L)')
+            end
+           title('Percent Correct by Contrast Difference')
+        elseif input.doSizeDiscrim
+          if input.gratingDiameterDiffSPO<10
+             xlabel('Size Difference (R/L)')
+           else
+             xlabel('Size Difference (R-L)')
+            end
+           title('Percent Correct by Size Difference')
+        end
+      else
+        if input.gratingContrastDiffSPO<10
+         xlabel('Contrast Difference (R/L)')
+        else
+         xlabel('Contrast Difference (R-L)')
+        end
+      title('Percent Correct by Contrast Difference')
       end
 end
 
@@ -767,21 +822,31 @@ xlabel('Time');
 
 axH  = subplot(spSz{:},10);
 hold on
-if input.doContrastDiscrim
+if isfield(input,'doContrastDiscrim')
+  if input.doContrastDiscrim
+    if input.gratingContrastDiffSPO > 10
+      differenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+    elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
+      differenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+    elseif isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
+      differenceRight =chop(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
+    end
+  elseif input.doSizeDiscrim
+  if input.gratingDiameterDiffSPO > 10
+      differenceRight = chop(cell2mat(input.rightGratingDiameterDeg) - cell2mat(input.leftGratingDiameterDeg),2);
+    elseif ~isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
+      differenceRight = chop(cell2mat(input.rightGratingDiameterDeg) - cell2mat(input.leftGratingDiameterDeg),2);
+    elseif isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
+      differenceRight =chop(cell2mat(input.rightGratingDiameterDeg) ./ cell2mat(input.leftGratingDiameterDeg),2);
+    end
+  end
+else
   if input.gratingContrastDiffSPO > 10
     differenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
   elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
     differenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
   elseif isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
     differenceRight =chop(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
-  end
-elseif input.doSizeDiscrim
-if input.gratingDiameterDiffSPO > 10
-    differenceRight = chop(cell2mat(input.rightGratingDiameterDeg) - cell2mat(input.leftGratingDiameterDeg),2);
-  elseif ~isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
-    differenceRight = chop(cell2mat(input.rightGratingDiameterDeg) - cell2mat(input.leftGratingDiameterDeg),2);
-  elseif isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
-    differenceRight =chop(cell2mat(input.rightGratingDiameterDeg) ./ cell2mat(input.leftGratingDiameterDeg),2);
   end
 end
 
@@ -888,26 +953,37 @@ set(vH, 'Color', 'g');
 set(gca, 'XLim', [minX maxX], ...
          'YLim', [0 1]);
 if min(differenceRight) < 0
-  if input.doContrastDiscrim
-      xlabel('Contrast Difference (R-L)')
-      set(gca, 'XTick', [-1:0.5:1], ...
-               'YTick', [0:0.25:1],...
-               'XGrid', 'on');
-  elseif input.doSizeDiscrim
-      xlabel('Size Difference (R-L)')
-      set(gca, 'XTick', [-input.maxGratingDiameterDeg:5:input.maxGratingDiameterDeg], ...
-               'YTick', [0:0.25:1],...
-               'XGrid', 'on');
+  if isfield(input,'doContrastDiscrim')
+    if input.doContrastDiscrim
+        xlabel('Contrast Difference (R-L)')
+        set(gca, 'XTick', [-1:0.5:1], ...
+                 'YTick', [0:0.25:1],...
+                 'XGrid', 'on');
+    elseif input.doSizeDiscrim
+        xlabel('Size Difference (R-L)')
+        set(gca, 'XTick', [-input.maxGratingDiameterDeg:5:input.maxGratingDiameterDeg], ...
+                 'YTick', [0:0.25:1],...
+                 'XGrid', 'on');
+    end
+  else
+    xlabel('Contrast Difference (R-L)')
+        set(gca, 'XTick', [-1:0.5:1], ...
+                 'YTick', [0:0.25:1],...
+                 'XGrid', 'on');
   end
 else
   set(gca,'XScale', 'log', ...
             'XGrid', 'on',...
             'XTick', xTickL,...
             'XTickLabel', xTLabelL);
-  if input.doContrastDiscrim
+  if isfield(input,'doContrastDiscrim')
+    if input.doContrastDiscrim
+      xlabel('Contrast Difference (R/L)')
+    elseif input.doSizeDiscrim
+      xlabel('Size Difference (R/L)')
+    end
+  else
     xlabel('Contrast Difference (R/L)')
-  elseif input.doSizeDiscrim
-    xlabel('Size Difference (R/L)')
   end
 end
 
@@ -953,10 +1029,14 @@ axH = subplot(spSz{:},11);
 hold on;
 
 if nCorr>0 %&& input.doTestRobot==0,
-  if input.doContrastDiscrim
+  if isfield(input,'doContrastDiscrim')
+    if input.doContrastDiscrim
+      contTargetV = celleqel2mat_padded(input.tGratingContrast).*100;
+    elseif input.doSizeDiscrim
+      contTargetV = celleqel2mat_padded(input.tGratingDiameterDeg);
+    end
+  else
     contTargetV = celleqel2mat_padded(input.tGratingContrast).*100;
-  elseif input.doSizeDiscrim
-    contTargetV = celleqel2mat_padded(input.tGratingDiameterDeg);
   end
     plotTrsB1 = contTargetV((correctIx|incorrectIx)&~block2Ix);
     uqTargetB1 = unique(plotTrsB1);
@@ -1008,13 +1088,18 @@ if nCorr>0 %&& input.doTestRobot==0,
        set(gca, 'XTick', xTickL);
        set(gca, 'XTickLabel', xTLabelL);
        ylabel('Correct (%)')
-       if input.doContrastDiscrim
-         xlabel('Target Contrast')
-         title('Percent Correct by Target Contrast')
-       elseif input.doSizeDiscrim
-         xlabel('Target Size')
-         title('Percent Correct by Target Size')
-       end
+       if isfield(input,'doContrastDiscrim')
+         if input.doContrastDiscrim
+           xlabel('Target Contrast')
+           title('Percent Correct by Target Contrast')
+         elseif input.doSizeDiscrim
+           xlabel('Target Size')
+           title('Percent Correct by Target Size')
+         end
+        else
+          xlabel('Target Contrast')
+          title('Percent Correct by Target Contrast')
+        end
 end
 %%%%%%%%%%%%%%%%
 if input.doBlocks==1
