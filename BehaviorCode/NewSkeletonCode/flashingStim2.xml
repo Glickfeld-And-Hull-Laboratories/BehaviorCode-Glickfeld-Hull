@@ -31,6 +31,7 @@
         <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doRandBaseOri" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+        <variable tag="doRandBaseOriBySession" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
@@ -427,6 +428,11 @@
                      <!-- init actions run only on first trial after loading experiment -->
                      <action type="if" condition="success+ignore+failure == 0">
                       <action type="report" message="**** First trial since experiment load - initializing"></action>
+
+                      <action type="if" condition="doRandBaseOriBySession">
+                        <action type="assignment" variable="baseGratingDirectionDeg" value="baseGratingDirectionDeg + (disc_rand(0,baseGratingDirectionStepN-1) * baseGratingDirectionStepDeg)"></action>
+                        <action type="report" message="Base orientation is $tBaseGratingDirectionDeg"></action>
+                      </action>  
 
                       <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
                       <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
