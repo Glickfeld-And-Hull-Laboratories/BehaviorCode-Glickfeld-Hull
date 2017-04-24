@@ -136,6 +136,11 @@
         <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
 
+        <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Distractor Stimulus Parameters"/>
+        <variable tag="dGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Distractor Stimulus Parameters"/>
+        <variable tag="dGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Distractor Stimulus Parameters"/>
+        <variable tag="dGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Distractor Stimulus Parameters"/>
+
         <!-- stimulus control parameters -->
         <variable tag="gratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="gratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
@@ -406,6 +411,14 @@
                 x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
                 rotation="tCatchGratingDirectionDeg" 
                 alpha_multiplier="tCatchGratingContrast"></stimulus>
+              <stimulus type="drifting_Grating" tag="distractor_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
+                spatial_frequency="tGratingSpatialFreqCPD" 
+                speed="tGratingSpeedDPS" 
+                grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+                x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
+                x_position="dGratingAzimuthDeg" y_position="dGratingElevationDeg" 
+                rotation="dGratingDirectionDeg" 
+                alpha_multiplier="dGratingContrast"></stimulus>  
                 <stimulus type="drifting_grating" tag="photoDiodeGrating"  direction="0" starting_phase="0"
                   spatial_frequency=".000000000001" 
                   speed="0" 
@@ -454,6 +467,8 @@
                             <action type="if" condition="doITIStim">
                               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
                               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+                              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>    
+                              <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="start"></action>
                               <action type="update_stimulus_display" tag="justincase"></action>
                             </action>
                           </action>          
@@ -1288,11 +1303,15 @@
                                          <action type="if" condition="tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
                                           <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                           <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                          <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                           <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
                                         </action>
                                         <action type="if" condition="tCyclesOn == catchCyclesOn">
                                           <action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="catch_grating"></action> 
                                           <action type="play_dynamic_stimulus" stimulus="catch_grating" tag="StimOn"></action>
+                                          <action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                          <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                           <action type="play_sound" sound="catchSound"/>
                                           <action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
                                           <action type="assignment" variable="tCatchTimeMs" value="now()/1000"/>
@@ -1316,6 +1335,8 @@
                                         <action type="if" condition="!tShortCatchTrial">
                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                          <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                         <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                          <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
                                        </action>
 
@@ -1402,6 +1423,7 @@
                                       <action type="if" condition="!doConstantStimulus">
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
+                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                         <action type="report" message="Not doing Constant Stimulus"></action>
                                         <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
                                         <action type="assignment" variable="tStimOffMs" value="now()/1000" />
@@ -1476,21 +1498,29 @@
                                       <action type="if" condition="doConstantStimulus==1">
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
+                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOff"></action>
                                       </action>
                                       <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                        <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="play_sound" sound="baseSound"/>
                                         <action type="assignment" variable="isCatchTrial" value= "1"/>
                                       </action>
                                       <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
                                       </action>
                                       <action type="if" condition="nCyclesOn &lt; tMaxCyclesOn">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="report" message="Target Stim On for $tStimOnTimeMs ms"/>
                                       </action>
 
@@ -1585,6 +1615,7 @@
 
                                      <action type="if" condition="doITIStim == 0">
                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                       <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                        <action type="update_stimulus_display" tag="justincase"></action>
                                      </action>
                                      <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
@@ -1594,6 +1625,8 @@
                                      <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
                                       <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
                                       <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                      <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
+                                      <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                       <action type="update_stimulus_display" tag="justincase"></action>
                                     </action>
 
@@ -1657,6 +1690,7 @@
 
                                     <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
                                      <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                     <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                      <action type="update_stimulus_display" tag="justincase"></action>
                                    </action>	
                                    <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
@@ -1666,6 +1700,8 @@
                                    <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
                                     <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
                                     <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
+                                    <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                     <action type="update_stimulus_display" tag="justincase"></action>
                                   </action>
 
@@ -1714,6 +1750,7 @@
 
                                   <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
                                    <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                   <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                    <action type="update_stimulus_display" tag="justincase"></action>
                                  </action>	
                                  <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
@@ -1722,6 +1759,8 @@
                                  <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
                                   <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
                                   <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
+                                  <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                   <action type="update_stimulus_display" tag="justincase"></action>
                                 </action>
 
@@ -1833,6 +1872,8 @@
                                 <action type="play_sound" sound="baseSound"/>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                               </action>
 
                               <action type="if" condition="tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==0">
@@ -1841,6 +1882,8 @@
                                 <action type="play_sound" sound="targetSound"/>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                 <action type="assignment" variable="tDidDeviantAfterMissing" value="1"/>
                               </action>
                               
@@ -1886,10 +1929,13 @@
                               
                               <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                               </action> 
                               <action type="if" condition="doConstantStimulus">
                                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="Return to base"></action>
+                                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
+                                <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="Return to base"></action>
                               </action> 
 
                               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
@@ -1969,6 +2015,7 @@
           </task_system>
         </trial>
         <action type="dequeue_stimulus" stimulus="base_grating"></action>
+        <action type="dequeue_stimulus" stimulus="distractor_grating"></action>
         <action tag="Update Stimulus" type="update_stimulus_display"></action>
         <action type="assignment" tag="" variable="laserTrigger" value="0"/>
         <action type="if" condition="optic_device == 'led' ">
