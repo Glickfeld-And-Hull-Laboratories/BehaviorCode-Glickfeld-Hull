@@ -16,8 +16,8 @@
         <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
         <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string" persistant="1"/>
 
-        <variable tag="minITItimeMs" scope="global" logging="when_changed" default_value="3000" type="float" persistant="1" groups="Trial Structure"/>
-        <variable tag="maxITItimeMs" scope="global" logging="when_changed" default_value="8000" type="float" persistant="1" groups="Trial Structure"/>
+        <variable tag="minItiTimeMs" scope="global" logging="when_changed" default_value="3000" type="float" persistant="1" groups="Trial Structure"/>
+        <variable tag="maxItiTimeMs" scope="global" logging="when_changed" default_value="8000" type="float" persistant="1" groups="Trial Structure"/>
 
         <variable tag="postRewardMs" scope="global" logging="when_changed" default_value="2000" type="integer" persistant="1" groups="Reward"/>
         <variable tag="rewardUs" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
@@ -49,6 +49,7 @@
 
       <folder tag="Task Status">
         <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+        <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
       </folder>
       <folder tag="Online Display">
@@ -68,9 +69,9 @@
         <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-        <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-        <variable tag="dGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-        <variable tag="tRewardTrial" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="dGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tRewardTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="tItiTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       </folder>
   </variables>
@@ -161,12 +162,12 @@
             <action type="run_python_string" tag="set tGratingDirectionDeg" code="calc_tGratingDirectionDeg()"></action>
 
             <!-- set ITI time -->
-            <action type="assignment" tag="Set ITI" variable="tItiTimeMs" value="rand(minItiTimeMs, maxItiTimeMS)"></action>
+            <action type="assignment" tag="Set ITI" variable="tItiTimeMs" value="rand(minItiTimeMs, maxItiTimeMs)"></action>
             <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
                     timebase="" duration="tItiTimeMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="timer_expired" tag="If Expired, Go To StartTrial" target="StartTrial" timer="interTrialTimer"></transition>
+            <transition type="timer_expired" tag="If Expired, Go To StimOn" target="StimOn" timer="interTrialTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="StimOn" interruptible="YES">
@@ -189,8 +190,8 @@
                     timebase="" duration="rewardDelayMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" tag="Reward timer ends, and is reward trial, go to reward" condition="expired(rewardTimer) &amp;&amp; tRewardTrial" target="Reward"></transition>
-              <transition type="conditional" tag="Stim timer ends" condition="expired(stimulusTimer)" target="StimOff"></transition>
+              <transition type="conditional" tag="Reward timer ends, and is reward trial, go to reward" condition="timerExpired(rewardTimer) &amp;&amp; tRewardTrial" target="Reward"></transition>
+              <transition type="conditional" tag="Stim timer ends" condition="timerExpired(stimulusTimer)" target="StimOff"></transition>
           </task_system_state>
 
           <task_system_state tag="StimOff" interruptible="YES">
@@ -203,8 +204,8 @@
               <action tag="Update Display" type="update_stimulus_display"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" tag="Reward timer ends, and is reward trial, go to reward" condition="expired(rewardTimer) &amp;&amp; tRewardTrial" target="Reward"></transition>
-              <transition type="conditional" tag="Reward timer ends, and is not reward trial, go to end trial" condition="expired(rewardTimer) &amp;&amp; !tRewardTrial" target="EndTrial"></transition>
+              <transition type="conditional" tag="Reward timer ends, and is reward trial, go to reward" condition="timerExpired(rewardTimer) &amp;&amp; tRewardTrial" target="Reward"></transition>
+              <transition type="conditional" tag="Reward timer ends, and is not reward trial, go to end trial" condition="timerExpired(rewardTimer) &amp;&amp; !tRewardTrial" target="EndTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="Reward" interruptible="YES">
@@ -215,7 +216,7 @@
                       timebase="" duration="postRewardMs" duration_units="ms"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" tag="To end trial" condition="expired(postRewardTimer) &amp;&amp; expired(stimulusTimer)" target="EndTrial"></transition>
+              <transition type="conditional" tag="To end trial" condition="timerExpired(postRewardTimer) &amp;&amp; timerExpired(stimulusTimer)" target="EndTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrial" interruptible="YES">
@@ -243,7 +244,8 @@
 
         </task_system>
       </trial>
-      <action type="dequeue_stimulus" stimulus="base_grating"></action>
+      <action type="dequeue_stimulus" stimulus="target_grating"></action>
+      <action type="dequeue_stimulus" stimulus="distractor_grating"></action>
       <action tag="Update Stimulus" type="update_stimulus_display"></action>
     </protocol>
   </experiment>

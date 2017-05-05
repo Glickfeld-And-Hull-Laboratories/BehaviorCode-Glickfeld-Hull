@@ -35,9 +35,10 @@ juiceAmtsMs = input.juiceTimesMsCell{trN};
 juiceD = sum(juiceAmtsMs);  % if isempty, this will be empty
 nJ = length(juiceAmtsMs);
 stimStr = '';
-stimStr = [stimStr sprintf('direction %g%deg ', chop(input.gratingDirectionDeg{trN},2))];
+stimStr = [stimStr sprintf('direction %g%deg ', chop(input.tGratingDirectionDeg{trN},2))];
 
-fprintf(1,%s- rew %dms\n', ...
+input.holdStartsMs = input.tThisTrialStartTimeMs; 
+fprintf(1,'%s- rew %dms\n', ...
         stimStr, round(juiceD));
 
 
@@ -78,7 +79,7 @@ end
 
 
 %% run subfunctions
-input = exptRunSubfunctions(ds, input, { @plotOnlineHist });
+input = exptRunSubfunctions(ds, input, { @plotPavlov });
 
 
 
