@@ -1,10 +1,10 @@
 function input = plotPavlov(data_struct, input)
 
 % essential consts
-figNum = 4;
+figNum = 6;
 name = 'Pavlov Stim';
 consts = visstim_constants;
-spSz = {2,2};
+spSz = {3,2};
 
 smoothType = 'lowess';
 %% draw figure
@@ -92,21 +92,26 @@ end
 ndir = length(dirs);
 tDirs = celleqel2mat_padded(input.tGratingDirectionDeg);
 for idir = 1:ndir
-    axH = subplot(spSz{:}, idir+3);
+    axH = subplot(3,2, idir+2);
     hold on;
-    set(axH, 'Visible', 'off');
-    title([num2str(dirs(idir)) ' deg'])
     if nTrial > 1 
         ind = find(tDirs == dirs(idir));
-        lickTimes = [];
-        for i = 1:length(ind)
-            lickTimes = [lickTimes (input.lickometerTimesUs{i} - input.stimOnUs{i})];
-        end
-        cdfplot(lickTimes./1000)
-        xlim([-2000 4000])
-        xlabel('Time from stimulus (ms)')
-        ylabel('Fraction of licks')
-    end       
+      if length(ind>1)
+          lickTimes = [];
+          for i = 1:length(ind)
+            ii = ind(i);
+              lickTimes = [lickTimes bsxfun(@minus, double(input.lickometerTimesUs{ii}), double(input.stimOnUs{ii}))];
+          end
+          if length(lickTimes>1)
+            cdfplot(lickTimes./1000)
+            set(axH, 'Visible', 'on');
+            xlim([-2000 4000])
+            xlabel('Time from stimulus (ms)')
+            ylabel('Fraction of licks')
+            title([num2str(dirs(idir)) ' deg'])
+          end
+        end       
+    end
 end
 
 
