@@ -42,9 +42,14 @@ if tTrialN > 1
         text(0.00, 1.25, name, 'FontWeight', 'bold', 'FontSize', 18);
         text(0.70, 1.25, date, 'FontWeight', 'light', 'FontSize', 18);
 
-        text(0.00, 1.0, {'Subject Number'}, 'FontSize', 12);
-	text(0.70, 1.0, ...
-             { sprintf('%2d', input.subjectNum)}, 'FontSize', 12);
+        elMin = round((now - datenum(input.startDateVec)) * 24*60);
+        startStr = datestr(input.startDateVec, 'HH:MM');
+        text(0.00, 1.05, {'Subject:', 'Start time + elapsed:', 'Reward vol:'});
+  text(0.60, 1.05, ...
+             { sprintf('%2d', input.subjectNum), ...
+               sprintf('%s + %2dm', startStr, elMin), ...
+               sprintf('%.1f ms', input.rewardUs./1000)});
+
         tStr = sprintf( ['Target grating \n', ...
                  'Stim time: %3.0f \n' ,...
                  'Direction (deg): %s \n', ...
@@ -78,7 +83,7 @@ if tTrialN > 1
 
         text(0, 0.8, tStr, ...
              'VerticalAlignment', 'top', ...
-             'HorizontalAlignment', 'left', 'FontSize', 12);
+             'HorizontalAlignment', 'left');
          
         set(gcf, 'Visible', 'on');
 
@@ -87,10 +92,32 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Specific plots for specific tasks in this section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%lick rates by stimulus Direction
+%licks per trial
 ndir = length(dirs);
 tDirs = celleqel2mat_padded(input.tGratingDirectionDeg);
+for idir = 1:ndir
+    axH = subplot(3,2,2);
+    hold on;
+    if nTrial > 1 
+        ind = find(tDirs == dirs(idir));
+        if length(ind>1)
+            nLicks = zeros(length(ind),1);
+            for i = 1:length(ind)
+                ii = ind(i);
+                lickTimes = bsxfun(@minus, double(input.lickometerTimesUs{ii}), double(input.stimOnUs{ii}));
+                postStim_licks = find(lickTimes>0);
+                preStimEnd_licks = find(lickTimes<input.gratingDurationMs*1000);
+                nLicks(i) = length(intersect(postStim_licks,preStimEnd_licks));
+            end
+            plot(ind, smooth(nLicks,5))
+            set(axH, 'Visible', 'on');
+            xlabel('Trial Number')
+            ylabel('Licks per trial')
+        end
+    end
+end          
+
+%lick rates by stimulus Direction
 for idir = 1:ndir
     axH = subplot(3,2, idir+2);
     hold on;
@@ -98,12 +125,24 @@ for idir = 1:ndir
         ind = find(tDirs == dirs(idir));
       if length(ind>1)
           lickTimes = [];
+          trialNumber = [];
           for i = 1:length(ind)
-            ii = ind(i);
+              ii = ind(i);
               lickTimes = [lickTimes bsxfun(@minus, double(input.lickometerTimesUs{ii}), double(input.stimOnUs{ii}))];
+              trialNumber = [trialNumber ii.*ones(1,size(double(input.lickometerTimesUs{ii}),2))];
           end
           if length(lickTimes>1)
-            cdfplot(lickTimes./1000)
+            g = gray(nTrial/50);
+            for i = 1:20
+                if nTrial > 50*i
+                    ind_i = find(trialNumber < 50*i);
+                   h(i+1) = cdfplot(lickTimes(:,ind_i)./1000);
+                   set(h(i+1), 'Color', g(i,:));
+                   hold on
+                end
+            end
+            h(1) = cdfplot(lickTimes./1000);
+            set(h(1), 'Color', 'r');    
             set(axH, 'Visible', 'on');
             xlim([-2000 4000])
             xlabel('Time from stimulus (ms)')
