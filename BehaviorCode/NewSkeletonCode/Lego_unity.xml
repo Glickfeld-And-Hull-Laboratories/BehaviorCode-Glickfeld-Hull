@@ -448,6 +448,10 @@
 
                           <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
                           <action type="assignment" variable="tSvStimNumber2" value="svStimNumber2"/>
+                          <action type="if" condition="tSvStimNumber2 >= 80-noGoTrPer80  &amp;&amp; doNoGo">
+                            <action type="assignment" variable="tSvStimNumber2" value="disc_rand(0,79-noGoTrPer80)"/>
+                          </action>   
+
                           <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
 
 
@@ -923,9 +927,6 @@
         <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
       </action>
     </action>
-    <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+noGoTrPer80))"> 
-      <action type="assignment" variable="tStimulusNumber2" value="8"/>
-    </action>
         <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + noGoTrPer80"/>
     <!-- level 8: b2 sep odds on -->                          
     <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
@@ -933,9 +934,6 @@
         <action type="assignment" variable="tStimulusNumber" value="8"/> 
         <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
         <action type="assignment" variable="tLeftTrial" value="0"/>         
-      </action>
-      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+block2NoGoTrPer80))"> 
-        <action type="assignment" variable="tStimulusNumber2" value="8"/>
       </action>
       <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2NoGoTrPer80"/>
     </action>
@@ -972,44 +970,15 @@
                   <action type="if" condition="inPreBlock">
                         <action type="assignment" variable="tStimulusNumber" value="0"/>
                   </action>
-                  
-                  <action type="if" condition="doContrastDiscrim">      
-                      <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))"/>
 
-                      <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff / (pow(2, 1.0*tStimulusNumber2/gratingContrastDiffSPO)) + 1"></action>
-                     
-                      <action type="if" condition="doOnlyMaxDiff">
-                       <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff"></action>
-                     </action>
-                     
-                     <action type="if" condition="tGratingContrast &lt; minDiscrimTarget">
-                        <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff"></action>
-                     </action>
-                        
-                     <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
-
-                     <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
-                     <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
-                 </action>
-
-                 <action type="if" condition="doSizeDiscrim">      
-                      <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*tStimulusNumber/gratingDiameterSPO))"/>
-
-                      <action type="assignment" variable="dGratingDiameterDiff" value="gratingMaxDiameterDiff / (pow(2, 1.0*tStimulusNumber2/gratingDiameterDiffSPO)) + 1"></action>
-                     
-                      <action type="if" condition="doOnlyMaxDiff">
-                       <action type="assignment" variable="dGratingDiameterDiff" value="gratingMaxDiameterDiff"></action>
-                     </action>
-                     
-                     <action type="if" condition="tGratingDiameterDeg &lt; minDiscrimTarget">
-                        <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff"></action>
-                     </action>
-                        
-                     <action type="assignment" variable="dGratingDiameterDeg" value="tGratingDiameterDeg / dGratingDiameterDiff"></action>
-
-                     <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
-                     <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast"/>
-                 </action>    
+                <action type="if" condition="(doCorrectiveTrials == 1) &amp;&amp; (tConsecErrors &gt; 0)">
+                    <action type="if" condition="wasNoGo">
+                        <action type="assignment" variable="tStimulusNumber" value="8" />
+                    </action>
+                    <action type="if" condition="wasNoGo">    
+                        <action type="assignment" variable="tLeftTrial" value="tLastTrialWasLeft" />
+                    </action>    
+                </action>
 
                   <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber == 8">
                     <action type="assignment" variable="isNoGo" value="1"></action>
@@ -1035,6 +1004,44 @@
                     <action type="assignment" variable="isNoGo" value="0"></action>
                   </action>
 
+                  <action type="if" condition="doContrastDiscrim &amp;&amp; !isNoGo">      
+                      <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))"/>
+
+                      <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff / (pow(2, 1.0*tStimulusNumber2/gratingContrastDiffSPO)) + 1"></action>
+                     
+                      <action type="if" condition="doOnlyMaxDiff">
+                       <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff"></action>
+                     </action>
+                     
+                     <action type="if" condition="tGratingContrast &lt; minDiscrimTarget">
+                        <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff"></action>
+                     </action>
+                        
+                     <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
+
+                     <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                     <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                 </action>
+
+                 <action type="if" condition="doSizeDiscrim &amp;&amp; !isNoGo">      
+                      <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*tStimulusNumber/gratingDiameterSPO))"/>
+
+                      <action type="assignment" variable="dGratingDiameterDiff" value="gratingMaxDiameterDiff / (pow(2, 1.0*tStimulusNumber2/gratingDiameterDiffSPO)) + 1"></action>
+                     
+                      <action type="if" condition="doOnlyMaxDiff">
+                       <action type="assignment" variable="dGratingDiameterDiff" value="gratingMaxDiameterDiff"></action>
+                     </action>
+                     
+                     <action type="if" condition="tGratingDiameterDeg &lt; minDiscrimTarget">
+                        <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff"></action>
+                     </action>
+                        
+                     <action type="assignment" variable="dGratingDiameterDeg" value="tGratingDiameterDeg / dGratingDiameterDiff"></action>
+
+                     <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
+                     <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast"/>
+                 </action>    
+
                  <action type="if" condition="doContrastDiscrim"> 
                      <action type="report" tag="" message="Target contrast this trial is $tGratingContrast"/>
                      <action type="report" message="Distractor contrast this trial is $dGratingContrast"/>
@@ -1043,15 +1050,6 @@
                      <action type="report" tag="" message="Target size this trial is $tGratingDiameterDeg"/>
                      <action type="report" message="Distractor size this trial is $dGratingDiameterDeg"/>
                  </action>    
-
-                 <action type="if" condition="(doCorrectiveTrials == 1) &amp;&amp; (tConsecErrors &gt; 0)">
-                    <action type="if" condition="wasNoGo">
-                        <action type="assignment" variable="isNoGo" value="1" />
-                    </action>
-                    <action type="if" condition="wasNoGo">    
-                        <action type="assignment" variable="tLeftTrial" value="tLastTrialWasLeft" />
-                    </action>    
-                </action>
 
                  <action type="if" condition="doBlock2">
                   <action type="assert" stop_on_failure="1"
