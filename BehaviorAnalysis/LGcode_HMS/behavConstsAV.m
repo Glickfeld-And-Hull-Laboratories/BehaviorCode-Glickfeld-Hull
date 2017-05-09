@@ -24,12 +24,15 @@ switch tHostname
         elseif tUsername(1:5) == 'ashle'
             rc.name = 'ashle';
             rootDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis';
+            rc.behavData = 'Y:\home\andrew\Behavior\Data';
             rc.indexFilename = fullfile(rootDir, '\Behavior\experimentIndexes\av-subj-days-lg.xls');
+            rc.indexFilename_audCtrl = fullfile(rootDir, '\Behavior\experimentIndexes\v-img-subj-days-lg.xls');
+            rc.indexFilename_fsavImg = fullfile(rootDir, '\Behavior\experimentIndexes\fsav-img-subj-days-lg.xls');
             rc.fitOutputFilename = fullfile(rootDir, '\Behavior\experimentIndexes\av-subj-fits-lg.xls');
             rc.fitOutputSummary = fullfile(rootDir, '\Behavior\output\analysis\summary');
             rc.fitOutputPdfDir = fullfile(rootDir, '\Behavior\output\pdfFits');
             rc.fitOutputMatDir = fullfile(rootDir, '\Behavior\output\fitMatStats');
-            rc.eyeOutputDir = fullfile(rootDir);
+            rc.eyeOutputDir = fullfile(rootDir, 'FSAV Summaries','pupil');
             rc.eyeInputDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis\';
             rc.caOutputDir = fullfile(rootDir, 'FSAV Summaries');
             rc.ashleyAnalysis = fullfile(rootDir);

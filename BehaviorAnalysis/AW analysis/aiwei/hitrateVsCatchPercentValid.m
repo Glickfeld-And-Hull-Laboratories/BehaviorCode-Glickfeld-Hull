@@ -1,4 +1,4 @@
- earlyLT50 = 1;
+earlyLT50 = 1;
 lapseLT10 = 1;
 amp_edges = [0.003 0.008 0.0195 0.047 0.12 0.29 0.73];
 ori_edges = [6 12 24 40 60 80 100];
@@ -9,14 +9,14 @@ miceAnalyzed = unique(xd.Subject);
 av = behavParamsAV;
 mice = unique(xd.Subject);
 nMice = length(mice);
-fn = fullfile(rc.fitOutputSummary, [date '_CatchSummary.mat']);
-% fn = fullfile(rc.fitOutputSummary, ['11-Oct-2015_i613_i614_CatchSummary.mat']);
+% fn = fullfile(rc.fitOutputSummary, [date '_CatchSummary.mat']);
+fn = fullfile(rc.fitOutputSummary, ['16-May-2016_CatchSummary.mat']);
 load(fn)
 
 close all
 
 maxEarlyRate =0.5;
-maxLapseRate = 0.7;
+maxLapseRate = 0.9;
 
 % mouse = [613, 614, 616, 626]
 % if length(miceAnalyzed) == 1

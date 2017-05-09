@@ -1,0 +1,1 @@
+ntrials = input.trialSinceReset;
