@@ -68,7 +68,7 @@ def get_targetCorrect():
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs)
 	#	setvar('randReqHoldMaxMs',randReqHoldMaxMs - 200)
 
-	elif (reactToWindow + reactToWindow_lastN)/2 <= 0.4 and (trials%80 == 0) and randReqHoldMaxMs >= 1200:
+	elif (reactToWindow + reactToWindow_lastN)/2 <= 0.4 and (tTrialsDoneSinceStart%80 == 0) and randReqHoldMaxMs >= 1200:
 		setvar('randReqHoldMaxMs',randReqHoldMaxMs)
 		#setvar('randReqHoldMaxMs',randReqHoldMaxMs - 400)
 

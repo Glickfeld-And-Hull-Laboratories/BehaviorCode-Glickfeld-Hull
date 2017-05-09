@@ -25,6 +25,7 @@
         <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser Variables"/>
         <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
         <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
+        <variable tag="doRandBaseOri" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doSpeedDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
         <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
         <variable tag="itiContrast" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Task Type"/>
@@ -73,6 +74,8 @@
     </folder>
     <folder tag="Stimuli">
         <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="baseGratingDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="baseGratingDirectionStepN" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="baseGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
@@ -267,6 +270,7 @@
         <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
 
         <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="randBaseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -328,6 +332,11 @@
           <!-- init actions before running trials after any press of start-->
           <action type="queue_stimulus" stimulus="background"></action>
           <action type="if" condition="doVisualStim">
+            <action type="if" condition="doRandBaseOri">
+                <action type="assignment" variable="tBaseGratingDirectionDeg" value="(tBaseGratingDirectionDeg + (disc_rand(0,baseGratingDirectionStepN-1) * baseGratingDirectionStepDeg)) % 180"></action>
+                <action type="assignment" variable="randBaseGratingDirectionDeg" value="tBaseGratingDirectionDeg"></action>
+                <action type="report" message="tBaseGratingDirectionDeg is $tBaseGratingDirectionDeg"/>
+            </action>
             <action type="if" condition="doITIStim">
               <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
@@ -616,6 +625,7 @@
                   <!-- same for both types of block2 trials -->    
 
                   <action type="if" condition="tBlock2TrialNumber == 0">
+                    
                     <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
                     <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                     <action type="assignment" variable="tBaseGratingSpeedDPS" value="baseGratingSpeedDPS"></action>
@@ -634,6 +644,7 @@
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
+                    
                     <action type="assignment" variable="tBaseGratingDirectionDeg" value="block2BaseGratingDirectionDeg"></action>
                     <action type="assignment" variable="tBaseGratingContrast" value="block2BaseGratingContrast"></action>
                     <action type="assignment" variable="tBaseGratingSpeedDPS" value="block2BaseGratingSpeedDPS"></action>
@@ -845,6 +856,9 @@
 
   <!-- choose vis stim ori/dir/speed -->
   <action type="if" condition="doVisualStim"> 
+      <action type="if" condition="doRandBaseOri">
+        <action type="assignment" variable="tBaseGratingDirectionDeg" value="randBaseGratingDirectionDeg"></action>
+      </action>
       <action type="if" condition="doOriDetect">
         <action type="assignment" variable="tGratingDirectionDeg" 
           value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))"></action> 
@@ -1022,6 +1036,9 @@
                 <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
 
                 <action type="if" condition="doVisualStim">
+                    <action type="if" condition="doRandBaseOri">
+                        <action type="assignment" variable="tBaseGratingDirectionDeg" value="randBaseGratingDirectionDeg"/>
+                    </action>
                   <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="tBaseGratingContrast"></action>  
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
                   <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
@@ -1108,6 +1125,7 @@
             <action type="dequeue_stimulus" stimulus="target_grating"></action>
             <action type="update_stimulus_display"></action>
             <action type="if" condition="doITIStim==1">
+              
               <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>    
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
@@ -1131,7 +1149,8 @@
     <action type="if" condition="tStimTurnedOn == 1">  <!-- so we only turn it off once here -->
       <action type="if" condition="(((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs">
         <action type="dequeue_stimulus" stimulus="target_grating"></action>
-        <action type="if" condition="doITIStim">
+        
+        <action type="if" condition="doITIStim"> 
           <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>
           <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
           <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>                            
@@ -1181,13 +1200,15 @@
       <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
   </action>
   <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
-  <action tag="Update Display" type="update_stimulus_display"></action>
-  <action type="if" condition="doITIStim==1">
-      <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>
-      <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-      <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
-      <action tag="Update Display" type="update_stimulus_display"></action>
-  </action> 
+  
+  <action type="report" message="~~~~~~~~~tBaseGratingDirectionDeg is $tBaseGratingDirectionDeg  EarlyRelease"/>
+  
+  <action type="if" condition="doITIStim">
+    <action type="assignment" variable="tBaseGratingDirectionDeg" value="randBaseGratingDirectionDeg"/>
+        <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>    
+        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
+        <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+    </action> 
   <action type="if" condition="doITIStim==0">
       <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>    
       <action tag="Update Display" type="update_stimulus_display"></action>
@@ -1282,6 +1303,10 @@
     <action type="assignment" tag="set tNRewards" variable="tNRewards" value="consecCorrects"></action>
 
     <action tag="Dequeue Stimulus 2" type="dequeue_stimulus" stimulus="target_grating"></action>
+    
+    <action type="if" condition="doRandBaseOri">
+        <action type="assignment" variable="tBaseGratingDirectionDeg" value="(tBaseGratingDirectionDeg + (disc_rand(0,baseGratingDirectionStepN-1) * baseGratingDirectionStepDeg)) % 180"></action>
+    </action>
     <action type="if" condition="doITIStim==1">
         <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>    
         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
@@ -1388,6 +1413,11 @@
       <action type="assignment" tag="Encode LeverSolenoidOn" variable="strobedDigitalWord" value="12"></action>
   </action>
   <action tag="Dequeue Stimulus 1" type="dequeue_stimulus" stimulus="target_grating"></action>
+
+  <action type="if" condition="doRandBaseOri">
+        <action type="assignment" variable="tBaseGratingDirectionDeg" value="(tBaseGratingDirectionDeg + (disc_rand(0,baseGratingDirectionStepN-1) * baseGratingDirectionStepDeg)) % 180"></action>
+    </action>
+
   <action type="if" condition="doITIStim==1">
       <action type="assignment" tag="set base stim contrast" variable="tBaseGratingContrast" value="itiContrast"></action>
       <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
@@ -1431,6 +1461,9 @@
                 <action tag="Update Stimulus" type="update_stimulus_display"></action>
             </action>
 
+            <action type="if" condition="doRandBaseOri">
+                <action type="assignment" variable="randBaseGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
+            </action>
             
 
             <!-- allow two trials after each timeout is over -->

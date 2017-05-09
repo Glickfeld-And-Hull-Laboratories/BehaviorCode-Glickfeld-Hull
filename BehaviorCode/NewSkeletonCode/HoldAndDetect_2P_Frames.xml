@@ -25,7 +25,7 @@
       <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doITIStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
-      <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="doIncorrectSound" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
@@ -247,7 +247,6 @@
       <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
       <variable tag="isFirstTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="isTooFast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-
       <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -258,6 +257,7 @@
       <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tGratingDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDoNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tUnexpectRewardNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -282,9 +282,13 @@
       <variable tag="cLeverUp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
       <variable tag="tRewardOmissionTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tOmissionRewardNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tRewardDelayTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tRewardDelayDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       
+      <variable tag="rewardOmissionEveryN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="rewardUnexpectEveryN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79" 
                 selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
@@ -359,6 +363,8 @@
               <action type="assignment" variable="isFirstTrial" value="0"></action>
             </action>  
 
+            
+
             <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
 
             <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
@@ -396,6 +402,31 @@
             <!-- choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 -->
             <action type="assignment" variable="tSvStimNumber" value="svStimNumber"/>  <!-- choose a value from selection var, 0-origin -->
             <action type="assignment" variable="tTempStimOdds" value="0"/>  <!-- this variable exists only for code clarity below -->
+
+            <!-- choose reward omission and unexpected reward randomly-->
+            <action type="if" condition="rewardOmissionPercent != 0">
+              <action type="assignment" variable="rewardOmissionEveryN" value="round(100/rewardOmissionPercent)"/>
+            </action>
+
+            <action type="if" condition="rewardUnexpectPercent != 0">
+              <action type="assignment" variable="rewardUnexpectEveryN" value="round(100/rewardUnexpectPercent)"/>
+            </action>
+
+            <action type="if" condition="rewardOmissionPercent != 0 &amp;&amp; (success % rewardOmissionEveryN == 0)  ">
+              <action type="assignment" variable="tOmissionRewardNum" value="(int)(disc_rand(1,rewardOmissionEveryN)) + success"/>
+              <action type="report" message="the tOmissionRewardNum is $tOmissionRewardNum"/>
+            </action>
+
+            <action type="if" condition="doLever==0 &amp;&amp; rewardUnexpectPercent != 0 &amp;&amp; ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ">
+              <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectEveryN-1)) + (success+ignore+failure)"/>
+              <action type="report" message="the tUnexpectRewardNum is $tUnexpectRewardNum"/>
+            </action>
+
+
+            <action type="if" condition="doLever==0 &amp;&amp; rewardUnexpectPercent != 0 &amp;&amp; success+ignore+failure == 0 ">
+              <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectEveryN-1))"/>
+              <action type="report" message="the tUnexpectRewardNum is $tUnexpectRewardNum"/>
+            </action>
 
             <!-- level 1 -->                         
             <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))"> 
@@ -837,10 +868,7 @@
             <action type="assert" condition="abs(tBaseGratingDirectionDeg-tGratingDirectionDeg) &lt;= 360" stop_on_failure="1" 
                     message="Maximum direction step is 360 degrees"/>
 
-            <action type="if" condition="rewardUnexpectPercent != 0">
-              <action type="assignment" variable="tDoNoStimulusChange" value="(int)(disc_rand(0,100) &lt; rewardUnexpectPercent)"/>
-              <action type="report" message="the tDoNoStimulusChange is $tDoNoStimulusChange"/>
-            </action>
+            
 
             <!-- send laser params to controller -->
             <action type="if" condition="doLaserStim">
@@ -1036,8 +1064,12 @@
               <action tag="Report StimOn" full_name="ReportDigital" type="report" message="StimOn (still holding; signaling release ok)"></action>
                 <action type="assignment" variable="cTargetOn" value="counter"></action>
 
+              <action type="if" condition="rewardUnexpectPercent !=0 &amp;&amp; (success+ignore+failure) == tUnexpectRewardNum">
+                <action type="assignment" variable="tDoNoStimulusChange" value="1"/>
+              </action>
+
               <!-- vis stim on -->
-              <action type="if" condition="doVisualStim &amp;&amp; tDoNoStimulusChange==0">
+              <action type="if" condition="doVisualStim &amp;&amp; tDoNoStimulusChange == 0">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                 <action tag="Update Display" type="update_stimulus_display"></action>
                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
@@ -1091,12 +1123,13 @@
           <task_system_state tag="React" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="set too fast time over" variable="isTooFast" value="0"/>
-
+           
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If Unexpected Reward" condition="!doLever &amp;&amp; rewardUnexpectPercent!=0 &amp;&amp; (success+ignore+failure) == tDoNoStimulusChange" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="!doLever &amp;&amp; (counter &gt;= (cLeverDown + tFakeMouseReactFrames))" target="Reward"></transition>
-            <transition type="conditional" tag="If Unexpected Reward" condition="tDoNoStimulusChange == 1" target="Reward"></transition>
+            
             <transition type="conditional" tag="Go to Missed" condition="(counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
             <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff" ></transition>
           </task_system_state>
@@ -1147,6 +1180,11 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
               <action type="assignment" variable="cLeverUp" value="counter"></action>
+
+
+            <action type="if" condition="success+ignore+failure == tUnexpectRewardNum">
+              <action type="report" message="~~~~~Unexpected Reward~~~~~for total trial."/>
+            </action>
 
             <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
             <!-- Raise solenoid after correct trial for any solenoid -->
@@ -1265,12 +1303,13 @@
             <action type="assignment" tag="interRewardInterval minimum to juiceTime" variable="tInterRewardIntervalMs" value="interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )"></action>
             <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
 
-            <action type="if" condition="rewardOmissionPercent != 0">
-              <action type="assignment" variable="tRewardOmissionTrial" value="(int)(disc_rand(0,100) &lt; rewardOmissionPercent)"/>
-              <action type="report" message="the tRewardOmissionTrial is $tRewardOmissionTrial"/>
+            <action type="if" condition="success == tOmissionRewardNum">
+              <action type="assignment" variable="tRewardOmissionTrial" value="1"/>
+              <action type="report" message="~~~~~Omitted Reward~~~~~for $success success trial."/>
             </action>
 
-            <action type="if" condition="tRewardOmissionTrial == 0">
+            <action type="if" condition="success != tOmissionRewardNum">
+              <action type="assignment" variable="tRewardOmissionTrial" value="0"/>
               <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
             </action>
 

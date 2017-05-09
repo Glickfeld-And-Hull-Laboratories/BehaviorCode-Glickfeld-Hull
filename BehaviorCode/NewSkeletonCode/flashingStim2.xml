@@ -27,9 +27,11 @@
         <variable tag="doITIStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
         <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+        <variable tag="doLaserStimSteps" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doRandBaseOri" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+        <variable tag="doRandBaseOriBySession" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
         <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
@@ -134,39 +136,34 @@
         <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
 
+        <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Distractor Stimulus Parameters"/>
+        <variable tag="dGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Distractor Stimulus Parameters"/>
+        <variable tag="dGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Distractor Stimulus Parameters"/>
+        <variable tag="dGratingAzimuthDeg" scope="global" logging="when_changed" default_value="150" type="float" persistant="1" groups="Distractor Stimulus Parameters"/>
+
         <!-- stimulus control parameters -->
         <variable tag="gratingMaxContrastStep" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="gratingContrastStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="gratingMaxDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="gratingDirectionStepsPerOctave" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus Parameters"/>
 
-        <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserOffPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTransitionRampUpDownMs" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTransitionDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>  <!-- 0: do not do baseline -->
-        <variable tag="laserBaselinePostStimTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Laser"/> 
+        <variable tag="laserPeakMaxMw" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserBaselinePowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser Stim"/>  <!-- 0: do not do baseline -->
 
-        <variable tag="laserDoLinearRamp" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Laser"/>
-        <variable tag="laserRampLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserRampExtraConstantLengthMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserRampDoExpRamp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="laserDoLinearRamp" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserRampLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser Stim"/>
 
-        <variable tag="laserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserPulseLengthMs" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserPulsePeriodMs" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTrainLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTrainRandomNPulses" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
-        <variable tag="laserTrainRandomType" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/> 
+        <variable tag="laserDoPulseTrain" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserPulseLengthMs" scope="global" logging="when_changed" default_value="5" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserPulsePeriodMs" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Laser Stim"/>
+        <variable tag="laserTrainLengthMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Laser Stim"/>
 
-        <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
-        <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
-        <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Laser"/>
-        <variable tag="forceMinStimStepTo" scope="global" logging="when_changed" default_value="-1" type="float" persistant="1" groups="Laser"/>
-
-        <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Laser"/>
-        <variable tag="laserDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Laser"/>
+        <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
+        <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
+        <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
+        <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Trial Laser"/>
+        <variable tag="laserDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Laser"/>
         <!-- block 2 control -->
 
         <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Stimulus"/>
@@ -348,6 +345,7 @@
         <variable tag="trials" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
         <variable tag="nCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tCycleLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -413,6 +411,14 @@
                 x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
                 rotation="tCatchGratingDirectionDeg" 
                 alpha_multiplier="tCatchGratingContrast"></stimulus>
+              <stimulus type="drifting_Grating" tag="distractor_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
+                spatial_frequency="tGratingSpatialFreqCPD" 
+                speed="tGratingSpeedDPS" 
+                grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+                x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
+                x_position="dGratingAzimuthDeg" y_position="dGratingElevationDeg" 
+                rotation="dGratingDirectionDeg" 
+                alpha_multiplier="dGratingContrast"></stimulus>  
                 <stimulus type="drifting_grating" tag="photoDiodeGrating"  direction="0" starting_phase="0"
                   spatial_frequency=".000000000001" 
                   speed="0" 
@@ -436,6 +442,11 @@
                      <action type="if" condition="success+ignore+failure == 0">
                       <action type="report" message="**** First trial since experiment load - initializing"></action>
 
+                      <action type="if" condition="doRandBaseOriBySession">
+                        <action type="assignment" variable="baseGratingDirectionDeg" value="baseGratingDirectionDeg + (disc_rand(0,baseGratingDirectionStepN-1) * baseGratingDirectionStepDeg)"></action>
+                        <action type="report" message="Base orientation is $tBaseGratingDirectionDeg"></action>
+                      </action>  
+
                       <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
                       <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
                       <action type="assignment" variable="lastActualHoldTimeMs" value="0"></action>
@@ -456,6 +467,8 @@
                             <action type="if" condition="doITIStim">
                               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
                               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+                              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>    
+                              <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="start"></action>
                               <action type="update_stimulus_display" tag="justincase"></action>
                             </action>
                           </action>          
@@ -1007,6 +1020,11 @@
 
           <!-- setting nCyclesOn -->
           <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
+          <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(nCyclesOn-1,nCyclesOn+3)"/>
+
+          <action type="if" condition="nCyclesOn == 2">
+            <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,5)"/>
+          </action>  
           
             <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn">
               <action type="assignment" variable="tMinShortCatchCycle" value="nCyclesOn-1"/> 
@@ -1042,30 +1060,34 @@
           <!-- setting total required hold time -->
           <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="((tStimOnTimeMs+tStimOffTimeMs)*nCyclesOn)+tStimOnTimeMs"/> 
 
-          <!-- !doBlock2 error checking -->
-          <action type="assert" stop_on_failure="1"
-            condition="!doLaserStim || (laserDoLinearRamp || laserDoPulseTrain)" 
-            message="When doLaserStim, ramp or train must be set"/>
+          
 
             <!-- choose laser power -->
             <action type="if" condition="doLaserStim">
-              <action type="assignment" variable="tLaserPowerMw" 
-                value="tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)"></action> 
+                <action type="assignment" variable="tLaserPeakMaxMw" value="laserPeakMaxMw"/>
+                <action type="if" condition="!doLaserStimSteps">
+                  <action type="assignment" variable="tLaserPowerMw" value="tLaserPeakMaxMw"></action> 
+                </action>  
+                <action type="if" condition="doLaserStimSteps">
+                    <action type="assignment" variable="tLaserPowerMw" 
+                        value="tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)"></action>
+                </action>          
 
                 <!-- adjust from baseline -->
                 <action type="if" condition="tLaserBaselinePowerMw > 0">
                   <action type="assignment" variable="tLaserPowerMw" 
                     value="tLaserPowerMw + tLaserBaselinePowerMw"/>
-                  </action>
+                </action>
 
-                  <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
+                <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
 
-                  <action type="assert" condition="tTrialLaserPowerMw_trigger == 0" stop_on_failure="1" 
-                    message="bug: tLaserPowerMw and tTrialLaserPowerMw_trigger != 0"/>
-                  </action>
-                  <action type="if" condition="!doLaserStim">
-                    <action type="assignment" variable="tLaserPowerMw" value="0"/>
-                  </action>
+                <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="tLaserPowerMw"></action>
+
+            </action>
+
+              <action type="if" condition="!doLaserStim">
+                <action type="assignment" variable="tLaserPowerMw" value="0"/>
+              </action>
 
                   <!-- choose vis stim ori/dir -->
                   <action type="if" condition="tDoVisualStim">
@@ -1209,8 +1231,7 @@
                                 <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
                                   <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
                                   <action type="assignment" tag="Send laser paramsto controller" variable="sendLaserParams" value="0"></action>
-                                  <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1" 
-                                    message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/>
+                                  
                                     <action type="assert" stop_on_failure="1"
                                       condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
                                       message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
@@ -1282,11 +1303,15 @@
                                          <action type="if" condition="tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
                                           <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                           <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                          <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                           <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
                                         </action>
                                         <action type="if" condition="tCyclesOn == catchCyclesOn">
                                           <action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="catch_grating"></action> 
                                           <action type="play_dynamic_stimulus" stimulus="catch_grating" tag="StimOn"></action>
+                                          <action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                          <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                           <action type="play_sound" sound="catchSound"/>
                                           <action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
                                           <action type="assignment" variable="tCatchTimeMs" value="now()/1000"/>
@@ -1310,6 +1335,8 @@
                                         <action type="if" condition="!tShortCatchTrial">
                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                          <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                         <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                          <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
                                        </action>
 
@@ -1325,7 +1352,21 @@
                                           <action type="assignment" variable="MIO0" value="1"/>
                                         </action>
 
-                                        <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == 1)">
+                                        <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == 1) &amp;&amp; (!doLaserStim)">
+                                            <action type="if" condition="optic_device == 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                                <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+                                            </action>
+                                            <action type="if" condition="optic_device != 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                            </action>
+                                          <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                                          <action type="report" message="-----Laser Duration is to $laserDuration"/>
+                                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+                                        </action>
+
+                                        <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == tCycleLaser) &amp;&amp; (doLaserStim)">
                                             <action type="if" condition="optic_device == 'led' ">
                                                 <action type="assignment" variable="laserTrigger" value="1"></action>
                                                 <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
@@ -1382,6 +1423,7 @@
                                       <action type="if" condition="!doConstantStimulus">
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
+                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                         <action type="report" message="Not doing Constant Stimulus"></action>
                                         <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
                                         <action type="assignment" variable="tStimOffMs" value="now()/1000" />
@@ -1393,6 +1435,19 @@
                                         <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                                         <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                                       </action>
+
+                                      <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                                            <action type="if" condition="optic_device == 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="0"></action>
+                                                <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                            </action>
+                                            <action type="if" condition="optic_device != 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="0"></action>
+                                            </action>
+                                          
+                                          <action type="report" message="********* Turning off LASER TRIGGER *********"/>
+
+                                        </action>
 
                                       <action type="if" condition="sendElectrophysSync==1">
                                         <action type="assignment" variable="MIO0" value="0"/>
@@ -1443,21 +1498,29 @@
                                       <action type="if" condition="doConstantStimulus==1">
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
+                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOff"></action>
                                       </action>
                                       <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                        <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="play_sound" sound="baseSound"/>
                                         <action type="assignment" variable="isCatchTrial" value= "1"/>
                                       </action>
                                       <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
                                       </action>
                                       <action type="if" condition="nCyclesOn &lt; tMaxCyclesOn">
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="report" message="Target Stim On for $tStimOnTimeMs ms"/>
                                       </action>
 
@@ -1467,6 +1530,20 @@
                                       <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
                                       <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
                                       
+                                      <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; ((tCyclesOn+1) == tCycleLaser) &amp;&amp; (doLaserStim)">
+                                            <action type="if" condition="optic_device == 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                                <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+                                            </action>
+                                            <action type="if" condition="optic_device != 'led' ">
+                                                <action type="assignment" variable="laserTrigger" value="1"></action>
+                                            </action>
+                                          <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                                          <action type="report" message="-----Laser Duration is to $laserDuration"/>
+                                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+                                        </action>
+
                                       <action type="if" condition="sendElectrophysSync &amp;&amp; doPulseLength == 0">
                                         <action type="assignment" variable="MIO0" value="1"/>
                                       </action>
@@ -1538,6 +1615,7 @@
 
                                      <action type="if" condition="doITIStim == 0">
                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                       <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                        <action type="update_stimulus_display" tag="justincase"></action>
                                      </action>
                                      <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
@@ -1547,6 +1625,8 @@
                                      <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
                                       <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
                                       <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                      <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
+                                      <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                       <action type="update_stimulus_display" tag="justincase"></action>
                                     </action>
 
@@ -1610,6 +1690,7 @@
 
                                     <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
                                      <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                     <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                      <action type="update_stimulus_display" tag="justincase"></action>
                                    </action>	
                                    <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
@@ -1619,6 +1700,8 @@
                                    <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
                                     <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
                                     <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
+                                    <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                     <action type="update_stimulus_display" tag="justincase"></action>
                                   </action>
 
@@ -1667,6 +1750,7 @@
 
                                   <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
                                    <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                   <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                    <action type="update_stimulus_display" tag="justincase"></action>
                                  </action>	
                                  <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
@@ -1675,6 +1759,8 @@
                                  <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
                                   <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
                                   <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
+                                  <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                   <action type="update_stimulus_display" tag="justincase"></action>
                                 </action>
 
@@ -1786,6 +1872,8 @@
                                 <action type="play_sound" sound="baseSound"/>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                               </action>
 
                               <action type="if" condition="tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==0">
@@ -1794,6 +1882,8 @@
                                 <action type="play_sound" sound="targetSound"/>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                 <action type="assignment" variable="tDidDeviantAfterMissing" value="1"/>
                               </action>
                               
@@ -1839,10 +1929,13 @@
                               
                               <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                               </action> 
                               <action type="if" condition="doConstantStimulus">
                                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
                                 <action type="play_dynamic_stimulus" stimulus="base_grating" tag="Return to base"></action>
+                                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
+                                <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="Return to base"></action>
                               </action> 
 
                               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
@@ -1851,6 +1944,19 @@
                               <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                               <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                               
+                              <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                                <action type="if" condition="optic_device == 'led' ">
+                                    <action type="assignment" variable="laserTrigger" value="0"></action>
+                                    <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                    </action>
+                                    <action type="if" condition="optic_device != 'led' ">
+                                         <action type="assignment" variable="laserTrigger" value="0"></action>
+                                     </action>
+                                          
+                                    <action type="report" message="********* Turning off LASER TRIGGER *********"/>
+
+                              </action>
+
                               <action type="if" condition="sendElectrophysSync">
                                 <action type="assignment" variable="MIO0" value="0"/>
                               </action>
@@ -1909,6 +2015,7 @@
           </task_system>
         </trial>
         <action type="dequeue_stimulus" stimulus="base_grating"></action>
+        <action type="dequeue_stimulus" stimulus="distractor_grating"></action>
         <action tag="Update Stimulus" type="update_stimulus_display"></action>
         <action type="assignment" tag="" variable="laserTrigger" value="0"/>
         <action type="if" condition="optic_device == 'led' ">

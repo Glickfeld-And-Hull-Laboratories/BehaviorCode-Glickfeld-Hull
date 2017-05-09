@@ -241,7 +241,7 @@ end
 %stimFrames = cellfun(@length,input.announceStimulusTimes.driftStimulus)
 
 % misc error checking
-assert(~input.doLaserStim || all(tLaserDoLinearRampV | tLaserDoPulseTrainV));
+%assert(~input.doLaserStim || all(tLaserDoLinearRampV | tLaserDoPulseTrainV));
 
 % figure out block2 stim levels
 showBlock2 = input.doBlock2;
@@ -365,11 +365,8 @@ if length(holdStarts) > 2
              'VerticalAlignment', 'top', ...
              'HorizontalAlignment', 'left');
 
-        if input.laserRampDoExpRamp == 0, 
-          rampShapeStr = 'lin'; 
-        else
-          rampShapeStr = 'exp';
-        end
+        rampShapeStr = 'lin'; 
+        
         
         trPer80Str = regexprep(['[' num2str(input.trPer80V, '%3d') ']'], '[ *', '[');
         if input.doBlock2SeparateOdds
@@ -1508,11 +1505,8 @@ end
 
 function outStr = subPpLaser(input)
 
-if input.laserRampDoExpRamp == 0, 
-  rampShapeStr = 'lin'; 
-else
-  rampShapeStr = 'exp';
-end
+rampShapeStr = 'lin'; 
+
 
 if input.laserDoLinearRamp
   outStr = [ sprintf('ramp %d (%s)+ const %d ms', ...
@@ -1523,6 +1517,8 @@ elseif input.laserDoPulseTrain
   outStr = [ sprintf('train, pulse %d, period %d, dur %d', ...
                          input.laserPulseLengthMs, input.laserPulsePeriodMs, ...
                          input.laserTrainLengthMs) ];
+else
+  outStr = [ sprintf('not doing ramp or train')];
 end
 
 
