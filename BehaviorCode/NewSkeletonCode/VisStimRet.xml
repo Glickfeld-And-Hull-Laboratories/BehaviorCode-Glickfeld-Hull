@@ -482,7 +482,7 @@
                             <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN)"/>
                             <action type="if" condition="tTempStim &lt; (gratingAzimuthStepN * gratingContrastStepN)">
                               <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
-                              <action type="assignment" variable="tgratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
+                              <action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD"/>
                               <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(tTempStim/gratingContrastStepN))"/>
                               <action type="assignment" variable="tGratingContrast" value= "gratingContrast * pow(gratingContrastStepLog, gratingContrastStepDir*(tTempStim % gratingContrastStepN))"/>
                               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Con is $tGratingContrast ; SF is tGratingSpatialFreqCPD"/>
