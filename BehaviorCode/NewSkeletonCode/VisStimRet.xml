@@ -544,10 +544,10 @@
                        </action>          
 
                        <!--Select spatial frequency -->
-                       <action type="if" condition="doSFStim == 1">	
+                       <action type="if" condition="doSFStim == 1 &amp;&amp; !doConStim">	
                         <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingSpatialFreqStepN"/>          	
 
-                        <action type="if" condition="doRetStim = 1 &amp;&amp; !doConStim">
+                        <action type="if" condition="doRetStim = 1">
                           <action type="assignment" variable="tTempStim" value= "floor((tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingSpatialFreqStepN))/(gratingElevationStepN * gratingAzimuthStepN))"/>
                         </action>	
                         <action type="assignment" variable="tGratingSpatialFreqCPD" value= "gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim))))"/>
