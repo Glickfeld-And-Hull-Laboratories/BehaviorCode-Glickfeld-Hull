@@ -5,13 +5,9 @@
       pulse_duration="juice" pulse_on="juice" 
       lever1="FIO1" 
       lever1_solenoid="MIO0"
-      counter2="counter2"
-      trial_laser_powerMw="tTrialLaserPowerMw"
-      laser_trigger="laserTrigger"
       optic_device="optic_device"
       strobed_digital_word="strobedDigitalWord"
-      counter="counter"
-      do2led="do2led" led_seq="led_seq" LED_duration="LED_durationMS" led1_status="led1_status" led2_status="led2_status"/>
+      counter="counter"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
       <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
     </io_devices>
@@ -52,11 +48,11 @@
     </sounds>
     <stimuli tag="Stimuli">
         <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
-        <stimulus type="drifting_grating" tag="grating"  direction="0" starting_phase="0"
-          spatial_frequency="0.01" 
+        <stimulus type="drifting_grating" tag="target_grating"  direction="0" starting_phase="0"
+          spatial_frequency="0.000001" 
           speed="0" 
           grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
-          x_size="100" y_size="100" 
+          x_size="500" y_size="500" 
           x_position="0" y_position="0" 
           rotation="0" 
           alpha_multiplier="1"></stimulus>                
@@ -119,7 +115,7 @@
               <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating"></action>
-                <action type="play_dynamic_stimulus" stimulus="target_grating_gaussian" tag="start"></action>
+                <action type="play_dynamic_stimulus" stimulus="target_grating" tag="start"></action>
               <action tag="Update Display" type="update_stimulus_display"></action>
               <action type="report" message="Visual Stim ON, presenting for $nScansOn scans."></action>
             
@@ -143,9 +139,6 @@
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
 
-            <!-- trigger serial param dump to cyberkinetics -->
-            <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="1"></action>
-            <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="0"></action>
             
             <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
 
