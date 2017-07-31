@@ -58,6 +58,10 @@
         <variable tag="rewardStaircaseMinReward" scope="global" logging="when_changed" default_value="20000" type="integer" persistant="1" groups="Reward"/>
         <variable tag="rewardStaircaseMaxReward" scope="global" logging="when_changed" default_value="200000" type="integer" persistant="1" groups="Reward"/>
 
+        <variable tag="doRewardBias" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Reward"/>
+        <variable tag="lowProbRewardScale" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Reward"/>
+        <variable tag="highProbRewardScale" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Reward"/>
+
         <variable tag="ignoreTimeoutMs" scope="global" logging="when_changed" default_value="5000" type="integer" groups="Time-Outs" persistant="1"/>
         <variable tag="incorrectTimeoutMs" scope="global" logging="when_changed" default_value="2000" type="integer" groups="Time-Outs" persistant="1"/>
         <variable tag="nConsecErrorsCauseTimeout" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Timeouts"/>
@@ -1309,6 +1313,15 @@
 
                         <action type="if" condition="doConsecCorrectReward==0">
                           <action type="assignment" variable="tRewardTimeUs" value="rewardTimeUs"/>
+                        </action>
+
+                        <action type="if" condition="doRewardBias">
+                            <action type="if" condition="stimProbAvgLeft &lt; 0.5 &amp;&amp; tLeftTrial || stimProbAvgLeft &gt; 0.5 &amp;&amp; !tLeftTrial">
+                                <action type="assignment" variable="tRewardTimeUs" value="rewardTimeUs*lowProbRewardScale"/>
+                            </action>
+                            <action type="if" condition="stimProbAvgLeft &lt; 0.5 &amp;&amp; !tLeftTrial || stimProbAvgLeft &gt; 0.5 &amp;&amp; tLeftTrial">
+                                <action type="assignment" variable="tRewardTimeUs" value="rewardTimeUs*highProbRewardScale"/>
+                            </action>
                         </action>
 
                         <action type="assignment" variable="juice" value="tRewardTimeUs"></action>
