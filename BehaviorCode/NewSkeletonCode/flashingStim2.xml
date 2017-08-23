@@ -1450,18 +1450,19 @@
                                         <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                                       </action>
 
-                                      <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
-                                            <action type="if" condition="optic_device == 'led' ">
-                                                <action type="assignment" variable="laserTrigger" value="0"></action>
-                                                <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                      <action type="if" condition="!doCueRefLaser">  
+                                          <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                                                <action type="if" condition="optic_device == 'led' ">
+                                                    <action type="assignment" variable="laserTrigger" value="0"></action>
+                                                    <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                                </action>
+                                                <action type="if" condition="optic_device != 'led' ">
+                                                    <action type="assignment" variable="laserTrigger" value="0"></action>
+                                                </action>
+                                              
+                                              <action type="report" message="********* Turning off LASER TRIGGER *********"/>
                                             </action>
-                                            <action type="if" condition="optic_device != 'led' ">
-                                                <action type="assignment" variable="laserTrigger" value="0"></action>
-                                            </action>
-                                          
-                                          <action type="report" message="********* Turning off LASER TRIGGER *********"/>
-
-                                        </action>
+                                      </action>
 
                                       <action type="if" condition="sendElectrophysSync==1">
                                         <action type="assignment" variable="MIO0" value="0"/>
@@ -1958,7 +1959,8 @@
                               <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                               <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                               
-                              <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                              <action type="if" condition="!doCueRefLaser">  
+                                <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
                                 <action type="if" condition="optic_device == 'led' ">
                                     <action type="assignment" variable="laserTrigger" value="0"></action>
                                     <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
@@ -1968,7 +1970,7 @@
                                      </action>
                                           
                                     <action type="report" message="********* Turning off LASER TRIGGER *********"/>
-
+                                </action>
                               </action>
 
                               <action type="if" condition="sendElectrophysSync">
