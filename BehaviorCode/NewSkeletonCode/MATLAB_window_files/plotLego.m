@@ -642,10 +642,7 @@ if nCorr>0  %&& input.doTestRobot==0,
       xL1 = [0 ceil(log10(xLimm(2)))];
     end
     set(gca, 'XLim', [minX maxX], ...
-           'XScale', 'log', ...
            'XGrid', 'on');
-       set(gca, 'XTick', xTickL);
-       set(gca, 'XTickLabel', xTLabelL);
 
 
     set(pH, ...
@@ -715,7 +712,7 @@ if nCorr>0 %&& input.doTestRobot==0,
         percentCell{jj} = corrNTrialsVal/totalNTrialsValB1;
     end
     didNoGoIx = celleqel2mat_padded(input.didNoGo);
-    plotTrsNoGo = contDiffV(noGoIx|didNoGoIx);
+    plotTrsNoGo = contDiffV(~noGoIx&didNoGoIx);
     nLevelsNoGo = unique(plotTrsNoGo);
     for kk=1:length(nLevelsNoGo)
       valNoGo = nLevelsNoGo(kk);
@@ -724,9 +721,9 @@ if nCorr>0 %&& input.doTestRobot==0,
       totalNTrialsValNoGo = sum(valIx & didNoGoIx);
       percentContCellNoGoByDiff{kk} = totalNTrialsValNoGo/totalNTrialsVal;
     end
-    pH = plot((sc_num * uqDiff), cell2mat(percentCell));
-    if sum(didNoGoIx)>0
-      pH1 = plot((sc_num * uqDiff), cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
+    pH = plot(sc_num*uqDiff, cell2mat(percentCell));
+    if length(plotTrsNoGo)>0
+      pH1 = plot(sc_num * nLevelsNoGo, cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
       set(pH1, ...
         'LineWidth', 1.5, ...
         'Marker', '.', ...
@@ -739,16 +736,10 @@ if nCorr>0 %&& input.doTestRobot==0,
         'MarkerSize', 9);
     
     set(gca, 'YLim', [0 1], ...
-           'XScale', 'log', ...
-           'XGrid', 'on');
-       set(gca, 'XTick', xTickL);
-       set(gca, 'XTickLabel', xTLabelL);
+           'XGrid', 'on',...
+           'Xscale', 'log');
        ylabel('Correct/Ignore (%)')
-       %if minX==maxX
-       %  xlim([minX-100 maxX+100])
-       %elseif minX<maxX
-       %  xlim([minX maxX])
-       %end
+        xlim([1 100])
 
        if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
@@ -1044,7 +1035,7 @@ hold on;
 if nCorr>0 %&& input.doTestRobot==0,
   if isfield(input,'doContrastDiscrim')
     if input.doContrastDiscrim
-      contTargetV = celleqel2mat_padded(input.tGratingContrast).*100;
+      contTargetV = celleqel2mat_padded(input.tGratingContrast);
     elseif input.doSizeDiscrim
       contTargetV = celleqel2mat_padded(input.tGratingDiameterDeg);
     end
@@ -1064,7 +1055,7 @@ if nCorr>0 %&& input.doTestRobot==0,
     end
 
     didNoGoIx = celleqel2mat_padded(input.didNoGo);
-    plotTrsNoGo = contTargetV(noGoIx|didNoGoIx);
+    plotTrsNoGo = contTargetV(~noGoIx&didNoGoIx);
     nLevelsNoGo = unique(plotTrsNoGo);
     for kk=1:length(nLevelsNoGo)
       valNoGo = nLevelsNoGo(kk);
@@ -1087,7 +1078,6 @@ if nCorr>0 %&& input.doTestRobot==0,
           percentCellB2{jj} = corrNTrialsValB2/totalNTrialsValB2;
       end
     end
-
     pH1 = plot(uqTargetB1, cell2mat(percentCellB1));
     if sum(block2Ix)>0
       ph2 = plot(uqTargetB2, cell2mat(percentCellB2),'Color', yColor);
@@ -1096,7 +1086,7 @@ if nCorr>0 %&& input.doTestRobot==0,
         'Marker', '.', ...
         'MarkerSize', 9);
     end
-    if sum(didNoGoIx)>0
+    if length(plotTrsNoGo)>0
       ph3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGoByTarg),'Color', 'r');
       set(ph3, ...
         'LineWidth', 1.5, ...
@@ -1104,8 +1094,8 @@ if nCorr>0 %&& input.doTestRobot==0,
         'MarkerSize', 9);
     end
 
-    minX = 0;
-    maxX = 100;
+    minX = 0.01;
+    maxX = 1;
     xLimm = [minX maxX];
     if ~(xLimm(1)==0),
       xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];
@@ -1124,8 +1114,6 @@ if nCorr>0 %&& input.doTestRobot==0,
            'XLim', [minX maxX], ...
            'XScale', 'log', ...
            'XGrid', 'on');
-       set(gca, 'XTick', xTickL);
-       set(gca, 'XTickLabel', xTLabelL);
        ylabel('Correct/Ignore (%)')
        if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
