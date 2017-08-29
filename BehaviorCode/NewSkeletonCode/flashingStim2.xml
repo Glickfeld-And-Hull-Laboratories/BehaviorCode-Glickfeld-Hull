@@ -162,7 +162,9 @@
         <variable tag="trialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
         <variable tag="trialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
         <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
-        <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Trial Laser"/>
+        <variable tag="doTargetRefLaser" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Trial Laser"/>
+        <variable tag="doCueRefLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Laser"/>
+        <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="laserDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Laser"/>
         <!-- block 2 control -->
 
@@ -1020,11 +1022,17 @@
 
           <!-- setting nCyclesOn -->
           <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
-          <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(nCyclesOn-1,nCyclesOn+3)"/>
 
-          <action type="if" condition="nCyclesOn == 2">
-            <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,5)"/>
-          </action>  
+          <action type="if" condition="doTargetRefLaser == 1">
+            <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(nCyclesOn-1,nCyclesOn+3)"/>
+            <action type="if" condition="nCyclesOn == 2">
+                <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,5)"/>
+            </action> 
+          </action>
+
+          <action type="if" condition="doCueRefLaser == 1">
+            <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,nCyclesOn+3)"/>
+          </action>
           
             <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn">
               <action type="assignment" variable="tMinShortCatchCycle" value="nCyclesOn-1"/> 
@@ -1442,18 +1450,19 @@
                                         <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                                       </action>
 
-                                      <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
-                                            <action type="if" condition="optic_device == 'led' ">
-                                                <action type="assignment" variable="laserTrigger" value="0"></action>
-                                                <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                      <action type="if" condition="!doCueRefLaser">  
+                                          <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                                                <action type="if" condition="optic_device == 'led' ">
+                                                    <action type="assignment" variable="laserTrigger" value="0"></action>
+                                                    <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                                </action>
+                                                <action type="if" condition="optic_device != 'led' ">
+                                                    <action type="assignment" variable="laserTrigger" value="0"></action>
+                                                </action>
+                                              
+                                              <action type="report" message="********* Turning off LASER TRIGGER *********"/>
                                             </action>
-                                            <action type="if" condition="optic_device != 'led' ">
-                                                <action type="assignment" variable="laserTrigger" value="0"></action>
-                                            </action>
-                                          
-                                          <action type="report" message="********* Turning off LASER TRIGGER *********"/>
-
-                                        </action>
+                                      </action>
 
                                       <action type="if" condition="sendElectrophysSync==1">
                                         <action type="assignment" variable="MIO0" value="0"/>
@@ -1950,7 +1959,8 @@
                               <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                               <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                               
-                              <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                              <action type="if" condition="!doCueRefLaser">  
+                                <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
                                 <action type="if" condition="optic_device == 'led' ">
                                     <action type="assignment" variable="laserTrigger" value="0"></action>
                                     <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
@@ -1960,7 +1970,7 @@
                                      </action>
                                           
                                     <action type="report" message="********* Turning off LASER TRIGGER *********"/>
-
+                                </action>
                               </action>
 
                               <action type="if" condition="sendElectrophysSync">
