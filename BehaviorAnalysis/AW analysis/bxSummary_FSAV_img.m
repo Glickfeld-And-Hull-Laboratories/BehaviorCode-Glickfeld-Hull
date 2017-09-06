@@ -1,7 +1,10 @@
 clear all
 close all
-ds = '_V1';
+ds = '_V1som';
 %%
+minTrN_expt = 1;
+minTrN_all = 1;
+nTimes = 5;
 
 datasetStr = ['awFSAVdatasets' ds];
 eval(datasetStr)
@@ -136,9 +139,9 @@ for iexp = 1:nexp
         expt_fig = figure; setFigParams4Print('portrait')
         suptitle(title_str)
         subplot(4,2,1)
-        errorbarxy(avg_ori, HR_ori, sem_ori, sem_ori, HR_ori - ci95_HR_ori(:,1)', ci95_HR_ori(:,2)' - HR_ori, {'ok', 'k', 'k'});
+        errorbarxy(avg_ori, HR_ori, sem_ori, sem_ori, HR_ori - ci95_HR_v(:,1)', ci95_HR_v(:,2)' - HR_ori, {'ok', 'k', 'k'});
         hold on
-        errorbarxy(avg_oric, FR_ori, sem_oric, sem_oric, FR_ori - ci95_FR_ori(:,1)', ci95_FR_ori(:,2)' - FR_ori, {'oc', 'c', 'c'});
+        errorbarxy(avg_oric, FR_ori, sem_oric, sem_oric, FR_ori - ci95_HR_av(:,1)', ci95_HR_av(:,2)' - FR_ori, {'oc', 'c', 'c'});
         set(gca, 'xscale', 'log');
         xlabel('Orientation change (deg)')
         ylabel('Hit rate')
@@ -151,7 +154,7 @@ for iexp = 1:nexp
         subplot(4,2,2)
         errorbarxy(avg_amp, HR_amp, sem_amp, sem_amp, HR_amp - ci95_HR_amp(:,1)', ci95_HR_amp(:,2)' - HR_amp, {'ok', 'k', 'k'});
         hold on
-%         errorbarxy(avg_oric, FR_ori, sem_oric, sem_oric, FR_ori - ci95_FR_ori(:,1)', ci95_FR_ori(:,2)' - FR_ori, {'oc', 'c', 'c'});
+%         errorbarxy(avg_oric, FR_ori, sem_oric, sem_oric, FR_ori - ci95_HR_av(:,1)', ci95_HR_av(:,2)' - FR_ori, {'oc', 'c', 'c'});
         set(gca, 'xscale', 'log');
         xlabel('Amplitude (% max)')
         ylabel('Hit rate')
@@ -184,7 +187,7 @@ for iexp = 1:nexp
         sp2 = subplot(1,2,2);
         h = plot(avg_amp, HR_amp, 'ko');
         hold on
-%         errorbarxy(avg_oric, FR_ori, sem_oric, sem_oric, FR_ori - ci95_FR_ori(:,1)', ci95_FR_ori(:,2)' - FR_ori, {'oc', 'c', 'c'});
+%         errorbarxy(avg_oric, FR_ori, sem_oric, sem_oric, FR_ori - ci95_HR_av(:,1)', ci95_HR_av(:,2)' - FR_ori, {'oc', 'c', 'c'});
 %         set(gca, 'xscale', 'log');
         x_axis_amp = fliplr(chop(spoc(0.2,1,4),2));
         sp2.XTick = [0 x_axis_amp];
@@ -267,19 +270,19 @@ hr_calc = 2;
 
 bxSumExptHR_FSAV_img
 
-ori_ind = ~isnan(HR_ori);
-oric_ind = ~isnan(FR_ori);
+ori_ind = ~isnan(HR_v);
+oric_ind = ~isnan(HR_av);
 x_axis_ori = fliplr(chop(spoc(90,1,4),2));
 
 % hit rate - valid and invalid visual trials
 figure(all_fig);
 sp2 = subplot(2,2,2);
-h = errorbarxy(avg_ori(ori_ind), HR_ori(ori_ind), sem_ori(ori_ind), sem_ori(ori_ind), HR_ori(ori_ind) - ci95_HR_ori((ori_ind),1)', ci95_HR_ori((ori_ind),2)' - HR_ori(ori_ind), {'ok', 'k', 'k'});
+h = errorbarxy(avg_ori(ori_ind), HR_v(ori_ind), sem_ori(ori_ind), sem_ori(ori_ind), HR_v(ori_ind) - ci95_HR_v((ori_ind),1)', ci95_HR_v((ori_ind),2)' - HR_v(ori_ind), {'ok', 'k', 'k'});
 h.hMain.MarkerFaceColor  = 'k';
 h.hMain.LineStyle = '-';
 h.hMain.LineWidth = 3;
 hold on
-h = errorbarxy(avg_oric(oric_ind), FR_ori(oric_ind), sem_oric(oric_ind), sem_oric(oric_ind), FR_ori(oric_ind) - ci95_FR_ori((oric_ind),1)', ci95_FR_ori((oric_ind),2)' - FR_ori(oric_ind), {'oc', 'c', 'c'});
+h = errorbarxy(avg_oric(oric_ind), HR_av(oric_ind), sem_oric(oric_ind), sem_oric(oric_ind), HR_av(oric_ind) - ci95_HR_av((oric_ind),1)', ci95_HR_av((oric_ind),2)' - HR_av(oric_ind), {'oc', 'c', 'c'});
 h.hMain.MarkerFaceColor  = 'c';
 h.hMain.LineStyle = '-';
 h.hMain.LineWidth = 3;
@@ -319,7 +322,7 @@ figAxForm(sp3)
 title('visual trials')
 
 figure(all_fig)
-print(fullfile(fnout,'all_expt'),'-dpdf','-fillpage')
+print(fullfile(fnout,'all_expt_img'),'-dpdf','-fillpage')
 
 %% behavior dep on previous trial
 % hit rate - vis trials sorted by preceeding trial type
@@ -341,7 +344,7 @@ h.LineStyle = '-';
 h.LineWidth = 2;
 leg(2) = h;
 hold on
-% h = errorbarxy(avg_oric(oric_ind), FR_ori(oric_ind), sem_oric(oric_ind), sem_oric(oric_ind), FR_ori(oric_ind) - ci95_FR_ori((oric_ind),1)', ci95_FR_ori((oric_ind),2)' - FR_ori(oric_ind), {'oc', 'c', 'c'});
+% h = errorbarxy(avg_oric(oric_ind), HR_av(oric_ind), sem_oric(oric_ind), sem_oric(oric_ind), HR_av(oric_ind) - ci95_HR_av((oric_ind),1)', ci95_HR_av((oric_ind),2)' - HR_av(oric_ind), {'oc', 'c', 'c'});
 h = plot(avg_oric(oric_ind), FR_oricpvv(oric_ind),'co');
 h.MarkerFaceColor  = 'c';
 h.LineStyle = '-';

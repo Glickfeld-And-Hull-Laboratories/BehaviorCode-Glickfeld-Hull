@@ -16,7 +16,6 @@ nexp = size(expt,2);
 mice = unique({expt.SubNum});
 nmice = length(mice);
 colors_mice = parula(nmice);
-expCatch = logical(cell2mat({expt.catch}));
 visual = 0;
 auditory = 1;
 
@@ -178,7 +177,7 @@ for iexp = 1:nexp
 end
 
 title('HR each exp')
-legend({expt(expCatch).SubNum},'location','eastoutside')
+legend({expt.SubNum},'location','eastoutside')
 
 figXAxis(sp1,[],[0.75 2.25],[1 2],{'vis','vis+aud'});
 figYAxis(sp1,'match HR',[0 1.1],y_axis_hr);
@@ -221,15 +220,24 @@ title({['vis = ' num2str(sum(n_ori(1,:),2))], ['vis+aud = ' num2str(sum(n_ori(2,
 % axis square
 
 % hit rate by trial length
-bxSumTiming_FSAV_img
+bxSumTiming_FSaudcon_img
+
+v_ind = ~isnan(HR_v_trTime);
+av_ind = ~isnan(HR_av_trTime);
 
 figure(all_fig)
 sp3 = subplot(2,2,3);
-h = errorbar(avg_trTime,HR_trTime,HR_trTime-ci_95_HR_trTime(:,1)',ci_95_HR_trTime(:,2)'-HR_trTime,'ko');
+h = errorbar(avg_trTime(v_ind),HR_v_trTime(v_ind),HR_v_trTime(v_ind)-ci_95_HR_v_trTime((v_ind),1)',ci_95_HR_v_trTime((v_ind),2)'-HR_v_trTime(v_ind),'ko');
 h.MarkerFaceColor = 'k';
+h.LineStyle = '-';
+h.LineWidth = 3;
+leg(1) = h;
 hold on
-h = errorbar(avg_trTime,FR_trTime,FR_trTime-ci_95_FR_trTime(:,1)',ci_95_FR_trTime(:,2)'-FR_trTime,'co');
+h = errorbar(avg_trTime(av_ind),HR_av_trTime(av_ind),HR_av_trTime(av_ind)-ci_95_HR_av_trTime((av_ind),1)',ci_95_HR_av_trTime((av_ind),2)'-HR_av_trTime(av_ind),'co');
 h.MarkerFaceColor = 'c';
+h.LineStyle = '-';
+h.LineWidth = 3;
+leg(2) = h;
 hold on
 
 x_tick = [0 chop(avg_trTime,2)];
@@ -237,7 +245,9 @@ x_tick_label = [0 chop(avg_trTime./1000,2)];
 figXAxis(h.Parent,'trial length (s)',[0 trialTime_edges(end)+500],x_tick,x_tick_label);
 figYAxis(h.Parent,'HR',[0 1.1],y_axis_hr)
 figAxForm(sp3)
-title('visual trials')
+title('binned by trial length')
+l = legend(leg,{'vis';'vis+aud'},'location','southeastoutside');
+title(l,'trial type')
 
 figure(all_fig)
 print(fullfile(fnout,'all_expt'),'-dpdf','-fillpage')

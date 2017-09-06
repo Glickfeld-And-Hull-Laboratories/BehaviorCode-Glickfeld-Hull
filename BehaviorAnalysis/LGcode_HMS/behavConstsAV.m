@@ -26,7 +26,7 @@ switch tHostname
             rootDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis';
             rc.behavData = 'Y:\home\andrew\Behavior\Data';
             rc.indexFilename = fullfile(rootDir, '\Behavior\experimentIndexes\av-subj-days-lg.xls');
-            rc.indexFilename_audCtrl = fullfile(rootDir, '\Behavior\experimentIndexes\v-img-subj-days-lg.xls');
+            rc.indexFilename_audCtrl = fullfile(rootDir, '\Behavior\experimentIndexes\v-subj-days-lg.xls');
             rc.indexFilename_fsavImg = fullfile(rootDir, '\Behavior\experimentIndexes\fsav-img-subj-days-lg.xls');
             rc.fitOutputFilename = fullfile(rootDir, '\Behavior\experimentIndexes\av-subj-fits-lg.xls');
             rc.fitOutputSummary = fullfile(rootDir, '\Behavior\output\analysis\summary');
