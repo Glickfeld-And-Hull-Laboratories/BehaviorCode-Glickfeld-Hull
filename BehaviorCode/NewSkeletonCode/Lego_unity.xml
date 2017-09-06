@@ -240,6 +240,7 @@
         <variable tag="leftDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="rightDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="trackMotion" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="dTrackMotion" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="tGratingEccentricityStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -1243,6 +1244,7 @@
 
                         <action type="if" condition="doTestRobot==0">
                           <action type="assignment" tag="track motion" variable="trackMotion" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))+tGratingEccentricityStart"/>
+                          <action type="assignment" tag="track motion" variable="dTrackMotion" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))-tGratingEccentricityStart"/>
                         </action>
 
                         <action type="if" condition="doTestRobot==1">
@@ -1252,8 +1254,11 @@
                         <action type="if" condition="doFeedbackMotion==1">
                             <action type="if" condition="(tLeftTrial &amp;&amp; trackMotion &lt;= gratingTargetEccentricity) || (tLeftTrial == 0 &amp;&amp; trackMotion &gt;= gratingTargetEccentricity)">
                               <action type="assignment" tag="Move stimulus" variable="tGratingEccentricityDeg" value="trackMotion"/>
+                              <action type="assignment" tag="Move distractor stimulus" variable="dGratingEccentricityDeg" value="dTrackMotion"/>
                               <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
                               <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
+                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"/>
+                              <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"/>
                             </action>
                             <action type="if" condition="(tLeftTrial &amp;&amp; trackMotion &gt;= gratingTargetEccentricity) || (tLeftTrial == 0 &amp;&amp; trackMotion &lt;= gratingTargetEccentricity)">
                               <action type="assignment" tag="Move stimulus" variable="tGratingEccentricityDeg" value="gratingTargetEccentricity"/>
