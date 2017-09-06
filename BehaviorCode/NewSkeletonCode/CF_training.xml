@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              laser_trigger="laserTrigger"
+              optic_device="optic_device"
+              laser_duration="laserDuration"/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+    <folder tag="Behavioral Control">
+      <!-- New Variables at the Top -->   
+      <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>   
+      <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1"/>
+      <variable tag="soundAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="toneDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
+      <variable tag="laserOnDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="laserOffDurationMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="laserFreqHZ" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1"/>
+      <variable tag="beforeLaserDurationMs" scope="global" logging="when_changed" default_value="125" type="integer" persistant="1"/>
+    </folder>
+    
+    <folder tag="Task Status">
+      <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+    </folder>
+    <folder tag="Online Display">
+      <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+    </folder>
+    <folder tag="Hardware variables">
+      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"/>
+    </folder>
+    <folder tag="Internal Variables">
+      <variable tag="trials" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
+      <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="laserCycleN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tlaserCycleN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+    </folder>
+  </variables>
+  <sounds tag="Sounds">
+          <sound tag="toneSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/2000hz_500ms.wav" amplitude="soundAmplitude"></sound>
+  </sounds>
+  <stimuli tag="Stimuli">
+    <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>        
+  </stimuli>    
+  <experiment tag="Experiment" full_name="">
+    <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      <action type="queue_stimulus" stimulus="background"></action>
+      <action type="update_stimulus_display" tag="-"></action>
+    <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+      <!-- init actions before running trials after any press of start-->
+            
+      <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+      <action type="assignment" variable="laserOffDurationMs" value="1/laserFreqHZ*1000 - laserOnDurationMs"></action>
+      <action type="assignment" variable="laserCycleN" value="(toneDurationMs - beforeLaerTimerMs)*laserFreqHZ/1000"></action>
+
+      <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="10000" sampling_method="cycles">
+        <task_system tag="TS" full_name="TS" description="" interruptible="YES">
+          <task_system_state tag="InterTrialInterval" interruptible="YES">
+            <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+            <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms ****"></action>
+            <action type="assignment" variable="tlaserCycleN" value="0"></action>
+            <action type="start_timer" timer="itiTimerMs" timebase="" duration="itiTimeMs" duration_units="ms"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="timer_expired" timer="itiTimerMs" target="TrialStart"></transition>
+          </task_system_state>
+
+          <task_system_state tag="TrialStart" interruptible="YES">
+            <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
+            <action type="start_timer" timer="beforeLaerTimerMs" duration="beforeLaserDurationMS" timebase="" duration_units="ms"/>
+            <action type="play_sound" sound="toneSound"/>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+              <transition type="timer_expired" timer="beforeLaerTimerMs" target="LaserStimOn"></transition>
+          </task_system_state>
+
+          <task_system_state tag="LaserStimOn" interruptible="YES">
+            <action type="assignment" variable="tlaserCycleN" value="tlaserCycleN + 1"/>
+            <action type="if" condition="optic_device != 'led' ">
+              <action type="assignment" variable="laserTrigger" value="1"></action>
+            </action>
+            <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+            <action type="assignment" variable="laserDuration" value="laserDurationMs"/>
+            <action type="start_timer" timer="laserOnTimerMs" duration="laserOnDurationMs" timebase="" duration_units="ms"/>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+              <transition type="conditional" condition="timerExpired(laserOnTimerMs) &amp;&amp; tlaserCycleN &lt;= laserCycleN" target="LaserStimOff"></transition>
+              <transition type="conditional" condition="timerExpired(laserOnTimerMs) &amp;&amp; tlaserCycleN &gt; laserCycleN" target="EndTrial"></transition>
+          </task_system_state>
+
+          <task_system_state tag="LaserStimOff" interruptible="YES">
+            <action type="start_timer" timer="laserOffTimerMs" duration="laserOffDurationMs" timebase="" duration_units="ms"/>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+              <transition type="conditional" condition="timerExpired(laserOnTimerMs) &amp;&amp; tlaserCycleN &lt; laserCycleN" target="LaserStimOn"></transition>
+              <transition type="conditional" condition="timerExpired(laserOnTimerMs) &amp;&amp; tlaserCycleN &gt;= laserCycleN" target="EndTrial"></transition>
+          </task_system_state>
+
+          <task_system_state tag="EndTrial" interruptible="YES">
+            <action type="assignment" variable="laserTrigger" value="0"></action>
+            <action type="report" message="******Trial Ended******"/>
+            <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"/>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="yield" tag="return to parent task system"></transition>
+            <action type="assignment" variable="trials" value="trials+1"/>
+          </task_system_state>
+          
+        </task_system>
+      </trial>
+    
+      <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+    </protocol>
+  </experiment>
+</monkeyml>
+
