@@ -13,7 +13,8 @@
     <folder tag="Behavioral Control">
       <!-- New Variables at the Top -->   
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>   
+      <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="19" type="integer" persistant="1"/>
+      <variable tag="optic_device" scope="global" logging="when_changed" default_value="laserblue" type="string"/>   
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1"/>
       <variable tag="soundAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
       <variable tag="toneDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
@@ -23,10 +24,6 @@
       <variable tag="beforeLaserDurationMs" scope="global" logging="when_changed" default_value="125" type="integer" persistant="1"/>
     </folder>
     
-    <folder tag="Task Status">
-      <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
-      <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
-    </folder>
     <folder tag="Online Display">
       <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
     </folder>
@@ -57,7 +54,7 @@
             
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
       <action type="assignment" variable="laserOffDurationMs" value="1/laserFreqHZ*1000 - laserOnDurationMs"></action>
-      <action type="assignment" variable="laserCycleN" value="(toneDurationMs - beforeLaerTimerMs)*laserFreqHZ/1000"></action>
+      <action type="assignment" variable="laserCycleN" value="(toneDurationMs - beforeLaserDurationMs)*laserFreqHZ/1000"></action>
 
       <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="10000" sampling_method="cycles">
         <task_system tag="TS" full_name="TS" description="" interruptible="YES">
@@ -73,7 +70,7 @@
 
           <task_system_state tag="TrialStart" interruptible="YES">
             <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
-            <action type="start_timer" timer="beforeLaerTimerMs" duration="beforeLaserDurationMS" timebase="" duration_units="ms"/>
+            <action type="start_timer" timer="beforeLaerTimerMs" duration="beforeLaserDurationMs" timebase="" duration_units="ms"/>
             <action type="play_sound" sound="toneSound"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
               <transition type="timer_expired" timer="beforeLaerTimerMs" target="LaserStimOn"></transition>
@@ -85,7 +82,7 @@
               <action type="assignment" variable="laserTrigger" value="1"></action>
             </action>
             <action type="report" message="********* SENDING LASER TRIGGER *********"/>
-            <action type="assignment" variable="laserDuration" value="laserDurationMs"/>
+            <action type="assignment" variable="laserDuration" value="laserOnDurationMs"/>
             <action type="start_timer" timer="laserOnTimerMs" duration="laserOnDurationMs" timebase="" duration_units="ms"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
               <transition type="conditional" condition="timerExpired(laserOnTimerMs) &amp;&amp; tlaserCycleN &lt;= laserCycleN" target="LaserStimOff"></transition>
