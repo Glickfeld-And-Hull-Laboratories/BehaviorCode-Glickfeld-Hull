@@ -92,8 +92,8 @@
           <task_system_state tag="LaserStimOff" interruptible="YES">
             <action type="start_timer" timer="laserOffTimerMs" duration="laserOffDurationMs" timebase="" duration_units="ms"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" condition="timerExpired(laserOnTimerMs) &amp;&amp; tlaserCycleN &lt; laserCycleN" target="LaserStimOn"></transition>
-              <transition type="conditional" condition="timerExpired(laserOnTimerMs) &amp;&amp; tlaserCycleN &gt;= laserCycleN" target="EndTrial"></transition>
+              <transition type="conditional" condition="timerExpired(laserOffTimerMs) &amp;&amp; tlaserCycleN &lt; laserCycleN" target="LaserStimOn"></transition>
+              <transition type="conditional" condition="timerExpired(laserOffTimerMs) &amp;&amp; tlaserCycleN &gt;= laserCycleN" target="EndTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrial" interruptible="YES">
