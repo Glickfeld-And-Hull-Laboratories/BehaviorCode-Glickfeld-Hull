@@ -65,6 +65,10 @@ elif thisHostname == "hullglick5":
     PORT = 9993
     HOST = "neuroPi4.local"
     doTransmitCodesToBlackrock = False
+elif thisHostname == "hullglick6":
+    PORT = 9993
+    HOST = "neuroPi4.local"
+    doTransmitCodesToBlackrock = False
 elif thisHostname == "test-rig":
     PORT = 50007
     doTransmitCodesToBlackrock = False

@@ -1062,7 +1062,7 @@
                 </action>
                 <action type="if" condition="doLinearTargetSpacing">
                   <action type="assignment" variable="tGratingDirectionDeg" 
-                          value="tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg * ((8-tStimulusNumber)/8))"></action>
+                          value="tGratingMaxDirectionStepDeg * ((8-tStimulusNumber)/8)"></action>
                 </action>
                 <action type="if" condition="tDoContrastDetect">
                   <action type="assignment" variable="tGratingContrast" value="tBaseGratingContrast+tGratingMaxContrastStep"/>
@@ -1077,9 +1077,9 @@
                           value="tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))"></action> tD
                   <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
                 </action>
-                <action type="if" condition="!doLinearTargetSpacing">
+                <action type="if" condition="doLinearTargetSpacing">
                   <action type="assignment" variable="tGratingContrast" 
-                          value="tBaseGratingContrast + (tGratingMaxContrastStep * ((8-tStimulusNumber)/8))"></action>
+                          value="tGratingMaxContrastStep * ((8-tStimulusNumber)/8)"></action>
                   <action type="assignment" variable="tGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
                 </action>
               </action>  
