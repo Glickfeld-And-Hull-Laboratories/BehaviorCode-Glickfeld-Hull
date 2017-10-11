@@ -487,10 +487,17 @@ end
 axH = subplot(spSz{:}, 3);
 if input.maxCyclesOn*(input.stimOnTimeMs + input.stimOffTimeMs) < 1000
   maxX = 2000;
-else
-  maxFail = double(input.reactTimeMs+(input.maxCyclesOn*(input.stimOnTimeMs + input.stimOffTimeMs)));
-  maxX = ceil((maxFail+45)./500)*500;  % round up to nearest 500 ms.
 end
+if input.doRandStimOffTime
+    if isfield(input,'maxStimOffTimeMs')
+        maxX = double(max(input.maxCyclesOn)*(max(input.stimOnTimeMs) + max(input.maxStimOffTimeMs)));
+    else
+        maxX = double(max(input.maxCyclesOn)*(max(input.stimOnTimeMs) + max(input.stimOffTimeMs)));
+    end
+else
+    maxX = double(max(input.maxCyclesOn)*(max(input.stimOnTimeMs) + max(input.stimOffTimeMs)));
+end
+
 
 visIx = holdV <= maxX;
 nVisPts = sum(visIx);
@@ -1249,7 +1256,16 @@ end
 
 %% 12: error rate with hold time?
 axH = subplot(spSz{:}, 12);
-maxReqX = double(max(input.maxCyclesOn)*(max(input.stimOnTimeMs) + max(input.stimOffTimeMs)));
+if input.doRandStimOffTime
+    if isfield(input,'maxStimOffTimeMs')
+        maxReqX = double(max(input.maxCyclesOn)*(max(input.stimOnTimeMs) + max(input.maxStimOffTimeMs)));
+    else
+        maxReqX = double(max(input.maxCyclesOn)*(max(input.stimOnTimeMs) + max(input.stimOffTimeMs)));
+    end
+else
+    maxReqX = double(max(input.maxCyclesOn)*(max(input.stimOnTimeMs) + max(input.stimOffTimeMs)));
+end
+
 if nVisPts > 50
   binWidth = 100;	% Mark's code crashed -- pulger
   nBins = ceil(maxReqX ./ binWidth);
