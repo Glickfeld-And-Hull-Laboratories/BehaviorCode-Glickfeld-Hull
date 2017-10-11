@@ -9,6 +9,7 @@ def calc_tStimProbAvgLeft():
 	nTrialPerBlock = getvar('RandProbTrialperBlock')
 	lastIndex = getvar('tRandProbIndexLast')
 	preblock = getvar('RandProbPreBlockTrials')
+	blockNum = getvar('tRandBlockNumber')
 
 	if compTrials == 0:
 		if 0.5 in probList:
@@ -16,9 +17,11 @@ def calc_tStimProbAvgLeft():
 			setvar('tStimProbAvgLeft', 0.5)
 			setvar('tRandProbIndexLast', ind)
 			setvar('inPreBlock', 0)
+			setvar('tRandBlockNumber',1)
 		else:
-			tempval = random.randint(1,numProbs)-1
+			tempval = 0
 			setvar('tRandProbIndexLast', tempval)
+			setvar('tRandBlockNumber',1)
 			if preblock > 0:
 				setvar('inPreBlock', 1)
 				if probList[tempval] < 0.5:
@@ -30,9 +33,14 @@ def calc_tStimProbAvgLeft():
 				setvar('tStimProbAvgLeft', probList[tempval])
 	elif compTrials%nTrialPerBlock == 0:
 		tempval = lastIndex
+		blockNum = blockNum + 1
+		setvar('tRandBlockNumber', blockNum)
 		if tempval == 1:
-			while(tempval == lastIndex):
-				tempval = random.randint(1,numProbs)-1
+			if blockNum % (numProbs+1) == 0:
+				tempval = numProbs-1;
+				setvar('tRandProbIndexLast', tempval)
+			else:
+				tempval = 0;
 				setvar('tRandProbIndexLast', tempval)
 		else:
 			tempval = 1
