@@ -835,28 +835,28 @@ hold on
 if isfield(input,'doContrastDiscrim')
   if input.doContrastDiscrim
     if input.gratingContrastDiffSPO > 10
-      differenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+      differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
     elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
-      differenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+      differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
     elseif isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
-      differenceRight =chop(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
+      differenceRight =chop(celleqel2mat_padded(input.rightGratingContrast) ./ celleqel2mat_padded(input.leftGratingContrast),2);
     end
   elseif input.doSizeDiscrim
   if input.gratingDiameterDiffSPO > 10
-      differenceRight = chop(cell2mat(input.rightGratingDiameterDeg) - cell2mat(input.leftGratingDiameterDeg),2);
+      differenceRight = chop(celleqel2mat_padded(input.rightGratingDiameterDeg) - celleqel2mat_padded(input.leftGratingDiameterDeg),2);
     elseif ~isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
-      differenceRight = chop(cell2mat(input.rightGratingDiameterDeg) - cell2mat(input.leftGratingDiameterDeg),2);
+      differenceRight = chop(celleqel2mat_padded(input.rightGratingDiameterDeg) - celleqel2mat_padded(input.leftGratingDiameterDeg),2);
     elseif isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
-      differenceRight =chop(cell2mat(input.rightGratingDiameterDeg) ./ cell2mat(input.leftGratingDiameterDeg),2);
+        differenceRight =chop(celleqel2mat_padded(input.rightGratingDiameterDeg) ./ celleqel2mat_padded(input.leftGratingDiameterDeg),2);
     end
   end
 else
   if input.gratingContrastDiffSPO > 10
-    differenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+    differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
   elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
-    differenceRight = chop(cell2mat(input.rightGratingContrast) - cell2mat(input.leftGratingContrast),2);
+    differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
   elseif isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
-    differenceRight =chop(cell2mat(input.rightGratingContrast) ./ cell2mat(input.leftGratingContrast),2);
+    differenceRight =chop(celleqel2mat_padded(input.rightGratingContrast) ./ celleqel2mat_padded(input.leftGratingContrast),2);
   end
 end
 
