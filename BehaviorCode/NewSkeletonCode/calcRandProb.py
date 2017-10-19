@@ -37,10 +37,10 @@ def calc_tStimProbAvgLeft():
 		setvar('tRandBlockNumber', blockNum)
 		if tempval == 1:
 			if blockNum % (numProbs+1) == 0:
-				tempval = numProbs-1;
+				tempval = 0;
 				setvar('tRandProbIndexLast', tempval)
 			else:
-				tempval = 0;
+				tempval = numProbs-1;
 				setvar('tRandProbIndexLast', tempval)
 		else:
 			tempval = 1
