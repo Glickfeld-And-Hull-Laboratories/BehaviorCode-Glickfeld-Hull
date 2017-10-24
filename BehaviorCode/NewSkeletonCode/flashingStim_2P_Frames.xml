@@ -62,6 +62,8 @@
       <variable tag="doRandStimOffTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
       <variable tag="minStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="stimOffTimeIntervalMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="doRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+      <variable tag="conDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Structure"/>
 
       <variable tag="doShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
       <variable tag="minShortCatchCycle" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Short Catch"/>
@@ -290,6 +292,7 @@
       <variable tag="tSoundMaxTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
       <variable tag="tLaserPeakStepsPerOctave" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+      <variable tag="multVal" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
       <variable tag="tStimOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tStimOffTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -1117,7 +1120,12 @@
                 <action type="assignment" variable="tCatchGratingDirectionDeg" value="tBaseGratingDirectionDeg"/>
               </action>   
             </action>
-              	
+
+            <action type="if" condition="doRandCon">
+                <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
+                <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+            </action>
+
             <action type="if" condition="tDoVisualStim == 0">
               <action type="assignment" variable="tBaseGratingContrast" value="0"></action>
               <action type="assignment" variable="tGratingContrast" value="0"></action>
@@ -1341,6 +1349,17 @@
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
               <action type="update_stimulus_display" tag="justincase"></action>
+            </action>
+
+            <action type="if" condition="doRandCon">
+              <action type="if" condition="tCyclesOn &lt; nCyclesOn">
+                <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
+                <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+              </action>
+              <action type="if" condition="tCyclesOn &gt;= nCyclesOn">
+                <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
+                <action type="assignment" variable="tGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+              </action>
             </action>
 
             <action type="assignment" variable="cStimOff" value="counter" />
@@ -1708,6 +1727,11 @@
             <action type="if" condition="doPulseLength">
               <action type="assignment" tag="Set base contrast to 0" variable="tBaseGratingContrast" value="0"/>
             </action> 
+
+            <action type="if" condition="doRandCon">
+                <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
+                <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+            </action>
 
             <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
             
