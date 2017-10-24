@@ -30,6 +30,8 @@
         <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="invertDirection" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doOnlyMaxDiff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="doEasyStart" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="easyStartTrialNumber" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Task Control"/>
 
         <variable tag="doFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Feedback Motion"/>
         <variable tag="gratingTargetEccentricity" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Feedback Motion"/>
@@ -273,6 +275,7 @@
         <variable tag="tNBlockLeftTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
         <variable tag="tNBlockRightTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
         <variable tag="tRobotReactTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tRandBlockNumber" scope="global" logging="when_changed" default_value="0" type="integer"/>
 
 		<!-- frame conversion -->
       <variable tag="nFramesStationary" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -959,6 +962,12 @@
       <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2NoGoTrPer80"/>
     </action>
 </action>
+
+<!-- added preblock where all early trials are easy -->
+<action type="if" condition="tNTrialsCompleted &lt; easyStartTrialNumber &amp;&amp; doEasyStart">
+    <action type="assignment" variable="tStimulusNumber" value="0"/>
+    <action type="assignment" variable="tStimulusNumber2" value="0"/>
+</action> 
 
 <action type="report" message="tLeftTrial is $tLeftTrial!!!!"></action>
 

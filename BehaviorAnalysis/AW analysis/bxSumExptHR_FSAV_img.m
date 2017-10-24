@@ -1,27 +1,31 @@
 if hr_calc == 1
-[h_all, ~, bin_all] = histcounts(targets, ori_edges);
-[h_v, ~, bin_v] = histcounts(vTargets, ori_edges);
-[h_av, ~, bin_av] = histcounts(avTargets, ori_edges);
+% [h_all, ~, bin_all] = histcounts(targets, ori_edges);
+[h_v, ~, bin_v] = histcounts(visTargets, ori_edges);
+[h_av, ~, bin_av] = histcounts(audTargets, amp_edges);
 
 ori_bins = unique(bin_v);
 avg_ori = zeros(1,max(ori_bins,[],2));
 sem_ori = zeros(1,max(ori_bins,[],2));
+avg_amp = zeros(1,max(ori_bins,[],2));
+sem_amp = zeros(1,max(ori_bins,[],2));
 Hits_v = zeros(1,max(ori_bins,[],2));
 Misses_v = zeros(1,max(ori_bins,[],2));
 Hit_av = zeros(1,max(ori_bins,[],2));
 Misses_av = zeros(1,max(ori_bins,[],2));
 n_ori = zeros(2,max(ori_bins,[],2));
 for ibin = 1:max(ori_bins,[],2)
-    ind_all = find(bin_all == ibin);
-    avg_ori(ibin) = mean(targets(:,ind_all),2);
-    sem_ori(ibin) = std(targets(:,ind_all),[],2)./sqrt(length(ind_all));
+    ind = find(bin_v == ibin);
+    avg_ori(ibin) = mean(visTargets(:,ind),2);
+    sem_ori(ibin) = std(visTargets(:,ind),[],2)./sqrt(length(ind));
     
-    ind = bin_all == ibin & trType == visual;
     if length(ind)>=minTrN_expt
         Hits_v(ibin) = sum(successIx(ind),2);
         Misses_v(ibin) = sum(missedIx(ind),2);
     end
-    ind = bin_all == ibin & trType == auditory;
+    
+    ind = find(bin_av == ibin);
+    avg_amp(ibin) = mean(audTargets(:,ind),2);
+    sem_amp(ibin) = std(audTargets(:,ind),[],2)./sqrt(length(ind));
     if length(ind)>=minTrN_expt
         Hit_av(ibin) = sum(successIx(ind),2);
         Misses_av(ibin) = sum(missedIx(ind),2);
@@ -35,8 +39,8 @@ n_ori = [Hits_v+Misses_v; Hit_av+Misses_av];
 elseif hr_calc == 2 % across mice
     
   
-[h_v, edge, bin_v] = histcounts(visTargets_all, ori_edges);
-[h_av, edge, bin_av] = histcounts(invVisTargets_all, ori_edges);
+[h_v, ~, bin_v] = histcounts(visTargets_all, ori_edges);
+[h_av, ~, bin_av] = histcounts(invVisTargets_all, ori_edges);
 
 ori_bins = unique(bin_v);
 avg_ori = zeros(1,max(ori_bins,[],2));
@@ -74,43 +78,48 @@ for ibin = 1:max(ori_bins,[],2)
     indpa = find(bin_v == ibin & prevTrial_all == 0) ;
     indpvv = find(bin_v == ibin & prevTrial_all == 1 & prev2Trial_all == 1) ;
     indpaa = find(bin_v == ibin & prevTrial_all == 0 & prev2Trial_all == 0) ;
-    if length(ind)>=10
+    ind_min = successIx_all(ind) | missedIx_all(ind);
+    if sum(ind_min)>=minTrN_all
         avg_ori(ibin) = mean(visTargets_all(:,ind),2);
         sem_ori(ibin) = std(visTargets_all(:,ind),[],2)./sqrt(length(ind));
         Hits_v(ibin) = sum(successIx_all(ind),2);
         Misses_v(ibin) = sum(missedIx_all(ind),2);
-        
-        Hits_oripv(ibin) = sum(successIx_all(indpv),2);
-        Misses_oripv(ibin) = sum(missedIx_all(indpv),2);
-        Hits_oripa(ibin) = sum(successIx_all(indpa),2);
-        Misses_oripa(ibin) = sum(missedIx_all(indpa),2);
-        
-        Hits_oripvv(ibin) = sum(successIx_all(indpvv),2);
-        Misses_oripvv(ibin) = sum(missedIx_all(indpvv),2);
-        Hits_oripaa(ibin) = sum(successIx_all(indpaa),2);
-        Misses_oripaa(ibin) = sum(missedIx_all(indpaa),2);
+        if length(indpv)>=minTrN_all
+            Hits_oripv(ibin) = sum(successIx_all(indpv),2);
+            Misses_oripv(ibin) = sum(missedIx_all(indpv),2);
+            Hits_oripa(ibin) = sum(successIx_all(indpa),2);
+            Misses_oripa(ibin) = sum(missedIx_all(indpa),2);
+        end
+        if length(indpvv)>=minTrN_all
+            Hits_oripvv(ibin) = sum(successIx_all(indpvv),2);
+            Misses_oripvv(ibin) = sum(missedIx_all(indpvv),2);
+            Hits_oripaa(ibin) = sum(successIx_all(indpaa),2);
+            Misses_oripaa(ibin) = sum(missedIx_all(indpaa),2);
+        end
     end
     indc = find(bin_av == ibin);
     indcpv = find(bin_av == ibin & prevTrial_all == 1) ;
     indcpa = find(bin_av == ibin & prevTrial_all == 0) ;
     indcpvv = find(bin_av == ibin & prevTrial_all == 1 & prev2Trial_all == 1) ;
     indcpaa = find(bin_av == ibin & prevTrial_all == 0 & prev2Trial_all == 0) ;
-    if length(indc)>=10
+    ind_min = invHitIx_all(indc) | invMissIx_all(indc);
+    if sum(ind_min)>=minTrN_all
         avg_oric(ibin) = mean(invVisTargets_all(:,indc),2);
         sem_oric(ibin) = std(invVisTargets_all(:,indc),[],2)./sqrt(length(indc));
         Hit_av(ibin) = sum(invHitIx_all(indc),2);
         Misses_av(ibin) = sum(invMissIx_all(indc),2);
-        
-        Hits_oricpv(ibin) = sum(invHitIx_all(indcpv),2);
-        Misses_oricpv(ibin) = sum(invMissIx_all(indcpv),2);
-        Hits_oricpa(ibin) = sum(invHitIx_all(indcpa),2);
-        Misses_oricpa(ibin) = sum(invMissIx_all(indcpa),2);        
-        
-        Hits_oricpvv(ibin) = sum(invHitIx_all(indcpvv),2);
-        Misses_oricpvv(ibin) = sum(invMissIx_all(indcpvv),2);
-        Hits_oricpaa(ibin) = sum(invHitIx_all(indcpaa),2);
-        Misses_oricpaa(ibin) = sum(invMissIx_all(indcpaa),2);
-        
+        if length(indcpv)>=minTrN_all
+            Hits_oricpv(ibin) = sum(invHitIx_all(indcpv),2);
+            Misses_oricpv(ibin) = sum(invMissIx_all(indcpv),2);
+            Hits_oricpa(ibin) = sum(invHitIx_all(indcpa),2);
+            Misses_oricpa(ibin) = sum(invMissIx_all(indcpa),2);        
+        end
+        if length(indcpvv)>=minTrN_all
+            Hits_oricpvv(ibin) = sum(invHitIx_all(indcpvv),2);
+            Misses_oricpvv(ibin) = sum(invMissIx_all(indcpvv),2);
+            Hits_oricpaa(ibin) = sum(invHitIx_all(indcpaa),2);
+            Misses_oricpaa(ibin) = sum(invMissIx_all(indcpaa),2);
+        end
     end
 end
 [HR_v, ci95_HR_v] = binofit(Hits_v, Misses_v + Hits_v);

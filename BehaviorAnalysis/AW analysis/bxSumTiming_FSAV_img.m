@@ -4,7 +4,6 @@ cVisInd_all = find(invVisTargets_all > 1);
 prevVis = find(prevTrial_all == 1);
 prevAud = find(prevTrial_all == 0);
 
-nTimes = 6;
 trialTime_edges = [0:max(trLengthMs_all)/nTimes:max(trLengthMs_all)]+100;
 
 [h_time, edge, bin_time] = histcounts(trLengthMs_all,trialTime_edges);

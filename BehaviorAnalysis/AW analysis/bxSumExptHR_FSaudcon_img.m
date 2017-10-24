@@ -33,6 +33,9 @@ n_ori = [Hits_v+Misses_v; Hit_av+Misses_av];
 
 %%
 elseif hr_calc == 2 % across mice
+[h_all, ~, bin_all] = histcounts(targets_all, ori_edges);
+[h_v, ~, bin_v] = histcounts(vTargets_all, ori_edges);
+[h_av, ~, bin_av] = histcounts(avTargets_all, ori_edges);
     
 
 [h_all, ~, bin_all] = histcounts(targets_all, ori_edges); 
