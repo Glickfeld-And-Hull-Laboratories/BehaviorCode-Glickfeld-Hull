@@ -152,8 +152,8 @@ stimOnFrames = zeros(1, input.maxCyclesOn);
 
 %track contrast by presentation
 multVals = mwGetEventValue(eventsTrial, ds.event_codec, 'multVal', 'all', 1);
-input.tBaseGratingContrast{trN} = input.baseGratingContrast + (multVals .* input.conDiff);
-	 
+input.tBaseGratingContrast{trN} = input.baseGratingContrast + (double(multVals) .* input.conDiff);
+
 auditoryStimOnFrames = zeros(1, input.maxCyclesOn);
 for istim = 1:numberCyclesOn
     try

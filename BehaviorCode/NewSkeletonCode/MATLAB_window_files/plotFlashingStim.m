@@ -81,7 +81,9 @@ end
 %  TODO:  this should be automated in a loop, or better should not have to convert from cell at all
 tGratingDirectionDeg = celleqel2mat_padded(input.tGratingDirectionDeg);
 tGratingContrast = celleqel2mat_padded(input.tGratingContrast, NaN, 'double');
-tBaseGratingContrast = celleqel2mat_padded(input.tBaseGratingContrast, NaN, 'double');
+if ~input.doRandCon
+  tBaseGratingContrast = celleqel2mat_padded(input.tBaseGratingContrast, NaN, 'double');
+end
 tLaserPowerMw = celleqel2mat_padded(input.tLaserPowerMw);
 tLaserRampLengthMsV = celleqel2mat_padded(input.tLaserRampLengthMs);
 tLaserDoLinearRampV = celleqel2mat_padded(input.tLaserDoLinearRamp);
