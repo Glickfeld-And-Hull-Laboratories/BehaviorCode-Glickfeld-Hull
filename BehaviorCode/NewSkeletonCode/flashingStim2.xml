@@ -71,6 +71,10 @@
         <variable tag="minStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="maxStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="stimOffTimeIntervalMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="doTargetAfterMissed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+        <variable tag="targetOriAfterMissed" scope="global" logging="when_changed" default_value="90" type="float" persistant="1" groups="Trial Structure"/>
+        <variable tag="targetConAfterMissed" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Trial Structure"/>
+        <variable tag="maxChangeForTargetAfterMissed" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1" groups="Trial Structure"/>
 
         <variable tag="doShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
         <variable tag="minShortCatchCycle" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Short Catch"/>
@@ -239,6 +243,9 @@
         <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
         <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="lateSuccess" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="lateIgnore" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="lateFailure" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
         <variable tag="pressTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -359,11 +366,15 @@
         <variable tag="startReactState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
         <variable tag="isTooFast" scope="global" logging="when_changed" default_value="1" persistent="0" type="integer" persistant="0"/>
         <variable tag="isEndState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
+        <variable tag="isEndTargetState" scope="global" logging="when_changed" default_value="0" persistent="0" type="integer" persistant="0"/>
         <variable tag="isCatchTrial" scope="global" logging="when_changed" default_value="0" persistent="0" type="boolean" persistant="0"/>
         <variable tag="tShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="catchCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tFalseAlarm" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tCatchTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tDoTargetAfterMissed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="tMissedFirstTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="tMissedSecondTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
         <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -405,6 +416,14 @@
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tGratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
+              <stimulus type="drifting_Grating" tag="late_target_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
+              spatial_frequency="tGratingSpatialFreqCPD" 
+              speed="tGratingSpeedDPS" 
+              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
+              x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
+              rotation="targetOriAfterMissed" 
+              alpha_multiplier="targetConAfterMissed"></stimulus>
               <stimulus type="drifting_Grating" tag="catch_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
                 spatial_frequency="tGratingSpatialFreqCPD" 
                 speed="tGratingSpeedDPS" 
@@ -484,11 +503,14 @@
                           <action type="assignment" tag="Reset tStimOn" variable="tStimOnMs" value="0"/>
                           <action type="assignment" tag="Reset tCyclesOn" variable="tCyclesOn" value="0"/>
                           <action type="assignment" tag="Reset too fast time over" variable="isTooFast" value="1"/>
-                          <action type="assignment" tag="Reset End state" variable="isEndState" value="0"/>  
+                          <action type="assignment" tag="Reset End state" variable="isEndState" value="0"/>
+                          <action type="assignment" tag="Reset End target state" variable="isEndTargetState" value= "0"></action>  
                           <action type="assignment" tag="Reset Catch trial" variable="isCatchTrial" value="0"/>
                           <action type="assignment" tag="Reset Catch trial" variable="tShortCatchTrial" value="0"/> 
                           <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>
                           <action type="assignment" tag="Reset total cycle time" variable="tTotalStimTimeMs" value="0"/>
+                          <action type="assignment" tag="Reset taret miss" variable="tMissedFirstTarget" value="0"/>
+                          <action type="assignment" tag="Reset taret miss" variable="tMissedSecondTarget" value="0"/>
                           
 
                            <action type="if" condition="doPhotodiode">
@@ -1167,6 +1189,19 @@
                         <action type="assert" condition="abs(tBaseGratingDirectionDeg-tGratingDirectionDeg) &lt;= 360" stop_on_failure="1" 
                           message="Maximum direction step is 360 degrees"/>
 
+                    <action type="if" condition="doTargetAfterMissed">       
+                        <action type="if" condition="tGratingDirectionDeg &lt;= maxChangeForTargetAfterMissed"> 
+                              <action type="assignment" variable="tDoTargetAfterMissed" value="1"/>
+                        </action>
+                        <action type="if" condition="tGratingDirectionDeg &gt; maxChangeForTargetAfterMissed"> 
+                              <action type="assignment" variable="tDoTargetAfterMissed" value="0"/>
+                        </action>        
+                    </action>
+
+                    <action type="if" condition="doTargetAfterMissed == 0"> 
+                        <action type="assignment" variable="tDoTargetAfterMissed" value="0"/>
+                    </action>  
+
                           <!-- choose auditory stim -->  
                           <action type="if" condition="tDoAuditoryStim">
                             <action type="assignment" variable="tSoundBaseAmplitude" value="soundBaseAmplitude"/>
@@ -1589,17 +1624,20 @@
                                     <task_system_state tag="React" interruptible="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                       <action type="assignment" tag="set too fast time over" variable="isTooFast" value="0"/>
+                                      <action type="report" message="In react time" />
                                       <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                       <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
                                       <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==0) &amp;&amp; !doLever &amp;&amp; timerExpired(fakeMouseTimer)" target="Reward"></transition>
                                       <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Lever Up" condition="(isCatchTrial==1) &amp;&amp; !doLever &amp;&amp; timerExpired(fakeMouseTimer)" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
-                                      <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+                                      <transition type="conditional" tag="Go to Missed" condition="tDoTargetAfterMissed == 0 &amp;&amp; (isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+                                      <transition type="conditional" tag="Missed but second chance" condition="tDoTargetAfterMissed &amp;&amp; tMissedFirstTarget == 0 &amp;&amp; timerExpired(reactTimeTimer)" target="TempMissed"></transition>
+                                      <transition type="conditional" tag="Go to Missed" condition="tDoTargetAfterMissed &amp;&amp; isEndTargetState &amp;&amp; timerExpired(endReactTimeTimer)" target="Missed"></transition>
                                       <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
-                                      <transition type="timer_expired" tag="Dequeue Visual Stimulus" target="EndTrialStimOff" timer="targetOnTimer"></transition>
-                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer)" target="EndTrialStimOn"></transition>
-                                      <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer)" target="EndTrialStimOff"></transition>
+                                      <transition type="conditional" tag="Deueue Visual Stimulus" condition="timerExpired(targetOnTimer) &amp;&amp; stimTag == 2" target="EndTrialStimOff"></transition>
+                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer) &amp;&amp; stimTag == 0" target="EndTrialStimOn"></transition>
+                                      <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer) &amp;&amp; stimTag" target="EndTrialStimOff"></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="EarlyRelease" interruptible="YES">
@@ -1646,7 +1684,13 @@
                                     </action>
 
                                     <!-- update running variables -->
-                                    <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
+                                    <action type="if" condition="tMissedFirstTarget == 0">
+                                        <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
+                                    </action>
+                                    <action type="if" condition="tMissedFirstTarget">
+                                        <action type="assignment" tag="failure++" variable="lateFailure" value="lateFailure+1"></action>
+                                    </action>
+                                        
                                     <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
                                     <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
                                     <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
@@ -1678,6 +1722,18 @@
                                     <transition type="timer_expired" target="PossibleEndTimeout" timer="earlyTimeoutTimer"></transition>
                                   </task_system_state>
 
+                                  <task_system_state tag="TempMissed" interruptible="YES">
+                                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                                    <action type="report" message="Missed first target" />
+                                    <action type="assignment" tag="missed first target" variable="tMissedFirstTarget" value="1"></action>
+                                    <action type="assignment" tag="reset too fast" variable="isTooFast" value="1"></action>
+                                    <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
+                                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                                    <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer) &amp;&amp; stimTag" target="EndTrialStimOff"></transition>
+                                    <transition type="conditional" tag="Queue second target" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer) &amp;&amp; stimTag == 0" target="EndTrialTargetStimOn"></transition>
+                                  </task_system_state>
+
+
                                   <task_system_state tag="Missed" interruptible="YES">
                                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                                     <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
@@ -1690,7 +1746,15 @@
                                     <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
                                     <action type="assignment" variable="actualHoldTimeMs" value=" (now()/1000) - tLeverPressTimeMs"></action>
                                     <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
-                                    <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
+
+                                    <action type="if" condition="tMissedFirstTarget == 0">
+                                        <action type="assignment" tag="ignore++" variable="ignore" value="ignore + 1"></action>
+                                    </action>
+                                    <action type="if" condition="tMissedFirstTarget">
+                                        <action type="assignment" tag="lateIgnore++" variable="lateIgnore" value="lateIgnore + 1"></action>
+                                        <action type="assignment" tag="missed first target" variable="tMissedSecondTarget" value="1"></action>
+                                    </action>
+                                        
                                     <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
                                     <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
                                     <action tag="Report 4" full_name="ReportDigital" type="report" message="** Ignored react stimulus"></action>
@@ -1797,10 +1861,17 @@
                                 <action type="report" tag="Report" message="actualHoldTimeMs = $actualHoldTimeMs"></action>
                                 <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Success"></action>
                                 <!-- update running variables -->
-                                <action type="assignment" tag="success++" variable="success" value="success+1"></action>
                                 <action type="assignment" variable="tConsecErrors" value="0"></action>
+                                 <action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
+                                <action type="if" condition="tMissedFirstTarget == 0">
+                                    <action type="assignment" tag="success++" variable="success" value="success+1"></action>
+                                </action>
+                                <action type="if" condition="tMissedFirstTarget">
+                                    <action type="assignment" tag="success++" variable="lateSuccess" value="lateSuccess+1"></action>
+                                </action>    
+                                    
                                 <action type="assignment" tag="Assign reward" variable="tTotalRewardTimeUs" value="rewardUs"></action>
-                                <action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
+                                
                                 <!-- assign reward size based on elapsed rand if rampdown == 0 -->
                                 <action type="if" condition="doBlock2 == 1">
                                   <action type="if" condition="doBlock2SeparateReward == 0">
@@ -1922,10 +1993,14 @@
                               <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
                               <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
                               <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (tStimOnMs*1000 + tStimOnTimeMs*1000 - tFrameDelayUs + 1500)" target="EndTrialStimOff" ></transition>
-                              <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
+                              <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="isEndTargetState == 0 &amp;&amp; (isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
+                              <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="isEndTargetState &amp;&amp; (isTooFast==1) &amp;&amp; timerExpired(endTooFastTimer)" target="React"></transition>
                               <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
-                              <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+                              <transition type="conditional" tag="Go to Missed" condition="tDoTargetAfterMissed == 0  &amp;&amp; (isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+                              <transition type="conditional" tag="Go second chance Missed" condition="tDoTargetAfterMissed &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; tMissedFirstTarget == 0" target="TempMissed"></transition>
                               <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
+                              <transition type="conditional" tag="Go to React" condition="isEndTargetState &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endTooFastTimer)" target="React"></transition>
+                              <transition type="conditional" tag="Go to Missed" condition="isEndTargetState &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endReactTimeTimer)" target="Missed"></transition>
                             </task_system_state>
 
                             <task_system_state tag="EndTrialStimOff" interruptible="YES">
@@ -1955,6 +2030,7 @@
 
                               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
                               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+                              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="late_target_grating"></action>
                               <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
                               <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                               <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
@@ -1990,13 +2066,76 @@
                               <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
                               <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
                               <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
-                              <transition type="timer_expired" tag="Back to base stimulus presentation" target="EndTrialStimOn" timer="endOffTimer"></transition>
-                              <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
+                              <transition type="conditional" tag="if endOffTimer expired, go to back to endOnStim" condition="tDoTargetAfterMissed == 0  &amp;&amp; timerExpired(endOffTimer)" target="EndTrialStimOn"></transition>
+                              <transition type="conditional" tag="if endOffTimer expired, and do target after missed, go to endTargetOnStim" condition="tDoTargetAfterMissed &amp;&amp; timerExpired(endOffTimer) &amp;&amp; tMissedFirstTarget &amp;&amp; isTooFast == 0 &amp;&amp; isEndTargetState == 0" target="EndTrialTargetStimOn"></transition>
+                              <transition type="conditional" tag="if endOffTimer expired, and do target after missed, but react not expired, go to endOnStim" condition="tDoTargetAfterMissed &amp;&amp; timerExpired(endOffTimer) &amp;&amp; tMissedFirstTarget == 0" target="EndTrialStimOn"></transition>
+                              <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="isEndTargetState == 0 &amp;&amp; (isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
+                              <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="isEndTargetState &amp;&amp; (isTooFast==1) &amp;&amp; timerExpired(endTooFastTimer)" target="React"></transition>
                               <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
-                              <transition type="conditional" tag="Go to Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+                              <transition type="conditional" tag="Go to Missed" condition="tDoTargetAfterMissed == 0 &amp;&amp; (isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+                              <transition type="conditional" tag="Go to Target after Missed" condition="tDoTargetAfterMissed &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; tMissedFirstTarget == 0" target="TempMissed"></transition>
                               <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
-                              <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                              <transition type="conditional" tag="Go to Missed" condition="isEndTargetState &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endReactTimeTimer)" target="Missed"></transition>
                             </task_system_state>
+
+                            <task_system_state tag="EndTrialTargetStimOn" interruptible="YES">
+                              <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                              <action type="if" condition="doPhotodiode">
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
+                              </action>
+
+
+                              <!-- Must dequeue stimulus in the doConstantStimulus case -->
+                              <action type="if" condition="doConstantStimulus==1">
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
+                                <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOff"></action>
+                              </action>
+
+                            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="late_target_grating"></action>
+                            <action type="play_dynamic_stimulus" stimulus="late_target_grating" tag="StimOn"></action>
+                            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>
+                            <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
+                            <action type="report" message="Target Stim On for $tStimOnTimeMs ms"/>
+
+                              <action type="if" condition="doPulseLength == 0">
+                                <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
+                              </action>
+                              <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
+                              <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
+                              <action type="start_timer" tag="" timer="endTargetOnTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
+
+                              <action type="start_timer" tag="" timer="endTooFastTimer" duration="tooFastTimeMs" timebase="" duration_units="ms"/> 
+                              <action type="start_timer" tag="" timer="endReactTimeTimer" duration="reactTimeMs" timebase="" duration_units="ms"></action>
+
+                              <action type="if" condition="doRandStimOffTime">
+                                <action type="assignment" tag="Set tStimOffTime between min and maxStimOffTime" variable="tStimOffTimeMs" value="((int)rand(0, 1+ceil((maxStimOffTimeMs-minStimOffTimeMs)/stimOffTimeIntervalMs))*stimOffTimeIntervalMs)+minStimOffTimeMs"/>
+                              </action>
+
+                              <action type="assignment" variable="isEndTargetState" value= "1"></action>
+                              <action type="assignment" variable="isTooFast" value= "1"></action>
+
+                              <action type="if" condition="sendElectrophysSync &amp;&amp; doPulseLength == 0">
+                                <action type="assignment" variable="MIO0" value="1"/>
+                              </action>
+
+                              <action type="report" message="End of Trial - Target On"/>
+                              
+                              <action type="report" message="timerDurationMs is $timerDurationMs" />
+                              
+                              <action type="assignment" variable="stimTag" value="1"></action>
+                              <action type="assignment" variable="tStimTurnedOn" value="1"></action>
+
+                              <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                              <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
+                              <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="endTooFastTimer"></transition>
+                              <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (targetStimOnMs*1000 + timerDurationMs*1000 - tFrameDelayUs + 1500)" target="EndTrialStimOff" ></transition>
+                            </task_system_state>
+
 
                             <task_system_state tag="PossibleEndTimeout" interruptible="YES">    
             <!-- do timeout if too many recent errors:
