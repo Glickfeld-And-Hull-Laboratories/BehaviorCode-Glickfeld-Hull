@@ -985,7 +985,9 @@
         </task_system_state>
 
         <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
+
           <action type="if" tag="if doLeverSolenoid/ErrorsOnly" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly">
+            <action type="assignment" variable="quadrature" value="0"></action>
             <!-- Lower solenoid at beginning of trial for any solenoid -->
             <action type="assignment" tag="lever Solenoid off" variable="MIO0" value="0"></action>
             <action type="assignment" tag="Encode LeverSolenoidOff" variable="strobedDigitalWord" value="13"></action>
