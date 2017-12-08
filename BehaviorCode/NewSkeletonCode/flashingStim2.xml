@@ -360,6 +360,7 @@
         <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="targetStimOn2Ms" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -2132,7 +2133,7 @@
                               <action type="if" condition="doPulseLength == 0">
                                 <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
                               </action>
-                              <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
+                              <action type="assignment" tag="set Target Stim on time" variable="targetStimOn2Ms" value="now()/1000"/>
                               <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
                               <action type="start_timer" tag="" timer="endTargetOnTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
 
