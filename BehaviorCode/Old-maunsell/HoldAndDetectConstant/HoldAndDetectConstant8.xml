@@ -1191,10 +1191,10 @@
     <action type="assignment" tag="failure++" variable="failure" value="failure+1"></action>
     <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
     <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"></action>
-
+        
     <action tag="Play incorrectSound" type="play_sound" sound="incorrectSound"></action>
-
-    <!-- reject stim selection -->
+        
+    <!-- reject stim selection -->      
     <action type="reject_selections" selection="svStimNumber"></action>
 
     <action type="if" tag="if doLeverSolenoid/Early" condition="doLeverSolenoidAllTrials || doLeverSolenoidOnEarly">
@@ -1206,7 +1206,12 @@
   <action type="report" message="~~~~~~~~~tBaseGratingDirectionDeg is $tBaseGratingDirectionDeg  EarlyRelease"/>
   
   <action type="if" condition="doITIStim">
-    <action type="assignment" variable="tBaseGratingDirectionDeg" value="randBaseGratingDirectionDeg"/>
+    <action type="if" condition="doRandBaseOri">
+        <action type="assignment" variable="tBaseGratingDirectionDeg" value="randBaseGratingDirectionDeg"/>
+    </action>
+    <action type="if" condition="!doRandBaseOri">
+        <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"/>
+    </action>
         <action type="assignment" tag="set base stim contrast" variable="setBaseGratingContrast" value="itiContrast"></action>    
         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>

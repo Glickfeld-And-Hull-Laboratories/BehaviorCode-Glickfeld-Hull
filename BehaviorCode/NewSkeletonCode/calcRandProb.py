@@ -3,6 +3,7 @@ import numpy
 import random
 def calc_tStimProbAvgLeft():
 	probList = getvar('ProbList')
+	doLowFirst = getvar('doLowProbFirst')
 	numProbs = len(probList)
 
 	compTrials = getvar('tNTrialsCompleted')
@@ -19,7 +20,10 @@ def calc_tStimProbAvgLeft():
 			setvar('inPreBlock', 0)
 			setvar('tRandBlockNumber',1)
 		else:
-			tempval = 0
+			if doLowFirst == 1:
+				tempval = 0
+			else:
+				tempval = numProbs-1
 			setvar('tRandProbIndexLast', tempval)
 			setvar('tRandBlockNumber',1)
 			if preblock > 0:
@@ -35,16 +39,28 @@ def calc_tStimProbAvgLeft():
 		tempval = lastIndex
 		blockNum = blockNum + 1
 		setvar('tRandBlockNumber', blockNum)
-		if tempval == 1:
-			if blockNum % (numProbs+1) == 0:
-				tempval = 0;
-				setvar('tRandProbIndexLast', tempval)
+		if doLowFirst == 0:
+			if tempval == 1:
+				if blockNum % (numProbs+1) == 0:
+					tempval = 0;
+					setvar('tRandProbIndexLast', tempval)
+				else:
+					tempval = numProbs-1;
+					setvar('tRandProbIndexLast', tempval)
 			else:
-				tempval = numProbs-1;
+				tempval = 1
 				setvar('tRandProbIndexLast', tempval)
 		else:
-			tempval = 1
-			setvar('tRandProbIndexLast', tempval)
+			if tempval == 1:
+				if blockNum % (numProbs+1) == 0:
+					tempval = numProbs-1;
+					setvar('tRandProbIndexLast', tempval)
+				else:
+					tempval = 0;
+					setvar('tRandProbIndexLast', tempval)
+			else:
+				tempval = 1
+				setvar('tRandProbIndexLast', tempval)	
 		if preblock > 0:
 			setvar('inPreBlock', 1)
 			if probList[tempval] < 0.5:

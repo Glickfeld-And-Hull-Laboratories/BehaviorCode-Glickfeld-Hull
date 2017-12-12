@@ -699,7 +699,7 @@ end
 axH = subplot(spSz{:},8);
 hold on;
 
-if nCorr>0 %&& input.doTestRobot==0,
+if nCorr>0 && input.doTestRobot==0,
     plotTrs = contDiffV(correctIx|incorrectIx);
     uqDiff = unique(plotTrs);
     nLevels = length(uqDiff);
@@ -713,15 +713,17 @@ if nCorr>0 %&& input.doTestRobot==0,
     end
     didNoGoIx = celleqel2mat_padded(input.didNoGo);
     plotTrsNoGo = contDiffV(~noGoIx&didNoGoIx);
-    nLevelsNoGo = unique(plotTrsNoGo);
-    for kk=1:length(nLevelsNoGo)
-      valNoGo = nLevelsNoGo(kk);
-      valIx = contDiffV==valNoGo;
-      totalNTrialsVal = sum(valIx);
-      totalNTrialsValNoGo = sum(valIx & didNoGoIx);
-      percentContCellNoGoByDiff{kk} = totalNTrialsValNoGo/totalNTrialsVal;
+    if find(didNoGoIx)
+      nLevelsNoGo = unique(plotTrsNoGo);
+      for kk=1:length(nLevelsNoGo)
+        valNoGo = nLevelsNoGo(kk);
+        valIx = contDiffV==valNoGo;
+        totalNTrialsVal = sum(valIx);
+        totalNTrialsValNoGo = sum(valIx & didNoGoIx);
+        percentContCellNoGoByDiff{kk} = totalNTrialsValNoGo/totalNTrialsVal;
+      end
     end
-    pH = plot(sc_num*uqDiff, cell2mat(percentCell));
+    pH = plot(uqDiff, cell2mat(percentCell));
     if length(plotTrsNoGo)>0
       pH1 = plot(sc_num * nLevelsNoGo, cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
       set(pH1, ...
@@ -1064,7 +1066,6 @@ if nCorr>0 %&& input.doTestRobot==0,
       totalNTrialsValNoGo = sum(valIx & didNoGoIx);
       percentContCellNoGoByTarg{kk} = totalNTrialsValNoGo/totalNTrialsVal;
     end
-
     if sum(block2Ix)>0
       plotTrsB2 = contTargetV((correctIx|incorrectIx)&block2Ix);
       uqTargetB2 = unique(plotTrsB2);
@@ -1078,6 +1079,7 @@ if nCorr>0 %&& input.doTestRobot==0,
           percentCellB2{jj} = corrNTrialsValB2/totalNTrialsValB2;
       end
     end
+
     pH1 = plot(uqTargetB1, cell2mat(percentCellB1));
     if sum(block2Ix)>0
       ph2 = plot(uqTargetB2, cell2mat(percentCellB2),'Color', yColor);
@@ -1093,9 +1095,13 @@ if nCorr>0 %&& input.doTestRobot==0,
         'Marker', '.', ...
         'MarkerSize', 9);
     end
-
-    minX = 0.01;
-    maxX = 1;
+    if input.doContrastDiscrim
+      minX = 0.01;
+      maxX = 1;
+    elseif input.doSizeDiscrim
+      minX = 1;
+      maxX = 100;
+    end
     xLimm = [minX maxX];
     if ~(xLimm(1)==0),
       xL1 = [floor(log10(xLimm(1))) ceil(log10(xLimm(2)))];

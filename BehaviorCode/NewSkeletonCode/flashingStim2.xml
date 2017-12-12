@@ -71,6 +71,8 @@
         <variable tag="minStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="maxStimOffTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
         <variable tag="stimOffTimeIntervalMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Trial Structure"/>
+        <variable tag="doRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+        <variable tag="conDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Structure"/>
         <variable tag="doTargetAfterMissed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
         <variable tag="targetOriAfterMissed" scope="global" logging="when_changed" default_value="90" type="float" persistant="1" groups="Trial Structure"/>
         <variable tag="targetConAfterMissed" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Trial Structure"/>
@@ -358,6 +360,7 @@
         <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="targetStimOn2Ms" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tStimOnMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tStimOffMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -375,6 +378,7 @@
         <variable tag="tDoTargetAfterMissed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="tMissedFirstTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="tMissedSecondTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="multVal" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -1178,6 +1182,11 @@
                         </action> 	
                       </action>
 
+                    <action type="if" condition="doRandCon">
+                        <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
+                        <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+                    </action>
+
                       <action type="if" condition="tDoVisualStim == 0">
                         <action type="assignment" variable="tBaseGratingContrast" value="0"></action>
                         <action type="assignment" variable="tGratingContrast" value="0"></action>
@@ -1483,6 +1492,17 @@
                                         <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
                                         <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                                         <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
+                                      </action>
+
+                                      <action type="if" condition="doRandCon">
+                                          <action type="if" condition="tCyclesOn &lt; nCyclesOn">
+                                            <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
+                                            <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+                                          </action>
+                                          <action type="if" condition="tCyclesOn &gt;= nCyclesOn">
+                                            <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
+                                            <action type="assignment" variable="tGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+                                          </action>
                                       </action>
 
                                       <action type="if" condition="!doCueRefLaser">  
@@ -2060,6 +2080,11 @@
                                 <action type="assignment" tag="Set base contrast to 0" variable="tBaseGratingContrast" value="0"/>
                               </action> 
 
+                              <action type="if" condition="doRandCon">
+                                <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
+                                <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+                              </action>
+
                               <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
 
                               <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -2108,7 +2133,7 @@
                               <action type="if" condition="doPulseLength == 0">
                                 <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
                               </action>
-                              <action type="assignment" tag="set Target Stim on time" variable="targetStimOnMs" value="now()/1000"/>
+                              <action type="assignment" tag="set Target Stim on time" variable="targetStimOn2Ms" value="now()/1000"/>
                               <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
                               <action type="start_timer" tag="" timer="endTargetOnTimer" duration="timerDurationMs" timebase="" duration_units="ms"/>
 
