@@ -713,7 +713,7 @@ if nCorr>0 && input.doTestRobot==0,
     end
     didNoGoIx = celleqel2mat_padded(input.didNoGo);
     plotTrsNoGo = contDiffV(~noGoIx&didNoGoIx);
-    if didNoGoIx
+    if find(didNoGoIx)
       nLevelsNoGo = unique(plotTrsNoGo);
       for kk=1:length(nLevelsNoGo)
         valNoGo = nLevelsNoGo(kk);
