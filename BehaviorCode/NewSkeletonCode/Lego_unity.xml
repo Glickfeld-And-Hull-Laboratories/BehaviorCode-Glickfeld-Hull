@@ -20,6 +20,7 @@
         <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="15" type="integer" persistant="1"/>
         <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
 
+        <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doContrastDiscrim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doSizeDiscrim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
@@ -1008,10 +1009,18 @@
                         <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff"></action>
                      </action>
                         
-                     <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
+                     <action type="if" condition="doContrastDetect">
+                        <action type="assignment" variable="dGratingContrast" value="0"></action>
+                     </action>
+                     <action type="if" condition="!doContrastDetect">
+                        <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
+                     </action>
 
                      <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
                      <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+
+
+
                  </action>
 
                  <action type="if" condition="doSizeDiscrim">      
@@ -1037,8 +1046,8 @@
                     <action type="assignment" variable="isNoGo" value="1"></action>
                     <action type="report" message="This is a NoGo trial"></action>
                     <action type="if" condition="doContrastDiscrim">
-                        <action type="assignment" variable="tGratingContrast" value="0.00001"></action>
-                        <action type="assignment" variable="dGratingContrast" value="0.00001"></action>
+                        <action type="assignment" variable="tGratingContrast" value="0"></action>
+                        <action type="assignment" variable="dGratingContrast" value="0"></action>
                         <action type="assignment" variable="dGratingContrastDiff" value="1"></action>
                     </action>
                     <action type="if" condition="doSizeDiscrim">
