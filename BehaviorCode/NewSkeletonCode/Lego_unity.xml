@@ -23,6 +23,8 @@
         <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doContrastDiscrim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doSizeDiscrim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="doRandContrast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="doRandSize" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
         <variable tag="stationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="stationaryThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
@@ -1016,10 +1018,15 @@
                         <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
                      </action>
 
-                     <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
-                     <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                     <action type="if" condition="doRandSize">
+                        <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,7)/gratingDiameterSPO))"/>
+                        <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,7)/gratingDiameterSPO))"/>
+                     </action>
 
-
+                     <action type="if" condition="!doRandSize">
+                         <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                         <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                     </action>
 
                  </action>
 
@@ -1038,8 +1045,15 @@
                         
                      <action type="assignment" variable="dGratingDiameterDeg" value="tGratingDiameterDeg / dGratingDiameterDiff"></action>
 
-                     <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
-                     <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast"/>
+                     <action type="if" condition="doRandContrast">
+                        <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,7)/gratingContrastSPO))"/>
+                        <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,7)/gratingContrastSPO))"/>
+                     </action>
+
+                     <action type="if" condition="!doRandContrast">
+                         <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
+                         <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast"/>
+                     </action>    
                  </action>    
 
                   <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber == 8">
@@ -1049,10 +1063,14 @@
                         <action type="assignment" variable="tGratingContrast" value="0"></action>
                         <action type="assignment" variable="dGratingContrast" value="0"></action>
                         <action type="assignment" variable="dGratingContrastDiff" value="1"></action>
+                        <action type="assignment" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
+                        <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
                     </action>
                     <action type="if" condition="doSizeDiscrim">
                         <action type="assignment" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
                         <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
+                        <action type="assignment" variable="tGratingContrast" value="gratingMaxContrast"></action>
+                        <action type="assignment" variable="dGratingContrast" value="gratingMaxContrast"></action>
                     </action>    
                     <action type="assignment" variable="tLeftTrial" value="round(rand(0,1))"></action>
                   </action>
