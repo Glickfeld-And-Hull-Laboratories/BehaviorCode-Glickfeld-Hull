@@ -287,6 +287,7 @@
       <variable tag="tOmissionRewardNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tRewardDelayTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tRewardDelayDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tItiUnexpectedRewardTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
       <variable tag="rewardOmissionEveryN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="rewardUnexpectEveryN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -424,23 +425,23 @@
               <action type="report" message="the tOmissionRewardNum is $tOmissionRewardNum"/>
             </action>
 
-            <action type="if" condition="doLever==0 &amp;&amp; rewardUnexpectPercent != 0 &amp;&amp; ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ">
+            <action type="if" condition="rewardUnexpectPercent != 0 &amp;&amp; ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ">
               <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectEveryN-1)) + (success+ignore+failure)"/>
               <action type="report" message="the tUnexpectRewardNum is $tUnexpectRewardNum"/>
             </action>
 
 
-            <action type="if" condition="doLever==0 &amp;&amp; rewardUnexpectPercent != 0 &amp;&amp; success+ignore+failure == 0 ">
+            <action type="if" condition="rewardUnexpectPercent != 0 &amp;&amp; success+ignore+failure == 0 ">
               <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectEveryN-1))"/>
               <action type="report" message="the tUnexpectRewardNum is $tUnexpectRewardNum"/>
             </action>
 
-            <action type="if" condition="doLever == 1 &amp;&amp; itiRewardUnexpectPercent != 0 &amp;&amp; ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ">
+            <action type="if" condition="itiRewardUnexpectPercent != 0 &amp;&amp; ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ">
               <action type="assignment" variable="tITIUnexpectRewardNum" value="(int)(disc_rand(0,itiRewardUnexpectEveryN-1)) + (success+ignore+failure)"/>
               <action type="report" message="the tITIUnexpectRewardNum is $tITIUnexpectRewardNum"/>
             </action>
 
-            <action type="if" condition="doLever == 1 &amp;&amp; itiRewardUnexpectPercent != 0 &amp;&amp; success+ignore+failure == 0 ">
+            <action type="if" condition="itiRewardUnexpectPercent != 0 &amp;&amp; success+ignore+failure == 0 ">
               <action type="assignment" variable="tITIUnexpectRewardNum" value="(int)(disc_rand(0,tITIUnexpectRewardNum-1))"/>
               <action type="report" message="the tITIUnexpectRewardNum is $tITIUnexpectRewardNum"/>
             </action>
@@ -994,6 +995,7 @@
           <task_system_state tag="itiReward" full_name="" description="" interruptible="YES">
             <action type="start_timer" tag="Start interTrialTimer after iti Reward" timer="interTrialTimer2"
                     timebase="" duration="round(tItiWaitTimeMs/2)" duration_units="ms"></action>
+                    <action type="assignment" variable="tItiUnexpectedRewardTrial" value="1"></action>
             <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
             <transition type="timer_expired" tag="If Expired, Go To StartTrial" target="StartTrial" timer="interTrialTimer2"></transition>
           </task_system_state>
