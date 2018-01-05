@@ -20,6 +20,7 @@
         <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="15" type="integer" persistant="1"/>
         <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
 
+        <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doContrastDiscrim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doSizeDiscrim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
@@ -116,11 +117,15 @@
         <variable tag="gratingMaxContrastDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingContrastDiffSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="minDiscrimTarget" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="doRandContrast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="nRandContrast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Visual Stimuli"/>
 
         <variable tag="gratingMaxDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingDiameterSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingMaxDiameterDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingDiameterDiffSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="doRandSize" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="nRandSize" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Visual Stimuli"/>
 
         <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>    
@@ -1008,10 +1013,23 @@
                         <action type="assignment" variable="dGratingContrastDiff" value="gratingMaxContrastDiff"></action>
                      </action>
                         
-                     <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
+                     <action type="if" condition="doContrastDetect">
+                        <action type="assignment" variable="dGratingContrast" value="0"></action>
+                     </action>
+                     <action type="if" condition="!doContrastDetect">
+                        <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
+                     </action>
 
-                     <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
-                     <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                     <action type="if" condition="doRandSize">
+                        <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))"/>
+                        <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))"/>
+                     </action>
+
+                     <action type="if" condition="!doRandSize">
+                         <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                         <action type="assignment" tag="" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                     </action>
+
                  </action>
 
                  <action type="if" condition="doSizeDiscrim">      
@@ -1029,21 +1047,32 @@
                         
                      <action type="assignment" variable="dGratingDiameterDeg" value="tGratingDiameterDeg / dGratingDiameterDiff"></action>
 
-                     <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
-                     <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast"/>
+                     <action type="if" condition="doRandContrast">
+                        <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast)/gratingContrastSPO))"/>
+                        <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast)/gratingContrastSPO))"/>
+                     </action>
+
+                     <action type="if" condition="!doRandContrast">
+                         <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
+                         <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast"/>
+                     </action>    
                  </action>    
 
                   <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber == 8">
                     <action type="assignment" variable="isNoGo" value="1"></action>
                     <action type="report" message="This is a NoGo trial"></action>
                     <action type="if" condition="doContrastDiscrim">
-                        <action type="assignment" variable="tGratingContrast" value="0.00001"></action>
-                        <action type="assignment" variable="dGratingContrast" value="0.00001"></action>
+                        <action type="assignment" variable="tGratingContrast" value="0"></action>
+                        <action type="assignment" variable="dGratingContrast" value="0"></action>
                         <action type="assignment" variable="dGratingContrastDiff" value="1"></action>
+                        <action type="assignment" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
+                        <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
                     </action>
                     <action type="if" condition="doSizeDiscrim">
                         <action type="assignment" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
                         <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
+                        <action type="assignment" variable="tGratingContrast" value="gratingMaxContrast"></action>
+                        <action type="assignment" variable="dGratingContrast" value="gratingMaxContrast"></action>
                     </action>    
                     <action type="assignment" variable="tLeftTrial" value="round(rand(0,1))"></action>
                   </action>
