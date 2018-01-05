@@ -442,7 +442,7 @@
             </action>
 
             <action type="if" condition="itiRewardUnexpectPercent != 0 &amp;&amp; success+ignore+failure == 0 ">
-              <action type="assignment" variable="tITIUnexpectRewardNum" value="(int)(disc_rand(0,tITIUnexpectRewardNum-1))"/>
+              <action type="assignment" variable="tITIUnexpectRewardNum" value="(int)(disc_rand(0,itiRewardUnexpectEveryN-1))"/>
               <action type="report" message="the tITIUnexpectRewardNum is $tITIUnexpectRewardNum"/>
             </action>
 
@@ -981,23 +981,22 @@
             </action>
 
             <!-- start iti unexpected reward timer -->
+            <action type="if" condition="itiRewardUnexpectPercent !=0 &amp;&amp; (success+ignore+failure) != tITIUnexpectRewardNum">
+              <action type="assignment" variable="tItiUnexpectedRewardTrial" value="0"></action>
+            </action>
 
-            <action type="if" condition="itiRewardUnexpectPercent !=0 &amp;&amp; (success+ignore+failure) == tITIUnexpectRewardNum">
-                <action type="start_timer" tag="Start interTrial Unexpected Reward Timer" timer="itiUnexpectedRewardTimer"
-                    timebase="" duration="round(tItiWaitTimeMs/2)" duration_units="ms"></action>
-              </action>
+            <action type="report" message="during ITI and wait for tItiWaitFrames to start"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional"  tag="if do unexpected reward during mid ITI, Go to itiReward" condition="itiRewardUnexpectPercent !=0 &amp;&amp; (success+ignore+failure) == tITIUnexpectRewardNum &amp;&amp; timerExpired(itiUnexpectedRewardTimer)" target="itiReward" ></transition>
-            <transition type="timer_expired" tag="If Expired, Go To StartTrial" target="StartTrial" timer="interTrialTimer"></transition>
+            <transition type="conditional"  tag="if do unexpected reward during mid ITI, Go to itiReward" condition="itiRewardUnexpectPercent !=0 &amp;&amp; (success+ignore+failure) == tITIUnexpectRewardNum &amp;&amp; (counter &gt;= (cItiStart + tItiWaitFrames/2))" target="itiReward" ></transition>
+            <transition type="conditional" tag="if counter larger than tItiWaitFrames" condition="counter &gt;= (cItiStart + tItiWaitFrames)" target="StartTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="itiReward" full_name="" description="" interruptible="YES">
-            <action type="start_timer" tag="Start interTrialTimer after iti Reward" timer="interTrialTimer2"
-                    timebase="" duration="round(tItiWaitTimeMs/2)" duration_units="ms"></action>
-                    <action type="assignment" variable="tItiUnexpectedRewardTrial" value="1"></action>
-            <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
-            <transition type="timer_expired" tag="If Expired, Go To StartTrial" target="StartTrial" timer="interTrialTimer2"></transition>
+            <action type="assignment" variable="tItiUnexpectedRewardTrial" value="1"></action>
+            <action type="assignment" tag="Start reward" variable="juice" value="minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
+            <action type="report" message="----- Unexpected Reward in ITI -----"></action>
+            <transition type="conditional" tag="if counter larger than tItiWaitFrames" condition="counter &gt;= (cItiStart + tItiWaitFrames)" target="StartTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
