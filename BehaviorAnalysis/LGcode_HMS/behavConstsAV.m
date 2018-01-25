@@ -28,6 +28,7 @@ switch tHostname
             rc.indexFilename = fullfile(rootDir, '\Behavior\experimentIndexes\av-subj-days-lg.xls');
             rc.indexFilename_audCtrl = fullfile(rootDir, '\Behavior\experimentIndexes\v-subj-days-lg.xls');
             rc.indexFilename_fsavImg = fullfile(rootDir, '\Behavior\experimentIndexes\fsav-img-subj-days-lg.xls');
+            rc.eaMouseIndexFilename = fullfile(rootDir,'Behavior','experimentIndexes','FSAV_eaMouseData.xls');
             rc.fitOutputFilename = fullfile(rootDir, '\Behavior\experimentIndexes\av-subj-fits-lg.xls');
             rc.fitOutputSummary = fullfile(rootDir, '\Behavior\output\analysis\summary');
             rc.fitOutputPdfDir = fullfile(rootDir, '\Behavior\output\pdfFits');
