@@ -165,29 +165,29 @@ end
 
 if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial
 	if find(cell2mat_padded(input.tShortCatchTrial) == 1)
-		if doOriAndContrastInterleaved
-    		cPowerV = (double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
-     		double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
-		elseif input.doContrastDetect
-    		cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
-		elseif input.doOriDetect
-    		cPowerV = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
-    elseif input.doAuditoryDetect
-        cPowerV = double(abs(double(cell2mat_padded(input.tSoundCatchAmplitude)))*100);
+		if input.block2DoContrastDetect
+    		cPowerB1 = double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
+    elseif input.block2DoOriDetect
+    		cPowerB1 = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+    elseif input.block2DoAuditoryDetect
+        cPowerB1 = double(abs(double(cell2mat_padded(input.tSoundCatchAmplitude)))*100);
 		end
-		cPowerV(find(cPowerV==0)) = NaN;
-		if all(cPowerV) == 0
-  			nCP = 0;
-		else
-  			nCP = length(chop(unique(cPowerV(~isnan(cPowerV))),4));
-		end
-	else
-		nCP  = 0;
-		cPowerV = NaN;
-	end
+    if input.doContrastDetect 
+        cPowerB2 = double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
+    elseif input.doOriDetect 
+        cPowerB2 = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
+    elseif input.doAuditoryDetect 
+        cPowerB2 = double(abs(double(cell2mat_padded(input.tSoundCatchAmplitude)))*100);
+    end
+    cTrPowers = cPowerB1+cPowerB2;
+    cTrPowers(find(cTrPowers==0)) = NaN;
+    cPowerLevels = unique(cTrPowers(~isnan(cTrPowers)));
+    nCP = length(cPowerLevels);
+  else
+    nCP = 0;
+  end
 else
-	nCP  = 0;
-	cPowerV = NaN;
+  nCP = 0;
 end
 if or(input.doAuditoryDetect,input.block2DoAuditoryDetect)
     aPowerV = double(celleqel2mat_padded(input.tSoundTargetAmplitude))*100;
@@ -335,11 +335,11 @@ if length(holdStarts) > 2
                        chop(nanmean(juiceTimesMsV),2), ...
                        chop(nanstd(juiceTimesMsV),2)), ...
              });
-	t2H(1) = text(0.00, 0.9, {'Trials:', 'Correct:', 'Early:', 'Failed:'});
+	t2H(1) = text(0.00, 0.93, {'Trials:', 'Correct:', 'Early:', 'Failed:', 'Catch:'});
     if ~input.doBlock2
-	     t2H(2) = text(0.35, 0.9, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
+	     t2H(2) = text(0.35, 0.93, {sprintf('%d', nTrial), sprintf('%d', nCorr), ...
 				sprintf('%d', nFail), sprintf('%d', nIg)});
-	     t2H(3) = text(0.54, 0.9, {' ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
+	     t2H(3) = text(0.54, 0.93, {' ', sprintf('%.0f%%', nCorr / numTrials * 100.0), ...
 				sprintf('%.0f%%', nFail / numTrials * 100.0), ...
 				sprintf('%.0f%%', nIg / numTrials * 100.0)});
     else
@@ -349,13 +349,16 @@ if length(holdStarts) > 2
         nFail2 = sum(failureIx(find(tBlock2TrialNumberV==1)));
         nIg1 = sum(ignoreIx(find(tBlock2TrialNumberV==0)));
         nIg2 = sum(ignoreIx(find(tBlock2TrialNumberV==1)));
+        nCatch1 = sum(catchIx(find(tBlock2TrialNumberV==1)));
+        nCatch2 = sum(catchIx(find(tBlock2TrialNumberV==0)));
         numTrials1 = nCorr1+nFail1+nIg1;
         numTrials2 = nCorr2+nFail2+nIg2;
-        t2H(2) = text(0.25, 0.9, {sprintf('%d', nTrial), sprintf('%d, %d', nCorr1, nCorr2), ...
-				sprintf('%d, %d', nFail1, nFail2), sprintf('%d, %d', nIg1, nIg2)});
-	      t2H(3) = text(0.5, 0.9, {' ', sprintf('%.0f%%, %.0f%%', (nCorr1 / numTrials1 * 100.0), (nCorr2 / numTrials2 * 100.0)), ...
+        t2H(2) = text(0.25, 0.93, {sprintf('%d', nTrial), sprintf('%d, %d', nCorr1, nCorr2), ...
+				sprintf('%d, %d', nFail1, nFail2), sprintf('%d, %d', nIg1, nIg2), sprintf('%d, %d', nCatch1, nCatch2)});
+	      t2H(3) = text(0.5, 0.93, {' ', sprintf('%.0f%%, %.0f%%', (nCorr1 / numTrials1 * 100.0), (nCorr2 / numTrials2 * 100.0)), ...
 				sprintf('%.0f%%, %.0f%%', (nFail1 / numTrials1 * 100.0), (nFail2 / numTrials2 * 100.0)), ...
-				sprintf('%.0f%%, %.0f%%', (nIg1 / numTrials1 * 100.0), (nIg2 / numTrials2 * 100.0))});
+				sprintf('%.0f%%, %.0f%%', (nIg1 / numTrials1 * 100.0), (nIg2 / numTrials2 * 100.0)), ...
+        sprintf('%.0f%%, %.0f%%', (nCatch1 / numTrials1 * 100.0), (nCatch2 / numTrials2 * 100.0))});
     end
         set(t2H, 'VerticalAlignment', 'top', ...
                  'HorizontalAlignment', 'left');
@@ -977,19 +980,9 @@ if nStims >= 1
     if nAP>0
     	stimPowerV = [stimPowerV; chop(aPowerV,2)];
     end
-    if nCP>0
-    	catchPowerV = chop(cPowerV,2);
-    else
-    	catchPowerV = NaN;
-    end
   end
   powerLevels = unique(stimPowerV(~isnan(stimPowerV)));
-  if nCP>0
-  	catchLevels = unique(catchPowerV(~isnan(catchPowerV)));
-  	powerLevels = union(catchLevels, powerLevels);
-  end
   nL = length(powerLevels);
-  
   % init structure for later use in for loop
   pFNames = {'correct','early','total', ...
              'correct1','early1','total1', ...
@@ -1007,13 +1000,13 @@ if nStims >= 1
   secondHalfIx = reqHoldV > halfR;
   lastFewTrIx = false(size(firstHalfIx));  
   lastFewTrIx(find(successIx | missIx, 50, 'last')) = true;
-
-
+  
   for iP=1:nL
     tP = powerLevels(iP);
     trIx = sum(stimPowerV == tP,1);
-    ctrIx = catchPowerV == tP;
-    
+    if nCP>1
+      ctrIx = cTrPowers == tP;
+    end
     powerP(1).correct(iP) = sum(trIx & successIx);
     powerP.early(iP) = sum(trIx & earlyIx);
     powerP.total(iP) = sum(trIx);
@@ -1030,6 +1023,11 @@ if nStims >= 1
     powerP.earlyRecent(iP) = sum(trIx & earlyIx & lastFewTrIx);
     powerP.totalRecent(iP) = sum(trIx & lastFewTrIx);
 
+    if nCP>1
+      powerP.FA(iP) = sum(block2Tr1Ix & ctrIx & falseAlarmIx);
+      powerP.CR(iP) = sum(block2Tr1Ix & ctrIx & correctRejectIx);
+    end
+
     if showBlock2
       powerP.block2Correct1(iP) = sum(trIx & block2Tr1Ix & successIx);
       powerP.block2Correct2(iP) = sum(trIx & block2Tr2Ix & successIx);
@@ -1037,7 +1035,7 @@ if nStims >= 1
       powerP.block2Early2(iP) = sum(trIx & block2Tr2Ix & earlyIx);
       powerP.block2Total1(iP) = sum(trIx & block2Tr1Ix);
       powerP.block2Total2(iP) = sum(trIx & block2Tr2Ix);
-      if isfield(input,'doShortCatchTrial') & input.doShortCatchTrial
+      if nCP>1
       	powerP.block2FA(iP) = sum(ctrIx & block2Tr2Ix & falseAlarmIx);
       	powerP.block2CR(iP) = sum(ctrIx & block2Tr2Ix & correctRejectIx);
       end
@@ -1068,13 +1066,19 @@ if nStims >= 1
         set(pH(2), 'Color', yColor, 'LineWidth', 2);
       end
     end
-    if isfield(input,'doShortCatchTrial') & input.doShortCatchTrial
-    	pctFABlock2 = powerP.block2FA ./ (powerP.block2FA+powerP.block2CR) * 100;
+    if nCP>1
+      pctFA = powerP.FA ./ (powerP.FA+powerP.CR) * 100;
+      desFAIx = ~isnan(pctFA);
+      pctFABlock2 = powerP.block2FA ./ (powerP.block2FA+powerP.block2CR) * 100;
     	des2FAIx = ~isnan(pctFABlock2);
-    	if sum(des2FAIx)>0
-      		pH(3) = plot(powerLevels(des2FAIx), pctFABlock2(des2FAIx), '.-m');
+    	if sum(desFAIx)>0
+      		pH(3) = plot(powerLevels(desFAIx), pctFA(desFAIx), '.-y');
           set(pH(3), 'LineWidth', 2)
     	end
+      if sum(des2FAIx)>0
+          pH(4) = plot(powerLevels(des2FAIx), pctFABlock2(des2FAIx), '.-c');
+          set(pH(4), 'LineWidth', 2)
+      end
     end    	
   else
     pH = plot(powerLevels, pctCorr, '.-b');
