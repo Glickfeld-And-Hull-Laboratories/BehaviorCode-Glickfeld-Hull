@@ -10,7 +10,7 @@ if length(invTars) == 2;
     
     if invRatio > valRatio
         nMatch_val(1) = nTar_val(1);
-        nMatch_val(2) = nTar_val(1) * (1/invRatio);
+        nMatch_val(2) = round(nTar_val(1) * (1/invRatio));
     else
         nMatch_val(2) = nTar_val(2);
         nMatch_val(1) = round(nTar_val(2) * invRatio);

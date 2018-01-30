@@ -10,7 +10,7 @@ end
 
 %%
 minTrN_expt = 1;
-minTrN_all = 30;
+minTrN_all = 25;
 thresh = 30;
 early_cutoff = 0.5;
 lapse_cutoff = 0.9;
@@ -24,7 +24,7 @@ colors_mice = parula(nmice);
 % expCatch = logical(cell2mat({expt.catch}));
 
 
-doExptStruct = 1;
+doExptStruct = 0;
 if doExptStruct
     bxExptStruct_FSAV_train
 else
@@ -48,6 +48,7 @@ successIx_all = [];
 missedIx_all = [];
 invHitIx_all = [];
 invMissIx_all = [];
+nCycles_all = [];
 trLengthMs_all = [];
 prevTrial_all = [];
 prev2Trial_all = [];
@@ -57,19 +58,20 @@ pctInv_expt = zeros(1,nexp);
 invHR_expt = zeros(1,nexp);
 valHR_expt = zeros(1,nexp);
 
-doPlot = 0;
+doPlot = 1;
 ntr1 = 0;
 ntr2 = 0;
 %% analyze behavior data from each experiment
 hr_calc = 1;
-for iexp = 1:nexp
+for iexp = 1:size(bxExp,2)
     if isnan(bxExp(iexp).invType)
         continue
     else
         ntr1 = ntr1 + length(bxExp(iexp).sIx);
-        if early_mat(iexp) > early_cutoff | HR_ori_mat(iexp) < lapse_cutoff | HR_amp_mat(iexp) < lapse_cutoff
+        if early_mat(iexp) > early_cutoff | HR_ori_mat(iexp) < lapse_cutoff | HR_amp_mat(iexp) < lapse_cutoff | stimOnTime100 == 0
             continue
         end
+        
         ntr2 = ntr2 + length(bxExp(iexp).sIx);
         sn = bxExp(iexp).sn;
         sn_ind = find(mice == sn);
@@ -145,6 +147,7 @@ for iexp = 1:nexp
         invHitIx_all = cat(2,invHitIx_all,invHitIx);
         invMissIx_all = cat(2,invMissIx_all,invMissIx);
         trLengthMs_all = cat(2,trLengthMs_all,trLengthMs);
+        nCycles_all = cat(2,nCycles_all,nCyc);
         prevTrial_all = cat(2,prevTrial_all,prevTrial);
         prev2Trial_all = cat(2,prev2Trial_all,prev2Trial);
         prevVisTarget_all = cat(2,prevVisTarget_all,prevVisTarget);
@@ -171,6 +174,12 @@ for iexp = 1:nexp
             ms(sn_ind).trLengthMs = trLengthMs;      
         end
 
+        if length(ms(sn_ind).visTargets) == length(ms(sn_ind).invHitIx)
+            disp(iexp)
+        else
+            error(num2str(iexp))
+        end
+        
         bxSumExptHR_FSAV_img
     end
 end
@@ -340,9 +349,14 @@ h = errorbarxy(avg_oric(oric_ind), HR_av(oric_ind), sem_oric(oric_ind), sem_oric
 h.hMain.MarkerFaceColor  = 'c';
 h.hMain.LineStyle = '-';
 h.hMain.LineWidth = 3;
-% set(gca, 'xscale', 'log');
+figXAxis([],'Orientation change (deg)',[0 100],[0 10 100],[0 10 100]);
+f = gca;
+f.XScale = 'log';
+f.XLim = [1 130]
+f.XTick = [0 10 100];
+xlabel('Orientation change (deg)');
 y_tick = y_axis_hr;
-figXAxis(h.hMain.Parent,'Orientation change (deg)',x_lim_hr,x_tick_hr,x_tick_label_hr);
+% figXAxis(h.hMain.Parent,'Orientation change (deg)',[-100 100],[0 10 100],[0 10 100]);
 figYAxis(h.hMain.Parent,'HR',[0 1.1],y_tick);
 figAxForm(sp2)
 % h.hMain.Parent.XTick = [ori_edges(3) ori_edges(end)];
@@ -486,11 +500,16 @@ h.MarkerFaceColor  = h.Color;
 h.LineStyle = '-';
 h.LineWidth = 1;
 leg(4) = h;
-h.Parent.XScale = 'log';
-x_tick = [0 x_axis_ori];
-x_tick_label = [0 x_axis_ori];
+% h.Parent.XScale = 'log';
+% x_tick = [0 x_axis_ori];
+% x_tick_label = [0 x_axis_ori];
 y_tick = y_axis_hr;
-figXAxis(h.Parent,'Orientation change (deg)',[0 100],x_tick,x_tick_label);
+% figXAxis(h.Parent,'Orientation change (deg)',[0 100],x_tick,x_tick_label);
+f = gca;
+f.XScale = 'log';
+f.XLim = [9 130]
+f.XTick = [0 10 100];
+xlabel('Orientation change (deg)');
 figYAxis(h.Parent,'HR',[0 1.1],y_tick);
 figAxForm(h.Parent)
 legend(leg,{'vis->vis';'aud->vis';'vis->inv vis';'aud->inv vis'},'location','northwest')
@@ -584,3 +603,8 @@ figXAxis(h.Parent,'trial length (s)',[0 trialTime_edges(end)+500],x_tick,x_tick_
 figYAxis(h.Parent,'HR',[0 1.1],y_axis_hr)
 figAxForm(h.Parent)
 print(fullfile(fnout,'all_expt_train_depPrev2Trial'),'-dpdf','-fillpage')
+
+%% 
+plotFSAV_HREaCycle
+
+%%

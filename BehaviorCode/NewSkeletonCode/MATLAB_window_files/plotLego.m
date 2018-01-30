@@ -508,13 +508,20 @@ xlabel('Trials');
 axH = subplot(spSz{:},7);
 hold on;
 
+%hack for switching between detect and discrim
+dGratingContrast = celleqel2mat_padded(input.dGratingContrast);
+ind = find(dGratingContrast == 0);
+if length(ind)>0
+  dGratingContrast(ind) = 0.0001;
+end
+
 if nCorr>0  %&& input.doTestRobot==0,
   if isfield(input,'doContrastDiscrim')
     if input.doContrastDiscrim
       if input.gratingContrastDiffSPO<10
-        contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ celleqel2mat_padded(input.dGratingContrast),2);
+        contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ dGratingContrast,2);
       else
-        contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - celleqel2mat_padded(input.dGratingContrast),2);
+        contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - dGratingContrast,2);
       end
     elseif input.doSizeDiscrim
       if input.gratingDiameterDiffSPO<10
@@ -525,9 +532,9 @@ if nCorr>0  %&& input.doTestRobot==0,
     end
   else
     if input.gratingContrastDiffSPO<10
-      contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ celleqel2mat_padded(input.dGratingContrast),2);
+      contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ dGratingContrast,2);
     else
-      contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - celleqel2mat_padded(input.dGratingContrast),2);
+      contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - dGratingContrast,2);
     end
   end
 
@@ -946,7 +953,7 @@ else
     xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
     xTLabelL = cellstr(num2str(xTickL(:)));
 end
-
+nLevelsB1 = nLevelsB1(~isnan(nLevelsB1));
 pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 if sum(block2Ix)>= 1
   pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);

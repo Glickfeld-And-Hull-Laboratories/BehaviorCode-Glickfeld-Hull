@@ -82,14 +82,14 @@
         <variable tag="minShortCatchCycle" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Short Catch"/>
         <variable tag="minShortCatchTrial" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
         <variable tag="doShortCatchReward" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Short Catch"/>
-        <variable tag="catchTrPerB2Level1" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
-        <variable tag="catchTrPerB2Level2" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
-        <variable tag="catchTrPerB2Level3" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
-        <variable tag="catchTrPerB2Level4" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
-        <variable tag="catchTrPerB2Level5" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
-        <variable tag="catchTrPerB2Level6" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
-        <variable tag="catchTrPerB2Level7" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
-        <variable tag="catchTrPerB2Level8" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="catchTrPer80Level1" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="catchTrPer80Level2" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="catchTrPer80Level3" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="catchTrPer80Level4" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="catchTrPer80Level5" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="catchTrPer80Level6" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="catchTrPer80Level7" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
+        <variable tag="catchTrPer80Level8" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Short Catch"/>
         
         <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
         <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
@@ -750,49 +750,49 @@
                             <!-- short catch -->
                             <action type="assignment" variable="tSvCatchNumber" value="svCatchNumber"/>  <!-- choose a value from selection var, 0-origin -->
                             <action type="assignment" variable="tTempStimOddsCatch" value="0"/>  <!-- this variable exists only for code clarity below -->
-
-                            <action type="if" condition="tBlock2TrialNumber &amp;&amp; doShortCatchTrial">
-                              <action type="assignment" variable="tShortCatchTrial" value="(int)(tSvCatchNumber &lt; (catchTrPerB2Level1 + catchTrPerB2Level2 + catchTrPerB2Level3 + catchTrPerB2Level4 + catchTrPerB2Level5 + catchTrPerB2Level6 + catchTrPerB2Level7 + catchTrPerB2Level8))"/>
+                            <action type="if" condition="doShortCatchTrial">
+                              <action type="assignment" variable="tShortCatchTrial" value="(int)(tSvCatchNumber &lt; (catchTrPer80Level1 + catchTrPer80Level2 + catchTrPer80Level3 + catchTrPer80Level4 + catchTrPer80Level5 + catchTrPer80Level6 + catchTrPer80Level7 + catchTrPer80Level8))"/>
+                              <action type="report" message="catch trial is $tShortCatchTrial"/>
                               <!-- level1 -->  
-                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level1))"> 
+                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPer80Level1))"> 
                                 <action type="assignment" variable="tCatchNumber" value="0"/>
                               </action>
-                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level1"/>
+                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPer80Level1"/>
                               <!-- level2 -->  
-                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level2))"> 
+                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPer80Level2))"> 
                                 <action type="assignment" variable="tCatchNumber" value="1"/>
                               </action>
-                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level2"/>
+                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPer80Level2"/>
                               <!-- level3 -->  
-                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level3))"> 
+                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPer80Level3))"> 
                                 <action type="assignment" variable="tCatchNumber" value="2"/>
                               </action>
-                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level3"/>
+                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPer80Level3"/>
                               <!-- level4 -->  
-                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level4))"> 
+                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPer80Level4))"> 
                                 <action type="assignment" variable="tCatchNumber" value="3"/>
                               </action>
-                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level4"/>
+                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPer80Level4"/>
                               <!-- level5 -->  
-                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level5))"> 
+                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPer80Level5))"> 
                                 <action type="assignment" variable="tCatchNumber" value="4"/>
                               </action>
-                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level5"/>
+                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPer80Level5"/>
                               <!-- level6 -->  
-                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level6))"> 
+                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPer80Level6))"> 
                                 <action type="assignment" variable="tCatchNumber" value="5"/>
                               </action>
-                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level6"/>
+                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPer80Level6"/>
                               <!-- level7 -->  
-                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level7))"> 
+                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPer80Level7))"> 
                                 <action type="assignment" variable="tCatchNumber" value="6"/>
                               </action>
-                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level7"/>
+                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPer80Level7"/>
                               <!-- level8 -->  
-                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPerB2Level8))"> 
+                              <action type="if" condition="tSvCatchNumber >= tTempStimOddsCatch &amp;&amp; (tSvCatchNumber &lt; (tTempStimOddsCatch+catchTrPer80Level8))"> 
                                 <action type="assignment" variable="tCatchNumber" value="7"/>
                               </action>
-                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPerB2Level8"/>
+                              <action type="assignment" variable="tTempStimOddsCatch" value="tTempStimOddsCatch + catchTrPer80Level8"/>
                             </action>
 
 
@@ -910,6 +910,23 @@
                     <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/>
                     <action type="assignment" variable="tDoDeviantAfterMissing" value="doDeviantAfterMissing"/>
                     <action type="assignment" variable="tDoNoResponse" value="doNoResponse"/>
+                    <action type="if" condition="tShortCatchTrial == 1">
+                     <action type="assignment" variable="tDoCatchOriDetect" value="block2DoOriDetect"/>
+                     <action type="assignment" variable="tDoCatchContrastDetect" value="block2DoContrastDetect"/>
+                     <action type="assignment" variable="tDoCatchAuditoryDetect" value="block2DoAuditoryDetect"/>
+                     <action type="if" condition="tDoCatchOriDetect == 1">
+                      <action type="assignment" variable="tGratingMaxDirectionStepDeg" value="block2GratingMaxDirectionStepDeg"></action>
+                      <action type="assignment" variable="tGratingDirectionStepsPerOctave" value="block2GratingDirectionStepsPerOctave"></action>
+                     </action>
+                     <action type="if" condition="tDoCatchContrastDetect == 1">  
+                      <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
+                      <action type="assignment" variable="tGratingContrastStepsPerOctave" value="block2GratingContrastStepsPerOctave"></action>
+                     </action>
+                     <action type="if" condition="tDoCatchAuditoryDetect == 1">
+                      <action type="assignment" variable="tSoundMaxTargetAmplitude" value="block2SoundTargetAmplitude"></action>
+                      <action type="assignment" variable="tSoundTargetStepsPerOctave" value="block2SoundTargetStepsPerOctave"></action>                        
+                     </action>
+                    </action>
                   </action>
 
                   <action type="if" condition="tBlock2TrialNumber == 1">
@@ -955,7 +972,7 @@
                     <action type="assignment" variable="tSoundMaxTargetAmplitude" value="soundTargetAmplitude"></action>
                     <action type="assignment" variable="tSoundTargetStepsPerOctave" value="soundTargetStepsPerOctave"></action>                        
                   </action>
-                </action>
+                </action>    
               </action>
 
               <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
@@ -1060,14 +1077,14 @@
             <action type="assignment" tag="Set cycle for laser stim" variable="tCycleLaser" value="(int)rand(2,nCyclesOn+3)"/>
           </action>
           
-            <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn">
-              <action type="assignment" variable="tMinShortCatchCycle" value="nCyclesOn-1"/> 
+          <action type="if" condition="tShortCatchTrial">
+            <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn-1">
+              <action type="assignment" variable="nCyclesOn" value="(int)rand(minShortCatchCycle+1,minShortCatchCycle+3)"/>
             </action>
-            <action type="if" condition="minShortCatchCycle &lt; nCyclesOn">
-             <action type="assignment" variable="tMinShortCatchCycle" value="minShortCatchCycle"/> 
-            </action>
+            <action type="assignment" tag="Set catchCyclesOn as nCyclesOn-1" variable="catchCyclesOn" value="nCyclesOn-1"/> 
+          </action>  
 
-            <action type="assignment" tag="Set catchCyclesOn between min and nCyclesOn" variable="catchCyclesOn" value="(int)rand(tMinShortCatchCycle, nCyclesOn)"/>
+            
 
         <action type="if" condition="trials &lt; minShortCatchTrial">
          <action type="assignment" variable="tShortCatchTrial" value="0"/> 
@@ -1353,19 +1370,11 @@
 
                                       <task_system_state tag="TrialStimOn" interruptible="YES">
                                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                                                                                
+                                        <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
                                         <action type="report" message="TrialStim On of $tCyclesOn" />
-                                        <action type="assignment" variable="stimTag" value= "1"/>
-                                        
-
-                                        <action type="if" condition="tShortCatchTrial"> 
-                                         <action type="if" condition="tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
-                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-                                          <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
-                                          <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
-                                          <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
-                                        </action>
-                                        <action type="if" condition="tCyclesOn == catchCyclesOn">
+                                         
+                                        <action type="if" condition="tShortCatchTrial &amp;&amp; tCyclesOn == catchCyclesOn">
                                           <action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="catch_grating"></action> 
                                           <action type="play_dynamic_stimulus" stimulus="catch_grating" tag="StimOn"></action>
                                           <action tag="Queue Catch Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
@@ -1374,13 +1383,13 @@
                                           <action type="report" message="Lever Down - Trial Started - Catch Stim On $tCyclesOn of $nCyclesOn"/>
                                           <action type="assignment" variable="tCatchTimeMs" value="now()/1000"/>
                                         </action>
-                                      </action>
 
-                                        <action type="assignment" variable="tCyclesOn" value="tCyclesOn + 1"/>
-
-                                        <action type="if" condition="doRandStimOffTime">
-                                            <action type="assignment" tag="Set tStimOffTime between min and maxStimOffTime" variable="tStimOffTimeMs" value="((int)rand(0, 1+ceil((maxStimOffTimeMs-minStimOffTimeMs)/stimOffTimeIntervalMs))*stimOffTimeIntervalMs)+minStimOffTimeMs"/>
-                                            <action type="assignment" tag="Count total cycle time" variable="tTotalStimTimeMs" value="tTotalStimTimeMs + tStimOnTimeMs + tStimOffTimeMs"/>
+                                        <action type="if" condition="!tShortCatchTrial || tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
+                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
+                                          <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
+                                          <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
+                                          <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
                                         </action>
 
                                         <action type="if" condition="doPhotodiode">
@@ -1388,16 +1397,6 @@
                                             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
                                             <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
                                          </action>
-
-                                         
-                                        <action type="if" condition="!tShortCatchTrial">
-                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-                                         <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
-                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
-                                         <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
-                                         <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
-                                       </action>
-
             
                                         <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
 
@@ -1448,6 +1447,12 @@
 
 
                                       <action type="play_sound" sound="baseSound"/>
+                                      <action type="assignment" variable="stimTag" value= "1"/>
+
+                                      <action type="if" condition="doRandStimOffTime">
+                                        <action type="assignment" tag="Set tStimOffTime between min and maxStimOffTime" variable="tStimOffTimeMs" value="((int)rand(0, 1+ceil((maxStimOffTimeMs-minStimOffTimeMs)/stimOffTimeIntervalMs))*stimOffTimeIntervalMs)+minStimOffTimeMs"/>
+                                        <action type="assignment" tag="Count total cycle time" variable="tTotalStimTimeMs" value="tTotalStimTimeMs + tStimOnTimeMs + tStimOffTimeMs"/>
+                                      </action>
 
                                       <action type="if" tag="if fakeMouse and first stim on" condition="!doLever &amp;&amp; tCyclesOn == 1 &amp;&amp; !doFakeMouseSuccessOnly">
                                         <action type="start_timer" tag="Start Fake Mouse Timer" timer="fakeMouseTimer" timebase="" duration="tFakeMouseReactMs" duration_units="ms"></action>
@@ -1468,9 +1473,6 @@
                         
                                       <action type="assignment" variable="stimTag" value= "0"/>
                                       
-
-                                      <action type="report" message="This is Cycle $tCyclesOn."></action>
-
                                       <action type="if" condition="doPhotodiode">
                                         <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>

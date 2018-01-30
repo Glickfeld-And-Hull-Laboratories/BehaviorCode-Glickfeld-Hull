@@ -1,6 +1,9 @@
+stimOnTime100 = zeros(nexp,1);
 early_mat = zeros(nexp,1);
 HR_ori_mat = zeros(nexp,1);
 HR_amp_mat = zeros(nexp,1);
+visHitRate = cell(1,nexp);
+audHitRate = cell(1,nexp);
 bxExp = [];
 for iexp = 1:nexp
     fprintf([num2str(iexp) ' '])
@@ -9,6 +12,16 @@ for iexp = 1:nexp
     
     mworks_dir = dir(fullfile(rc.pathStr, ['data-i' num2str(subnum) '-' expDate '-*']));
     runs = xd.ChooseMatFile(iexp);
+    if iscell(runs)
+        runs = cell2mat(runs);
+        if ischar(runs)
+            if strcmp(runs,'NaN')
+                runs = nan;
+            else
+                runs = eval(runs);
+            end
+        end
+    end
     if ~isnan(runs)
         mworks_dir = mworks_dir(runs);
         
@@ -30,6 +43,8 @@ for iexp = 1:nexp
             input_temp = trialChopper(input_temp, [rng(1) rng(end)]);
         end
     end
+    
+    stimOnTime100(iexp) = input_temp.stimOnTimeMs == 100;
     
     nt = length(input_temp.trialOutcomeCell);
     failureIx = strcmp(input_temp.trialOutcomeCell, 'failure');
@@ -77,32 +92,44 @@ for iexp = 1:nexp
     bxExp(iexp).tVisTargets = gratingDirectionDeg;
     bxExp(iexp).tAudTargets = soundAmplitude;
     
+    visHitRate{iexp} = zeros(1,length(oris)-1);
+    for i = 1:length(oris)-1
+        ind = gratingDirectionDeg == oris(i+1);
+        visHitRate{iexp}(i) = sum(ind & successIx)./sum(ind & (successIx | missedIx));
+    end
+    audHitRate{iexp} = zeros(1,length(amps)-1);
+    for i = 1:length(amps)-1
+        ind = soundAmplitude == amps(i+1);
+        audHitRate{iexp}(i) = sum(ind & successIx)./sum(ind & (successIx | missedIx));
+    end
+    
     if ~isfield(input_temp, 'catchTrialOutcomeCell') | (sum(strcmp(input_temp.catchTrialOutcomeCell,'FA'))+sum(strcmp(input_temp.catchTrialOutcomeCell,'CR'))) == 0
+        input_temp.catchTrialOutcomeCell = cell(1,length(gratingDirectionDeg));
         for trN = 1:length(input_temp.trialOutcomeCell)
             if input_temp.tShortCatchTrial{trN}
                 if input_temp.tFalseAlarm{trN}
                     input_temp.catchTrialOutcomeCell{trN} = 'FA';
-                end
-                if isfield(input_temp, 'cCatchOn')
+%                 end
+                elseif isfield(input_temp, 'cCatchOn')
                     if isempty(input_temp.cCatchOn{trN})
                         input_temp.cCatchOn{trN} = NaN;
                         input_temp.catchTrialOutcomeCell{trN} = 'failure';
-                    end
-                    if (input_temp.cLeverUp{trN}-input_temp.cCatchOn{trN})>input_temp.nFramesReact
+%                     end
+                    elseif (input_temp.cLeverUp{trN}-input_temp.cCatchOn{trN})>input_temp.nFramesReact
                         input_temp.catchTrialOutcomeCell{trN} = 'CR';
-                    end
-                    if (input_temp.cLeverUp{trN}-input_temp.cCatchOn{trN})<input_temp.nFramesTooFast
+%                     end
+                    elseif (input_temp.cLeverUp{trN}-input_temp.cCatchOn{trN})<input_temp.nFramesTooFast
                         input_temp.catchTrialOutcomeCell{trN} = 'failure';
                     end
                 else
                     if isempty(input_temp.tCatchTimeMs{trN})
                         input_temp.cCatchOn{trN} = NaN;
                         input_temp.catchTrialOutcomeCell{trN} = 'failure';
-                    end
-                    if (input_temp.leverUpTimeMs{trN}-input_temp.tCatchTimeMs{trN})>input_temp.reactTimeMs
+%                     end
+                    elseif (input_temp.leverUpTimeMs{trN}-input_temp.tCatchTimeMs{trN})>input_temp.reactTimeMs
                         input_temp.catchTrialOutcomeCell{trN} = 'CR';
-                    end
-                    if (input_temp.leverUpTimeMs{trN}-input_temp.tCatchTimeMs{trN})<input_temp.tooFastTimeMs
+%                     end
+                    elseif (input_temp.leverUpTimeMs{trN}-input_temp.tCatchTimeMs{trN})<input_temp.tooFastTimeMs
                         input_temp.catchTrialOutcomeCell{trN} = 'failure';
                     end
                 end
@@ -119,6 +146,7 @@ for iexp = 1:nexp
     bxExp(iexp).invMissIx = invMiss;
         
     bxExp(iexp).trLength = cell2mat(input_temp.tCyclesOn);
+    bxExp(iexp).invTrLength = cell2mat(input_temp.catchCyclesOn);
     
     tOn = input_temp.stimOnTimeMs;
     tOff = input_temp.stimOffTimeMs;
@@ -128,4 +156,5 @@ for iexp = 1:nexp
     bxExp(iexp).sn = subnum;
 end
 
-save(fullfile(fnout,'bxExpMat_training'),'bxExp','early_mat','HR_ori_mat','HR_amp_mat')
+save(fullfile(fnout,'bxExpMat_training'),'bxExp',...
+'early_mat','HR_ori_mat','HR_amp_mat','visHitRate','audHitRate','stimOnTime100')
