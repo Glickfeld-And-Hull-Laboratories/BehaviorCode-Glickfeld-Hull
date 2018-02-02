@@ -170,14 +170,14 @@ if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial
     elseif input.block2DoOriDetect
     		cPowerB1 = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
     elseif input.block2DoAuditoryDetect
-        cPowerB1 = double(abs(double(cell2mat_padded(input.tSoundCatchAmplitude)))*100);
+        cPowerB1 = double(abs(double(celleqel2mat_padded(input.tSoundCatchAmplitude)))*100);
 		end
     if input.doContrastDetect 
         cPowerB2 = double(abs(double(cell2mat_padded(input.tCatchGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
     elseif input.doOriDetect 
         cPowerB2 = double(abs(double(cell2mat_padded(input.tCatchGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
     elseif input.doAuditoryDetect 
-        cPowerB2 = double(abs(double(cell2mat_padded(input.tSoundCatchAmplitude)))*100);
+        cPowerB2 = double(abs(double(celleqel2mat_padded(input.tSoundCatchAmplitude)))*100);
     end
     cTrPowers = cPowerB1+cPowerB2;
     cTrPowers(find(cTrPowers==0)) = NaN;
@@ -1000,7 +1000,6 @@ if nStims >= 1
   secondHalfIx = reqHoldV > halfR;
   lastFewTrIx = false(size(firstHalfIx));  
   lastFewTrIx(find(successIx | missIx, 50, 'last')) = true;
-  
   for iP=1:nL
     tP = powerLevels(iP);
     trIx = sum(stimPowerV == tP,1);
