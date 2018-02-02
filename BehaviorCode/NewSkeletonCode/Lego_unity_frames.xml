@@ -22,6 +22,7 @@
 
         <variable tag="doContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doContrastDiscrim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
+
         <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Task Control"/>
         <variable tag="stationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="stationaryThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
@@ -108,11 +109,16 @@
         <variable tag="gratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingContrastDiffSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
 
+        <variable tag="gratingMaxDiameterDeg" scope="global" logging="when_changed" default_value="40" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingDiameterSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingMaxDiameterDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="gratingDiameterDiffSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="doRandSize" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="nRandSize" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Visual Stimuli"/>
+
         <variable tag="gratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Visual Stimuli"/>
-        <variable tag="gratingHeightDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
-        <variable tag="gratingWidthDeg" scope="global" logging="when_changed" default_value="40" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingSpatialFreqCPD" scope="global" logging="when_changed" default_value="0.04" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingSpeedDPS" scope="global" logging="when_changed" default_value="50" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
@@ -250,6 +256,9 @@
         <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="dGratingContrastDiff" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+        <variable tag="tGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="dGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="dGratingDiameterDiff" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
         <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -349,7 +358,7 @@
             spatial_frequency="gratingSpatialFreqCPD"
             speed="gratingSpeedDPS"
             grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1"
-            x_size="gratingWidthDeg" y_size="gratingHeightDeg"
+            x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg"
             x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg"
             rotation="gratingDirectionDeg"
             alpha_multiplier="tGratingContrast"></stimulus>
@@ -357,7 +366,7 @@
               spatial_frequency="gratingSpatialFreqCPD"
               speed="gratingSpeedDPS"
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1"
-              x_size="gratingWidthDeg" y_size="gratingHeightDeg"
+              x_size="dGratingDiameterDeg" y_size="dGratingDiameterDeg"
               x_position="dGratingEccentricityDeg" y_position="gratingElevationDeg"
               rotation="gratingDirectionDeg"
               alpha_multiplier="dGratingContrast"></stimulus>
@@ -1011,6 +1020,16 @@
                  </action>
                  <action type="if" condition="!doContrastDetect">
                     <action type="assignment" variable="dGratingContrast" value="tGratingContrast / dGratingContrastDiff"></action>
+                 </action>
+
+                 <action type="if" condition="!doRandSize">
+                    <action type="assignment" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                    <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                 </action>
+
+                 <action type="if" condition="doRandSize">
+                    <action type="assignment" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize)/gratingDiameterSPO))"/>
+                    <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize)/gratingDiameterSPO))"/>
                  </action>
 
                  <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber == 8">
