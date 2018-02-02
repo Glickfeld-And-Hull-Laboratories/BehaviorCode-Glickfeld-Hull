@@ -179,7 +179,7 @@ if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial
     elseif input.doAuditoryDetect 
         cPowerB2 = double(abs(double(celleqel2mat_padded(input.tSoundCatchAmplitude)))*100);
     end
-    cTrPowers = cPowerB1+cPowerB2;
+    cTrPowers = chop(cPowerB1+cPowerB2,2);
     cTrPowers(find(cTrPowers==0)) = NaN;
     cPowerLevels = unique(cTrPowers(~isnan(cTrPowers)));
     nCP = length(cPowerLevels);
