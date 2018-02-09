@@ -104,6 +104,10 @@
         <variable tag="whiteNoiseSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
         <variable tag="stationaryPeriodSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
 
+        <variable tag="doGaussianMask" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="doEllipseMask" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="mask" scope="global" logging="when_changed" default_value="none" type="string" persistant="1" groups="Visual Stimuli"/>
+
         <variable tag="gratingMaxContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingMaxDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
@@ -249,6 +253,7 @@
         <variable tag="leftDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="rightDecisionThreshold" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="trackMotion" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="dTrackMotion" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="tGratingEccentricityStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -354,22 +359,26 @@
         </sounds>
         <stimuli tag="Stimuli">
           <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
-          <stimulus type="drifting_grating" tag="targetGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
-            spatial_frequency="gratingSpatialFreqCPD"
-            speed="gratingSpeedDPS"
-            grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1"
-            x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg"
-            x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg"
-            rotation="gratingDirectionDeg"
-            alpha_multiplier="tGratingContrast"></stimulus>
-            <stimulus type="drifting_grating" tag="distractorGrating"  direction="0" starting_phase="gratingStartingPhaseDeg"
-              spatial_frequency="gratingSpatialFreqCPD"
-              speed="gratingSpeedDPS"
-              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1"
-              x_size="dGratingDiameterDeg" y_size="dGratingDiameterDeg"
-              x_position="dGratingEccentricityDeg" y_position="gratingElevationDeg"
-              rotation="gratingDirectionDeg"
-              alpha_multiplier="dGratingContrast"></stimulus>
+          <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
+              <stimulus type="drifting_grating" tag="targetGrating_$mask"  direction="0" starting_phase="gratingStartingPhaseDeg"
+                spatial_frequency="gratingSpatialFreqCPD"
+                speed="gratingSpeedDPS"
+                grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1"
+                x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg"
+                x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg"
+                rotation="gratingDirectionDeg"
+                alpha_multiplier="tGratingContrast"></stimulus>
+          </list_replicator>  
+            <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
+                <stimulus type="drifting_grating" tag="distractorGrating_$mask"  direction="0" starting_phase="gratingStartingPhaseDeg"
+                  spatial_frequency="gratingSpatialFreqCPD"
+                  speed="gratingSpeedDPS"
+                  grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1"
+                  x_size="dGratingDiameterDeg" y_size="dGratingDiameterDeg"
+                  x_position="dGratingEccentricityDeg" y_position="gratingElevationDeg"
+                  rotation="gratingDirectionDeg"
+                  alpha_multiplier="dGratingContrast"></stimulus>
+            </list_replicator>
               <stimulus type="drifting_grating" tag="rewardGrating"  direction="0" starting_phase="rewardGratingStartingPhaseDeg"
                 spatial_frequency=".000000000001"
                 speed="gratingSpeedDPS"
@@ -1213,10 +1222,19 @@
                         <action type="report" message="In Reaction Time for $nFramesReact frames "></action>
                         <action type="start_timer" timer="reactionTimerMs" timebase="" duration="reactionTimeMs" duration_units="ms"/>
 
-                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating"></action>
-                        <action type="play_dynamic_stimulus" stimulus="distractorGrating" tag="start"></action>
-                        <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"></action>
-                        <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"></action>
+                        <action type="if" condition="doGaussianMask">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating_gaussian"></action>
+                            <action type="play_dynamic_stimulus" stimulus="distractorGrating_gaussian" tag="start"></action>
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating_gaussian"></action>
+                            <action type="play_dynamic_stimulus" stimulus="targetGrating_gaussian" tag="start"></action>
+                        </action> 
+                        <action type="if" condition="doEllipseMask">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating_ellipse"></action>
+                            <action type="play_dynamic_stimulus" stimulus="distractorGrating_ellipse" tag="start"></action>
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating_ellipse"></action>
+                            <action type="play_dynamic_stimulus" stimulus="targetGrating_ellipse" tag="start"></action>
+                        </action> 
+
                         <action tag="Update Display" type="update_stimulus_display"></action>
                         <action type="assignment" variable="stimTimestampMs" value="now()/1000"/>
                         <action type="assignment" variable="qStimOn" value="quadrature"/>
@@ -1230,8 +1248,10 @@
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="assignment" tag="tag stimOff" variable="stimIsOff" value="1"/>
                         <action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
-                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractorGrating"></action>
-                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="targetGrating"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractorGrating_ellipse"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
                         <action tag="Update Display" type="update_stimulus_display"></action>
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" condition="isNotTooFast" target="Reaction"></transition>
@@ -1255,6 +1275,7 @@
 
                         <action type="if" condition="doTestRobot==0">
                           <action type="assignment" tag="track motion" variable="trackMotion" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))+tGratingEccentricityStart"/>
+                          <action type="assignment" tag="track motion" variable="dTrackMotion" value="(feedbackMotionSensitivity*(quadrature-tQuadrature))-tGratingEccentricityStart"/>
                         </action>
 
                         <action type="if" condition="doTestRobot==1">
@@ -1264,13 +1285,34 @@
                         <action type="if" condition="doFeedbackMotion==1">
                             <action type="if" condition="(tLeftTrial &amp;&amp; trackMotion &lt;= gratingTargetEccentricity) || (tLeftTrial == 0 &amp;&amp; trackMotion &gt;= gratingTargetEccentricity)">
                               <action type="assignment" tag="Move stimulus" variable="tGratingEccentricityDeg" value="trackMotion"/>
-                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
-                              <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
+                              <action type="assignment" tag="Move distractor stimulus" variable="dGratingEccentricityDeg" value="dTrackMotion"/>
+                              <action type="if" condition="doGaussianMask">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating_gaussian"/>
+                                  <action type="play_dynamic_stimulus" stimulus="targetGrating_gaussian" tag="start"/>
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating_gaussian"/>
+                                  <action type="play_dynamic_stimulus" stimulus="distractorGrating_gaussian" tag="start"/>
+                              </action>
+                              <action type="if" condition="doEllipseMask">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating_ellipse"/>
+                                  <action type="play_dynamic_stimulus" stimulus="targetGrating_ellipse" tag="start"/>
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating_ellipse"/>
+                                  <action type="play_dynamic_stimulus" stimulus="distractorGrating_ellipse" tag="start"/>
+                              </action>
                             </action>
                             <action type="if" condition="(tLeftTrial &amp;&amp; trackMotion &gt;= gratingTargetEccentricity) || (tLeftTrial == 0 &amp;&amp; trackMotion &lt;= gratingTargetEccentricity)">
                               <action type="assignment" tag="Move stimulus" variable="tGratingEccentricityDeg" value="gratingTargetEccentricity"/>
-                              <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating"/>
-                              <action type="play_dynamic_stimulus" stimulus="targetGrating" tag="start"/>
+                              <action type="if" condition="doGaussianMask">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating_gaussian"/>
+                                  <action type="play_dynamic_stimulus" stimulus="targetGrating_gaussian" tag="start"/>
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating_gaussian"/>
+                                  <action type="play_dynamic_stimulus" stimulus="distractorGrating_gaussian" tag="start"/>
+                              </action>
+                              <action type="if" condition="doEllipseMask">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="targetGrating_ellipse"/>
+                                  <action type="play_dynamic_stimulus" stimulus="targetGrating_ellipse" tag="start"/>
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractorGrating_ellipse"/>
+                                  <action type="play_dynamic_stimulus" stimulus="distractorGrating_ellipse" tag="start"/>
+                              </action>
                             </action>
                             <action tag="Update Display" type="update_stimulus_display"/>
                         </action>
@@ -1308,8 +1350,13 @@
                       <task_system_state tag="Reward" interruptible="YES">
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
-                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+                        <action type="if" condition="doFeedbackMotion==0">
+                            <action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
+                            <action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
+                            <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
+                            <action type="dequeue_stimulus" stimulus="distractorGrating_ellipse"></action>
+                            <action type="update_stimulus_display"></action>
+                        </action>
 
 						<action type="if" tag="stim is not already off" condition="!stimIsOff">
                         	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
@@ -1400,9 +1447,15 @@
 
                       <task_system_state tag="Incorrect" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
-                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+
+                        <action type="if" condition="doFeedbackMotion==0">
+                            <action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
+                            <action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
+                            <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
+                            <action type="dequeue_stimulus" stimulus="distractorGrating_ellipse"></action>
+                            <action type="update_stimulus_display"></action>
+                        </action>
 
                         <action type="if" tag="stim is not already off" condition="!stimIsOff">
                         	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
@@ -1459,8 +1512,10 @@
                       <task_system_state tag="Ignore" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
-                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
-                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+                        <action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
+                        <action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
+                        <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
+                        <action type="dequeue_stimulus" stimulus="distractorGrating_ellipse"></action>
 
                         <action type="if" tag="stim is not already off" condition="!stimIsOff">
                         	<action type="assignment" tag="Log counter" variable="cStimOff" value="counter"></action>
@@ -1532,8 +1587,10 @@
                       <task_system_state tag="EndTrial" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
-                        <action type="dequeue_stimulus" stimulus="targetGrating"></action>
-                        <action type="dequeue_stimulus" stimulus="distractorGrating"></action>
+                        <action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
+                        <action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
+                        <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
+                        <action type="dequeue_stimulus" stimulus="distractorGrating_ellipse"></action>
                         <action type="update_stimulus_display"></action>
                         <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
