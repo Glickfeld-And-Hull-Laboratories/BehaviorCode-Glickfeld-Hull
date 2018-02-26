@@ -72,9 +72,15 @@ if isfield(input, 'doShortCatchTrial') & input.doShortCatchTrial,
 	nCR = sum(correctRejectIx);
 	tCatchGratingDirectionDeg = celleqel2mat_padded(input.tCatchGratingDirectionDeg);
 	tCatchGratingContrast = celleqel2mat_padded(input.tCatchGratingContrast, NaN, 'double');
-if isfield(input, 'tSoundCatchAmplitude')
-  tSoundCatchAmplitude = celleqel2mat_padded(input.tSoundCatchAmplitude, NaN, 'double');
-end
+  if isfield(input, 'tSoundCatchAmplitude')
+    tSoundCatchAmplitude = celleqel2mat_padded(input.tSoundCatchAmplitude, NaN, 'double');
+  end
+else
+  catchIx = zeros(size(successIx));
+  falseAlarmIx = zeros(size(successIx));
+  correctRejectIx = zeros(size(successIx));
+  nFA = sum(falseAlarmIx);
+  nCR = sum(correctRejectIx);
 end
 
 
