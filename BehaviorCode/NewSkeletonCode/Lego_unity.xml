@@ -1061,14 +1061,21 @@
                   <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber == 8">
                     <action type="assignment" variable="isNoGo" value="1"></action>
                     <action type="report" message="This is a NoGo trial"></action>
-                    <action type="assignment" variable="tGratingContrast" value="0"></action>
-                    <action type="assignment" variable="dGratingContrast" value="0"></action>
-                    <action type="assignment" variable="dGratingContrastDiff" value="0"></action>
-                    <action type="assignment" variable="tGratingDiameterDeg" value="0"></action>
-                    <action type="assignment" variable="dGratingDiameterDeg" value="0"></action>
-                  </action>    
-                  <action type="assignment" variable="tLeftTrial" value="round(rand(0,1))"></action>
-                 </action>
+                    <action type="if" condition="doContrastDiscrim">
+                        <action type="assignment" variable="tGratingContrast" value="0"></action>
+                        <action type="assignment" variable="dGratingContrast" value="0"></action>
+                        <action type="assignment" variable="dGratingContrastDiff" value="1"></action>
+                        <action type="assignment" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
+                        <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
+                    </action>
+                    <action type="if" condition="doSizeDiscrim">
+                        <action type="assignment" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
+                        <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
+                        <action type="assignment" variable="tGratingContrast" value="gratingMaxContrast"></action>
+                        <action type="assignment" variable="dGratingContrast" value="gratingMaxContrast"></action>
+                    </action>    
+                    <action type="assignment" variable="tLeftTrial" value="round(rand(0,1))"></action>
+                  </action>
                     
                   <action type="if" condition="tStimulusNumber &lt; 8">
                     <action type="assignment" variable="isNoGo" value="0"></action>
