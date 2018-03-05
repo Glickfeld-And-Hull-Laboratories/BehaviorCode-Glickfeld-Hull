@@ -200,6 +200,8 @@
         <variable tag="block2TargetOnTimeMs" scope="global" logging="when_changed" default_value="100" type="integer" persistant="1" groups="Block2 Stimulus"/>
         <variable tag="block2MinCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Block2 Stimulus"/>
         <variable tag="block2MaxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2DoLogCycNum" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2 Stimulus"/>
+        <variable tag="block2NLogCycNum" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Block2 Stimulus"/>
         <variable tag="block2GratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
         <variable tag="block2GratingAzimuthDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
         <variable tag="block2GratingHeightDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Stimulus"/>
@@ -312,6 +314,8 @@
         <variable tag="tTargetOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tMinCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tMaxCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tDoLogCycNum" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="tNLogCycNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tMinShortCatchCycle" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
         <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -831,6 +835,8 @@
                                                 <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
                                                 <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
                                                 <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
+                                                <action type="assignment" variable="tDoLogCycNum" value="doLogCycNum"></action>
+                                                <action type="assignment" variable="tNLogCycNum" value="nLogCycNum"></action>
                                                 <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
                                                 <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                                                 <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -890,6 +896,8 @@
                     <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
                     <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
                     <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
+                    <action type="assignment" variable="tDoLogCycNum" value="doLogCycNum"></action>
+                    <action type="assignment" variable="tNLogCycNum" value="nLogCycNum"></action>
                     <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
                     <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
                     <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -937,6 +945,8 @@
                     <action type="assignment" variable="tTargetOnTimeMs" value="block2TargetOnTimeMs"></action>
                     <action type="assignment" variable="tMinCyclesOn" value="block2MinCyclesOn"></action>
                     <action type="assignment" variable="tMaxCyclesOn" value="block2MaxCyclesOn"></action>
+                    <action type="assignment" variable="tDoLogCycNum" value="block2DoLogCycNum"></action>
+                    <action type="assignment" variable="tNLogCycNum" value="block2NLogCycNum"></action>
                     <action type="assignment" variable="tBaseGratingDirectionDeg" value="block2BaseGratingDirectionDeg"></action>
                     <action type="assignment" variable="tBaseGratingContrast" value="block2BaseGratingContrast"></action>
                     <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
@@ -1046,7 +1056,9 @@
               <action type="assignment" variable="tStimOffTimeMs" value="stimOffTimeMs"></action>
               <action type="assignment" variable="tTargetOnTimeMs" value="targetOnTimeMs"></action>
               <action type="assignment" variable="tMinCyclesOn" value="minCyclesOn"></action>
-              <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>                        
+              <action type="assignment" variable="tMaxCyclesOn" value="maxCyclesOn"></action>
+              <action type="assignment" variable="tDoLogCycNum" value="doLogCycNum"></action>
+              <action type="assignment" variable="tNLogCycNum" value="nLogCycNum"></action>                       
               <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>                           
               <action type="assignment" variable="tGratingAzimuthDeg" value="gratingAzimuthDeg"></action>                       
               <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg"></action>                         
@@ -1067,8 +1079,8 @@
 
           <!-- setting nCyclesOn -->
           <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
-          <action type="if" condition="doLogCycNum == 1">
-            <action type="assignment" tag="Set nCyclesOn by log values" variable="nCyclesOn" value="tMinCyclesOn * pow(2, disc_rand(0, nLogCycNum))"/>
+          <action type="if" condition="tDoLogCycNum == 1">
+            <action type="assignment" tag="Set nCyclesOn by log values" variable="nCyclesOn" value="tMinCyclesOn * pow(2, disc_rand(0, tNLogCycNum))"/>
           </action>
 
 
