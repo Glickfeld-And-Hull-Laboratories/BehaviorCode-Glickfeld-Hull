@@ -55,6 +55,8 @@
       <variable tag="targetOnTimeMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="minCyclesOn" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="maxCyclesOn" scope="global" logging="when_changed" default_value="2" type="integer" persistant="1" groups="Trial Structure"/>
+      <variable tag="doLogCycNum" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+      <variable tag="nLogCycNum" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Trial Structure"/>
       <variable tag="tooFastTimeMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="reactTimeMs" scope="global" logging="when_changed" default_value="1000" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="doExtendItiOnShortPrevTrial" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Structure"/>
@@ -1028,6 +1030,10 @@
             </action>
 
             <action type="assignment" tag="Set nCyclesOn between min and maxCyclesOn" variable="nCyclesOn" value="(int)rand(tMinCyclesOn, (tMaxCyclesOn+1))"/>
+
+            <action type="if" condition="doLogCycNum == 1">
+              <action type="assignment" tag="Set nCyclesOn by log values" variable="nCyclesOn" value="tMinCyclesOn * pow(2, (int)rand(0, nLogCycNum))"/>
+            </action>
 
             <action type="if" condition="tShortCatchTrial">
               <action type="if" condition="minShortCatchCycle &gt;= nCyclesOn-1">
