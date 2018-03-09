@@ -29,7 +29,7 @@ wheelTime = input.quadratureTimesUs;
 emptyIndex = cellfun(@isempty,wheelTime);       %# Find indices of empty cells
 wheelTime(emptyIndex) = {int64(1)};                    %# Fill empty cells with 0
 wheelTime = cell2mat(wheelTime);
-wheelTime_diff = diff(wheelTime);     
+wheelTime_diff = diff(wheelTime);    
 % time_zero = find(wheelTime_diff==0);       % find zero time difference and remove them
 % wheelIx(time_zero) = [];
 % wheelTime_diff(time_zero) = [];
@@ -39,17 +39,19 @@ wheelTime_diff = diff(wheelTime);
 
 
 wheelSpeed  = double(wheelIx)./double(wheelTime_diff);
-avgWheelN   = 1000;
-
-if length(wheelSpeed) >= 10
+avgWheelN   = 100;
+%length(wheelSpeed)
+if length(wheelSpeed)>= 100
     %WheelTimePoint  = wheelTime;
     %time_one = find(wheelTime==1);
     %WheelTimePoint(time_one(2:end)) = [];
     %WheelTimePoint  = WheelTimePoint(1:avgWheelN:end)/1e6; 
-    meanWheelSpeed  = arrayfun(@(i) mean(wheelSpeed(i:i+avgWheelN-1)),1:avgWheelN:length(wheelSpeed)-avgWheelN+1);
+    sumWheelSpeed  = arrayfun(@(i) nansum(wheelSpeed(i:i+avgWheelN-1)),1:avgWheelN:length(wheelSpeed)-avgWheelN+1);
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),smooth(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed,smoothType));
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed);
-    plot(meanWheelSpeed);
+    plot(sumWheelSpeed);
+    
+    %plot(wheelSpeed);
 % lH = plot(double(wheelIx), nTrial);
 % set(lH, 'Color', 'r', ...
 %         'LineWidth', 3);
