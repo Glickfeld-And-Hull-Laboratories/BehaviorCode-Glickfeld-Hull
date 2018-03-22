@@ -39,17 +39,17 @@ wheelTime_diff = diff(wheelTime);
 
 
 wheelSpeed  = double(wheelIx)./double(wheelTime_diff);
-avgWheelN   = 100;
+avgWheelN   = 10;
 %length(wheelSpeed)
-if length(wheelSpeed)>= 100
+if length(wheelSpeed)>= 10
     %WheelTimePoint  = wheelTime;
     %time_one = find(wheelTime==1);
     %WheelTimePoint(time_one(2:end)) = [];
     %WheelTimePoint  = WheelTimePoint(1:avgWheelN:end)/1e6; 
-    sumWheelSpeed  = arrayfun(@(i) nansum(wheelSpeed(i:i+avgWheelN-1)),1:avgWheelN:length(wheelSpeed)-avgWheelN+1);
+    meanWheelSpeed  = arrayfun(@(i) nanmean(wheelSpeed(i:i+avgWheelN-1)),1:avgWheelN:length(wheelSpeed)-avgWheelN+1);
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),smooth(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed,smoothType));
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed);
-    plot(sumWheelSpeed);
+    plot(meanWheelSpeed);
     
     %plot(wheelSpeed);
 % lH = plot(double(wheelIx), nTrial);
