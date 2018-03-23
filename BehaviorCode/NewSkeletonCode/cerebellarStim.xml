@@ -11,9 +11,10 @@
               strobed_digital_word="strobedDigitalWord"
               counter="counter"
               running_criteria="running_criteria"
-              start_CB="MouseIsStill"
-              still_duration = "stationaryDuration"
+              start_CB_still="MouseIsStill"
+              still_duration="stationaryDuration"
               start_CB_running="MouseIsRunning"
+              running_duration="runningDuration"
               doCB="docerebellarStim"
               do_wheelspeed="DoWheelspeed"
               ws_durationUS="speedIntervalUS"
@@ -59,6 +60,7 @@
       <variable tag="Dot_x" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
       <variable tag="Dot_y" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
       <variable tag="setDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
+      <variable tag="setDotContrast_stay" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
     </folder>
 
     <folder tag="ImagingVars">
@@ -69,7 +71,8 @@
       <variable tag="DoWheelspeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
       <variable tag="requiredPulse" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-      <variable tag="stationaryDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="RunningDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="StationaryDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
     </folder>
 
     <folder tag="NFrames">
@@ -80,11 +83,13 @@
       <variable tag="MovingDotTotalNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="ReverseDelayNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="ReverseNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="stationaryNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
     </folder>
 
     <folder tag="Task Status">
       <variable tag="soundstimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="Imaging" scope="global" logging="when_changed" default_value="0" type="boolean"/>
     </folder>
     <folder tag="Online Display">
       <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -103,6 +108,7 @@
       <variable tag="running_criteria" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="wheelSpeed" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="stationaryDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="runningDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -117,6 +123,8 @@
       <variable tag="tReverseVStimTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tReverseDelayMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="lastTrialStimOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="lastTrialMouseStill" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -139,12 +147,16 @@
               speed="wheelSpeed*DotSpeedScale+DotSpeedBaseline" field_radius="DotFieldRadius"
               field_center_x="Dot_x" field_center_y="Dot_y"
               alpha_multiplier="setDotContrast"></stimulus>
+    <stimulus type="moving_dots" tag="moving_dots_stay"  direction="tDotDirectionDeg"
+              dot_density="DotDensity" dot_size="DotSizeDeg" coherence="setDotCoherence"
+              speed="requiredPulse*DotSpeedScale" field_radius="DotFieldRadius"
+              field_center_x="Dot_x" field_center_y="Dot_y"
+              alpha_multiplier="setDotContrast_stay"></stimulus>
   </stimuli>
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
       <action type="queue_stimulus" stimulus="background"></action>
       <action type="update_stimulus_display"></action>
-
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
       <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
       <action type="assignment" tag="set quadrature to 0" variable="quadrature" value="0"></action>
@@ -177,14 +189,15 @@
           <action type="assignment" tag="Calculate nFramesReverseDelay" variable="ReverseDelayNFrames" value="ceil(tReverseDelayMS/frameImagingDurationMs)"/>
           <action type="assignment" tag="Calculate nFramesReverse" variable="ReverseNFrames" value="ceil(ReverseDurationMS/frameImagingDurationMs)"/>
           <action type="assignment" tag="Calculate nFramesMovingDotReverse" variable="MovingDotTotalNFrames" value="ceil(MovingDotDurationMS/frameImagingDurationMs)"/>
+          <action type="assignment" variable="stationaryNFrames" value="StationaryDurationMS/frameImagingDurationMs"/>
 
           <action type="assignment" variable="running_criteria" value="requiredPulse"/>
           <action type="assignment" variable="docerebellarStim" value="DoCerebellarStim"/>
-          <action type="assignment" variable="stationaryDuration" value="stationaryDurationMs"/>
+          <action type="assignment" variable="runningDuration" value="RunningDurationMS"/>
           <action type="assignment" variable="MouseIsStill" value="0"/>
           <action type="assignment" variable="MouseIsRunning" value="0"/>
           <action type="assignment" variable="tDotDirectionDeg" value="DotDirectionDeg"/>
-
+          <action type="assignment" variable="Imaging" value="1"/>
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
               <action type="report" message="** Stopping after completing $stopAfterNTrials trials"></action>
@@ -195,6 +208,7 @@
           <action type="if" condition="tTrialsDoneSinceStart == 0">
             <action type="assignment" variable="tCounter" value="0"></action>
             <action type="assignment" variable="counter" value="0"></action>
+            <action type="assignment" variable="stationaryDuration" value="StationaryDurationMS"/>
           </action>
           <action type="if" condition="tTrialsDoneSinceStart != 0">
             <action type="assignment" variable="tCounter" value="counter"></action>
@@ -238,7 +252,7 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
 
-          <transition type="conditional" tag="camera starts" condition="counter - tcounter > 0" target="CheckCriteria"></transition>
+          <transition type="conditional" tag="camera starts" condition="counter - tCounter > 0" target="CheckCriteria"></transition>
           <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
               , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames" target="EndTrial" ></transition>
       </task_system_state>
@@ -247,17 +261,27 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="if" condition="DoMovingDot == 1 &amp;&amp; DoCerebellarStim == 1">
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots"></action>
+                  <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots_stay"></action>
+                  <action type="play_dynamic_stimulus" stimulus="moving_dots_stay" tag="start"></action>
                   <action type="play_dynamic_stimulus" stimulus="moving_dots" tag="start"></action>
                   <action type="update_stimulus_display"></action>
                   <action type="report" message="Display stationary moving dots..."></action>
                   <action type="report" message="checking running/still for $MovingDotTotalNFrames"/>
           </action>
-
-            <action type="report" message="checking running/still criteria for nFrames"/>
+          <action type="if" condition="stationaryDuration &lt;= MovingDotDurationMS ">
+            <action type="assignment" variable="stationaryDuration" value="StationaryDurationMS"/>
+          </action>
+            <action type="report" message="checking running/still criteria for nFrames and lastTrialStimOn = $lastTrialStimOn"/>
+            <action type="if" condition="lastTrialStimOn == 0 &amp;&amp; tTrialsDoneSinceStart > 0 &amp;&amp; lastTrialMouseStill == 1">
+              <action type="report" message="Being Still long enough!!!!!!"/>
+              <action type="assignment" variable="stationaryDuration" value="stationaryDuration - MovingDotDurationMS"/>
+              <action type="assignment" variable="stationaryNFrames" value="stationaryDuration/frameImagingDurationMs"/>
+              <action type="report" message="still for $stationaryNFrames frames-----"/>
+            </action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
 
             <transition type="conditional" tag="if passing criteria, move to Delay Stim" condition="MouseIsRunning == 1" target="ReverseDelay"></transition>
-          <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="MouseIsStill == 1" target="ReverseVStim"></transition>
+          <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="MouseIsStill == 1 &amp;&amp; counter - tCounter >= stationaryNFrames" target="ReverseVStim"></transition>
 
             <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
               , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames" target="EndTrial" ></transition>
@@ -269,14 +293,23 @@
             <action type="assignment" variable="tCounter" value="counter"></action>
             <action type="report" message="***Delay reverse of $ReverseDelayNFrames ***"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="if past delay, move to reverse" condition="counter - tcounter >= ReverseDelayNFrames" target="ReverseVStim"></transition>
+            <transition type="conditional" tag="if past delay, move to reverse" condition="counter - tCounter >= ReverseDelayNFrames" target="ReverseVStim"></transition>
       </task_system_state>
 
       <task_system_state tag="ReverseVStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tCounter" value="counter"></action>
-            <action type="assignment" variable="tDotDirectionDeg" value="tDotDirectionDeg+180"></action>
+            
+              <action type="assignment" variable="tDotDirectionDeg" value="tDotDirectionDeg+180"></action>
+
+            <action type="if" condition="MouseIsStill == 1">
+              <action type="assignment" variable="setDotContrast_stay" value="1"></action>
+              <action type="assignment" variable="setDotContrast" value="0"></action>
+            </action>
+            <action type="report" message="!!! Reverse Moving Dot Now!!!!"></action>
             <action type="assignment" variable="tReverseVStimTimeMs" value="now()/1000"></action>
+            <action type="assignment" variable="stationaryDuration" value="StationaryDurationMS"/>
+            <action type="assignment" variable="lastTrialStimOn" value="1"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If $ReverseNFrames, move to EndTrial" condition="(counter - tCounter) >= ReverseNFrames" target="EndTrial" ></transition>
       </task_system_state>
@@ -312,14 +345,28 @@
 
       <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="report" message="Last trial stim on is $lastTrialStimOn !!!!!!!"></action>
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="if" condition="tDotDirectionDeg == 0">
+              <action type="assignment" variable="lastTrialStimOn" value="0"/>
+            </action>
+            <action type="if" condition="MouseIsStill == 1">
+              <action type="assignment" variable="lastTrialMouseStill" value="1"/>
+            </action>
+            <action type="if" condition="MouseIsStill == 0">
+              <action type="assignment" variable="lastTrialMouseStill" value="0"/>
+            </action>
             <action type="assignment" variable="MouseIsStill" value="0"/>
             <action type="assignment" variable="MouseIsRunning" value="0"/>
+            <action type="assignment" variable="setDotContrast_stay" value="0"></action>
+            <action type="assignment" variable="setDotContrast" value="1"></action>
 
-
-            <!--<action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots"></action> -->
-            <!--<action type="update_stimulus_display"></action> -->
-
+<!--
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="moving_dots_stay"></action>
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots"></action>
+            <action type="play_dynamic_stimulus" stimulus="moving_dots" tag="start"></action>
+            <action type="update_stimulus_display"></action>
+-->
             <action type="if" condition="DoSolenoid == 1">
                 <action type="assignment" variable="lever_solenoid" value="0"/>
             </action>

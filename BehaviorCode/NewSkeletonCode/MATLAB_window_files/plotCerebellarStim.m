@@ -19,17 +19,17 @@ consts.behavPdfPath = fullfile(homeDir, 'Documents/MWorks/BehavOutputPdfs');
 
 %nTrial = input.trialSinceReset;
 
-wheelIx = input.quadratureValues;
-emptyIndex = cellfun(@isempty,wheelIx);       %# Find indices of empty cells
-wheelIx(emptyIndex) = {int64(0)};                    %# Fill empty cells with 0
-wheelIx = cell2mat(wheelIx);
-wheelIx = diff(wheelIx);
+%wheelIx = input.quadratureValues;
+%emptyIndex = cellfun(@isempty,wheelIx);       %# Find indices of empty cells
+%wheelIx(emptyIndex) = {int64(0)};                    %# Fill empty cells with 0
+%wheelIx = cell2mat(wheelIx);
+%wheelIx = diff(wheelIx);
 
-wheelTime = input.quadratureTimesUs;
-emptyIndex = cellfun(@isempty,wheelTime);       %# Find indices of empty cells
-wheelTime(emptyIndex) = {int64(1)};                    %# Fill empty cells with 0
-wheelTime = cell2mat(wheelTime);
-wheelTime_diff = diff(wheelTime);    
+%wheelTime = input.quadratureTimesUs;
+%emptyIndex = cellfun(@isempty,wheelTime);       %# Find indices of empty cells
+%wheelTime(emptyIndex) = {int64(1)};                    %# Fill empty cells with 0
+%wheelTime = cell2mat(wheelTime);
+%wheelTime_diff = diff(wheelTime);    
 % time_zero = find(wheelTime_diff==0);       % find zero time difference and remove them
 % wheelIx(time_zero) = [];
 % wheelTime_diff(time_zero) = [];
@@ -38,18 +38,19 @@ wheelTime_diff = diff(wheelTime);
 %wheelTime(time_one(2:end))=[];
 
 
-wheelSpeed  = double(wheelIx)./double(wheelTime_diff);
+%wheelSpeed  = double(wheelIx)./double(wheelTime_diff);
+wheelSpeed  = cell2mat(input.wheelSpeedValues);
 avgWheelN   = 10;
 %length(wheelSpeed)
-if length(wheelSpeed)>= 10
+if length(wheelSpeed)>= 1
     %WheelTimePoint  = wheelTime;
     %time_one = find(wheelTime==1);
     %WheelTimePoint(time_one(2:end)) = [];
     %WheelTimePoint  = WheelTimePoint(1:avgWheelN:end)/1e6; 
-    meanWheelSpeed  = arrayfun(@(i) nanmean(wheelSpeed(i:i+avgWheelN-1)),1:avgWheelN:length(wheelSpeed)-avgWheelN+1);
+    %meanWheelSpeed  = arrayfun(@(i) nanmean(wheelSpeed(i:i+avgWheelN-1)),1:avgWheelN:length(wheelSpeed)-avgWheelN+1);
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),smooth(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed,smoothType));
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed);
-    plot(meanWheelSpeed);
+    plot(wheelSpeed);
     
     %plot(wheelSpeed);
 % lH = plot(double(wheelIx), nTrial);
@@ -59,8 +60,9 @@ if length(wheelSpeed)>= 10
 % set(lH2, 'Color', 'k', ...
 %         'LineWidth', 2);
         
-    title('Mean Running rate every 1000 movements registered (~1s)')
-    ylabel('Running Rate (pulses/ms)');
+    title('Mean Running rate every 100ms')
+    ylabel('Running Rate (pulses/s)');
+
 % else
 %     plot(wheelSpeed);
 %     title('Mean Running rate for every 1 movement registered')
