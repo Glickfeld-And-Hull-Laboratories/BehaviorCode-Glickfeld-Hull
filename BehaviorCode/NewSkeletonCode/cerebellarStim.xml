@@ -112,6 +112,7 @@
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cReverse" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTactileStimulusDurationUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTactileStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -308,6 +309,7 @@
             </action>
             <action type="report" message="!!! Reverse Moving Dot Now!!!!"></action>
             <action type="assignment" variable="tReverseVStimTimeMs" value="now()/1000"></action>
+            <action type="assignment" variable="cReverse" value="counter"></action>
             <action type="assignment" variable="stationaryDuration" value="StationaryDurationMS"/>
             <action type="assignment" variable="lastTrialStimOn" value="1"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
