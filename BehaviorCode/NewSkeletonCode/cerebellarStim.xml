@@ -260,7 +260,7 @@
 
       <task_system_state tag="CheckCriteria" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="if" condition="DoMovingDot == 1 &amp;&amp; DoCerebellarStim == 1">
+            <action type="if" condition="DoMovingDot == 1">
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots"></action>
                   <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="moving_dots_stay"></action>
                   <action type="play_dynamic_stimulus" stimulus="moving_dots_stay" tag="start"></action>
@@ -269,6 +269,7 @@
                   <action type="report" message="Display stationary moving dots..."></action>
                   <action type="report" message="checking running/still for $MovingDotTotalNFrames"/>
           </action>
+          <action type="if" condition="DoCerebellarStim == 1">
           <action type="if" condition="stationaryDuration &lt;= MovingDotDurationMS ">
             <action type="assignment" variable="stationaryDuration" value="StationaryDurationMS"/>
           </action>
@@ -279,6 +280,7 @@
               <action type="assignment" variable="stationaryNFrames" value="stationaryDuration/frameImagingDurationMs"/>
               <action type="report" message="still for $stationaryNFrames frames-----"/>
             </action>
+          </action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
 
             <transition type="conditional" tag="if passing criteria, move to Delay Stim" condition="MouseIsRunning == 1" target="ReverseDelay"></transition>
