@@ -40,6 +40,7 @@ consts.behavPdfPath = fullfile(homeDir, 'Documents/MWorks/BehavOutputPdfs');
 
 %wheelSpeed  = double(wheelIx)./double(wheelTime_diff);
 wheelSpeed  = cell2mat(input.wheelSpeedValues);
+cReverse = cell2mat(input.cReverse);
 avgWheelN   = 10;
 %length(wheelSpeed)
 if length(wheelSpeed)>= 1
@@ -51,7 +52,7 @@ if length(wheelSpeed)>= 1
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),smooth(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed,smoothType));
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed);
     plot(wheelSpeed);
-    
+    hold on; vline(cReverse,'r');
     %plot(wheelSpeed);
 % lH = plot(double(wheelIx), nTrial);
 % set(lH, 'Color', 'r', ...
