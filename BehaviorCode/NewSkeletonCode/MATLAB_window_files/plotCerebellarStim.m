@@ -51,7 +51,7 @@ if length(wheelSpeed)>= 1
     %meanWheelSpeed  = arrayfun(@(i) nanmean(wheelSpeed(i:i+avgWheelN-1)),1:avgWheelN:length(wheelSpeed)-avgWheelN+1);
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),smooth(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed,smoothType));
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed);
-    plot(wheelSpeed);
+    plot(wheelSpeed,'b');
     hold on; vline(cReverse,'r');
     %plot(wheelSpeed);
 % lH = plot(double(wheelIx), nTrial);
