@@ -40,7 +40,12 @@ consts.behavPdfPath = fullfile(homeDir, 'Documents/MWorks/BehavOutputPdfs');
 
 %wheelSpeed  = double(wheelIx)./double(wheelTime_diff);
 wheelSpeed  = cell2mat(input.wheelSpeedValues);
-cReverse = cell2mat(input.cReverse);
+cReverse = input.cReverse;
+emptyIndex = cellfun(@isempty,cReverse);
+cReverse(emptyIndex) = {int64(0)};
+cReverse = cell2mat(cReverse);
+cReverse(cReverse == 0) = [];
+
 avgWheelN   = 10;
 %length(wheelSpeed)
 if length(wheelSpeed)>= 1
