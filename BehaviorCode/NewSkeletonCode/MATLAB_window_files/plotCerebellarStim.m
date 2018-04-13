@@ -57,7 +57,9 @@ if length(wheelSpeed)>= 1
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),smooth(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed,smoothType));
     %plot(WheelTimePoint(1:length(meanWheelSpeed)),meanWheelSpeed);
     plot(wheelSpeed,'b');
-    hold on; vline(cReverse,'r');
+    if ~isempty(cReverse)
+        hold on; vline(cReverse,'r');
+    end
     %plot(wheelSpeed);
 % lH = plot(double(wheelIx), nTrial);
 % set(lH, 'Color', 'r', ...
