@@ -126,6 +126,7 @@
       <variable tag="tDotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="lastTrialStimOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="lastTrialMouseStill" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="lastTrialMouseRun" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -270,15 +271,25 @@
                   <action type="report" message="checking running/still for $MovingDotTotalNFrames"/>
           </action>
           <action type="if" condition="DoCerebellarStim == 1">
-          <action type="if" condition="stationaryDuration &lt;= MovingDotDurationMS ">
-            <action type="assignment" variable="stationaryDuration" value="StationaryDurationMS"/>
-          </action>
+            <action type="if" condition="stationaryDuration &lt;= MovingDotDurationMS ">
+              <action type="assignment" variable="stationaryDuration" value="StationaryDurationMS"/>
+            </action>
             <action type="report" message="checking running/still criteria for nFrames and lastTrialStimOn = $lastTrialStimOn"/>
             <action type="if" condition="lastTrialStimOn == 0 &amp;&amp; tTrialsDoneSinceStart > 0 &amp;&amp; lastTrialMouseStill == 1">
               <action type="report" message="Being Still long enough!!!!!!"/>
               <action type="assignment" variable="stationaryDuration" value="stationaryDuration - MovingDotDurationMS"/>
               <action type="assignment" variable="stationaryNFrames" value="stationaryDuration/frameImagingDurationMs"/>
               <action type="report" message="still for $stationaryNFrames frames-----"/>
+            </action>
+
+            <action type="if" condition="runningDuration &lt;= MovingDotDurationMS ">
+              <action type="assignment" variable="runningDuration" value="RunningDurationMS"/>
+            </action>
+            <action type="report" message="checking running/still criteria for nFrames and lastTrialStimOn = $lastTrialStimOn"/>
+            <action type="if" condition="lastTrialStimOn == 0 &amp;&amp; tTrialsDoneSinceStart > 0 &amp;&amp; lastTrialMouseRun == 1">
+              <action type="report" message="Being Running long enough!!!!!!"/>
+              <action type="assignment" variable="runningDuration" value="runningDuration - MovingDotDurationMS"/>
+              <action type="report" message="run for another $runningDuration MS-----"/>
             </action>
           </action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -302,7 +313,7 @@
       <task_system_state tag="ReverseVStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tCounter" value="counter"></action>
-            
+
               <action type="assignment" variable="tDotDirectionDeg" value="tDotDirectionDeg+180"></action>
 
             <action type="if" condition="MouseIsStill == 1">
@@ -359,6 +370,12 @@
             </action>
             <action type="if" condition="MouseIsStill == 0">
               <action type="assignment" variable="lastTrialMouseStill" value="0"/>
+            </action>
+            <action type="if" condition="MouseIsRun == 1">
+              <action type="assignment" variable="lastTrialMouseRun" value="1"/>
+            </action>
+            <action type="if" condition="MouseIsRun == 0">
+              <action type="assignment" variable="lastTrialMouseRun" value="0"/>
             </action>
             <action type="assignment" variable="MouseIsStill" value="0"/>
             <action type="assignment" variable="MouseIsRunning" value="0"/>
