@@ -941,6 +941,7 @@
 
               <!-- update display, finalize variables -->
               <action tag="Update Display" type="update_stimulus_display"></action>
+              <action type="assignment" variable="MIO0" value="1"/>
               <action type="report" message="Visual Stim ON, presenting for $nScansOn scans."></action>
               <action type="report" message="Laser trial and power is $tTrialLaserPowerMw_trigger"/>
               <action type="if" condition="tTrialLaserPowerMw_trigger &gt; 0">
@@ -1221,6 +1222,7 @@
               <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
               <action tag="Update Stimulus" type="update_stimulus_display"></action>
             </action>
+            <action type="assignment" variable="MIO0" value="0"/>
 
             <action type="assignment" tag="Log Speed of entire stim Interval" variable="tStimWheelCounter" value="counter2 - ttCounter2"></action>
             <!-- Must use next selection and reset selection here to move through rand/seq -->

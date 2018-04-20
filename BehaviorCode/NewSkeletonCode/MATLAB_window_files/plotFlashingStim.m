@@ -153,10 +153,11 @@ if all(lPowerV) == 0
 else
   nLP = length(chop(unique(lPowerV(~isnan(lPowerV))),4));
 end
+
 if doOriAndContrastInterleaved
     vPowerV = (double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
      double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
-elseif doContrast
+elseif doContrast   
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
 elseif doOri
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
