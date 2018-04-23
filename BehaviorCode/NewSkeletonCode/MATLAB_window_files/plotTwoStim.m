@@ -128,7 +128,7 @@ if tTrialN > 1
       tStrISI = sprintf('ISI: %3.0f)', isi_mat);
 
 
-        text(0, 0.8, [tStr1; tStr2, tStrISI], ...
+        text(0, 0.8, [tStr1; tStr2; tStrISI], ...
              'VerticalAlignment', 'top', ...
              'HorizontalAlignment', 'left', 'FontSize', 12);
          
@@ -272,37 +272,46 @@ function outStr = subPpGrating(input, doPpBlock2Grating)
 if nargin < 2, doPpBlock2Grating = false; end
 
 % assemble vars- block2 or not
-tV = struct('gratingWidthDeg', []);
+tV = struct('gratingDiameterDeg', []);
 if doPpBlock2Grating
-  tV.gratingWidthDeg = input.block2GratingWidthDeg;
-  tV.gratingHeightDeg = input.block2GratingHeightDeg;
-  tV.gratingAzimuthDeg = input.block2GratingAzimuthDeg;
-  tV.gratingElevationDeg = input.block2GratingElevationDeg;
-  tV.gratingSpatialFreqCPD = input.block2GratingSpatialFreqCPD;
-  tV.gratingDurationMs = input.block2GratingDurationMs;
-  tV.gratingSpeedDPS = input.block2GratingSpeedDPS;
+  tV.stimOneGratingDirectionDeg = input.block2StimOneGratingDirectionDeg;
+  tV.stimOneGratingDiameterDeg = input.block2StimOneGratingDiameterDeg;
+  tV.stimOneGratingAzimuthDeg = input.block2StimOneGratingAzimuthDeg;
+  tV.stimOneGratingElevationDeg = input.block2StimOneGratingElevationDeg;
+  tV.stimOneGratingSpatialFreqCPD = input.block2StimOneGratingSpatialFreqCPD;
+  tV.stimOneGratingDurationMs = input.block2StimOneGratingOnTimeMs;
+  tV.stimOneGratingTemporalFreqCPS = input.block2StimOneGratingTemporalFreqCPS;
+  tV.stimTwoGratingDirectionDeg = input.block2StimTwoGratingDirectionDeg;
+  tV.stimTwoGratingDiameterDeg = input.block2StimTwoGratingDiameterDeg;
+  tV.stimTwoGratingAzimuthDeg = input.block2StimTwoGratingAzimuthDeg;
+  tV.stimTwoGratingElevationDeg = input.block2StimTwoGratingElevationDeg;
+  tV.stimTwoGratingSpatialFreqCPD = input.block2StimTwoGratingSpatialFreqCPD;
+  tV.stimTwoGratingDurationMs = input.block2StimTwoGratingOnTimeMs;
+  tV.stimTwoGratingTemporalFreqCPS = input.block2StimTwoGratingTemporalFreqCPS;
 else
-  tV.gratingWidthDeg = input.gratingWidthDeg;
-  tV.gratingHeightDeg = input.gratingHeightDeg;
-  tV.gratingAzimuthDeg = input.gratingAzimuthDeg;
-  tV.gratingElevationDeg = input.gratingElevationDeg;
-  tV.gratingSpatialFreqCPD = input.gratingSpatialFreqCPD;
-  tV.gratingDurationMs = input.gratingDurationMs;
-  tV.gratingSpeedDPS = input.gratingSpeedDPS;
+  tV.stimOneGratingDirectionDeg = input.stimOneGratingDirectionDeg;
+  tV.stimOneGratingDiameterDeg = input.stimOneGratingDiameterDeg;
+  tV.stimOneGratingAzimuthDeg = input.stimOneGratingAzimuthDeg;
+  tV.stimOneGratingElevationDeg = input.stimOneGratingElevationDeg;
+  tV.stimOneGratingSpatialFreqCPD = input.stimOneGratingSpatialFreqCPD;
+  tV.stimOneGratingDurationMs = input.stimOneGratingOnTimeMs;
+  tV.stimOneGratingTemporalFreqCPS = input.stimOneGratingTemporalFreqCPS;
+  tV.stimTwoGratingDirectionDeg = input.stimTwoGratingDirectionDeg;
+  tV.stimTwoGratingDiameterDeg = input.stimTwoGratingDiameterDeg;
+  tV.stimTwoGratingAzimuthDeg = input.stimTwoGratingAzimuthDeg;
+  tV.stimTwoGratingElevationDeg = input.stimTwoGratingElevationDeg;
+  tV.stimTwoGratingSpatialFreqCPD = input.stimTwoGratingSpatialFreqCPD;
+  tV.stimTwoGratingDurationMs = input.stimTwoGratingOnTimeMs;
+  tV.stimTwoGratingTemporalFreqCPS = input.stimTwoGratingTemporalFreqCPS;
 end
 
-outStr = sprintf('%gx%gdeg, at (%g,%g), %gcpd, %dms', ...
-                 roundn(double(tV.gratingWidthDeg),-2), ...
-                 roundn(double(tV.gratingHeightDeg),-2), ...
-                 tV.gratingAzimuthDeg, ...
-                 tV.gratingElevationDeg, ...
-                 tV.gratingSpatialFreqCPD, ...
-                 tV.gratingDurationMs);
-
-
-if tV.gratingSpeedDPS ~= 0 
-  outStr = strcat(outStr, sprintf(' %d deg/s', tV.gratingSpeedDPS));
-end
+outStr = sprintf('Stim 1: %gms, %gdeg, %gcpd; Stim 2: %gms, %gdeg, %gcpd'; , ...
+                 chop(tV.stimOneGratingDurationMs,2), ...
+                 tV.stimOneGratingDirectionDeg, ...
+                 tV.stimOneGratingSpatialFreqCPD,...
+                 chop(tV.stimTwoGratingDurationMs,2), ...
+                 tV.stimTwoGratingDirectionDeg, ...
+                 tV.stimTwoGratingSpatialFreqCPD);
 
 %%%%%%%%%%%%%%%%
 
