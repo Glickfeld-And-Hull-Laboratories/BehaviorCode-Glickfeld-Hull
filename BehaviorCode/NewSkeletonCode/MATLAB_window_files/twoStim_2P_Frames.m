@@ -88,7 +88,6 @@ trN = input.trialSinceReset;
 
 % Consts that govern tValues
 input.constList = { 'subjectNum',...
-    'experimentXmlTrialId', ...
     'speedIntervalMS', ...
     'doMatrix', ...
     'doRandISITime', ...
@@ -240,8 +239,8 @@ catch
 end
 
 %% disp status
-stim1Str = sprintf('Stim1: con %g%%, dir %g%deg, %g%ms', input.tStimOneGratingContrast{trN}, input.tStimOneGratingDirectionDeg{trN}, input.tStimOneOnTimeMs{trN});
-stim2Str = sprintf('Stim2: con %g%%, dir %g%deg, %g%ms', input.tStimTwoGratingContrast{trN}, input.tStimTwoGratingDirectionDeg{trN}, input.tStimTwoOnTimeMs{trN});
+stim1Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimOneGratingContrast{trN}.*100, input.tStimOneGratingDirectionDeg{trN}, input.tStimOneGratingOnTimeMs{trN});
+stim2Str = sprintf('Stim2: con %g%%, dir %g%, %g% ms', input.tStimTwoGratingContrast{trN}*100, input.tStimTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
 isiStr = sprintf('ISI: %g%ms', input.tISITimeMs{trN});
 
 if ~input.doBlock2
@@ -250,10 +249,8 @@ else
   block2Str = sprintf(' b2tr %d ', input.tBlock2TrialNumber{trN});
 end
 itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));
-fprintf(1,'%s, %s %s\n', ...
-        round(holdTimeMs), round(input.tTotalReqHoldTimeMs{trN}), round(reactTimeMs), ...
-        stim1Str, stim2Str, block2Str, ...
-        nJ, round(juiceD));
+fprintf(1,'%s; %s; %s; %s\n', ...
+    stim1Str, stim2Str, isiStr, block2Str);
 
 %% run subfunctions
 input = exptRunSubfunctions(ds, input, { @plotTwoStim });
