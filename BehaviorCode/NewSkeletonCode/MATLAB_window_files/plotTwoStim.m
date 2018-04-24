@@ -52,6 +52,8 @@ tTrialN = input.trialSinceReset;
     for itrial = 1:nTrial
         wheelIx(itrial) =input.wheelSpeedValues{itrial}(end)-input.wheelSpeedValues{itrial}(1);
     end
+  else
+    wheelIx = [];
   end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Performance Values
