@@ -112,6 +112,7 @@
         <variable tag="doEllipseMask" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
         <variable tag="mask" scope="global" logging="when_changed" default_value="none" type="string" persistant="1" groups="Visual Stimuli"/>
 
+        <variable tag="doRandPhase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingMaxContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingMaxContrastDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
@@ -264,6 +265,7 @@
         <variable tag="dGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="dGratingDiameterDiff" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
         <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
 
@@ -345,7 +347,7 @@
         <stimuli tag="Stimuli">
           <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
           <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
-              <stimulus type="drifting_grating" tag="targetGrating_$mask"  direction="0" starting_phase="gratingStartingPhaseDeg"
+              <stimulus type="drifting_grating" tag="targetGrating_$mask"  direction="0" starting_phase="tGratingStartingPhaseDeg"
                 spatial_frequency="gratingSpatialFreqCPD" 
                 speed="gratingSpeedDPS" 
                 grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1" 
@@ -355,7 +357,7 @@
                 alpha_multiplier="tGratingContrast"></stimulus>
           </list_replicator>
           <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
-            <stimulus type="drifting_grating" tag="distractorGrating_$mask"  direction="0" starting_phase="gratingStartingPhaseDeg"
+            <stimulus type="drifting_grating" tag="distractorGrating_$mask"  direction="0" starting_phase="tGratingStartingPhaseDeg"
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1" 
@@ -1056,7 +1058,14 @@
                          <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
                          <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast"/>
                      </action>    
-                 </action>    
+                 </action>
+
+                 <action type="if" condition="doRandPhase"> 
+                    <action type="assignment" tag="" variable="tGratingStartingPhaseDeg" value="gratingStartingPhaseDeg + (disc_rand(0,7)*45)"/>
+                 </action>
+                 <action type="if" condition="!doRandPhase"> 
+                    <action type="assignment" tag="" variable="tGratingStartingPhaseDeg" value="gratingStartingPhaseDeg"/>
+                 </action>        
 
                   <action type="if" condition="doNoGo &amp;&amp; tStimulusNumber == 8">
                     <action type="assignment" variable="isNoGo" value="1"></action>
