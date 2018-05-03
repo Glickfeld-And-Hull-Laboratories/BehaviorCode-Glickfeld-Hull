@@ -502,6 +502,8 @@
                               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Con is $tGratingContrast ; SF is tGratingSpatialFreqCPD"/>
                             </action>
                           </action>
+
+                          <!--
                           <action type="if" condition="!doSFStim &amp;&amp; !doConStim">
                             <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>    
                             <action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
@@ -515,6 +517,7 @@
                              <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
                            </action>
                          </action>
+                        -->
                        </action>
                        <action type="if" condition="doRetStim == 0">
                          <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
@@ -572,7 +575,7 @@
                    </action> 
 
                    <!--Select direction -->
-                   <action type="if" condition="(doDirStim == 1) &amp;&amp; !doMatrix">
+                   <action type="if" condition="(doDirStim == 1) &amp;&amp; !doMatrix &amp;&amp; doRetStim == 0">
                      <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingDirectionStepN"/>
                      <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim))"/>
                      <action type="report" message="Direction is $tGratingDirectionDeg"/>
