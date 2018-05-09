@@ -459,7 +459,7 @@
                               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Direction is $tGratingDirectionDeg"/>
                             </action>
                             <action type="if" condition="tTempStim &gt;= (gratingAzimuthStepN * gratingDirectionStepN)">
-                              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg + (gratingElevationStepDeg * (floor(tTempStim % (gratingAzimuthStepN * gratingDirectionStepN *gratingElevationStepN)) / (gratingAzimuthStepN * gratingDirectionStepN)))"/>
+                              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg + (gratingElevationStepDeg * (floor((tTempStim % (gratingAzimuthStepN * gratingDirectionStepN *gratingElevationStepN)) / (gratingAzimuthStepN * gratingDirectionStepN))))"/>
                               <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(((tTempStim) % (gratingAzimuthStepN * gratingDirectionStepN))/gratingDirectionStepN))"/>
                               <action type="assignment" variable="tGratingDirectionDeg" value= "gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim % gratingDirectionStepN))"/>
                               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ;  $tGratingDirectionDeg"/>
