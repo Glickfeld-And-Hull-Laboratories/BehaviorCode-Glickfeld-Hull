@@ -26,6 +26,8 @@
         <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Task Control"/>
         <variable tag="stationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="stationaryThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="doRandStationaryPeriod" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="randStationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
@@ -296,9 +298,10 @@
         <variable tag="tNBlockRightTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
         <variable tag="tRobotReactTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tRandBlockNumber" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="tStationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="float"/>
 
 		<!-- frame conversion -->
-      <variable tag="nFramesStationary" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
+      <variable tag="nFramesStationary" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="nFramesIti" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesDelay" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -489,8 +492,15 @@
                             </action>
                           </action>
 
+                        <action type="if" condition="doRandStationaryPeriod">
+                            <action type="assignment" variable="tStationaryPeriodMs" value="stationaryPeriodMs + disc_rand(0,randStationaryPeriodMs)" />
+                        </action>
+                        <action type="if" condition="!doRandStationaryPeriod">
+                            <action type="assignment" variable="tStationaryPeriodMs" value="stationaryPeriodMs" />
+                        </action>  
+
                         <action type="assignment" tag="Calculate nFramesOn" variable="nFramesOn" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
-            			<action type="assignment" tag="Calculate nFramesStationary" variable="nFramesStationary" value="ceil((stationaryPeriodMs/1000)*frameRateHz)"/>
+            			<action type="assignment" tag="Calculate nFramesStationary" variable="nFramesStationary" value="ceil((tStationaryPeriodMs/1000)*frameRateHz)"/>
             			<action type="assignment" tag="Calculate nFramesDelay" variable="nFramesDelay" value="ceil((delayTimeMs/1000)*frameRateHz)"/>
             			<action type="assignment" tag="Calculate nFramesIti" variable="nFramesIti" value="ceil((itiTimeMs/1000)*frameRateHz)"/>
             			<action type="assignment" tag="Calculate nFramesTooFast" variable="nFramesTooFast" value="ceil((tooFastTimeMs/1000)*frameRateHz)"/>
@@ -1228,6 +1238,7 @@
                         <action type="assignment" tag="Log counter" variable="cStationaryStart" value="counter"></action>
                         <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
                         <action type="assignment" tag="Stationary triggered" variable="stationaryReset" value="1"/>
+                        <action type="report" message="**** In stationary period for $nFramesStationary frames"></action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" condition="counter-cStationaryStart &gt;= nFramesStationary" target="TrialStart"></transition>

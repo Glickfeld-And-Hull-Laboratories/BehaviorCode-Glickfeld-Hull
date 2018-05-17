@@ -26,6 +26,8 @@
 
         <variable tag="stationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="stationaryThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="doRandStationaryPeriod" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="randStationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
@@ -297,6 +299,7 @@
         <variable tag="tNBlockLeftTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
         <variable tag="tNBlockRightTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
         <variable tag="tRobotReactTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tStationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         
         <variable tag="tRandProbIndex" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -429,6 +432,13 @@
 
                           <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000" />
                           <action type="assignment" variable="qTrialStart" value="quadrature" />
+
+                          <action type="if" condition="doRandStationaryPeriod">
+                            <action type="assignment" variable="tStationaryPeriodMs" value="stationaryPeriodMs + disc_rand(0,randStationaryPeriodMs)" />
+                          </action>
+                          <action type="if" condition="!doRandStationaryPeriod">
+                            <action type="assignment" variable="tStationaryPeriodMs" value="stationaryPeriodMs" />
+                          </action>
 
                           <action type="if" condition="tLastTrialCorrect == 1">
                             <action type="if" condition="doRewardGrating == 1">
@@ -1252,16 +1262,17 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; stationaryPeriodMs == 0" target="TrialStart"></transition>
-                        <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; stationaryPeriodMs &gt; 0" target="WaitForInitiate"></transition>
+                        <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; tStationaryPeriodMs == 0" target="TrialStart"></transition>
+                        <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; tStationaryPeriodMs &gt; 0" target="WaitForInitiate"></transition>
                       </task_system_state>
 
                       <task_system_state tag="WaitForInitiate" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="report" message="**** In stationary period for $tStationaryPeriodMs ms"></action>
                         <action type="if" condition="stationaryReset==1">
                             <action type="play_sound" sound="stationaryPeriodSound"/>
                         </action>
-                        <action type="start_timer" timer="stationaryTimerMs" timebase="" duration="stationaryPeriodMs" duration_units="ms"/>
+                        <action type="start_timer" timer="stationaryTimerMs" timebase="" duration="tStationaryPeriodMs" duration_units="ms"/>
                         <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
                         <action type="assignment" tag="Stationary triggered" variable="stationaryReset" value="1"/>    
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
