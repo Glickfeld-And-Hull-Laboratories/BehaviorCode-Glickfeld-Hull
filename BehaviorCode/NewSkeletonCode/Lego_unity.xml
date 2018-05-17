@@ -117,6 +117,8 @@
         <variable tag="gratingContrastSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingMaxContrastDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingContrastDiffSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="doZeroConTrials" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="zeroConTrPer80" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Visual Stimuli"/>
         <variable tag="minDiscrimTarget" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="doRandContrast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
         <variable tag="nRandContrast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Visual Stimuli"/>
@@ -476,12 +478,15 @@
 
 
                         <!-- exception for previous trial ignore to not give NoGo trial -->
-                        <action type="if" condition="tSvStimNumber >= 80-noGoTrPer80  &amp;&amp; doNoGo &amp;&amp; tLastTrialIgnore">
+                        <action type="if" condition="tSvStimNumber >= 80-noGoTrPer80  &amp;&amp; doNoGo || doZeroConTrials &amp;&amp; tLastTrialIgnore">
                             <action type="assignment" variable="tSvStimNumber" value="disc_rand(0,79-noGoTrPer80)"/>
                         </action> 
-                        <action type="if" condition="tSvStimNumber >= 80-noGoTrPer80  &amp;&amp; doNoGo &amp;&amp; tNTrialsCompleted &lt; 10">
+                        <action type="if" condition="tSvStimNumber >= 80-noGoTrPer80  &amp;&amp; doNoGo || doZeroConTrials &amp;&amp; tNTrialsCompleted &lt; 10">
                             <action type="assignment" variable="tSvStimNumber" value="disc_rand(0,79-noGoTrPer80)"/>
                         </action> 
+
+                        <action type="assert" condition="doZeroConTrials + doNoGo &lt;= 1" stop_on_failure="1"
+                            message="Cannot do both NoGo and ZeroConTrials"/>   
 
                           <action type="if" condition="doRandProb == 1">
                             <action type="run_python_string" tag="set tStimProbAvgLeft" code="calc_tStimProbAvgLeft()"></action>
@@ -964,6 +969,34 @@
       <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2NoGoTrPer80"/>
     </action>
 </action>
+
+<action type="if" condition="doZeroConTrials"> 
+    <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+zeroConTrPer80))"> 
+      <action type="assignment" variable="tStimulusNumber" value="8"/>
+      <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
+        <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= (((int)zeroConTrPer80-1)/2))"/>
+      </action>
+      <action type="if" condition="!doBlock2">
+        <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
+      </action>
+    </action>
+    <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+zeroConTrPer80))"> 
+      <action type="assignment" variable="tStimulusNumber2" value="8"/>
+    </action>
+        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + zeroConTrPer80"/>
+    <!-- level 8: b2 sep odds on -->                          
+    <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
+      <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+zeroConTrPer80))"> 
+        <action type="assignment" variable="tStimulusNumber" value="8"/> 
+        <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+        <action type="assignment" variable="tLeftTrial" value="0"/>         
+      </action>
+      <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+zeroConTrPer80))"> 
+        <action type="assignment" variable="tStimulusNumber2" value="8"/>
+      </action>
+      <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + zeroConTrPer80"/>
+    </action>
+</action>
 <!-- added preblock where all early trials are easy -->
 <action type="if" condition="tNTrialsCompleted &lt; easyStartTrialNumber &amp;&amp; doEasyStart">
     <action type="assignment" variable="tStimulusNumber" value="0"/>
@@ -1082,6 +1115,15 @@
                         <action type="assignment" variable="dGratingDiameterDeg" value="gratingMaxDiameterDeg"></action>
                         <action type="assignment" variable="tGratingContrast" value="gratingMaxContrast"></action>
                         <action type="assignment" variable="dGratingContrast" value="gratingMaxContrast"></action>
+                    </action>    
+                    <action type="assignment" variable="tLeftTrial" value="round(rand(0,1))"></action>
+                  </action>
+
+                  <action type="if" condition="doZeroConTrials &amp;&amp; tStimulusNumber == 8">
+                    <action type="if" condition="doContrastDiscrim">
+                        <action type="assignment" variable="tGratingContrast" value="0"></action>
+                        <action type="assignment" variable="dGratingContrast" value="0"></action>
+                        <action type="assignment" variable="dGratingContrastDiff" value=".000001"></action>
                     </action>    
                     <action type="assignment" variable="tLeftTrial" value="round(rand(0,1))"></action>
                   </action>

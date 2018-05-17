@@ -851,7 +851,7 @@ if isfield(input,'doContrastDiscrim')
       differenceRight =chop(celleqel2mat_padded(input.rightGratingContrast) ./ celleqel2mat_padded(input.leftGratingContrast),2);
     end
   elseif input.doSizeDiscrim
-  if input.gratingDiameterDiffSPO > 10
+    if input.gratingDiameterDiffSPO > 10
       differenceRight = chop(celleqel2mat_padded(input.rightGratingDiameterDeg) - celleqel2mat_padded(input.leftGratingDiameterDeg),2);
     elseif ~isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
       differenceRight = chop(celleqel2mat_padded(input.rightGratingDiameterDeg) - celleqel2mat_padded(input.leftGratingDiameterDeg),2);
@@ -869,19 +869,20 @@ else
   end
 end
 
+
 plotTrsB1 = differenceRight((correctIx|incorrectIx)&~block2Ix);
 nLevelsB1 = unique(plotTrsB1);
 percentContCellB1 = cell(1,length(nLevelsB1));
 for kk=1:length(nLevelsB1)
     valB1 = nLevelsB1(kk);
     valIxB1 = differenceRight==valB1;
-    totalNTrialsValB1 = sum(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
+    totalNTrialsValB1 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
     if min(differenceRight) < 0
       if valB1>=0,
-          rightNTrialsValB1 = sum(differenceRight((valIxB1&correctIx)&~block2Ix));
+          rightNTrialsValB1 = length(differenceRight((valIxB1&correctIx)&~block2Ix));
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
       elseif valB1<0,
-          rightNTrialsValB1 = sum(differenceRight((valIxB1&incorrectIx)&~block2Ix));
+          rightNTrialsValB1 = length(differenceRight((valIxB1&incorrectIx)&~block2Ix));
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
       end
     else
@@ -902,21 +903,21 @@ if sum(block2Ix)>0
   for kk=1:length(nLevelsB2)
     valB2 = nLevelsB2(kk);
     valIxB2 = differenceRight==valB2;
-    totalNTrialsValB2 = sum(differenceRight(valIxB2&(correctIx|incorrectIx)&block2Ix));
+    totalNTrialsValB2 = length(differenceRight(valIxB2&(correctIx|incorrectIx)&block2Ix));
     if min(differenceRight) < 0
       if valB2>=0,
-          rightNTrialsValB2 = sum(differenceRight((valIxB2&correctIx)&block2Ix));
+          rightNTrialsValB2 = length(differenceRight((valIxB2&correctIx)&block2Ix));
           percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
       elseif valB2<0,
-          rightNTrialsValB2 = sum(differenceRight((valIxB2&incorrectIx)&block2Ix));
+          rightNTrialsValB2 = length(differenceRight((valIxB2&incorrectIx)&block2Ix));
           percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
       end
     else
         if valB2>=1,
-            rightNTrialsValB2 = sum(differenceRight(valIxB2&correctIx&block2Ix));
+            rightNTrialsValB2 = length(differenceRight(valIxB2&correctIx&block2Ix));
             percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
         elseif valB2<1,
-            rightNTrialsValB2 = sum(differenceRight(valIxB2&incorrectIx&block2Ix));
+            rightNTrialsValB2 = length(differenceRight(valIxB2&incorrectIx&block2Ix));
             percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
         end
     end
@@ -1058,8 +1059,8 @@ if nCorr>0 %&& input.doTestRobot==0,
     for jj=1:nLevelsB1
         valB1 = uqTargetB1(jj);
         valIxB1 = contTargetV==valB1;
-        totalNTrialsValB1 = sum(contTargetV(valIxB1&(correctIx|incorrectIx)&~block2Ix));
-        corrNTrialsValB1 = sum(contTargetV(valIxB1&correctIx&~block2Ix));
+        totalNTrialsValB1 = length(contTargetV(valIxB1&(correctIx|incorrectIx)&~block2Ix));
+        corrNTrialsValB1 = length(contTargetV(valIxB1&correctIx&~block2Ix));
         percentCellB1{jj} = corrNTrialsValB1/totalNTrialsValB1;
     end
 
@@ -1081,8 +1082,8 @@ if nCorr>0 %&& input.doTestRobot==0,
       for jj=1:nLevelsB2
           valB2 = uqTargetB2(jj);
           valIxB2 = contTargetV==valB2;
-          totalNTrialsValB2 = sum(contTargetV(valIxB2&(correctIx|incorrectIx)&block2Ix));
-          corrNTrialsValB2 = sum(contTargetV(valIxB2&correctIx&block2Ix));
+          totalNTrialsValB2 = length(contTargetV(valIxB2&(correctIx|incorrectIx)&block2Ix));
+          corrNTrialsValB2 = length(contTargetV(valIxB2&correctIx&block2Ix));
           percentCellB2{jj} = corrNTrialsValB2/totalNTrialsValB2;
       end
     end
