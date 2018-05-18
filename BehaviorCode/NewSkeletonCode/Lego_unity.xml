@@ -28,6 +28,7 @@
         <variable tag="stationaryThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="doRandStationaryPeriod" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="randStationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
+        <variable tag="doExtendedStationaryPeriod" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
@@ -226,6 +227,7 @@
         <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="incorrect" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
+        <variable tag="abort" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="trialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="float"/>
         <variable tag="stimTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -292,6 +294,7 @@
         <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="90" type="integer" persistant="0"/>
         <variable tag="tLastTrialCorrect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="tLastTrialIgnore" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="tLastTrialAbort" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="tConsecCorrects" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="tConsecErrors" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="tNTrialsCompleted" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -300,6 +303,7 @@
         <variable tag="tNBlockRightTrsCompleted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Block Control"/>
         <variable tag="tRobotReactTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tStationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tItiTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         
         <variable tag="tRandProbIndex" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -396,7 +400,7 @@
                   <action type="assignment" variable="tNTrialsCompleted" value="0"/>
                   <action type="assignment" variable="tLastTrialWasLeft" value="0"/>
                   
-                  <action type="if" condition="success+ignore+incorrect == 0">
+                  <action type="if" condition="success+ignore+incorrect+abort == 0">
                     <!-- reset selection var -->
                     <action type="reset_selection" selection="svStimNumber"></action>
                     <action type="reset_selection" selection="svStimNumber2"></action>
@@ -415,8 +419,14 @@
                           <action_marker _unmoveable="1" tag="Actions"></action_marker>
                           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
                           <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
-                          <action type="report" message="**** In Inter-Trial Interval for $itiTimeMs ms ****"></action>
-                          <action type="start_timer" timer="itiTimerMs" timebase="" duration="itiTimeMs" duration_units="ms"/>
+                          <action type="if" condition="tLastTrialAbort">
+                            <action type="assignment" variable="tItiTimeMs" value="100" />
+                          </action>
+                          <action type="if" condition="!tLastTrialAbort">
+                            <action type="assignment" variable="tItiTimeMs" value="itiTimeMs" />
+                          </action>
+                          <action type="report" message="**** In Inter-Trial Interval for $tItiTimeMs ms ****"></action>
+                          <action type="start_timer" timer="itiTimerMs" timebase="" duration="tItiTimeMs" duration_units="ms"/>
                           <action type="assignment" tag="set counter to 0" variable="counter" value="0"/>
                           <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"/>
                           <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
@@ -439,6 +449,10 @@
                           <action type="if" condition="!doRandStationaryPeriod">
                             <action type="assignment" variable="tStationaryPeriodMs" value="stationaryPeriodMs" />
                           </action>
+                          <action type="if" condition="tLastTrialAbort">
+                            <action type="assignment" variable="tItiTimeMs" value="100" />
+                          </action>
+
 
                           <action type="if" condition="tLastTrialCorrect == 1">
                             <action type="if" condition="doRewardGrating == 1">
@@ -1294,6 +1308,7 @@
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="delayTimerMs" target="StimOn"></transition>
+                        <transition type="conditional" condition="doExtendedStationaryPeriod &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
                       </task_system_state>
 
                       <task_system_state tag="StimOn" interruptible="YES">
@@ -1328,6 +1343,7 @@
                         <action type="assignment" variable="qStimOn" value="quadrature"/>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" condition="doExtendedStationaryPeriod &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
                         <transition type="timer_expired" timer="stimOnTimerMs" target="StimOff"></transition>
                         <transition type="timer_expired" timer="tooFastTimerMs" target="ZeroQuad"></transition>
                       </task_system_state>
@@ -1343,6 +1359,7 @@
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" condition="isNotTooFast" target="Reaction"></transition>
                         <transition type="conditional" condition="!isNotTooFast &amp;&amp; timerExpired(tooFastTimerMs)" target="ZeroQuad"></transition>
+                        <transition type="conditional" condition="!isNotTooFast &amp;&amp; doExtendedStationaryPeriod &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
                       </task_system_state>
 
                       <task_system_state tag="ZeroQuad" interruptible="YES">
@@ -1456,6 +1473,7 @@
                         <action type="assignment" tag="success++" variable="success" value="success+1"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="1"></action>
                         <action type="assignment" variable="tLastTrialIgnore" value="0"></action>
+                        <action type="assignment" variable="tLastTrialAbort" value="0"></action>
                         <action type="if" condition="doConsecCorrectReward==1">
                           <action type="if" condition="tConsecCorrects &lt; maxConsecCorrects">
                             <action type="assignment" variable="tRewardTimeUs" value="tConsecCorrects*consecCorrRewardInterval"/>
@@ -1538,6 +1556,7 @@
                         <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
                         <action type="assignment" variable="tLastTrialIgnore" value="0"></action>
+                        <action type="assignment" variable="tLastTrialAbort" value="0"></action>
                         <action tag="Report Reward" full_name="ReportDigital" type="report" message="** Incorrect: Time-Out for $incorrectTimeoutMs **"></action>
                         <action type="update_stimulus_display"></action>
                         <action type="play_sound" sound="incorrectSound"/>
@@ -1599,6 +1618,7 @@
                         <action type="update_stimulus_display"></action>
                         <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
                         <action type="assignment" variable="tLastTrialIgnore" value="1"></action>
+                        <action type="assignment" variable="tLastTrialAbort" value="0"></action>
                         <action type="play_sound" sound="incorrectSound"/>
                         <action type="play_sound" sound="whiteNoiseSound"/>
                         <action type="start_timer" timer="ignoreTimeoutTimer" timebase="" duration="ignoreTimeoutMs" duration_units="ms"/>
@@ -1644,18 +1664,75 @@
                         <transition type="timer_expired" timer="ignoreTimeoutTimer" target="PossibleEndTimeout"></transition>
                       </task_system_state>
 					  
-					  <task_system_state tag="PossibleEndTimeout" interruptible="YES">    
-            			<!-- do timeout if too many recent errors:
-            			use a state rather than a wait action because states are interruptible -->
-            			<action type="if" condition="tConsecErrors >= nConsecErrorsCauseTimeout">
-              				<action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
-              				<action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
-            			</action>
+                      <task_system_state tag="Abort" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
+                        <action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
+                        <action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
+                        <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
+                        <action type="dequeue_stimulus" stimulus="distractorGrating_ellipse"></action>
 
-            			<transition type="conditional" tag="- bypass timer checking if no timeout requested" 
-              				condition="tConsecErrors &lt; nConsecErrorsCauseTimeout" target="EndTrial"></transition>
-              			<transition type="timer_expired" target="EndTrial" timer="consecErrorTimer"></transition>
-            		  </task_system_state>
+                        <action type="assignment" variable="tDecisionTimeMs" value=" (now()/1000) - stimTimestampMs"></action>
+                        <action tag="Report Abort" full_name="ReportDigital" type="report" message="** Abort: End Trial **"></action>
+                        <action type="update_stimulus_display"></action>
+                        <action type="assignment" variable="tLastTrialCorrect" value="0"></action>
+                        <action type="assignment" variable="tLastTrialIgnore" value="0"></action>
+                        <action type="assignment" variable="tLastTrialAbort" value="1"></action>
+                        <action type="play_sound" sound="stationaryPeriodSound"/>
+                        <action type="assignment" tag="Abort++" variable="abort" value="abort+1"/>
+                        <action type="assignment" variable="tConsecErrors" value="tConsecErrors+1"/>
+                        <action type="assignment" variable="tConsecCorrects" value="0"/>
+
+                        <action type="assignment" variable="didNoGo" value="0"/>
+                        <action type="assignment" variable="tLeftResponse" value="0"/>
+                        <action type="assignment" variable="tRightResponse" value="0"/>
+
+                        <!-- accept stim selection -->
+                        <action type="accept_selections" selection="svStimNumber"></action>
+                        <action type="if" condition="doCorrectiveTrials==0">
+                          <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+                        </action>
+                        <action type="accept_selections" selection="svStimNumber2"></action>
+                        <action type="if" condition="doCorrectiveTrials==0">
+                          <action type="assignment" variable="tNStimAccepted2" value="tNStimAccepted2 + 1"></action>
+                        </action>
+
+                        <!-- update selection variable -->
+                        <action type="if" condition="(tNStimAccepted &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="reset_selection" selection="svStimNumber"/>
+                          <action type="assignment" variable="tNStimAccepted" value="0"></action>
+                          <action type="report" message="Should be resetting selections,tNStimAccepted=$tNStimAccepted"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted &lt; 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="next_selection" selection="svStimNumber"/>
+                          <action type="report" message="Next selection,tNStimAccepted=$tNStimAccepted"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted2 &gt;= 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="reset_selection" selection="svStimNumber2"/>
+                          <action type="assignment" variable="tNStimAccepted2" value="0"></action>
+                          <action type="report" message="Should be resetting selections,tNStimAccepted2=$tNStimAccepted2"/>
+                        </action>
+                        <action type="if" condition="(tNStimAccepted2 &lt; 80) &amp;&amp; doCorrectiveTrials==0">
+                          <action type="next_selection" selection="svStimNumber2"/>
+                          <action type="report" message="Next selection,tNStimAccepted2=$tNStimAccepted2"/>
+                        </action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="direct" target="EndTrial"></transition>
+                      </task_system_state>
+                      
+                      <task_system_state tag="PossibleEndTimeout" interruptible="YES">    
+                        <!-- do timeout if too many recent errors:
+                        use a state rather than a wait action because states are interruptible -->
+                        <action type="if" condition="tConsecErrors >= nConsecErrorsCauseTimeout">
+                            <action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
+                            <action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
+                        </action>
+
+                        <transition type="conditional" tag="- bypass timer checking if no timeout requested" 
+                            condition="tConsecErrors &lt; nConsecErrorsCauseTimeout" target="EndTrial"></transition>
+                        <transition type="timer_expired" target="EndTrial" timer="consecErrorTimer"></transition>
+                      </task_system_state>
             
                       <task_system_state tag="EndTrial" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker> 
