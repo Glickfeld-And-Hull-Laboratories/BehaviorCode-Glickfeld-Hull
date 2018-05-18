@@ -879,18 +879,22 @@ for kk=1:length(nLevelsB1)
     totalNTrialsValB1 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
     if min(differenceRight) < 0
       if valB1>=0,
-          rightNTrialsValB1 = length(differenceRight((valIxB1&correctIx)&~block2Ix));
+          ind = setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix));  
+          rightNTrialsValB1 = length(ind);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
       elseif valB1<0,
-          rightNTrialsValB1 = length(differenceRight((valIxB1&incorrectIx)&~block2Ix));
+          ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix));
+          rightNTrialsValB1 = length(ind);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
       end
     else
         if valB1>=1,
-            rightNTrialsValB1 = sum(differenceRight(valIxB1&correctIx&~block2Ix));
+            ind = setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix));
+            rightNTrialsValB1 = length(ind);
             percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
         elseif valB1<1,
-            rightNTrialsValB1 = sum(differenceRight(valIxB1&incorrectIx&~block2Ix));
+            ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix));
+            rightNTrialsValB1 = length(ind);
             percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
         end
     end
@@ -906,18 +910,22 @@ if sum(block2Ix)>0
     totalNTrialsValB2 = length(differenceRight(valIxB2&(correctIx|incorrectIx)&block2Ix));
     if min(differenceRight) < 0
       if valB2>=0,
-          rightNTrialsValB2 = length(differenceRight((valIxB2&correctIx)&block2Ix));
+          ind = setdiff(intersect(find(valIxB2),find(correctIx)), find(block1Ix));
+          rightNTrialsValB2 = length(ind);
           percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
       elseif valB2<0,
-          rightNTrialsValB2 = length(differenceRight((valIxB2&incorrectIx)&block2Ix));
+          ind = setdiff(intersect(find(valIxB2),find(incorrectIx)), find(block1Ix));
+          rightNTrialsValB2 = length(ind);
           percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
       end
     else
         if valB2>=1,
-            rightNTrialsValB2 = length(differenceRight(valIxB2&correctIx&block2Ix));
+            ind = setdiff(intersect(find(valIxB2),find(correctIx)), find(block1Ix));
+            rightNTrialsValB2 = length(ind);
             percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
         elseif valB2<1,
-            rightNTrialsValB2 = length(differenceRight(valIxB2&incorrectIx&block2Ix));
+            ind = setdiff(intersect(find(valIxB2),find(correctIx)), find(block1Ix));
+            rightNTrialsValB2 = length(ind);
             percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
         end
     end
