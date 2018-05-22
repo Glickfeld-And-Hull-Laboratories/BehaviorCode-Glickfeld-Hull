@@ -170,6 +170,8 @@
         <variable tag="trialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Laser"/>
         <variable tag="doTargetRefLaser" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Trial Laser"/>
         <variable tag="doCueRefLaser" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Laser"/>
+        <variable tag="doLaserDelay" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Laser"/>
+        <variable tag="laserDelayTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Laser"/>
         <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="laserDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Trial Laser"/>
         <!-- block 2 control -->
@@ -357,6 +359,8 @@
         <variable tag="nCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tCycleLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="inLaserDelay" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="endLaserDelay" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="stimTag" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="timerDurationMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="targetStimOnMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -514,7 +518,9 @@
                           <action type="assignment" tag="Reset Catch trial" variable="tFalseAlarm" value="0"/>
                           <action type="assignment" tag="Reset total cycle time" variable="tTotalStimTimeMs" value="0"/>
                           <action type="assignment" tag="Reset taret miss" variable="tMissedFirstTarget" value="0"/>
-                          <action type="assignment" tag="Reset taret miss" variable="tMissedSecondTarget" value="0"/>
+                          <action type="assignment" tag="Reset target miss" variable="tMissedSecondTarget" value="0"/>
+                          <action type="assignment" tag="Reset laser delay" variable="inLaserDelay" value="0"/>
+                          <action type="assignment" tag="Reset laser delay" variable="endLaserDelay" value="0"/>
                           
 
                            <action type="if" condition="doPhotodiode">
@@ -1131,6 +1137,7 @@
                 </action>
 
                 <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
+                <action type="report" message="Laser cycle this trial is $tCycleLaser"></action>
 
  
                 <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="tLaserPowerMw"></action>
@@ -1424,6 +1431,7 @@
                                         </action>
 
                                         <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (tCyclesOn == tCycleLaser) &amp;&amp; (doLaserStim)">
+                                          <action type="if" condition="!doLaserDelay">  
                                             <action type="if" condition="optic_device == 'led' ">
                                                 <action type="assignment" variable="laserTrigger" value="1"></action>
                                                 <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
@@ -1431,10 +1439,16 @@
                                             <action type="if" condition="optic_device != 'led' ">
                                                 <action type="assignment" variable="laserTrigger" value="1"></action>
                                             </action>
-                                          <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
-                                          <action type="report" message="-----Laser Duration is to $laserDuration"/>
-                                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
-                                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+                                            <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                                            <action type="report" message="-----Laser Duration is to $laserDuration"/>
+                                            <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                                            <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+                                          </action>
+                                          <action type="if" condition="doLaserDelay">
+                                            <action type="assignment" variable="inLaserDelay" value="1"/>
+                                            <action type="start_timer" tag="Start Laser Delay Timer" timer="laserDelayTimer" timebase="" duration="laserDelayTimeMs" duration_units="ms"></action>
+                                            <action type="report" message="********* Wait for laser delay *********"/>
+                                          </action>  
                                         </action>
 
                                         <action type="if" condition="tCyclesOn == 1">
@@ -1466,7 +1480,85 @@
                                       <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() > (tStimOnMs*1000 + tStimOnTimeMs*1000 - tFrameDelayUs + 1500)" target="TrialStimOff"></transition>
+                                      <transition type="conditional" tag="start delay laser" condition="inLaserDelay &amp;&amp; timerExpired(laserDelayTimer)" target="DelayLaserOn"></transition>
                                     </task_system_state>
+
+                                    <task_system_state tag="DelayLaserOn" interruptible="YES">
+                                      <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                                      <action type="assignment" variable="inLaserDelay" value="0"/>
+                                      <action type="assignment" variable="endLaserDelay" value="1"/>
+
+                                      <action type="if" condition="optic_device == 'led' ">
+                                        <action type="assignment" variable="laserTrigger" value="1"></action>
+                                        <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
+                                      </action>
+                                      <action type="if" condition="optic_device != 'led' ">
+                                        <action type="assignment" variable="laserTrigger" value="1"></action>
+                                      </action>
+                                      <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                                      <action type="report" message="-----Laser Duration is to $laserDuration"/>
+                                      <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                                      <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+
+                                      <action type="start_timer" tag="Start Laser On Timer" timer="laserOnTimer" timebase="" duration="tStimOnMs" duration_units="ms"></action>
+
+                                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                                      <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast" target="EarlyRelease"></transition>
+                                      <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast" target="EarlyRelease"></transition>
+                                      <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
+                                      <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
+                                      <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+                                      <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
+                                      <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
+                                      <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="stimTag &amp;&amp; !tStimTurnedOn &amp;&amp; now() > (tStimOnMs*1000 + tStimOnTimeMs*1000 - tFrameDelayUs + 1500)" target="TrialStimOff"></transition>
+                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="!stimTag &amp;&amp; !tStimTurnedOn &amp;&amp; (tCyclesOn &lt; nCyclesOn) &amp;&amp; (now() > (tStimOffMs*1000 + tStimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TrialStimOn"></transition>
+                                      <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="!stimTag &amp;&amp; !tStimTurnedOn &amp;&amp; (tCyclesOn &gt;= nCyclesOn) &amp;&amp; (now() >= (tStimOffMs*1000 + tStimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TargetStimOn"></transition>
+                                      <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="isEndTargetState == 0 &amp;&amp; tStimTurnedOn &amp;&amp; isTooFast &amp;&amp; timerExpired(tooFastTimer)" target="React" ></transition>
+                                      <transition type="conditional" tag="Go to React" condition="isEndTargetState &amp;&amp; (isTooFast==1) &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endTooFastTimer)" target="React"></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(isEndState==0) &amp;&amp; tStimTurnedOn &amp;&amp; stimTag &amp;&amp; now() >= (targetStimOnMs*1000 + timerDurationMs*1000 - tFrameDelayUs + 1500)" target="EndTrialStimOff" ></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer) &amp;&amp; stimTag == 1" target="EndTrialStimOff"></transition>
+                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer) &amp;&amp; stimTag == 0" target="EndTrialStimOn"></transition>
+                                      <transition type="conditional" tag="Go to Missed" condition="isEndTargetState &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endReactTimeTimer)" target="Missed"></transition>
+                                      <transition type="conditional" tag="Go to Missed" condition="tDoTargetAfterMissed == 0  &amp;&amp; (isCatchTrial==0) &amp;&amp; !isTooFast &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+                                      <transition type="conditional" tag="Go second chance Missed" condition="tDoTargetAfterMissed &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; !isTooFast &amp;&amp; tMissedFirstTarget == 0" target="TempMissed"></transition>
+                                      <transition type="conditional" tag="turn off laser" condition="endLaserDelay &amp;&amp; timerExpired(laserOnTimer)" target="DelayLaserOff"></transition>
+                                    </task_system_state>
+
+                                    <task_system_state tag="DelayLaserOff" interruptible="YES">
+                                      <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                                      <action type="if" condition="optic_device == 'led' ">
+                                        <action type="assignment" variable="laserTrigger" value="0"></action>
+                                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                      </action>
+                                      <action type="if" condition="optic_device != 'led' ">
+                                        <action type="assignment" variable="laserTrigger" value="0"></action>
+                                      </action>
+                                      <action type="report" message="********* Turning off LASER TRIGGER *********"/>
+
+                                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                                      <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast" target="EarlyRelease"></transition>
+                                      <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast" target="EarlyRelease"></transition>
+                                      <transition type="conditional" tag="If Lever Up and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
+                                      <transition type="conditional" tag="If fake mouse timer expired, and catch trial, and too fast expired Go To EarlyRelease" condition="(isCatchTrial==1) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="EarlyRelease"></transition>
+                                      <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
+                                      <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(isCatchTrial==0) &amp;&amp; timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
+                                      <transition type="conditional" tag="Go to Reward" condition="(isCatchTrial==1) &amp;&amp; timerExpired(reactTimeTimer)" target="Reward"></transition>
+                                      <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="stimTag &amp;&amp; !tStimTurnedOn &amp;&amp; now() > (tStimOnMs*1000 + tStimOnTimeMs*1000 - tFrameDelayUs + 1500)" target="TrialStimOff"></transition>
+                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="!stimTag &amp;&amp; !tStimTurnedOn &amp;&amp; (tCyclesOn &lt; nCyclesOn) &amp;&amp; (now() > (tStimOffMs*1000 + tStimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TrialStimOn"></transition>
+                                      <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="!stimTag &amp;&amp; !tStimTurnedOn &amp;&amp; (tCyclesOn &gt;= nCyclesOn) &amp;&amp; (now() >= (tStimOffMs*1000 + tStimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TargetStimOn"></transition>
+                                      <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="isEndTargetState == 0 &amp;&amp; tStimTurnedOn &amp;&amp; isTooFast &amp;&amp; timerExpired(tooFastTimer)" target="React" ></transition>
+                                      <transition type="conditional" tag="Go to React" condition="isEndTargetState &amp;&amp; (isTooFast==1) &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endTooFastTimer)" target="React"></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(isEndState==0) &amp;&amp; tStimTurnedOn &amp;&amp; stimTag &amp;&amp; now() >= (targetStimOnMs*1000 + timerDurationMs*1000 - tFrameDelayUs + 1500)" target="EndTrialStimOff" ></transition>
+                                      <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer) &amp;&amp; stimTag == 1" target="EndTrialStimOff"></transition>
+                                      <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer) &amp;&amp; stimTag == 0" target="EndTrialStimOn"></transition>
+                                      <transition type="conditional" tag="Go to Missed" condition="isEndTargetState &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endReactTimeTimer)" target="Missed"></transition>
+                                      <transition type="conditional" tag="Go to Missed" condition="tDoTargetAfterMissed == 0  &amp;&amp; (isCatchTrial==0) &amp;&amp; !isTooFast &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==0 || (tBlock2TrialNumber==1  &amp;&amp; block2DoMissAsCorrect==0))" target="Missed"></transition>
+                                      <transition type="conditional" tag="Go second chance Missed" condition="tDoTargetAfterMissed &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; !isTooFast &amp;&amp; tMissedFirstTarget == 0" target="TempMissed"></transition>
+                                    </task_system_state>
+
 
                                     <task_system_state tag="TrialStimOff" interruptible="YES">
                                       <action_marker _unmoveable="1" tag="Actions"></action_marker>
@@ -1507,18 +1599,20 @@
                                           </action>
                                       </action>
 
-                                      <action type="if" condition="!doCueRefLaser">  
-                                          <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
-                                                <action type="if" condition="optic_device == 'led' ">
-                                                    <action type="assignment" variable="laserTrigger" value="0"></action>
-                                                    <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                      <action type="if" condition="laserTrigger"> 
+                                          <action type="if" condition="!doCueRefLaser">  
+                                              <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                                                    <action type="if" condition="optic_device == 'led' ">
+                                                        <action type="assignment" variable="laserTrigger" value="0"></action>
+                                                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                                    </action>
+                                                    <action type="if" condition="optic_device != 'led' ">
+                                                        <action type="assignment" variable="laserTrigger" value="0"></action>
+                                                    </action>
+                                                  
+                                                  <action type="report" message="********* Turning off LASER TRIGGER *********"/>
                                                 </action>
-                                                <action type="if" condition="optic_device != 'led' ">
-                                                    <action type="assignment" variable="laserTrigger" value="0"></action>
-                                                </action>
-                                              
-                                              <action type="report" message="********* Turning off LASER TRIGGER *********"/>
-                                            </action>
+                                          </action>
                                       </action>
 
                                       <action type="if" condition="sendElectrophysSync==1">
@@ -1539,6 +1633,8 @@
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
                                       <transition type="conditional" tag="Queue Visual Stimulus" condition="(tCyclesOn &lt; nCyclesOn) &amp;&amp; (now() > (tStimOffMs*1000 + tStimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TrialStimOn"></transition>
                                       <transition type="conditional" tag="Move on to Target Stimulus Presentation" condition="(tCyclesOn &gt;= nCyclesOn) &amp;&amp; (now() >= (tStimOffMs*1000 + tStimOffTimeMs*1000 - tFrameDelayUs + 1500))" target="TargetStimOn"></transition>
+                                      <transition type="conditional" tag="turn on laser" condition="inLaserDelay &amp;&amp; timerExpired(laserDelayTimer)" target="DelayLaserOn"></transition>
+                                      <transition type="conditional" tag="turn off laser" condition="endLaserDelay &amp;&amp; timerExpired(laserOnTimer)" target="DelayLaserOff"></transition>
                                     </task_system_state> 
 
                                     <task_system_state tag="TargetStimOn" interruptible="YES">
@@ -1603,6 +1699,7 @@
                                       <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - targetStimOnMs*1000" />
                                       
                                       <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; ((tCyclesOn+1) == tCycleLaser) &amp;&amp; (doLaserStim)">
+                                          <action type="if" condition="!doLaserDelay">  
                                             <action type="if" condition="optic_device == 'led' ">
                                                 <action type="assignment" variable="laserTrigger" value="1"></action>
                                                 <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
@@ -1610,11 +1707,17 @@
                                             <action type="if" condition="optic_device != 'led' ">
                                                 <action type="assignment" variable="laserTrigger" value="1"></action>
                                             </action>
-                                          <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
-                                          <action type="report" message="-----Laser Duration is to $laserDuration"/>
-                                          <action type="report" message="********* SENDING LASER TRIGGER *********"/>
-                                          <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
-                                        </action>
+                                            <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                                            <action type="report" message="-----Laser Duration is to $laserDuration"/>
+                                            <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+                                            <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+                                          </action>
+                                          <action type="if" condition="doLaserDelay">
+                                            <action type="assignment" variable="inLaserDelay" value="1"/>
+                                            <action type="start_timer" tag="Start Laser Delay Timer" timer="laserDelayTimer" timebase="" duration="laserDelayTimeMs" duration_units="ms"></action>
+                                            <action type="report" message="********* Wait for laser delay *********"/>
+                                          </action>  
+                                      </action>
 
                                       <action type="if" condition="sendElectrophysSync &amp;&amp; doPulseLength == 0">
                                         <action type="assignment" variable="MIO0" value="1"/>
@@ -1641,6 +1744,8 @@
                                       <transition type="conditional" tag="If Fake mouse timer expired, Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever" target="EarlyRelease"></transition>
                                       <transition type="timer_expired" tag="if tooFastTimer expired, go to React" target="React" timer="tooFastTimer"></transition>
                                       <transition type="conditional" tag="Dequeue Visual Stimulus" condition="now() >= (targetStimOnMs*1000 + timerDurationMs*1000 - tFrameDelayUs + 1500)" target="EndTrialStimOff" ></transition>
+                                      <transition type="conditional" tag="turn on laser" condition="inLaserDelay &amp;&amp; timerExpired(laserDelayTimer)" target="DelayLaserOn"></transition>
+                                      <transition type="conditional" tag="turn off laser" condition="endLaserDelay &amp;&amp; timerExpired(laserOnTimer)" target="DelayLaserOff"></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="React" interruptible="YES">
@@ -1660,6 +1765,8 @@
                                       <transition type="conditional" tag="Deueue Visual Stimulus" condition="timerExpired(targetOnTimer) &amp;&amp; stimTag == 2" target="EndTrialStimOff"></transition>
                                       <transition type="conditional" tag="Queue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer) &amp;&amp; stimTag == 0" target="EndTrialStimOn"></transition>
                                       <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer) &amp;&amp; stimTag" target="EndTrialStimOff"></transition>
+                                      <transition type="conditional" tag="turn on laser" condition="inLaserDelay &amp;&amp; timerExpired(laserDelayTimer)" target="DelayLaserOn"></transition>
+                                      <transition type="conditional" tag="turn off laser" condition="endLaserDelay &amp;&amp; timerExpired(laserOnTimer)" target="DelayLaserOff"></transition>
                                     </task_system_state>
 
                                     <task_system_state tag="EarlyRelease" interruptible="YES">
@@ -1754,6 +1861,8 @@
                                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                                     <transition type="conditional" tag="Deueue Visual Stimulus" condition="(isEndState==1) &amp;&amp; timerExpired(endOnTimer) &amp;&amp; stimTag" target="EndTrialStimOff"></transition>
                                     <transition type="conditional" tag="Queue second target" condition="(isEndState==1) &amp;&amp; timerExpired(endOffTimer) &amp;&amp; stimTag == 0" target="EndTrialTargetStimOn"></transition>
+                                    <transition type="conditional" tag="turn on laser" condition="inLaserDelay &amp;&amp; timerExpired(laserDelayTimer)" target="DelayLaserOn"></transition>
+                                    <transition type="conditional" tag="turn off laser" condition="endLaserDelay &amp;&amp; timerExpired(laserOnTimer)" target="DelayLaserOff"></transition>
                                   </task_system_state>
 
 
@@ -2026,6 +2135,8 @@
                               <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
                               <transition type="conditional" tag="Go to React" condition="isEndTargetState &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endTooFastTimer)" target="React"></transition>
                               <transition type="conditional" tag="Go to Missed" condition="isEndTargetState &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endReactTimeTimer)" target="Missed"></transition>
+                              <transition type="conditional" tag="turn on laser" condition="inLaserDelay &amp;&amp; timerExpired(laserDelayTimer)" target="DelayLaserOn"></transition>
+                              <transition type="conditional" tag="turn off laser" condition="endLaserDelay &amp;&amp; timerExpired(laserOnTimer)" target="DelayLaserOff"></transition>
                             </task_system_state>
 
                             <task_system_state tag="EndTrialStimOff" interruptible="YES">
@@ -2060,18 +2171,20 @@
                               <action type="assignment" variable="tStimOffMs" value="now()/1000" />
                               <action type="assignment" variable="tFrameDelayUs" value="nextFrameTimeUs - tStimOffMs*1000" />
                               
-                              <action type="if" condition="!doCueRefLaser">  
-                                <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
-                                <action type="if" condition="optic_device == 'led' ">
-                                    <action type="assignment" variable="laserTrigger" value="0"></action>
-                                    <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                              <action type="if" condition="laserTrigger">     
+                                  <action type="if" condition="!doCueRefLaser">  
+                                    <action type="if" condition="(tTrialLaserPowerMw_trigger > 0) &amp;&amp; (doLaserStim)">
+                                    <action type="if" condition="optic_device == 'led' ">
+                                        <action type="assignment" variable="laserTrigger" value="0"></action>
+                                        <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+                                        </action>
+                                        <action type="if" condition="optic_device != 'led' ">
+                                             <action type="assignment" variable="laserTrigger" value="0"></action>
+                                         </action>
+                                              
+                                        <action type="report" message="********* Turning off LASER TRIGGER *********"/>
                                     </action>
-                                    <action type="if" condition="optic_device != 'led' ">
-                                         <action type="assignment" variable="laserTrigger" value="0"></action>
-                                     </action>
-                                          
-                                    <action type="report" message="********* Turning off LASER TRIGGER *********"/>
-                                </action>
+                                  </action>
                               </action>
 
                               <action type="if" condition="sendElectrophysSync">
@@ -2106,6 +2219,8 @@
                               <transition type="conditional" tag="Go to Target after Missed" condition="tDoTargetAfterMissed &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; tMissedFirstTarget == 0" target="TempMissed"></transition>
                               <transition type="conditional" tag="Go to Reward instead of Missed" condition="(isCatchTrial==0) &amp;&amp; timerExpired(reactTimeTimer) &amp;&amp; (tBlock2TrialNumber==1)  &amp;&amp; (block2DoMissAsCorrect==1)" target="Reward"></transition>
                               <transition type="conditional" tag="Go to Missed" condition="isEndTargetState &amp;&amp; tDoTargetAfterMissed &amp;&amp; timerExpired(endReactTimeTimer)" target="Missed"></transition>
+                              <transition type="conditional" tag="turn on laser" condition="inLaserDelay &amp;&amp; timerExpired(laserDelayTimer)" target="DelayLaserOn"></transition>
+                              <transition type="conditional" tag="turn off laser" condition="endLaserDelay &amp;&amp; timerExpired(laserOnTimer)" target="DelayLaserOff"></transition>
                             </task_system_state>
 
                             <task_system_state tag="EndTrialTargetStimOn" interruptible="YES">
