@@ -29,7 +29,7 @@
       <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string" persistant="0"/>
     </folder>
     <folder tag="StimulusSpecs">
-      <variable tag="stopAfterNTrials" scope="local" logging="when_changed" default_value="90" type="integer" persistant="1"/>
+      <variable tag="stopAfterNTrials" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
       <variable tag="tactileStimulusDurationUs" scope="global" logging="when_changed" default_value="100000" type="integer" persistant="1"/>
       <variable tag="solenoidStimulusDurationMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1"/>
       <variable tag="soundDurationMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
@@ -114,7 +114,7 @@
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="cReverse" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTactileStimulusDurationUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="tTactileStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cTactileStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -254,9 +254,11 @@
 
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
 
-          <transition type="conditional" tag="camera starts" condition="counter - tCounter > 0" target="CheckCriteria"></transition>
-          <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
-              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames" target="EndTrial" ></transition>
+          <transition type="conditional" tag="camera starts" condition="counter - tCounter > 0 &amp;&amp; DoCerebellarStim == 1" target="CheckCriteria"></transition>
+          <transition type="conditional" tag="If exceeding iTi and not doing cerebellar visual stim, move to send stim" 
+            condition="(counter - tCounter) >= itiNFrames &amp;&amp; DoCerebellarStim == 0" target="SendStim" ></transition>
+              <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
+              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames &amp;&amp; DoCerebellarStim == 1" target="EndTrial" ></transition>
       </task_system_state>
 
       <task_system_state tag="CheckCriteria" interruptible="YES">
@@ -334,7 +336,7 @@
             <action type="assignment" variable="tCounter" value="counter"></action>
               <action type="if" condition="DoTactileStim == 1">
                 <action type="report" message="*** Sending Tactile Stimulus -- Staying in Post-Stim State for $TStimNFrames scans."></action>
-                <action type="assignment" variable="tTactileStimTurnedOn" value="now()/1000"/>
+                <action type="assignment" variable="cTactileStimTurnedOn" value="counter"/>
                 <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
               </action>
 
@@ -371,10 +373,10 @@
             <action type="if" condition="MouseIsStill == 0">
               <action type="assignment" variable="lastTrialMouseStill" value="0"/>
             </action>
-            <action type="if" condition="MouseIsRun == 1">
+            <action type="if" condition="MouseIsRunning == 1">
               <action type="assignment" variable="lastTrialMouseRun" value="1"/>
             </action>
-            <action type="if" condition="MouseIsRun == 0">
+            <action type="if" condition="MouseIsRunning == 0">
               <action type="assignment" variable="lastTrialMouseRun" value="0"/>
             </action>
             <action type="assignment" variable="MouseIsStill" value="0"/>
