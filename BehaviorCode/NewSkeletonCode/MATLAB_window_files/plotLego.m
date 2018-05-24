@@ -54,6 +54,7 @@ else
 end
 
 block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
+block1Ix = find(block2Ix==0);
 
 if isfield(input,'isNoGo')
 noGoIx = cell2mat_padded(input.isNoGo);
