@@ -54,7 +54,7 @@ else
 end
 
 block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
-block1Ix = find(block2Ix==0);
+block1Ix = block2Ix==0;
 
 if isfield(input,'isNoGo')
 noGoIx = cell2mat_padded(input.isNoGo);
@@ -901,6 +901,7 @@ for kk=1:length(nLevelsB1)
     end
 end
 
+
 if sum(block2Ix)>0
   plotTrsB2 = differenceRight((correctIx|incorrectIx)&block2Ix);
   nLevelsB2 = unique(plotTrsB2);
@@ -925,7 +926,7 @@ if sum(block2Ix)>0
             rightNTrialsValB2 = length(ind);
             percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
         elseif valB2<1,
-            ind = setdiff(intersect(find(valIxB2),find(correctIx)), find(block1Ix));
+            ind = setdiff(intersect(find(valIxB2),find(incorrectIx)), find(block1Ix));
             rightNTrialsValB2 = length(ind);
             percentContCellB2{kk} = rightNTrialsValB2/totalNTrialsValB2;
         end
