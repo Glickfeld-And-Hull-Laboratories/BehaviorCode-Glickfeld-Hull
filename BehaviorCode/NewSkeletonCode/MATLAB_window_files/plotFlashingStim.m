@@ -157,8 +157,10 @@ end
 if doOriAndContrastInterleaved
     vPowerV = (double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
      double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
-elseif doContrast   
+elseif doContrast & ~input.doRandCon  
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
+elseif doContrast & input.doRandCon  
+    vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast)))*100);
 elseif doOri
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg))));
 elseif ~(doVisDetect | block2DoVisDetect);
