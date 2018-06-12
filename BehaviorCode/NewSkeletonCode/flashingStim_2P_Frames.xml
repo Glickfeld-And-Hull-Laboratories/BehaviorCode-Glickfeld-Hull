@@ -34,6 +34,7 @@
       <variable tag="doAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doAuditoryWhiteNoise" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doPairedPulse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doPulseLength" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
@@ -83,6 +84,7 @@
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="soundWhiteNoiseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundIncorrectAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
       <variable tag="soundRewardAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
@@ -318,6 +320,7 @@
 
       <variable tag="tSoundBasePressAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundCueAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tSoundWhiteNoiseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundBaseAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tSoundCatchAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -332,6 +335,7 @@
       <variable tag="tDoAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAuditoryCue" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoAuditoryWhiteNoise" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="doCustomTargetTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="tDoContrastDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoOriDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -402,6 +406,7 @@
     <sound tag="pressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/louderFlatterPress.wav" amplitude="soundPressAmplitude"></sound>
     <sound tag="basePressSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBasePressAmplitude"></sound>
     <sound tag="cueSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/1000Hz_pt3s.wav" amplitude="tSoundCueAmplitude"></sound>
+    <sound tag="whiteNoiseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/whitenoise.wav" amplitude="tSoundWhiteNoiseAmplitude"></sound>
     <sound tag="baseSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/6000Hz_.2s.wav" amplitude="tSoundBaseAmplitude"></sound>
     <sound tag="catchSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundCatchAmplitude"></sound>
     <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tSoundTargetAmplitude"></sound>
@@ -815,6 +820,7 @@
                   <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
                   <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
                   <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/>
+                  <action type="assignment" variable="tDoAuditoryWhiteNoise" value="doAuditoryWhiteNoise"/>
                   <action type="assignment" variable="tLaserDoLinearRamp" value="laserDoLinearRamp"></action>
                   <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
                   <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
@@ -868,6 +874,7 @@
                   <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
                   <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
                   <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/>
+                  <action type="assignment" variable="tDoAuditoryWhiteNoise" value="doAuditoryWhiteNoise"/>
                   <action type="if" condition="tShortCatchTrial == 1">
                       <action type="assignment" variable="tDoCatchOriDetect" value="block2DoOriDetect"/>
                       <action type="assignment" variable="tDoCatchContrastDetect" value="block2DoContrastDetect"/>
@@ -1016,6 +1023,7 @@
                 <action type="assignment" variable="tDoAuditoryDetect" value="doAuditoryDetect"/>
                 <action type="assignment" variable="tDoAuditoryStim" value="doAuditoryStim"/>
                 <action type="assignment" variable="tDoAuditoryCue" value="doAuditoryCue"/> 
+                <action type="assignment" variable="tDoAuditoryWhiteNoise" value="doAuditoryWhiteNoise"/> 
               </action>
             </action>
              <!-- !doBlock2 error checking -->
@@ -1194,6 +1202,14 @@
             </action>
             <action type="if" condition="!tDoAuditoryCue"> 
               <action type="assignment" variable="tSoundCueAmplitude" value="0"/>
+            </action> 
+
+
+            <action type="if" condition="tDoAuditoryWhiteNoise">
+              <action type="assignment" variable="tSoundWhiteNoiseAmplitude" value="soundWhiteNoiseAmplitude"/>
+            </action>
+            <action type="if" condition="!tDoAuditoryWhiteNoise"> 
+              <action type="assignment" variable="soundWhiteNoiseAmplitude" value="0"/>
             </action>  
 
             <!-- send laser params to controller -->
@@ -1348,6 +1364,7 @@
               <action type="play_sound" sound="pressSound"/>
               <action type="play_sound" sound="basePressSound"/>
               <action type="play_sound" sound="cueSound"/>
+              <action type="play_sound" sound="whiteNoiseSound"/>
               <action type="assignment" variable="tLeverPressTimeMs" value="now()/1000"/>
             </action>
 
