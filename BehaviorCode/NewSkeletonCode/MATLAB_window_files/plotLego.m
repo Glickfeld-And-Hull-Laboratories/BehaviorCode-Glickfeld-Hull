@@ -731,7 +731,15 @@ if nCorr>0 && input.doTestRobot==0,
         percentContCellNoGoByDiff{kk} = totalNTrialsValNoGo/totalNTrialsVal;
       end
     end
-    pH = plot(uqDiff, cell2mat(percentCell));
+
+    if ~find(uqDiff <=0)
+      pH = plot(uqDiff, cell2mat(percentCell));
+    else
+      percentCell = cell2mat(percentCell);
+      percentCell(find(uqDiff<=0)) = [];
+      uqDiff(find(uqDiff<=0)) = [];
+      pH = plot(uqDiff, percentCell);
+    end
     if length(plotTrsNoGo)>0
       pH1 = plot(sc_num * nLevelsNoGo, cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
       set(pH1, ...
@@ -744,11 +752,11 @@ if nCorr>0 && input.doTestRobot==0,
         'LineWidth', 1.5, ...
         'Marker', '.', ...
         'MarkerSize', 9);
-    
+    ylabel('Correct/Ignore (%)')
     set(gca, 'YLim', [0 1], ...
            'XGrid', 'on',...
            'Xscale', 'log');
-       ylabel('Correct/Ignore (%)')
+       
         xlim([1 100])
 
        if isfield(input,'doContrastDiscrim')
@@ -964,6 +972,7 @@ else
     xTickL = xTickL(xTickL>=xLimm(1) & xTickL<=xLimm(2));
     xTLabelL = cellstr(num2str(xTickL(:)));
 end
+
 nLevelsB1 = nLevelsB1(~isnan(nLevelsB1));
 pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 if sum(block2Ix)>= 1
