@@ -1746,6 +1746,10 @@
                         <action type="assignment" variable="tNTrialsCompleted" value="tNTrialsCompleted+1"/>
                         <action type="assignment" variable="tLastTrialWasLeft" value="tLeftTrial"/>
                         <action type="assignment" variable="wasNoGo" value="isNoGo"/>
+
+                        <action type="if" condition="tLastTrialAbort">
+                            <action type="play_sound" sound="stationaryPeriodSound"/>
+                        </action>
                         
                         <action type="if" condition="trackMotion &gt;= leftDecisionThreshold">
                             <action type="if" condition="invertDirection">
