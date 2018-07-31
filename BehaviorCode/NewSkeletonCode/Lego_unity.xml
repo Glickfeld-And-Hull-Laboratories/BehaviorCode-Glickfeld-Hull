@@ -29,6 +29,7 @@
         <variable tag="doRandStationaryPeriod" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="randStationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="doExtendedStationaryPeriod" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="doExtendedStatPerWithoutAbort" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="delayTimeMs" scope="global" logging="when_changed" default_value="5000" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="reactionTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="1" groups="Task Control"/>
@@ -1308,7 +1309,7 @@
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="delayTimerMs" target="StimOn"></transition>
-                        <transition type="conditional" condition="doExtendedStationaryPeriod &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
+                        <transition type="conditional" condition="doExtendedStationaryPeriod &amp;&amp; doExtendedStatPerWithoutAbort == 0 &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
                       </task_system_state>
 
                       <task_system_state tag="StimOn" interruptible="YES">
@@ -1343,10 +1344,22 @@
                         <action type="assignment" variable="qStimOn" value="quadrature"/>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="doExtendedStationaryPeriod &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
+                        <transition type="conditional" condition="doExtendedStationaryPeriod &amp;&amp; doExtendedStatPerWithoutAbort == 0 &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
+                        <transition type="conditional" condition="doExtendedStationaryPeriod &amp;&amp; doExtendedStatPerWithoutAbort &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="ExtendedStationaryPeriod"></transition>
                         <transition type="timer_expired" timer="stimOnTimerMs" target="StimOff"></transition>
                         <transition type="timer_expired" timer="tooFastTimerMs" target="ZeroQuad"></transition>
                       </task_system_state>
+
+                      <task_system_state tag="ExtendedStationaryPeriod" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="play_sound" sound="stationaryPeriodSound"/>
+                        <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" condition="doExtendedStationaryPeriod &amp;&amp; doExtendedStatPerWithoutAbort &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="ExtendedStationaryPeriod"></transition>
+                        <transition type="conditional" condition="stimIsOff == 0 &amp;&amp; timerExpired(stimOnTimerMs)" target="StimOff"></transition>
+                        <transition type="conditional" condition="timerExpired(tooFastTimerMs)" target="ZeroQuad"></transition>
+                      </task_system_state>  
 
                       <task_system_state tag="StimOff" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
@@ -1359,7 +1372,8 @@
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" condition="isNotTooFast" target="Reaction"></transition>
                         <transition type="conditional" condition="!isNotTooFast &amp;&amp; timerExpired(tooFastTimerMs)" target="ZeroQuad"></transition>
-                        <transition type="conditional" condition="!isNotTooFast &amp;&amp; doExtendedStationaryPeriod &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
+                        <transition type="conditional" condition="!isNotTooFast &amp;&amp; doExtendedStationaryPeriod &amp;&amp; doExtendedStatPerWithoutAbort == 0 &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="Abort"></transition>
+                        <transition type="conditional" condition="!isNotTooFast &amp;&amp; doExtendedStationaryPeriod &amp;&amp; doExtendedStatPerWithoutAbort &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="ExtendedStationaryPeriod"></transition>
                       </task_system_state>
 
                       <task_system_state tag="ZeroQuad" interruptible="YES">
@@ -1750,7 +1764,7 @@
                         <action type="if" condition="tLastTrialAbort">
                             <action type="play_sound" sound="stationaryPeriodSound"/>
                         </action>
-                        
+
                         <action type="if" condition="trackMotion &gt;= leftDecisionThreshold">
                             <action type="if" condition="invertDirection">
                                 <action type="assignment" variable="tLeftResponse" value="0"/>
