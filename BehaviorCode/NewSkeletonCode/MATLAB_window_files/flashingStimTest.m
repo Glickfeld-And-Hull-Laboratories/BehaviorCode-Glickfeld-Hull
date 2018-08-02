@@ -95,7 +95,8 @@ varsOneValEachTrial = {...
     'tDoTargetAfterMissed', ...
     'tMissedFirstTarget', ...
     'tMissedSecondTarget', ...
-    'multVal'
+    'multVal', ...
+    'multValSize'
 };
 
 exptSetupBridge;
@@ -138,7 +139,21 @@ end
 %track contrast by presentation
 if input.doRandCon
     multVals = mwGetEventValue(eventsTrial, ds.event_codec, 'multVal', 'all', 1);
-    input.tBaseGratingContrast{trN} = double(input.baseGratingContrast) + (double(multVals) .* double(input.conDiff));
+    if input.doLogCon == 0
+        input.tBaseGratingContrast{trN} = double(input.baseGratingContrast) + (double(multVals) .* double(input.conDiff));
+    elseif input.doLogCon == 1 
+        input.tBaseGratingContrast{trN} = double(input.baseGratingContrast) * (2.^double(multVals));
+    end
+end
+
+%track size by presentation
+if input.doRandSize
+    multValSizes = mwGetEventValue(eventsTrial, ds.event_codec, 'multValSize', 'all', 1);
+    if input.doLogSize == 0
+        input.tGratingDiameterDeg{trN} = double(input.gratingHeightDeg) + (double(multValSizes) .* double(input.sizeDiff));
+    elseif input.doLogSize == 1 
+        input.tGratingDiameterDeg{trN} = double(input.gratingHeightDeg) * (2.^double(multValSizes));
+    end
 end
 
 % add to array

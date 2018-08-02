@@ -75,6 +75,10 @@
         <variable tag="conDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Structure"/>
         <variable tag="doLogCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
         <variable tag="logConN" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Trial Structure"/>
+        <variable tag="doRandSize" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+        <variable tag="sizeDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Structure"/>
+        <variable tag="doLogSize" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
+        <variable tag="logSizeN" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Trial Structure"/>        
         <variable tag="doTargetAfterMissed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
         <variable tag="targetOriAfterMissed" scope="global" logging="when_changed" default_value="90" type="float" persistant="1" groups="Trial Structure"/>
         <variable tag="targetConAfterMissed" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Trial Structure"/>
@@ -384,6 +388,7 @@
         <variable tag="tMissedFirstTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="tMissedSecondTarget" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="multVal" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="multValSize" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
         <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -1211,6 +1216,12 @@
                         <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
                     </action>
 
+                    <action type="if" condition="doRandSize">
+                        <action type="assignment" variable="multValSize" value="disc_rand(-1,1)"/>
+                        <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg + (multValSize * sizeDiff)"/>
+                        <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg + (multValSize * sizeDiff)"/>
+                    </action>
+
                       <action type="if" condition="tDoVisualStim == 0">
                         <action type="assignment" variable="tBaseGratingContrast" value="0"></action>
                         <action type="assignment" variable="tGratingContrast" value="0"></action>
@@ -1570,6 +1581,19 @@
                                             <action type="assignment" variable="multVal" value="disc_rand(0,logConN-1)"/>
                                             <action type="assignment" variable="tGratingContrast" value="baseGratingContrast * pow(2,multVal)"/>
                                           </action>
+                                        </action>  
+                                      </action>
+
+                                    <action type="if" condition="doRandSize">
+                                        <action type="if" condition="doLogSize == 0">
+                                            <action type="assignment" variable="multValSize" value="disc_rand(-1,1)"/>
+                                            <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg + (multValSize * sizeDiff)"/>
+                                            <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg + (multValSize * sizeDiff)"/>
+                                        </action>
+                                        <action type="if" condition="doLogSize &gt; 0">  
+                                            <action type="assignment" variable="multValSize" value="disc_rand(0,logSizeN-1)"/>
+                                            <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg * pow(2,multValSize)"/>
+                                            <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg * pow(2,multValSize)"/>
                                         </action>  
                                       </action>
 
@@ -2171,6 +2195,12 @@
                               <action type="if" condition="doRandCon">
                                 <action type="assignment" variable="multVal" value="disc_rand(-1,1)"/>
                                 <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast + (multVal * conDiff)"/>
+                              </action>
+
+                              <action type="if" condition="doRandSize">
+                                <action type="assignment" variable="multValSize" value="disc_rand(-1,1)"/>
+                                <action type="assignment" variable="tGratingHeightDeg" value="gratingHeightDeg + (multValSize * sizeDiff)"/>
+                                <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg + (multValSize * sizeDiff)"/>
                               </action>
 
                               <action type="assignment" tag="in End state" variable="isEndState" value="1"></action>
