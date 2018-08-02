@@ -128,6 +128,8 @@
 
       </folder>
       <folder tag="Stimuli">
+        <variable tag="doGaussianMask" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Stimulus Parameters"/>
+        <variable tag="doEllipseMask" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="baseGratingDirectionStepDeg" scope="global" logging="when_changed" default_value="10" type="float" persistant="1" groups="Stimulus Parameters"/>
         <variable tag="baseGratingDirectionStepN" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus Parameters"/>
@@ -414,22 +416,26 @@
         </sounds>
         <stimuli tag="Stimuli">
           <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
-          <stimulus type="drifting_grating" tag="base_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
+          <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
+          <stimulus type="drifting_grating" tag="base_grating_$mask"  direction="0" starting_phase="gratingStartingPhaseDeg" 
             spatial_frequency="tGratingSpatialFreqCPD" 
             speed="tGratingSpeedDPS" 
-            grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+            grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1" 
             x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
             x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
             rotation="tBaseGratingDirectionDeg" 
             alpha_multiplier="tBaseGratingContrast"></stimulus>
-            <stimulus type="drifting_Grating" tag="target_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
+            </list_replicator>
+            <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
+            <stimulus type="drifting_Grating" tag="target_grating_$mask"  direction="0" starting_phase="gratingStartingPhaseDeg" 
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
-              grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
+              grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1" 
               x_size="tGratingWidthDeg" y_size="tGratingHeightDeg" 
               x_position="tGratingAzimuthDeg" y_position="tGratingElevationDeg" 
               rotation="tGratingDirectionDeg" 
               alpha_multiplier="tGratingContrast"></stimulus>
+              </list_replicator>
               <stimulus type="drifting_Grating" tag="late_target_grating"  direction="0" starting_phase="gratingStartingPhaseDeg" 
               spatial_frequency="tGratingSpatialFreqCPD" 
               speed="tGratingSpeedDPS" 
@@ -500,8 +506,14 @@
                           <action type="update_stimulus_display" tag="-"></action> 
                           <action type="if" condition="doVisualStim">
                             <action type="if" condition="doITIStim">
-                              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>    
-                              <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+                              <action type="if" condition="doGaussianMask">  
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_gaussian"></action>    
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="start"></action>
+                              </action>
+                              <action type="if" condition="doEllipseMask">  
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_ellipse"></action>    
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="start"></action>
+                              </action>
                               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>    
                               <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="start"></action>
                               <action type="update_stimulus_display" tag="justincase"></action>
@@ -1417,8 +1429,14 @@
                                         </action>
 
                                         <action type="if" condition="!tShortCatchTrial || tCyclesOn &gt; catchCyclesOn || tCyclesOn &lt; catchCyclesOn">
-                                          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-                                          <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                          <action type="if" condition="doGaussianMask">  
+                                            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_gaussian"></action>    
+                                            <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="stimOn"></action>
+                                          </action>
+                                          <action type="if" condition="doEllipseMask">  
+                                            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_ellipse"></action>    
+                                            <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="stimOn"></action>
+                                          </action>
                                           <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
                                           <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                           <action type="report" message="Lever Down - Trial Started - Stim On $tCyclesOn of $nCyclesOn"/>
@@ -1560,7 +1578,8 @@
 
 
                                       <action type="if" condition="!doConstantStimulus">
-                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_gaussian"></action>
+                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_ellipse"></action>
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                         <action type="report" message="Not doing Constant Stimulus"></action>
@@ -1677,29 +1696,49 @@
 
                                       <!-- Must dequeue stimulus in the doConstantStimulus case -->
                                       <action type="if" condition="doConstantStimulus==1">
-                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-                                        <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
+                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_gaussian"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="StimOff"></action>
+                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_ellipse"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOff"></action>
                                         <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOff"></action>
                                       </action>
                                       <action type="if" condition="(doLongCatchTrial==1) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
-                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-                                        <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                        <action type="if" condition="doGaussianMask">
+                                            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_gaussian"></action> 
+                                            <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="StimOn"></action>
+                                        </action>
+                                        <action type="if" condition="doEllipseMask">
+                                            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_ellipse"></action> 
+                                            <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOn"></action>
+                                        </action>
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
                                         <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="play_sound" sound="baseSound"/>
                                         <action type="assignment" variable="isCatchTrial" value= "1"/>
                                       </action>
                                       <action type="if" condition="(doLongCatchTrial==0) &amp;&amp; (nCyclesOn==tMaxCyclesOn)">
-                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
-                                        <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                                        <action type="if" condition="doGaussianMask">
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating_gaussian"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="target_grating_gaussian" tag="StimOn"></action>
+                                        </action>
+                                        <action type="if" condition="doEllipseMask">
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating_ellipse"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="target_grating_ellipse" tag="StimOn"></action>
+                                        </action>
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="report" message="Target Stim On for $stimOnTimeMs ms"/>
                                       </action>
                                       <action type="if" condition="nCyclesOn &lt; tMaxCyclesOn">
-                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating"></action>
-                                        <action type="play_dynamic_stimulus" stimulus="target_grating" tag="StimOn"></action>
+                                        <action type="if" condition="doGaussianMask">
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating_gaussian"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="target_grating_gaussian" tag="StimOn"></action>
+                                        </action>
+                                        <action type="if" condition="doEllipseMask">
+                                        <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="target_grating_ellipse"></action>
+                                        <action type="play_dynamic_stimulus" stimulus="target_grating_ellipse" tag="StimOn"></action>
+                                        </action>
                                         <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action>
                                         <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                         <action type="report" message="Target Stim On for $tStimOnTimeMs ms"/>
@@ -1807,18 +1846,26 @@
                                      </action>
 
                                      <action type="if" condition="doITIStim == 0">
-                                       <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                       <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_gaussian"></action>
+                                       <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_ellipse"></action>
                                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                        <action type="update_stimulus_display" tag="justincase"></action>
                                      </action>
                                      <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-                                     <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+                                     <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_gaussian"></action>
+                                     <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_ellipse"></action>
                                      <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="late_target_grating"></action>
                                      <action type="update_stimulus_display" tag="justincase"></action>
 
                                      <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
-                                      <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
-                                      <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                        <action type="if" condition="doGaussianMask">
+                                      <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating_gaussian"></action>
+                                      <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOn"></action>
+                                      </action>
+                                      <action type="if" condition="doEllipseMask">
+                                      <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating_ellipse"></action>
+                                      <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOn"></action>
+                                      </action>
                                       <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
                                       <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                       <action type="update_stimulus_display" tag="justincase"></action>
@@ -1910,18 +1957,26 @@
                                     </action>
 
                                     <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
-                                     <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                     <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_gaussian"></action>
+                                     <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_ellipse"></action>
                                      <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                      <action type="update_stimulus_display" tag="justincase"></action>
                                    </action>	
                                    <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-                                   <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+                                   <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_gaussian"></action>
+                                   <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_ellipse"></action>
                                    <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="late_target_grating"></action>
                                    <action type="update_stimulus_display" tag="justincase"></action>  
 
                                    <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
-                                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
-                                    <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                    <action type="if" condition="doGaussianMask">
+                                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating_gaussian"></action>
+                                    <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="StimOn"></action>
+                                    </action>
+                                    <action type="if" condition="doEllipseMask">
+                                    <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating_ellipse"></action>
+                                    <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOn"></action>
+                                    </action>
                                     <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
                                     <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                     <action type="update_stimulus_display" tag="justincase"></action>
@@ -1971,17 +2026,25 @@
                                   </action>
 
                                   <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
-                                   <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                   <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_gaussian"></action>
+                                   <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_ellipse"></action>
                                    <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                    <action type="update_stimulus_display" tag="justincase"></action>
                                  </action>	
                                  <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_gaussian"></action>
+                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_ellipse"></action>
                                  <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="late_target_grating"></action>
                                  <action type="update_stimulus_display" tag="justincase"></action>
                                  <action type="if" condition="doITIStim == 1 &amp;&amp; doConstantStimulus == 1">
-                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
-                                  <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                    <action type="if" condition="doGaussianMask">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating_gaussian"></action>
+                                  <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="StimOn"></action>
+                                  </action>
+                                  <action type="if" condition="doEllipseMask">
+                                  <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating_ellipse"></action>
+                                  <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOn"></action>
+                                  </action>
                                   <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
                                   <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                   <action type="update_stimulus_display" tag="justincase"></action>
@@ -2100,8 +2163,14 @@
                                         
                               <action type="if" condition="tDoDeviantAfterMissing==0 || (tDoDeviantAfterMissing==1 &amp;&amp; tDidDeviantAfterMissing==1)">
                                 <action type="play_sound" sound="baseSound"/>
-                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-                                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                <action type="if" condition="doGaussianMask">
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_gaussian"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="StimOn"></action>
+                            </action>
+                                <action type="if" condition="doEllipseMask">
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_ellipse"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOn"></action>
+                            </action>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
                                 <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                               </action>
@@ -2110,8 +2179,14 @@
                                 <action type="assignment" variable="tBaseGratingContrast" value="1"/>
                                 <action type="assignment" variable="tBaseGratingDirectionDeg" value="90"/>
                                 <action type="play_sound" sound="targetSound"/>
-                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action> 
-                                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOn"></action>
+                                <action type="if" condition="doGaussianMask">
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_gaussian"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="StimOn"></action>
+                            </action>
+                            <action type="if" condition="doEllipseMask">
+                                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating_ellipse"></action> 
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOn"></action>
+                            </action>
                                 <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="distractor_grating"></action> 
                                 <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOn"></action>
                                 <action type="assignment" variable="tDidDeviantAfterMissing" value="1"/>
@@ -2163,18 +2238,26 @@
                               </action>
                               
                               <action type="if" condition="doITIStim == 0 &amp;&amp; doConstantStimulus == 0">
-                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_gaussian"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_ellipse"></action>
                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                               </action> 
                               <action type="if" condition="doConstantStimulus">
-                                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating"></action>
-                                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="Return to base"></action>
+                                <action type="if" condition="doGaussianMask">
+                                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating_gaussian"></action>
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="Return to base"></action>
+                            </action>
+                            <action type="if" condition="doEllipseMask">
+                                <action tag="Queue Stimulus" type="queue_stimulus" stimulus="base_grating_ellipse"></action>
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="Return to base"></action>
+                            </action>
                                 <action tag="Queue Stimulus" type="queue_stimulus" stimulus="distractor_grating"></action>
                                 <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="Return to base"></action>
                               </action> 
 
                               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="catch_grating"></action>
-                              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating"></action>
+                              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_gaussian"></action>
+                              <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="target_grating_ellipse"></action>
                               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="late_target_grating"></action>
                               <action type="update_stimulus_display" tag="justincase" predicted_output_time="nextFrameTimeUs"></action>
                               <action type="assignment" variable="tStimOffMs" value="now()/1000" />
@@ -2264,8 +2347,10 @@
 
                               <!-- Must dequeue stimulus in the doConstantStimulus case -->
                               <action type="if" condition="doConstantStimulus==1">
-                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
-                                <action type="play_dynamic_stimulus" stimulus="base_grating" tag="StimOff"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_gaussian"></action>
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_gaussian" tag="StimOff"></action>
+                                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating_ellipse"></action>
+                                <action type="play_dynamic_stimulus" stimulus="base_grating_ellipse" tag="StimOff"></action>
                                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="distractor_grating"></action>
                                 <action type="play_dynamic_stimulus" stimulus="distractor_grating" tag="StimOff"></action>
                               </action>
@@ -2343,7 +2428,8 @@
 
           </task_system>
         </trial>
-        <action type="dequeue_stimulus" stimulus="base_grating"></action>
+        <action type="dequeue_stimulus" stimulus="base_grating_gaussian"></action>
+        <action type="dequeue_stimulus" stimulus="base_grating_ellipse"></action>
         <action type="dequeue_stimulus" stimulus="distractor_grating"></action>
         <action tag="Update Stimulus" type="update_stimulus_display"></action>
         <action type="assignment" tag="" variable="laserTrigger" value="0"/>
