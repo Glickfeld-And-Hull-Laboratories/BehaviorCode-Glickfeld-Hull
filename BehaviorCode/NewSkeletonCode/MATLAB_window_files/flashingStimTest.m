@@ -213,7 +213,13 @@ stimStr = '';
 if input.tBlock2TrialNumber{trN} == 0
     if input.doVisualStim
         if input.doContrastDetect
-            stimStr = [stimStr sprintf('ctst chg %g%% ', chop(abs(double(input.gratingContrast{trN})-double(input.tBaseGratingContrast{trN})),2)*100)];
+            if input.targetOnTimeMs > 0 
+                stimStr = [stimStr sprintf('ctst chg %g%% ', chop(abs(double(input.gratingContrast{trN})-double(input.tBaseGratingContrast{trN})),2)*100)];
+            end
+            if input.targetOnTimeMs == 0
+                x = input.tBaseGratingContrast{trN};
+                stimStr = [stimStr sprintf('ctst chg %g%% ', chop(abs(double(x(1))),2)*100)];
+            end
         elseif input.doOriDetect
             stimStr = [stimStr sprintf('direction %g%deg ', chop(input.gratingDirectionDeg{trN},2))];
         end

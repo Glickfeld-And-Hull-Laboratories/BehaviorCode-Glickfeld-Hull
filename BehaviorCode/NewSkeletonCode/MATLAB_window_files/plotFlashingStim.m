@@ -157,7 +157,7 @@ end
 if doOriAndContrastInterleaved
     vPowerV = (double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100) + ...
      double(abs(double(cell2mat_padded(input.tGratingDirectionDeg))-double(cell2mat_padded(input.tBaseGratingDirectionDeg)))));
-elseif doContrast & ~input.doRandCon  
+elseif doContrast & ~input.doRandCon 
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast))-double(cell2mat_padded(input.tBaseGratingContrast)))*100);
 elseif doContrast & input.doRandCon  
     vPowerV = double(abs(double(cell2mat_padded(input.tGratingContrast)))*100);
@@ -1009,6 +1009,7 @@ if nStims >= 1
   secondHalfIx = reqHoldV > halfR;
   lastFewTrIx = false(size(firstHalfIx));  
   lastFewTrIx(find(successIx | missIx, 50, 'last')) = true;
+
   for iP=1:nL
     tP = powerLevels(iP);
     trIx = sum(stimPowerV == tP,1);
@@ -1035,7 +1036,6 @@ if nStims >= 1
       powerP.FA(iP) = sum(block2Tr1Ix & ctrIx & falseAlarmIx);
       powerP.CR(iP) = sum(block2Tr1Ix & ctrIx & correctRejectIx);
     end
-
     if showBlock2
       powerP.block2Correct1(iP) = sum(trIx & block2Tr1Ix & successIx);
       powerP.block2Correct2(iP) = sum(trIx & block2Tr2Ix & successIx);
@@ -1058,7 +1058,8 @@ if nStims >= 1
   pctCorr1 = (powerP.correct1) ./ (powerP.total1-powerP.early1) * 100;
   pctCorr2 = (powerP.correct2) ./ (powerP.total2-powerP.early2) * 100;
   pctCorrRecent = (powerP.correctRecent) ./ (powerP.totalRecent-powerP.earlyRecent) * 100;
-  if showBlock2
+
+  if showBlock2 & nL
     pctCorr1Block2 = powerP.block2Correct1 ./ (powerP.block2Total1-powerP.block2Early1) * 100;
     pctCorr2Block2 = powerP.block2Correct2 ./ (powerP.block2Total2-powerP.block2Early2) * 100;
     des1Ix = ~isnan(pctCorr1Block2);
@@ -1135,8 +1136,9 @@ if nStims >= 1
         'Marker', 'v', ...
         'MarkerSize', 9);
   end
-
+  if nL
   anystack([pH1;pH2], 'bottom');
+ 
   %if all(~isempty(pH()))
   %  anystack(pH, 'top');
   %end
@@ -1174,7 +1176,7 @@ if nStims >= 1
   
   set(gca, 'XTickLabel', xTLabelL);
 end
-
+end
 %%%%%%%%%%%%%%%%
 
 %% 10 - for several stim levels, plot react times
