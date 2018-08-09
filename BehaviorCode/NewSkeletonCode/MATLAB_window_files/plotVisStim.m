@@ -132,9 +132,14 @@ if ~input.doMovingDots
 
  end
 
-
-
-wheelIx = celleqel2mat_padded(input.tStimWheelCounter);
+for it = 1:size(input.tGratingDirectionDeg,2)
+  temp  = input.wheelSpeedValues{it};
+  if ~isnan(temp)
+    wheelIx(it) = temp(end)-temp(1);
+  else 
+    wheelIx(it)=0;
+  end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Performance Values
 
