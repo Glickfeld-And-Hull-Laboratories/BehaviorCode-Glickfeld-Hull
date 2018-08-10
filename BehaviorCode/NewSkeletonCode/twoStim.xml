@@ -76,10 +76,15 @@
       <variable tag="stimOneGratingOnTimeSPO" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Stimulus One Parameters"/>
       <variable tag="stimOneGratingContrast" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Stimulus One Parameters"/>
       <variable tag="stimOneGratingContrastStepN" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="Stimulus One Parameters"/>
+       <variable tag="maskOneGratingContrastStepN" scope="global" logging="when_changed" default_value="5" type="float" persistant="1" groups="Mask One Parameters"/>
       <variable tag="stimOneGratingContrastSPO" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Stimulus One Parameters"/>
+       <variable tag="maskOneGratingContrastSPO" scope="global" logging="when_changed" default_value="2" type="float" persistant="1" groups="Mask One Parameters"/>
       <variable tag="stimOneGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus One Parameters"/>
+      <variable tag="maskOneGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Mask One Parameters"/>
       <variable tag="stimOneGratingDirectionStepN" scope="global" logging="when_changed" default_value="12" type="float" persistant="1" groups="Stimulus One Parameters"/>
+      <variable tag="maskOneGratingDirectionStepN" scope="global" logging="when_changed" default_value="12" type="float" persistant="1" groups="Mask One Parameters"/>
       <variable tag="stimOneGratingDirectionStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Stimulus One Parameters"/>
+      <variable tag="maskOneGratingDirectionStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Mask One Parameters"/>
       <variable tag="stimOneGratingElevationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Stimulus One Parameters"/>
       <variable tag="stimOneGratingElevationStepN" scope="global" logging="when_changed" default_value="12" type="float" persistant="1" groups="Stimulus One Parameters"/>
       <variable tag="stimOneGratingElevationStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Stimulus One Parameters"/>
@@ -256,7 +261,9 @@
       <variable tag="tDoRandISITime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoRandStimOnTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoRandMaskCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoRandDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoRandMaskDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoRandPos" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoRandDiameter" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoRandSF" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -289,6 +296,12 @@
       <variable tag="tStimTwoGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tStimTwoGratingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tStimTwoSoundAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+      <variable tag="tMaskOneGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tMaskOneGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+
+      <variable tag="tMaskTwoGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tMaskTwoGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
       <variable tag="tStimOneDoVisualStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tStimOneDoAuditoryStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -457,7 +470,10 @@
             <action type="assignment" variable="tStimOneGratingElevationDeg" value="stimOneGratingElevationDeg"></action>                         
             <action type="assignment" variable="tStimOneGratingAzimuthDeg" value="stimOneGratingAzimuthDeg"></action>                             
             <action type="assignment" variable="tStimOneGratingDiameterDeg" value="stimOneGratingDiameterDeg"></action>                       
-            <action type="assignment" variable="tStimOneGratingSpatialFreqCPD" value="stimOneGratingSpatialFreqCPD"></action>                             
+            <action type="assignment" variable="tStimOneGratingSpatialFreqCPD" value="stimOneGratingSpatialFreqCPD"></action>
+             <action type="assignment" variable="tMaskOneGratingDirectionDeg" value="stimOneGratingDirectionDeg"></action>
+            <action type="assignment" variable="tMaskOneGratingContrast" value="stimOneGratingContrast"></action>
+
             <action type="assignment" variable="tStimOneGratingTemporalFreqCPS" value="stimOneGratingTemporalFreqCPS"></action> 
             <action type="assignment" variable="tStimOneGratingPhaseDeg" value="stimOneGratingPhaseDeg"></action>
             <action type="assignment" variable="tStimTwoDoVisualStim" value="stimTwoDoVisualStim"></action>
@@ -480,25 +496,29 @@
               <action type="assignment" variable="tStimTwoGratingDirectionDeg" value="stimOneGratingDirectionDeg"></action>
               <action type="assignment" variable="tStimTwoGratingContrast" value="stimOneGratingContrast"></action>
               <action type="assignment" variable="tStimTwoSoundAmplitude" value="stimOneSoundAmplitude"></action>
-              <action type="assignment" variable="tStimTwoGratingElevationDeg" value="stimOneGratingElevationDeg"></action>                         
-              <action type="assignment" variable="tStimTwoGratingAzimuthDeg" value="stimOneGratingAzimuthDeg"></action>                             
+              <action type="assignment" variable="tStimTwoGratingElevationDeg" value="stimOneGratingElevationDeg"></action>                      
+              <action type="assignment" variable="tStimTwoGratingAzimuthDeg" value="stimOneGratingAzimuthDeg"></action>                           
               <action type="assignment" variable="tStimTwoGratingDiameterDeg" value="stimOneGratingDiameterDeg"></action>                       
-              <action type="assignment" variable="tStimTwoGratingSpatialFreqCPD" value="stimOneGratingSpatialFreqCPD"></action>                             
+              <action type="assignment" variable="tStimTwoGratingSpatialFreqCPD" value="stimOneGratingSpatialFreqCPD"></action>                  
               <action type="assignment" variable="tStimTwoGratingTemporalFreqCPS" value="stimOneGratingTemporalFreqCPS"></action> 
-              <action type="assignment" variable="tStimTwoGratingPhaseDeg" value="stimOneGratingPhaseDeg"></action>    
+              <action type="assignment" variable="tStimTwoGratingPhaseDeg" value="stimOneGratingPhaseDeg"></action> 
+              <action type="assignment" variable="tMaskTwoGratingDirectionDeg" value="stimOneGratingDirectionDeg"></action>
+              <action type="assignment" variable="tMaskTwoGratingContrast" value="stimOneGratingContrast"></action>   
             </action>
-
+  
             <action type="if" condition="!matchStimOneParameters">
               <action type="assignment" variable="tStimTwoGratingOnTimeMs" value="stimTwoGratingOnTimeMs"></action>
               <action type="assignment" variable="tStimTwoGratingDirectionDeg" value="stimTwoGratingDirectionDeg"></action>
               <action type="assignment" variable="tStimTwoGratingContrast" value="stimTwoGratingContrast"></action>
               <action type="assignment" variable="tStimTwoSoundAmplitude" value="stimTwoSoundAmplitude"></action>
-              <action type="assignment" variable="tStimTwoGratingElevationDeg" value="stimTwoGratingElevationDeg"></action>                         
-              <action type="assignment" variable="tStimTwoGratingAzimuthDeg" value="stimTwoGratingAzimuthDeg"></action>                             
+              <action type="assignment" variable="tStimTwoGratingElevationDeg" value="stimTwoGratingElevationDeg"></action>                      
+              <action type="assignment" variable="tStimTwoGratingAzimuthDeg" value="stimTwoGratingAzimuthDeg"></action>                            
               <action type="assignment" variable="tStimTwoGratingDiameterDeg" value="stimTwoGratingDiameterDeg"></action>                       
-              <action type="assignment" variable="tStimTwoGratingSpatialFreqCPD" value="stimTwoGratingSpatialFreqCPD"></action>                             
+              <action type="assignment" variable="tStimTwoGratingSpatialFreqCPD" value="stimTwoGratingSpatialFreqCPD"></action>              
               <action type="assignment" variable="tStimTwoGratingTemporalFreqCPS" value="stimTwoGratingTemporalFreqCPS"></action> 
-              <action type="assignment" variable="tStimTwoGratingPhaseDeg" value="stimTwoGratingPhaseDeg"></action>    
+              <action type="assignment" variable="tStimTwoGratingPhaseDeg" value="stimTwoGratingPhaseDeg"></action> 
+              <action type="assignment" variable="tMaskTwoGratingDirectionDeg" value="stimTwoGratingDirectionDeg"></action>
+              <action type="assignment" variable="tMaskTwoGratingContrast" value="stimTwoGratingContrast"></action>      
             </action>
 
              <action type="if" condition="doBlock2">
@@ -631,6 +651,11 @@
               <action type="if" condition="tDoRandCon">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingContrastStepN"/>
                 <action type="assignment" variable="tStimOneGratingContrast" value= "stimOneGratingContrast * pow(stimOneGratingContrastSPO,tTempStim1)"/>
+
+              <action type="if" condition="tDoRandMaskCon">
+                <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % maskOneGratingContrastStepN"/>
+                <action type="assignment" variable="tMaskOneGratingContrast" value= "maskOneGratingContrast * pow(maskOneGratingContrastSPO,tTempStim1)"/>
+
                 <action type="if" condition="matchStimOneParameters">
                   <action type="assignment" variable="tStimTwoGratingContrast" value= "tStimOneGratingContrast"/>
                 </action>
@@ -657,7 +682,15 @@
 
               <action type="if" condition="tDoRandDir">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingDirectionStepN"/>
-                <action type="assignment" variable="tStimOneGratingDirectionDeg" value= "stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))"/>
+                <action type="assignment" variable="tStimGratingDirectionDeg" value= "stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))"/>
+                </action>
+
+              <action type="if" condition="tDoRandMaskDir">
+                <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % maskOneGratingDirectionStepN"/>
+                <action type="assignment" variable="tMaskOneGratingDirectionDeg" value= "maskOneGratingDirectionDeg + (maskOneGratingDirectionStepDeg * (tTempStim1))"/>
+                </action>
+
+
                 <action type="if" condition="matchStimOneParameters">
                   <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "tStimOneGratingDirectionDeg"/>
                 </action>
