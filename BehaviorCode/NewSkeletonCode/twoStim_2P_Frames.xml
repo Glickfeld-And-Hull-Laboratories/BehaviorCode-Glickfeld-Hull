@@ -12,7 +12,9 @@
               do2led="do2led" led_seq="led_seq" LED_duration="LED_durationMS" led1_status="led1_status" led2_status="led2_status"
               do_wheelspeed="DoWheelSpeed"
               ws_durationUS="speedIntervalUS"
-              wheel_speed="wheelSpeed"/>
+              wheel_speed="wheelSpeed"
+              doCB="doCerebellarStim"
+              quadrature='quadrature'/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -34,6 +36,7 @@
       <variable tag="doRandPhase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doRandSoundAmp" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="doBlock2SeparateOdds" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
@@ -238,6 +241,7 @@
       <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0"/>
+      <variable tag="quadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
     </folder>
     <folder tag="Internal Variables">
       <variable tag="ntrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -991,6 +995,7 @@
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
 
             <action type="if" condition="doWheelSpeed == 1">
+              <action type="assignment" variable="doCerebellarStim" value="0"/>
               <action type="assignment" variable="DoWheelSpeed" value="doWheelSpeed"/>
               <action type="assignment" variable="speedIntervalUS" value="speedIntervalMS*1000"/>
             </action>
