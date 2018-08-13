@@ -38,75 +38,158 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
             end
             mworks = concatenateDataBlocks(mworks);
         end
+
         if ~isempty(trialRange)
             if trialRange(end) > length(mworks.trialOutcomeCell)
-                trialRange(end) = length(mworks.trialOutcomeCell);
+                lastTrial = find(trialRange > length(mworks.trialOutcomeCell),1)-1;
+                trialRange = trialRange(1:lastTrial);
             end
-            mworks = trialChopper(mworks,[trialRange(1) trialRange(end)]);
+            trialRangeInd = false(1,length(mworks.trialOutcomeCell));
+            trialRangeInd(trialRange) = true;
+            mworks = trialChopper(mworks,trialRangeInd);
         end
+        
+        nCyc = double(cell2mat(mworks.nCyclesOn));
+        
+        if isfield(mworks,'nFramesOn')
+            frameRate = mworks.frameRateHz;
+            
+            trialStartFr = celleqel2mat_padded(mworks.cFirstStim);
+            trialEndFr = celleqel2mat_padded(mworks.cLeverUp);
+            trialTimeFr = trialEndFr - trialStartFr;
+            
+            trialTimeMs = (trialTimeFr./frameRate).*1000;
+        else
+            leverUpTime = cell2mat(mworks.leverUpTimeMs);
+            leverDownTime = cell2mat(mworks.leverDownTimeMs);
+            trialTimeMs = double(leverUpTime - leverDownTime);
+        end
+        
+        tOn = double(mworks.stimOnTimeMs);
+        tOff = double(mworks.stimOffTimeMs);
+
+        valTargetOnTime =(tOn+tOff)*nCyc;
+        valReactTimeCalc = trialTimeMs - valTargetOnTime;
         
         nTrials = length(mworks.trialOutcomeCell);
         fa = strcmp(mworks.trialOutcomeCell,'failure');
         miss = strcmp(mworks.trialOutcomeCell,'ignore');
         hit = strcmp(mworks.trialOutcomeCell,'success');
         
+%         fidgets = trialTimeMs < (tOn+tOff+100);
+%         fa(fidgets) = false; 
+        
         pctEarly = sum(fa)./nTrials;
         
-        tVisTargets = cell2mat_padded(mworks.tGratingDirectionDeg);
+        tVisTargets = round(double(cell2mat_padded(mworks.tGratingDirectionDeg)),2,'significant');
         visTargets = unique(tVisTargets);
         visTargets = visTargets(2:end);        
         visHR = zeros(1,length(visTargets));
+        nVis = zeros(1,length(visTargets));
         for i = 1:length(visTargets)
             ind = tVisTargets == visTargets(i);
             visHR(i) = sum(ind & hit) ./ sum(ind & (hit | miss));
+            nVis(i) = sum(ind & (hit | miss));
         end
         
-        tAudTargets = celleqel2mat_padded(mworks.tSoundTargetAmplitude);
+        tAudTargets = round(double(celleqel2mat_padded(...
+            mworks.tSoundTargetAmplitude)),2,'significant');
         audTargets = unique(tAudTargets);
         audTargets = audTargets(2:end);
         audHR = zeros(1,length(audTargets));
+        nAud = zeros(1,length(audTargets));
         for i = 1:length(audTargets)
             ind = tAudTargets == audTargets(i);
             audHR(i) = sum(ind & hit) ./ sum(ind & (hit | miss));
+            nAud(i) = sum(ind & (hit | miss));
         end
         
+        bxStruct(iexp).date = expDate;
         bxStruct(iexp).sn = mouseName;
         bxStruct(iexp).pctEarly = pctEarly;
         bxStruct(iexp).visHR = visHR;
         bxStruct(iexp).audHR = audHR;
-        bxStruct(iexp).stimOnTime = mworks.stimOnTimeMs;
-        bxStruct(iexp).stimOffTime = mworks.stimOffTimeMs;
         bxStruct(iexp).hit = hit;
         bxStruct(iexp).miss = miss;
         bxStruct(iexp).fa = fa;
         bxStruct(iexp).tVisTargets = tVisTargets;
         bxStruct(iexp).tAudTargets = tAudTargets;
-        bxStruct(iexp).trLength = cell2mat(mworks.tCyclesOn);
-        bxStruct(iexp).trLengthMs = cellfun(@(x,y) x-y,...
-            mworks.tLeverReleaseTimeMs, mworks.tLeverPressTimeMs);
+        
+        bxStruct(iexp).stimOnTime = mworks.stimOnTimeMs;
+        bxStruct(iexp).stimOffTime = mworks.stimOffTimeMs;
+        bxStruct(iexp).trLengthMs = trialTimeMs;
+        bxStruct(iexp).nCycles = nCyc;
+        bxStruct(iexp).valReact = valReactTimeCalc;
+        bxStruct(iexp).size = mworks.gratingHeightDeg;
         
         if mworks.doShortCatchTrial
-            if mworks.doOriDetect == 1
-                visualBlock = 0;
-                auditoryBlock = 1;
-                bxStruct(iexp).invType = 'vis';
-                bxStruct(iexp).tInvTargets = cell2mat_padded(...
-                    mworks.tCatchGratingDirectionDeg);
-            else
-                visualBlock = 1;
-                auditoryBlock = 0;
-                bxStruct(iexp).invType = 'aud';
-                bxStruct(iexp).tInvTargets = cell2mat_padded(...
-                    mworks.tSoundCatchAmplitude);
+            bxStruct(iexp).tInvVisTargets = cell2mat_padded(...
+                mworks.tCatchGratingDirectionDeg);
+            bxStruct(iexp).tInvAudTargets = celleqel2mat_padded(...
+                mworks.tSoundCatchAmplitude);
+            if mworks.doShortCatchReward == 0
+                disp(['Catch not rewared - ' expDate '-' mouseName])
             end
-            bxStruct(iexp).invHit = strcmp(mworks.catchTrialOutcomeCell,'FA');
-            bxStruct(iexp).invMiss = strcmp(mworks.catchTrialOutcomeCell,'CR');
-            bxStruct(iexp).invTrLength = cell2mat(mworks.catchCyclesOn);
+            
+            if isfield(mworks,'cCatchOn')
+                cCyc = celleqel2mat_padded(mworks.cCatchOn);
+                
+                catchTrialFr = cCyc - trialStartFr;
+                catchReactFr = trialEndFr - cCyc;
+                
+                tooFastFr = round(frameRate*((mworks.tooFastTimeMs)/1000));
+                reactTimeFr = round(frameRate*((mworks.reactTimeMs)/1000));
+                
+                catchOutcome = cell(1,nTrials);
+                outInd = catchReactFr > tooFastFr & catchReactFr < reactTimeFr;
+                catchOutcome(outInd) = {'FA'};
+                outInd = catchReactFr > reactTimeFr;
+                catchOutcome(outInd) = {'CR'};
+                outInd = catchReactFr < 0;
+                catchOutcome(outInd) = {'failure'};
+                bxStruct(iexp).invHit = strcmp(catchOutcome,'FA');
+                bxStruct(iexp).invMiss = strcmp(catchOutcome,'CR');
+                
+                if iscell(mworks.nFramesOn)
+                    frOn = unique(cell2mat(mworks.nFramesOn));
+                    frOff = unique(cell2mat(mworks.nFramesOff));
+                else
+                    frOn = mworks.nFramesOn;
+                    frOff = mworks.nFramesOff;
+                end
+                catchTimeMs = (catchTrialFr./frameRate)*1000;
+                catchCycCalc = double(round(catchTrialFr./(frOn+frOff)));
+                invReactTimeCalc = (catchReactFr./frameRate)*1000;
+                
+            else
+                bxStruct(iexp).invHit = strcmp(mworks.catchTrialOutcomeCell,'FA');
+                bxStruct(iexp).invMiss = strcmp(mworks.catchTrialOutcomeCell,'CR');
+                catchTimeMs = celleqel2mat_padded(mworks.tCatchTimeMs) - ...
+                    double(leverDownTime);
+                catchCycCalc = double(round(catchTimeMs./(tOn+tOff)));
+                invTargetOnTime = (tOn+tOff)*catchCycCalc;
+                invReactTimeCalc = trialTimeMs - invTargetOnTime;
+            end
+            if any(bxStruct(iexp).tInvVisTargets > 0)
+                if any(bxStruct(iexp).tInvAudTargets > 0)
+                    bxStruct(iexp).invType = 'both';
+                else
+                    bxStruct(iexp).invType = 'vis';
+                end
+            elseif any(bxStruct(iexp).tInvAudTargets > 0)
+                bxStruct(iexp).invType = 'aud';
+            end
+            
+            bxStruct(iexp).catchCyc = catchCycCalc;
+            bxStruct(iexp).invReact = invReactTimeCalc;
         else
             bxStruct(iexp).invType = nan;
             bxStruct(iexp).invHit = nan(1,nTrials);
             bxStruct(iexp).invMiss = nan(1,nTrials);
-            bxStruct(iexp).invTrLength = nan(1,nTrials);
-        end        
+            bxStruct(iexp).catchCyc = nan(1,nTrials);
+            bxStruct(iexp).invReact = nan(1,nTrials);
+            
+        end 
+            
     end
 end

@@ -105,8 +105,16 @@ for iexp = 1:nexp_img
     invHit = strcmp(input_temp.catchTrialOutcomeCell,'FA');
     invMiss = strcmp(input_temp.catchTrialOutcomeCell,'CR');
     trLength = cell2mat(input_temp.tCyclesOn);
-    invTrLength = cell2mat(input_temp.catchCyclesOn);
+%     invTrLength = cell2mat(input_temp.catchCyclesOn); 
+    nCyc = cell2mat(input_temp.nCyclesOn);
     
+    leverUpTime = cell2mat(input_temp.cLeverUp);
+    leverDownTime = cell2mat(input_temp.cLeverDown);
+    trialTimeFrames = leverUpTime - leverDownTime;
+    trialTimeMs = double(trialTimeFrames .* (1000./input_temp.frameRateHz));
+    
+    catchTimeFrames = celleqel2mat_padded(input_temp.cCatchOn) - double(leverDownTime);
+    catchTimeMs = catchTimeFrames .* (1000./input_temp.frameRateHz);
     if ~isnan(imagingDatasets(iexp).trial_range)
         trial_range = imagingDatasets(iexp).trial_range;
         nt = length(trial_range);
@@ -122,13 +130,14 @@ for iexp = 1:nexp_img
         invHit = invHit(trial_range);
         invMiss = invMiss(trial_range);
         trLength = trLength(trial_range);  
-        invTrLength = invTrLength(trial_range);
+%         invTrLength = invTrLength(trial_range);
+        nCyc = nCyc(trial_range);
+        trialTimeMs = trialTimeMs(trial_range);
+        catchTimeMs = catchTimeMs(trial_range);
     end
     pctEarly = sum(failureIx,2)./length(failureIx);
     early_mat_img(iexp) = pctEarly;
     
-    bxImgExp(iexp).trLength = trLength;
-    bxImgExp(iexp).invTrLength = invTrLength;
     
     oris = unique(gratingDirectionDeg);
     maxOriTrials = find(gratingDirectionDeg == max(oris,[],2));
@@ -164,6 +173,19 @@ for iexp = 1:nexp_img
     
     tOn = input_temp.stimOnTimeMs;
     tOff = input_temp.stimOffTimeMs;
+    
+    catchCycCalc = round(catchTimeMs/double(tOn+tOff));
+    
+    invTargetOnTime = double((tOn+tOff).*catchCycCalc);
+    valTargetOnTime = double((tOn+tOff).*nCyc);
+
+    valReactTimeCalc = double(trialTimeMs - valTargetOnTime);
+    invReactTimeCalc = double(trialTimeMs - invTargetOnTime);
+    
+    bxImgExp(iexp).trLength = nCyc;
+    bxImgExp(iexp).invTrLength = catchCycCalc;
+    bxImgExp(iexp).valReact = valReactTimeCalc;
+    bxImgExp(iexp).invReact = invReactTimeCalc;
     bxImgExp(iexp).tOn = tOn;
     bxImgExp(iexp).tOff = tOff;
     

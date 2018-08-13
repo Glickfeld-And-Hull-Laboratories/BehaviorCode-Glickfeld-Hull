@@ -63,7 +63,7 @@ for iexp = 1:nexp
             vis = 1;
             aud = 0;
             bxExp(iexp).invType = 'aud';
-            bxExp(iexp).tInvTargets = cell2mat_padded(input_temp.tSoundCatchAmplitude);
+            bxExp(iexp).tInvTargets = celleqel2mat_padded(input_temp.tSoundCatchAmplitude);
         end
     else
         bxExp(iexp).invType = NaN;
@@ -145,11 +145,31 @@ for iexp = 1:nexp
     bxExp(iexp).invHitIx = invHit;
     bxExp(iexp).invMissIx = invMiss;
         
-    bxExp(iexp).trLength = cell2mat(input_temp.tCyclesOn);
-    bxExp(iexp).invTrLength = cell2mat(input_temp.catchCyclesOn);
     
-    tOn = input_temp.stimOnTimeMs;
-    tOff = input_temp.stimOffTimeMs;
+    leverUpTime = cell2mat(input_temp.leverUpTimeMs);
+    leverDownTime = cell2mat(input_temp.leverDownTimeMs);
+    trialTimeMs = double(leverUpTime - leverDownTime);
+
+    tOn = double(input_temp.stimOnTimeMs);
+    tOff = double(input_temp.stimOffTimeMs);
+    
+%     tInvCyc = cell2mat(input_temp.catchCyclesOn);
+    catchTimeMs = celleqel2mat_padded(input_temp.tCatchTimeMs) - double(leverDownTime);
+    catchCycCalc = round(catchTimeMs./double(tOn+tOff))+1;
+    
+    nCyc = cell2mat(input_temp.nCyclesOn);
+    
+    invTargetOnTime = double((tOn+tOff).*catchCycCalc);
+    valTargetOnTime = double((tOn+tOff).*nCyc);
+
+    valReactTimeCalc = trialTimeMs - valTargetOnTime;
+    invReactTimeCalc = trialTimeMs - invTargetOnTime;
+    
+    bxExp(iexp).trLength = trialTimeMs;%cell2mat(input_temp.tCyclesOn);
+    bxExp(iexp).nCyc = nCyc;
+    bxExp(iexp).invTrLength = catchCycCalc;
+    bxExp(iexp).valReact = valReactTimeCalc;
+    bxExp(iexp).invReact = invReactTimeCalc;
     bxExp(iexp).tOn = tOn;
     bxExp(iexp).tOff = tOff;
     

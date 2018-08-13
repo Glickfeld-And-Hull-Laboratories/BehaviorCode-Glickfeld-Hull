@@ -41,6 +41,7 @@ switch tHostname
             rc.caOutputDir = fullfile(rootDirCrashAnalysis, 'FSAV Summaries');
             rc.ashleyAnalysis = fullfile(rootDirCrashAnalysis);
             rc.ashleyData = fullfile(rootDirCrash,'data');
+            rc.isilon = rootDirIsilon;
         elseif tUsername(1:5) == 'xiaor'
             rc.name = 'xiaor';
             rootDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis';

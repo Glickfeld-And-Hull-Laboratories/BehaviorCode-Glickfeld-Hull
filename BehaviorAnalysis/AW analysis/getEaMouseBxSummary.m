@@ -118,6 +118,25 @@ for im = 1:nmice
     [~,invAudHR95ci] = binofit(nInvAudHits,nInvAudHits+nInvAudMisses);
     
     %%
+    ind = ~isnan(visHitRate);
+    msFit = weibullFitLG(visTargetsBinned(ind), visHitRate(ind),...
+        1, 0, {'nTrials', nVisHits(ind)+nVisMisses(ind)});
+
+    visBTAttnTestP = belowThreshAttnTest(msFit.thresh,tVisTargets,tInvVisTargets,...
+        hit,miss,invHit,invMiss);
+    visAttnTestP = allTrialsAttnTest(tVisTargets,tInvVisTargets,...
+        hit,miss,invHit,invMiss);
+    
+    ind = ~isnan(audHitRate);
+    msFit = weibullFitLG(audTargetsBinned(ind), audHitRate(ind),...
+        1, 0, {'nTrials', nAudHits(ind)+nAudMisses(ind)});
+
+    audBTAttnTestP = belowThreshAttnTest(msFit.thresh,tAudTargets,tInvAudTargets,...
+        hit,miss,invHit,invMiss);
+    audAttnTestP = allTrialsAttnTest(tAudTargets,tInvAudTargets,...
+        hit,miss,invHit,invMiss);
+    %%
+    %%
     visMatches = cell2mat(getMatchedValidTrialIndex(tVisTargets,tInvVisTargets));
     matchedVisHR = sum(ismember(visMatches,find(hit))) ./ ...
         (sum(ismember(visMatches,find(hit)))+sum(ismember(visMatches,find(miss))));
@@ -208,6 +227,11 @@ for im = 1:nmice
         sum(invAudLongTrials & (invHit | invMiss));
     
     %%
+    msSummary(im).av(visualTrials).belowThreshAttnTestP = visBTAttnTestP;
+    msSummary(im).av(auditoryTrials).belowThreshAttnTestP = audBTAttnTestP;
+    msSummary(im).av(visualTrials).allTrialsAttnTestP = visAttnTestP;
+    msSummary(im).av(auditoryTrials).allTrialsAttnTestP = audAttnTestP;
+    
     msSummary(im).av(visualTrials).binning(oriBin).cue(val).hitRate = ...
         visHitRate;
     msSummary(im).av(visualTrials).binning(oriBin).cue(val).hitRateCI = ...
