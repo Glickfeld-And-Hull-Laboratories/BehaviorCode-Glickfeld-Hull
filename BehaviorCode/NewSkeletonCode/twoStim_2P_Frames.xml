@@ -864,6 +864,7 @@
             </action>  
 
             <action type="if" condition="tDoMatrix">
+
               <action type="if" condition="tDoRandISITime &amp;&amp; tDoRandDir">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % (stimOneGratingDirectionStepN * isiTimeN)"/>
                 <action type="if" condition="tTempStim1 &lt; stimOneGratingDirectionStepN">
@@ -911,6 +912,60 @@
                   </action>
                 </action>
               </action>
+
+              <action type="if" condition="tDoRandCon &amp;&amp; tDoRandDir">
+                <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingContrastStepN)"/>
+                <action type="if" condition="tTempStim1 &lt; stimOneGratingDirectionStepN">
+                  <action type="assignment" variable="tStimOneGratingDirectionDeg" value= "stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))"/>
+                  <action type="assignment" variable="tStimOneGratingContrast" value= "stimOneGratingContrast"/>
+                </action>
+                <action type="if" condition="tTempStim1 &gt;= stimOneGratingDirectionStepN">
+                  <action type="assignment" variable="tStimOneGratingDirectionDeg" value= "stimOneGratingDirectionDeg+ (stimOneGratingDirectionStepDeg * ((tTempStim1) % stimOneGratingDirectionStepN))"/>
+                  <action type="assignment" variable="tStimOneGratingContrast" value= "stimOneGratingContrast * pow(stimOneGratingContrastSPO, (floor(tTempStim1 / stimOneGratingDirectionStepN)))"/>
+                </action>
+                <action type="if" condition="matchStimOneParameters">
+                  <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "tStimOneGratingDirectionDeg"/>
+                  <action type="assignment" variable="tStimTwoGratingContrast" value= "tStimOneGratingContrast"/>
+                </action>
+                <action type="if" condition="!matchStimOneParameters">
+                  <action type="assignment" variable="tTempStim2" value= "tStimulusNumber % (stimTwoGratingDirectionStepN * stimTwoGratingContrastStepN)"/>
+                  <action type="if" condition="tTempStim2 &lt; stimTwoGratingDirectionStepN">
+                    <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))"/>
+                    <action type="assignment" variable="tStimTwoGratingContrast" value= "stimTwoGratingContrast"/>
+                  </action>  
+                  <action type="if" condition="tTempStim2 &gt;= stimTwoGratingDirectionStepN">
+                    <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "stimTwoGratingDirectionDeg+ (stimTwoGratingDirectionStepDeg * ((tTempStim2) % stimTwoGratingDirectionStepN))"/>
+                    <action type="assignment" variable="tStimTwoGratingContrast" value= "stimTwoGratingContrast * pow(stimTwoGratingContrastSPO, (floor(tTempStim2 / stimTwoGratingDirectionStepN)))"/>
+                  </action>  
+                </action>
+                <action type="if" condition="doBlock2">
+                  <action type="if" condition="tBlock2TrialNumber">
+                    <action type="if" condition="!block2MatchB1VisStim">
+                      <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % (block2StimOneGratingDirectionStepN * block2StimOneGratingContrastStepN)"/>
+                      <action type="if" condition="tTempStim1 &lt; block2StimOneGratingDirectionStepN">
+                        <action type="assignment" variable="tStimOneGratingDirectionDeg" value= "block2StimOneGratingDirectionDeg + (block2StimOneGratingDirectionStepDeg * (tTempStim1))"/>
+                        <action type="assignment" variable="tStimOneGratingContrast" value= "block2StimOneGratingContrast"/>
+                      </action>
+                      <action type="if" condition="tTempStim1 &gt;= block2StimOneGratingDirectionStepN">
+                        <action type="assignment" variable="tStimOneGratingDirectionDeg" value= "block2StimOneGratingDirectionDeg+ (block2StimOneGratingDirectionStepDeg * ((tTempStim1) % block2StimOneGratingDirectionStepN))"/>
+                        <action type="assignment" variable="tStimOneGratingContrast" value= "block2StimOneGratingContrast * pow(block2StimOneGratingContrastSPO, (floor(tTempStim1 / block2StimOneGratingDirectionStepN)))"/>
+                      </action>
+                      <action type="if" condition="matchStimOneParameters">
+                        <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "tStimOneGratingDirectionDeg"/>
+                        <action type="assignment" variable="tStimTwoGratingContrast" value= "tStimOneGratingContrast"/>
+                      </action>
+                      <action type="if" condition="!matchStimOneParameters">
+                        <action type="assignment" variable="tTempStim2" value= "tStimulusNumber % (block2StimTwoGratingDirectionStepN * block2StimTwoGratingContrastStepN)"/>
+                        <action type="if" condition="tTempStim2 &lt; block2StimTwoGratingDirectionStepN">
+                          <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "block2StimTwoGratingDirectionDeg + (block2StimTwoGratingDirectionStepDeg * (tTempStim2))"/>
+                          <action type="assignment" variable="tStimTwoGratingContrast" value= "block2StimTwoGratingContrast * pow(block2StimTwoGratingContrastSPO, (floor(tTempStim2 / block2StimTwoGratingDirectionStepN)))"/>
+                        </action>
+                      </action> 
+                    </action>
+                  </action>
+                </action>
+              </action>
+
             </action>     
 
             <action type="if" condition="!tStimOneDoVisualStim">
@@ -924,8 +979,21 @@
             </action> 
             <action type="if" condition="!tStimTwoDoAuditoryStim">
               <action type="assignment" variable="tStimTwoSoundAmplitude" value= "0"/>
-            </action>        
+            </action> 
 
+            <!--- make sure contrast is between 0 and 1 -->
+            <action type="if" condition="tStimOneGratingContrast &lt; 0">       
+              <action type="assignment" variable="tStimOneGratingContrast" value= "0"/>
+            </action> 
+            <action type="if" condition="tStimOneGratingContrast &gt; 1">       
+              <action type="assignment" variable="tStimOneGratingContrast" value= "1"/>
+            </action>
+            <action type="if" condition="tStimTwoGratingContrast &lt; 0">       
+              <action type="assignment" variable="tStimTwoGratingContrast" value= "0"/>
+            </action> 
+            <action type="if" condition="tStimTwoGratingContrast &gt; 1">       
+              <action type="assignment" variable="tStimTwoGratingContrast" value= "1"/>
+            </action>  
 
             <!-- frame conversion -->
             <action type="assignment" tag="Calculate nStimOneFramesOn" variable="nStimOneFramesOn" value="ceil((tStimOneGratingOnTimeMs/1000)*frameRateHz)"/>
