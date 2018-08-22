@@ -8,10 +8,10 @@ exptSummaryDir = fullfile(rc.ashley,...
     'Manuscripts','Attention V1','Mouse Info.xlsx');
 exptSummaryInfo = readtable(exptSummaryDir);
 fnout = fullfile(rc.ashley,'Manuscripts','Attention V1','Matlab Figs');
-
-ms2analyze = cellfun(@num2str,num2cell(exptSummaryInfo.SubjectNumber),...
-    'unif',0);
-% ms2analyze = exptSummaryInfo.SubjectNumber';
+% 
+% ms2analyze = cellfun(@num2str,num2cell(exptSummaryInfo.SubjectNumber),...
+%     'unif',0);
+ms2analyze = exptSummaryInfo.SubjectNumber';
 nMice = length(ms2analyze);
 
 exampleMouse = '668';

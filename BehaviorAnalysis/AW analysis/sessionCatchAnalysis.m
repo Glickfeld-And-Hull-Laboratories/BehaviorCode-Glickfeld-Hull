@@ -1,18 +1,21 @@
-close all
-awFSAVdatasets_longStimON_V1
-for slct_expt = 18:20
-% ms = '743';
-% exptInfo = [{'180427';'0911';100:400};...
-%             ];
-ms = expt(slct_expt).SubNum;
-nrun = expt(slct_expt).nrun;
-exptInfo = cell(3,nrun);
-exptInfo(1,:) = repmat({expt(slct_expt).date},[1,nrun]);
-exptInfo(2,:) = cellstr(expt(slct_expt).time_mat)';
+clear all;close all
+% awFSAVdatasets_longStimON_V1
+% for slct_expt = 18:20
+% ms = expt(slct_expt).SubNum;
+% nrun = expt(slct_expt).nrun;
+% exptInfo = cell(3,nrun);
+% exptInfo(1,:) = repmat({expt(slct_expt).date},[1,nrun]);
+% exptInfo(2,:) = cellstr(expt(slct_expt).time_mat)';
 
 doSave = 0;
 fnout = 'Z:\Analysis\_temp figs\180201';
 
+ms = '626';
+exptInfo = [{[];'1617';[]},...
+            {[];'1650';[]},...
+            {[];'1707';[]}];
+nrun = size(exptInfo,2);
+exptInfo(1,:) = repmat({'160118'},[1,nrun]);
 
 for iexp = 1:size(exptInfo,2)
     dt = exptInfo{1,iexp};
@@ -211,4 +214,4 @@ if doSave
 end
 %%
 end
-end
+% end
