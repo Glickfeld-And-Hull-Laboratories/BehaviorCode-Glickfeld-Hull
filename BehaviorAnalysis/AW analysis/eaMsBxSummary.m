@@ -223,9 +223,11 @@ for im = 1:nmice
         msExptAnalyzed(exptN).av(visualTrials).falseAlarmRate = ...
             sum(fa(trueFAInd & visTrials & ~invTrials))/...
             sum(nFACyc(longEnoughTrials & visTrials & ~invTrials));
+        nVisFATrials = sum(nFACyc(longEnoughTrials & visTrials & ~invTrials));
         msExptAnalyzed(exptN).av(auditoryTrials).falseAlarmRate = ...
             sum(fa(trueFAInd & audTrials & ~invTrials))/...
             sum(nFACyc(longEnoughTrials & audTrials & ~invTrials));
+        nAudFATrials = sum(nFACyc(longEnoughTrials & audTrials & ~invTrials));
         
         HR = nan(1,length(visStim));
         for i = 1:length(visStim)
@@ -243,8 +245,11 @@ for im = 1:nmice
                 
         visHR = msExptInfo(iexp).visHR;        
         ind = nVis > minTrN_expt;
-        msVisFit = weibullFitLG(visStim(ind),visHR(ind),1,0,{'nTrials',nVis(ind)});
-        
+%         msVisFit = weibullFitLG(visStim(ind),visHR(ind),1,0,{'nTrials',nVis(ind)});
+        msVisFit = weibullFitLG([0 visStim(ind)],...
+            [msExptAnalyzed(exptN).av(visualTrials).falseAlarmRate visHR(ind)]...
+            ,1,0,{'nTrials',[nVisFATrials nVis(ind)]});
+
         msExptAnalyzed(exptN).av(visualTrials).threshold = msVisFit.thresh;
         
         [visHR_highThreshold, invVisHR_highThreshold, highThreshExpt,visMatchHighThreshTrialInd] = ...
@@ -264,11 +269,14 @@ for im = 1:nmice
         audHR = msExptInfo(iexp).audHR;
         ind = nAud > minTrN_expt;
         ind = ~isnan(audHR) & ind;
-        if sum(ind) >= 3
+        if sum(ind) >= 2
             
-            msAudFit = weibullFitLG(audStim(ind),audHR(ind),1,0,{'nTrials',nAud(ind)});
+%             msAudFit = weibullFitLG(audStim(ind),audHR(ind),1,0,{'nTrials',nAud(ind)});
+
             msExptAnalyzed(exptN).av(auditoryTrials).threshold = msAudFit.thresh;
-        
+            msAudFit = weibullFitLG([0 audStim(ind)],...
+                [msExptAnalyzed(exptN).av(auditoryTrials).falseAlarmRate audHR(ind)],...
+                1,0,{'nTrials',[nAudFATrials nAud(ind)]});        
             [audHR_highThreshold, invAudHR_highThreshold, highThreshExpt ,audMatchHighThreshTrialInd] = ...
                 getMatchedHighThresholdHR(...
                 audStim,msAudFit,highThreshold,tAudTargets,tInvAudTargets,...
@@ -286,6 +294,12 @@ for im = 1:nmice
             audMatchedHighThreshID = [];
             audMatchedHighThreshOutcome = [];     
             invAudHighThreshID = [];
+                        
+            msExptAnalyzed(exptN).av(auditoryTrials).threshold = nan;
+            msExptAnalyzed(exptN).av(auditoryTrials).highThreshold = nan;
+            msExptAnalyzed(exptN).av(auditoryTrials).cue(valid).highThreshHR = [nan nan];
+            msExptAnalyzed(exptN).av(auditoryTrials).cue(invalid).highThreshHR = [nan nan];
+
         end
         
         if isfield(msCmlvData,'tVisTargets')
@@ -471,6 +485,12 @@ for im = 1:nmice
                 msExptAnalyzed(iexp).av(auditoryTrials).cue(valid).targets - ...
                 msExptAnalyzed(iexp).av(auditoryTrials).threshold);
             da = cat(2,da,msExptAnalyzed(iexp).av(auditoryTrials).cue(valid).HR.*100);
+            if ~isempty(msExptAnalyzed(iexp).av(auditoryTrials).threshold)
+                xa = cat(2,xa,...
+                    msExptAnalyzed(iexp).av(auditoryTrials).cue(valid).targets - ...
+                    msExptAnalyzed(iexp).av(auditoryTrials).threshold);
+                da = cat(2,da,msExptAnalyzed(iexp).av(auditoryTrials).cue(valid).HR.*100);
+            end
         end
         subplot 231
         h = scatter(xv,dv,'o');
@@ -1188,15 +1208,15 @@ for im = 1:nmice
         %%
         [~,~,valTimeGroup] = histcounts(msCmlvData.valTargetTimeMs,timeBins);
         [~,~,invTimeGroup] = histcounts(msCmlvData.invTargetTimeMs,timeBins);
-        nBins = length(timeBins)-1;
+        nTimeBins = length(timeBins)-1;
 
-        nVis_timeBins = nan(2,nBins);
-        nInvVis_timeBins = nan(2,nBins);
-        nAud_timeBins = nan(2,nBins);
-        nInvAud_timeBins = nan(2,nBins);
-        meanTimePerBin = nan(2,nBins);
-        errTimePerBin = nan(2,nBins);
-        for ibin = 1:nBins
+        nVis_timeBins = nan(2,nTimeBins);
+        nInvVis_timeBins = nan(2,nTimeBins);
+        nAud_timeBins = nan(2,nTimeBins);
+        nInvAud_timeBins = nan(2,nTimeBins);
+        meanTimePerBin = nan(2,nTimeBins);
+        errTimePerBin = nan(2,nTimeBins);
+        for ibin = 1:nTimeBins
             invInd = invTimeGroup == ibin & msCmlvData.tInvVisTargets > 0;
             if sum(invInd) >= minTrN_ms
                 invTargets = unique(msCmlvData.tInvVisTargets(invInd));
@@ -1235,12 +1255,17 @@ for im = 1:nmice
             sum(nVis_timeBins(:,ind),1));
         [invVisHR_timeBins,invVisCI_timeBins] = binofit(nInvVis_timeBins(1,ind),...
             sum(nInvVis_timeBins(:,ind),1));
-
-        ind = ~isnan(sum(nAud_timeBins));
-        [audHR_timeBins,audCI_timeBins] = binofit(nAud_timeBins(1,ind),...
-            sum(nAud_timeBins(:,ind),1));
-        [invAudHR_timeBins,invAudCI_timeBins] = binofit(nInvAud_timeBins(1,ind),...
-            sum(nInvAud_timeBins(:,ind),1));
+        if any(ind)
+            [audHR_timeBins,audCI_timeBins] = binofit(nAud_timeBins(1,ind),...
+                sum(nAud_timeBins(:,ind),1));
+            [invAudHR_timeBins,invAudCI_timeBins] = binofit(nInvAud_timeBins(1,ind),...
+                sum(nInvAud_timeBins(:,ind),1));
+        else
+            audHR_timeBins = nan(1,2);
+            audCI_timeBins = nan(2,2);
+            invAudHR_timeBins = nan(1,2);
+            invAudCI_timeBins = nan(2,2);
+        end
 
         setFigParams4Print('landscape')
         set(0,'defaultAxesFontSize',12)
