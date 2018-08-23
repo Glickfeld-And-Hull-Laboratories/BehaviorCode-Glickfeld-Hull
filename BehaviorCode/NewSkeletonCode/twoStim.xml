@@ -361,11 +361,12 @@
       <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       
-      <!-- frame conversion -->
-      <variable tag="tItiWaitFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="nStimOneFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="nStimTwoFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="nFramesISI" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+   <!-- timer variables -->
+      <variable tag="tItiTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="StimOneTimeOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="StimTwoTimeOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="ISItime" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
 <!-- counter variables -->
     <variable tag="cItiStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -710,10 +711,18 @@
                 <action type="if" condition="matchStimOneParameters">
                   <action type="assignment" variable="tStimTwoGratingContrast" value= "tStimOneGratingContrast"/>
                 </action>
+                <action type="if" condition="matchStimOneParameters">
+                  <action type="assignment" variable="tMaskTwoGratingContrast" value= "tMaskOneGratingContrast"/>
+                </action>
                 <action type="if" condition="!matchStimOneParameters">
                   <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % stimTwoGratingContrastStepN"/>
                   <action type="assignment" variable="tStimTwoGratingContrast" value= "stimTwoGratingContrast * pow(stimTwoGratingContrastSPO,tTempStim2)"/>
                 </action>
+                <action type="if" condition="!matchStimOneParameters">
+                  <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % maskTwoGratingContrastStepN"/>
+                  <action type="assignment" variable="tMaskTwoGratingContrast" value= "maskTwoGratingContrast * pow(maskTwoGratingContrastSPO,tTempStim2)"/>
+                </action>
+
                 <action type="if" condition="doBlock2">
                   <action type="if" condition="tBlock2TrialNumber">
                     <action type="if" condition="!block2MatchB1VisStim">
@@ -745,10 +754,21 @@
                 <action type="if" condition="matchStimOneParameters">
                   <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "tStimOneGratingDirectionDeg"/>
                 </action>
+
+                <action type="if" condition="matchStimOneParameters">
+                  <action type="assignment" variable="tMaskTwoGratingDirectionDeg" value= "tMaskOneGratingDirectionDeg"/>
+                </action>
+
                 <action type="if" condition="!matchStimOneParameters">
                   <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % stimTwoGratingDirectionStepN"/>
                   <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))"/>
                 </action>
+
+                 <action type="if" condition="!matchStimOneParameters">
+                  <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % maskTwoGratingDirectionStepN"/>
+                  <action type="assignment" variable="tMaskTwoGratingDirectionDeg" value= "maskTwoGratingDirectionDeg + (maskTwoGratingDirectionStepDeg * (tTempStim2))"/>
+                </action>
+
                 <action type="if" condition="doBlock2">
                   <action type="if" condition="tBlock2TrialNumber">
                     <action type="if" condition="!block2MatchB1VisStim">
@@ -1012,8 +1032,15 @@
             <action type="if" condition="!tStimOneDoVisualStim">
               <action type="assignment" variable="tStimOneGratingContrast" value= "0"/>
             </action> 
+            <action type="if" condition="!tStimOneDoVisualStim">
+              <action type="assignment" variable="tMaskOneGratingContrast" value= "0"/>
+            </action> 
+
             <action type="if" condition="!tStimTwoDoVisualStim">
               <action type="assignment" variable="tStimTwoGratingContrast" value= "0"/>
+            </action>
+            <action type="if" condition="!tStimTwoDoVisualStim">
+              <action type="assignment" variable="tMaskTwoGratingContrast" value= "0"/>
             </action>
             <action type="if" condition="!tStimOneDoAuditoryStim">
               <action type="assignment" variable="tStimOneSoundAmplitude" value= "0"/>
@@ -1024,9 +1051,19 @@
 
 
             <!-- frame conversion -->
-            <action type="assignment" tag="Calculate nStimOneFramesOn" variable="nStimOneFramesOn" value="ceil((tStimOneGratingOnTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nStimTwoFramesOn" variable="nStimTwoFramesOn" value="ceil((tStimTwoGratingOnTimeMs/1000)*frameRateHz)"/>
-            <action type="assignment" tag="Calculate nFramesISI" variable="nFramesISI" value="ceil((tISITimeMs/1000)*frameRateHz)"/>
+
+            <action type="start_timer" timer="InterTrialTimer" duration="tItItimeMs" timebase="" duration_units="ms" />
+            
+            <action type="assignment" 
+            variable="tItiTimeMs" 
+            value="itiTimeMs"></action>
+
+            <action type="start_timer" timer="InterTrialTimer" duration="tItiTimeMs" timebase="" duration_units="ms" />
+
+            <action type="start_timer" timer="stimTimer" timebase="" duration="tStimOneGratingOnTimeMs" duration_units="ms"/>
+
+            <action type="start_timer" timer="ISItimer" timebase="" duration="ISItimeMs" duration_units="ms"/>
+
             
             <!-- initialize trial start/end times -->
             <action type="if" condition="tThisTrialStartTimeMs == -1">  
@@ -1034,7 +1071,7 @@
               <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
             </action>
             <action type="if" condition="tThisTrialStartTimeMs != -1">  <!--else-->
-              <!--later trials, copy this into last before setting this again below -->
+              <!--later trials, copy this into last before setting this again below -->9
               <action type="assignment" variable="tLastTrialStartTimeMs" value="tThisTrialStartTimeMs"></action>
             </action>
             <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
@@ -1077,10 +1114,6 @@
             </action>
             
 
-            <action type="assignment" 
-                    variable="tItiWaitFrames" 
-                    value="ceil((tItiWaitTimeMs/1000)*frameRateHz)"></action>
-
             <!-- if trialLaser, send params to controller -->
             <action type="if" condition="tTrialLaserPowerMw > 0">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
@@ -1098,14 +1131,16 @@
             <action type="report" message="In ITI, waiting $tItiWaitFrames, then wait for press"></action>
 			
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="StimOneOn"></transition>
-            <transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; !isFirstTrial" target="StimOneOn"></transition>
+            <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + tItiTimeMs) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="StimOneOn"></transition>
+            <transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + tItiTimeMs) &amp;&amp; !isFirstTrial" target="StimOneOn"></transition>
           </task_system_state>
                   
           <task_system_state tag="StimOneOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="assignment" variable="ntrials" value="ntrials + 1"/>
+
+            <action type="start_timer" timer="stimTimer" timebase="" duration="tStimOneGratingOnTimeMs" duration_units="ms"/>
 
           	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="stimOne"></action> 
           	<action type="play_dynamic_stimulus" stimulus="stimOne" tag="StimOn"></action>
@@ -1115,11 +1150,14 @@
             <action type="assignment" variable="mwStimOneOnMs" value="now()/1000" />
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimOneOn + nStimOneFramesOn)" target="StimOneOff"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="timerExpired(stimTimer)" target="StimOneOff"></transition>
           </task_system_state>
 
           <task_system_state tag="StimOneOff" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+            <action type="start_timer" timer="iTiTimer" timebase="" duration="itiTimeMs" duration_units="ms"/>
+
 
             <action type="dequeue_stimulus" stimulus="stimOne"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
@@ -1128,11 +1166,14 @@
             <action type="assignment" variable="mwStimOneOffMs" value="(now()/1000)" />
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Queue Visual Stimulus" condition="counter  &gt;= (cStimOneOff + nFramesISI)" target="StimTwoOn"></transition>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="timerExpired(itiTimer)" target="StimTwoOn"></transition>
           </task_system_state>
 
           <task_system_state tag="StimTwoOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+            <action type="start_timer" timer="stimTimer" timebase="" duration="tStimOneGratingOnTimeMs" duration_units="ms"/>
+
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="stimTwo"></action> 
             <action type="play_dynamic_stimulus" stimulus="stimTwo" tag="StimOn"></action>
             <action type="update_stimulus_display" tag="justincase"></action>
@@ -1141,11 +1182,13 @@
             <action type="assignment" variable="mwStimTwoOnMs" value="now()/1000" />
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimTwoOn + nStimOneFramesOn)" target="StimTwoOff"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="timerExpired(stimTimer)" target="StimTwoOff"></transition>
           </task_system_state>
 
           <task_system_state tag="StimTwoOff" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+            <action type="start_timer" timer="stimTimer" timebase="" duration="tStimOneGratingOnTimeMs" duration_units="ms"/>
 
             <action type="dequeue_stimulus" stimulus="stimTwo"></action>
             <action tag="Update Stimulus" type="update_stimulus_display"></action>
@@ -1154,7 +1197,7 @@
             <action type="assignment" variable="mwStimTwoOffMs" value="(now()/1000)" />
             
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Queue Visual Stimulus" condition="counter  &gt;= (cStimTwoOff + 3)" target="EndTrial"></transition>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="timerExpired(stimTimer)" target="EndTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrial" interruptible="YES">
