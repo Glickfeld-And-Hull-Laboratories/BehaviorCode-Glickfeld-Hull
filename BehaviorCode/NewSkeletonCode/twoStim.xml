@@ -26,7 +26,14 @@
       <variable tag="doRandISITime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doRandStimOnTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+
+      <variable tag="doRandMaskCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+
       <variable tag="doRandDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      
+      <variable tag="doRandMaskDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+
+
       <variable tag="doRandPos" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doRandDiameter" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doLogSize" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
@@ -46,9 +53,15 @@
       <variable tag="block2DoRandISITime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoRandStimOnTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+
+      <variable tag="block2DoRandMaskCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+
       <variable tag="block2DoLogCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
       <variable tag="block2LogConN" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="block2DoRandDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+
+      <variable tag="block2DoRandMaskDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
+
       <variable tag="block2DoRandPos" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoRandDiameter" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
       <variable tag="block2DoRandSF" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block2"/>
@@ -526,6 +539,8 @@
             <action type="assignment" variable="tDoRandStimOnTime" value="doRandStimOnTime"></action>
             <action type="assignment" variable="tDoRandCon" value="doRandCon"></action>
             <action type="assignment" variable="tDoRandDir" value="doRandDir"></action>
+            <action type="assignment" variable="tDoRandMaskCon" value="doRandCon"></action>
+            <action type="assignment" variable="tDoRandMaskDir" value="doRandDir"></action>
             <action type="assignment" variable="tDoRandPos" value="doRandPos"></action>
             <action type="assignment" variable="tDoRandDiameter" value="doRandDiameter"></action>
             <action type="assignment" variable="tDoRandSF" value="doRandSF"></action>
@@ -571,6 +586,8 @@
                     <action type="assignment" variable="tDoRandStimOnTime" value="block2DoRandStimOnTime"></action>
                     <action type="assignment" variable="tDoRandCon" value="block2DoRandCon"></action>
                     <action type="assignment" variable="tDoRandDir" value="block2DoRandDir"></action>
+                    <action type="assignment" variable="tDoRandMaskCon" value="block2DoRandMaskCon"></action>
+                    <action type="assignment" variable="tDoRandMaskDir" value="block2DoRandMaskDir"></action>
                     <action type="assignment" variable="tDoRandPos" value="block2DoRandPos"></action>
                     <action type="assignment" variable="tDoRandDiameter" value="block2DoRandDiameter"></action>
                     <action type="assignment" variable="tDoRandSF" value="block2DoRandSF"></action>
@@ -1052,18 +1069,11 @@
 
             <!-- frame conversion -->
 
-            <action type="start_timer" timer="InterTrialTimer" duration="tItItimeMs" timebase="" duration_units="ms" />
+            <action type="start_timer" timer="InterTrialTimer" duration="tItiTimeMs" timebase="" duration_units="ms" />
             
             <action type="assignment" 
             variable="tItiTimeMs" 
             value="itiTimeMs"></action>
-
-            <action type="start_timer" timer="InterTrialTimer" duration="tItiTimeMs" timebase="" duration_units="ms" />
-
-            <action type="start_timer" timer="stimTimer" timebase="" duration="tStimOneGratingOnTimeMs" duration_units="ms"/>
-
-            <action type="start_timer" timer="ISItimer" timebase="" duration="ISItimeMs" duration_units="ms"/>
-
             
             <!-- initialize trial start/end times -->
             <action type="if" condition="tThisTrialStartTimeMs == -1">  
@@ -1130,9 +1140,8 @@
 
             <action type="report" message="In ITI, waiting $tItiWaitFrames, then wait for press"></action>
 			
-            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + tItiTimeMs) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="StimOneOn"></transition>
-            <transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + tItiTimeMs) &amp;&amp; !isFirstTrial" target="StimOneOn"></transition>
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="timerExpired(InterTrialTimer)" target="StimOneOn"></transition>
           </task_system_state>
                   
           <task_system_state tag="StimOneOn" interruptible="YES">
