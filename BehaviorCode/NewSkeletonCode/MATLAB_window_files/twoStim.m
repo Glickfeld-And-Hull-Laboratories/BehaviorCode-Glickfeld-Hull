@@ -282,8 +282,10 @@ catch
 end
 
 %% disp status
-stim1Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimOneGratingContrast{trN}.*100, input.tStimOneGratingDirectionDeg{trN}, input.tStimOneGratingOnTimeMs{trN});
-stim2Str = sprintf('Stim2: con %g%%, dir %g%, %g% ms', input.tStimTwoGratingContrast{trN}*100, input.tStimTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
+stim1Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimOneGratingContrast{trN}.*100, input.tStimOneGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
+mask1Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskOneGratingContrast{trN}*100, input.tMaskOneGratingDirectionDeg{trN}, input.tMaskTwoGratingOnTimeMs{trN});
+stim2Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimTwoGratingContrast{trN}.*100, input.tStimTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
+mask2Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskTwoGratingContrast{trN}*100, input.tMaskTwoGratingDirectionDeg{trN}, input.tMaskTwoGratingOnTimeMs{trN});
 isiStr = sprintf('ISI: %g%ms', input.tISITimeMs{trN});
 
 if ~input.doBlock2
