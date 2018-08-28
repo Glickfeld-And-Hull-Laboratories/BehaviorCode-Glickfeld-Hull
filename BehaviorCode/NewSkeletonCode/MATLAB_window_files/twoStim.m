@@ -279,10 +279,26 @@ catch
 end
 
 %% disp status
-stim1Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimOneGratingContrast{trN}.*100, input.tStimOneGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
-mask1Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskOneGratingContrast{trN}*100, input.tMaskOneGratingDirectionDeg{trN}, input.tMaskTwoGratingOnTimeMs{trN});
-stim2Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimTwoGratingContrast{trN}.*100, input.tStimTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
-mask2Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskTwoGratingContrast{trN}*100, input.tMaskTwoGratingDirectionDeg{trN}, input.tMaskTwoGratingOnTimeMs{trN});
+if input.tStimOneGratingContrast{trN} > 0
+    stim1Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimOneGratingContrast{trN}.*100, input.tStimOneGratingDirectionDeg{trN}, input.tStimOneGratingOnTimeMs{trN});
+else
+    stim1Str = sprintf('');
+end
+if input.tMaskOneGratingContrast{trN} > 0
+    mask1Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskOneGratingContrast{trN}*100, input.tMaskOneGratingDirectionDeg{trN}, input.tStimOneGratingOnTimeMs{trN});
+else
+    mask1Str = sprintf('');
+end
+if input.tStimTwoGratingContrast{trN} > 0
+    stim2Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimTwoGratingContrast{trN}.*100, input.tStimTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
+else
+    stim2Str = sprintf('');
+end
+if input.tMaskTwoGratingContrast{trN} > 0
+    mask2Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskTwoGratingContrast{trN}*100, input.tMaskTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
+else
+    mask2Str = sprintf('');
+end
 isiStr = sprintf('ISI: %g%ms', input.tISITimeMs{trN});
 
 if ~input.doBlock2
@@ -291,8 +307,9 @@ else
   block2Str = sprintf(' b2tr %d ', input.tBlock2TrialNumber{trN});
 end
 itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));
-fprintf(1,'%s; %s; %s; %s\n', ...
-    stim1Str, stim2Str, isiStr, block2Str);
+fprintf(1,'%s %s %s %s %s %s\n', ...
+    stim1Str, stim2Str, mask1Str, mask2Str, isiStr, block2Str);
+
 
 %% run subfunctions
 input = exptRunSubfunctions(ds, input, { @plotTwoStim });

@@ -24,7 +24,7 @@ end
 nTrial = length(input.tNStimAccepted);
 tTrialN = input.trialSinceReset;
 
-  stim1On_mat = unique(celleqel2mat_padded(input.StimOneTimeOn));
+  stim1On_mat = unique(celleqel2mat_padded(input.tStimOneGratingOnTimeMs));
   az1_mat = unique(celleqel2mat_padded(input.tStimOneGratingAzimuthDeg));
   el1_mat = unique(celleqel2mat_padded(input.tStimOneGratingElevationDeg));
   dir1_mat = unique(celleqel2mat_padded(input.tStimOneGratingDirectionDeg));
@@ -35,7 +35,10 @@ tTrialN = input.trialSinceReset;
   phase1_mat = unique(celleqel2mat_padded(input.tStimOneGratingPhaseDeg));
   sound1_mat = unique(celleqel2mat_padded(input.tStimOneSoundAmplitude));
 
-  stim2On_mat = unique(celleqel2mat_padded(input.StimTwoTimeOn));
+  mask1_dir_mat = unique(celleqel2mat_padded(input.tMaskOneGratingDirectionDeg));
+  mask1_con_mat = unique(celleqel2mat_padded(input.tMaskOneGratingContrast));
+
+  stim2On_mat = unique(celleqel2mat_padded(input.tStimTwoGratingOnTimeMs));
   az2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingAzimuthDeg));
   el2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingElevationDeg));
   dir2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingDirectionDeg));
@@ -46,7 +49,10 @@ tTrialN = input.trialSinceReset;
   phase2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingPhaseDeg));
   sound2_mat = unique(celleqel2mat_padded(input.tStimTwoSoundAmplitude));
 
-  isi_mat = unique(celleqel2mat_padded(input.ISItime));
+  mask2_dir_mat = unique(celleqel2mat_padded(input.tMaskTwoGratingDirectionDeg));
+  mask2_con_mat = unique(celleqel2mat_padded(input.tMaskTwoGratingContrast));
+
+  isi_mat = unique(celleqel2mat_padded(input.tISITimeMs));
 
   if input.doWheelSpeed
     for itrial = 1:nTrial
@@ -82,7 +88,7 @@ if tTrialN > 1
   tStr1 = ['Stim One:'];
         if input.stimOneDoVisualStim
           tStr1 = sprintf( [tStr1 '\n',...
-                 'Frames On: %s \n' ,...
+                 'Time On (ms): %s \n' ,...
         				 'Az/El (deg): %s/%s \n',...
         				 'Diameter (deg): %s \n', ...
         				 'Direction (deg): %s \n', ...
@@ -105,13 +111,13 @@ if tTrialN > 1
           'Sound Vol = %s'], ...
             mat2str(sound1_mat));
       else
-        tStr1 = sprintf( ['No Stim One: \n']);
+        tStr1 = sprintf( ['No Stim One \n']);
       end
 
       tStr2 = ['Stim Two:'];
       if input.stimTwoDoVisualStim
           tStr2 = sprintf( [tStr2 '\n', ... 
-                 'Frames On: %s \n',...
+                 'Time On (ms): %s \n',...
                  'Az/El (deg): %s/%s \n',...
                  'Diameter (deg): %s \n', ...
                  'Direction (deg): %s \n', ...
@@ -134,9 +140,30 @@ if tTrialN > 1
           'Sound Vol = %s'], ...
             mat2str(sound2_mat));
       else
-        tStr2 = sprintf( ['No Stim Two: \n']);
+        tStr2 = sprintf( ['No Stim Two \n']);
       end
-      
+
+      tMaskStr1 = ['Mask One:'];
+      if input.doMask & find(mask1_con_mat > 0)
+          tMaskStr1 = sprintf( [tMaskStr1 '\n',...
+                 'Direction (deg): %s \n', ...
+                 'Contrast (pct): %s \n'], ...
+                        mat2str(mask1_dir_mat), ...
+                        mat2str(mask1_con_mat.*100));
+      else
+        tMaskStr1 = sprintf( ['No Mask One \n']);
+      end
+
+      tMaskStr2 = ['Mask Two:'];
+      if input.doMask & find(mask2_con_mat == 1)
+          tMaskStr2 = sprintf( [tMaskStr2 '\n',...
+                 'Direction (deg): %s \n', ...
+                 'Contrast (pct): %s \n'], ...
+                        mat2str(mask2_dir_mat), ...
+                        mat2str(mask2_con_mat.*100));
+      else
+        tMaskStr2 = sprintf( ['No Mask Two \n']);
+      end
 
       tStrISI = sprintf('ISI (frames): %s', mat2str(isi_mat));
 
@@ -145,6 +172,14 @@ if tTrialN > 1
              'HorizontalAlignment', 'left', 'FontSize', 12);
 
         text(0, -.5, tStr2, ...
+             'VerticalAlignment', 'top', ...
+             'HorizontalAlignment', 'left', 'FontSize', 12);
+
+        text(1, 0.6, tMaskStr1, ...
+             'VerticalAlignment', 'top', ...
+             'HorizontalAlignment', 'left', 'FontSize', 12);
+
+        text(1, -.5, tMaskStr2, ...
              'VerticalAlignment', 'top', ...
              'HorizontalAlignment', 'left', 'FontSize', 12);
 
