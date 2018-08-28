@@ -24,7 +24,7 @@ end
 nTrial = length(input.tNStimAccepted);
 tTrialN = input.trialSinceReset;
 
-  stim1On_mat = unique(celleqel2mat_padded(input.nStimOneFramesOn));
+  stim1On_mat = unique(celleqel2mat_padded(input.StimOneTimeOn));
   az1_mat = unique(celleqel2mat_padded(input.tStimOneGratingAzimuthDeg));
   el1_mat = unique(celleqel2mat_padded(input.tStimOneGratingElevationDeg));
   dir1_mat = unique(celleqel2mat_padded(input.tStimOneGratingDirectionDeg));
@@ -35,7 +35,7 @@ tTrialN = input.trialSinceReset;
   phase1_mat = unique(celleqel2mat_padded(input.tStimOneGratingPhaseDeg));
   sound1_mat = unique(celleqel2mat_padded(input.tStimOneSoundAmplitude));
 
-  stim2On_mat = unique(celleqel2mat_padded(input.nStimTwoFramesOn));
+  stim2On_mat = unique(celleqel2mat_padded(input.StimTwoTimeOn));
   az2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingAzimuthDeg));
   el2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingElevationDeg));
   dir2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingDirectionDeg));
@@ -46,7 +46,7 @@ tTrialN = input.trialSinceReset;
   phase2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingPhaseDeg));
   sound2_mat = unique(celleqel2mat_padded(input.tStimTwoSoundAmplitude));
 
-  isi_mat = unique(celleqel2mat_padded(input.nFramesISI));
+  isi_mat = unique(celleqel2mat_padded(input.ISItime));
 
   if input.doWheelSpeed
     for itrial = 1:nTrial
