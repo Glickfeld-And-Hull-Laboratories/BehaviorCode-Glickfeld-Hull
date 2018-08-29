@@ -2,6 +2,7 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
     rc = behavConstsAV;
     nexp = size(bxDataInfo,1);
     bxStruct = struct;
+    bxParams_FSAV;
     for iexp = 1:nexp
         fprintf(num2str(iexp))
         expDate = bxDataInfo(iexp).DateStr;
@@ -49,7 +50,6 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
             mworks = trialChopper(mworks,trialRangeInd);
         end
         
-        nCyc = double(cell2mat(mworks.nCyclesOn));
         
         if isfield(mworks,'nFramesOn')
             frameRate = mworks.frameRateHz;
@@ -65,6 +65,25 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
             trialTimeMs = double(leverUpTime - leverDownTime);
         end
         
+        tooShortTrials = trialTimeMs < minTrialLengthMs;
+        if any(tooShortTrials)
+            mworks = trialChopper(mworks,find(~tooShortTrials));
+            if isfield(mworks,'nFramesOn')
+                frameRate = mworks.frameRateHz;
+
+                trialStartFr = celleqel2mat_padded(mworks.cFirstStim);
+                trialEndFr = celleqel2mat_padded(mworks.cLeverUp);
+                trialTimeFr = trialEndFr - trialStartFr;
+
+                trialTimeMs = (trialTimeFr./frameRate).*1000;
+            else
+                leverUpTime = cell2mat(mworks.leverUpTimeMs);
+                leverDownTime = cell2mat(mworks.leverDownTimeMs);
+                trialTimeMs = double(leverUpTime - leverDownTime);
+            end
+        end
+        
+        nCyc = double(cell2mat(mworks.nCyclesOn));
         tOn = double(mworks.stimOnTimeMs);
         tOff = double(mworks.stimOffTimeMs);
 
@@ -127,6 +146,11 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
                 mworks.tCatchGratingDirectionDeg);
             bxStruct(iexp).tInvAudTargets = celleqel2mat_padded(...
                 mworks.tSoundCatchAmplitude);
+            if isempty(bxStruct(iexp).tInvVisTargets)
+                bxStruct(iexp).tInvVisTargets = nan(1,length(bxStruct(iexp).tInvAudTargets));
+            elseif isempty(bxStruct(iexp).tInvAudTargets)
+                bxStruct(iexp).tInvAudTargets = nan(1,length(bxStruct(iexp).tInvVisTargets));
+            end
             if mworks.doShortCatchReward == 0
                 disp(['Catch not rewared - ' expDate '-' mouseName])
             end
@@ -135,7 +159,7 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
                 cCyc = celleqel2mat_padded(mworks.cCatchOn);
                 
                 catchTrialFr = cCyc - trialStartFr;
-                catchReactFr = trialEndFr - cCyc;
+                catchReactFr = trialTimeFr - catchTrialFr;
                 
                 tooFastFr = round(frameRate*((mworks.tooFastTimeMs)/1000));
                 reactTimeFr = round(frameRate*((mworks.reactTimeMs)/1000));
@@ -145,7 +169,7 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
                 catchOutcome(outInd) = {'FA'};
                 outInd = catchReactFr > reactTimeFr;
                 catchOutcome(outInd) = {'CR'};
-                outInd = catchReactFr < 0;
+                outInd = catchReactFr < (0 +tooFastFr);
                 catchOutcome(outInd) = {'failure'};
                 bxStruct(iexp).invHit = strcmp(catchOutcome,'FA');
                 bxStruct(iexp).invMiss = strcmp(catchOutcome,'CR');
@@ -159,7 +183,7 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
                 end
                 catchTimeMs = (catchTrialFr./frameRate)*1000;
                 catchCycCalc = double(round(catchTrialFr./(frOn+frOff)));
-                invReactTimeCalc = (catchReactFr./frameRate)*1000;
+                invReactTimeCalc = trialTimeMs - catchTimeMs;
                 
             else
                 bxStruct(iexp).invHit = strcmp(mworks.catchTrialOutcomeCell,'FA');
@@ -167,8 +191,9 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
                 catchTimeMs = celleqel2mat_padded(mworks.tCatchTimeMs) - ...
                     double(leverDownTime);
                 catchCycCalc = double(round(catchTimeMs./(tOn+tOff)));
-                invTargetOnTime = (tOn+tOff)*catchCycCalc;
-                invReactTimeCalc = trialTimeMs - invTargetOnTime;
+%                 invTargetOnTime = (tOn+tOff)*catchCycCalc;
+%                 invReactTimeCalc = trialTimeMs - invTargetOnTime;
+                invReactTimeCalc = trialTimeMs - catchTimeMs;
             end
             if any(bxStruct(iexp).tInvVisTargets > 0)
                 if any(bxStruct(iexp).tInvAudTargets > 0)

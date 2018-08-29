@@ -5,6 +5,7 @@ minTrN_ms = 15;
 minTrN_expt = 2;
 nBins = 6;
 minCyclesFA = 2;
+minTrialLengthMs = 500;
 
 visThreshAll = 30;
 highThreshold = 0.75;

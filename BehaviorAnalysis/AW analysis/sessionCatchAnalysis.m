@@ -10,12 +10,10 @@ clear all;close all
 doSave = 0;
 fnout = 'Z:\Analysis\_temp figs\180201';
 
-ms = '626';
-exptInfo = [{[];'1617';[]},...
-            {[];'1650';[]},...
-            {[];'1707';[]}];
+ms = '756';
+exptInfo = [{[];'1511';[]}];
 nrun = size(exptInfo,2);
-exptInfo(1,:) = repmat({'160118'},[1,nrun]);
+exptInfo(1,:) = repmat({'180821'},[1,nrun]);
 
 for iexp = 1:size(exptInfo,2)
     dt = exptInfo{1,iexp};
@@ -35,7 +33,7 @@ invVisTargets = celleqel2mat_padded(d.tCatchGratingDirectionDeg);
 invAudTargets = celleqel2mat_padded(d.tSoundCatchAmplitude);
 
 valOutcome = d.trialOutcomeCell;
-if ~isfield(d,'catchTrialOutcomeCells')
+if ~isfield(d,'catchTrialOutcomeCell')
     invOutcome = nan(1,length(invVisTargets));
 else
     invOutcome = d.catchTrialOutcomeCell;

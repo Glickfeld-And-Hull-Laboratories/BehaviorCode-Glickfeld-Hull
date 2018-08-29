@@ -1,13 +1,13 @@
 clear all
 close all
 
-ms2analyze = {'613';'614';'668';'750'};
+ms2analyze = {'613';'614';'625';'668';'750'};
 exampleDay = 10;
 doExampleDay = false;
-doLoadPreviousDataset = true;
-doCheck4NewDates = false;
+doLoadPreviousDataset = false;
+doCheck4NewDates = true;
 doRewarded = true;
-doPlot = false;
+doPlot = true;
 %%
 nmice = length(ms2analyze);
 bxParams_FSAV
@@ -73,6 +73,7 @@ for im = 1:nmice
         save(fullfile(fnout,savedDataName),'msExptInfo')
     end
     %%
+    disp(mouseName)
     nexp = size(msExptInfo,2);
     msCmlvData = struct;
     msExptAnalyzed = struct;    
@@ -119,6 +120,16 @@ for im = 1:nmice
         invHit = msExptInfo(iexp).invHit;
         invMiss = msExptInfo(iexp).invMiss;
         invRT = msExptInfo(iexp).invReact;
+        
+        cycLengthMs = double(msExptInfo(iexp).stimOnTime+msExptInfo(iexp).stimOffTime);
+        tCyc = floor(msExptInfo(iexp).trLengthMs./cycLengthMs);
+        lastStimRT = msExptInfo(iexp).trLengthMs - (tCyc.*cycLengthMs);
+        tCyc = tCyc - 1;
+        tCyc(tCyc < 0) = nan;
+        oneStimBackRT = msExptInfo(iexp).trLengthMs - (tCyc.*cycLengthMs);
+        tCyc = tCyc - 1;
+        tCyc(tCyc < 0) = nan;
+        twoStimBackRT = msExptInfo(iexp).trLengthMs - (tCyc.*cycLengthMs);
         
         msExptAnalyzed(exptN).av(visualTrials).cue(invalid).nTrials = sum(tInvVisTargets > 0);
         msExptAnalyzed(exptN).av(auditoryTrials).cue(invalid).nTrials = sum(tInvAudTargets > 0);
@@ -266,6 +277,7 @@ for im = 1:nmice
         visMatchedHighThreshID = visMatchHighThreshTrialInd(visMatchHighThreshTrialInd > 0 & (hit | miss));
         visMatchedHighThreshOutcome = hit(visMatchHighThreshTrialInd > 0 & (hit | miss));
         
+        
         audHR = msExptInfo(iexp).audHR;
         ind = nAud > minTrN_expt;
         ind = ~isnan(audHR) & ind;
@@ -273,7 +285,6 @@ for im = 1:nmice
             
 %             msAudFit = weibullFitLG(audStim(ind),audHR(ind),1,0,{'nTrials',nAud(ind)});
 
-            msExptAnalyzed(exptN).av(auditoryTrials).threshold = msAudFit.thresh;
             msAudFit = weibullFitLG([0 audStim(ind)],...
                 [msExptAnalyzed(exptN).av(auditoryTrials).falseAlarmRate audHR(ind)],...
                 1,0,{'nTrials',[nAudFATrials nAud(ind)]});        
@@ -287,6 +298,7 @@ for im = 1:nmice
             invAudHighThreshID(tInvAudTargets > highThreshExpt) = 2;
             invAudHighThreshID(tInvAudTargets < highThreshExpt & tInvAudTargets > 0) = 1;  
             
+            msExptAnalyzed(exptN).av(auditoryTrials).threshold = msAudFit.thresh;
             msExptAnalyzed(exptN).av(auditoryTrials).highThreshold = highThreshExpt;
             msExptAnalyzed(exptN).av(auditoryTrials).cue(valid).highThreshHR = audHR_highThreshold;
             msExptAnalyzed(exptN).av(auditoryTrials).cue(invalid).highThreshHR = invAudHR_highThreshold;
@@ -309,10 +321,15 @@ for im = 1:nmice
             msCmlvData.tInvAudTargets = cat(2,msCmlvData.tInvAudTargets,tInvAudTargets);
             msCmlvData.hit = cat(2,msCmlvData.hit,hit);
             msCmlvData.miss = cat(2,msCmlvData.miss,miss);
+            msCmlvData.fa = cat(2,msCmlvData.fa,fa);
             msCmlvData.invHit = cat(2,msCmlvData.invHit,invHit);
             msCmlvData.invMiss = cat(2,msCmlvData.invMiss,invMiss);
             msCmlvData.valRT = cat(2,msCmlvData.valRT,valRT);
             msCmlvData.invRT = cat(2,msCmlvData.invRT,invRT);
+            msCmlvData.lastStimRT = cat(2,msCmlvData.lastStimRT,lastStimRT);
+            msCmlvData.oneStimBackRT = cat(2,msCmlvData.oneStimBackRT,oneStimBackRT);
+            msCmlvData.twoStimBackRT = cat(2,msCmlvData.twoStimBackRT,twoStimBackRT);
+         
             msCmlvData.valTargetTimeMs = cat(2,msCmlvData.valTargetTimeMs,targetTimeMs);
             msCmlvData.invTargetTimeMs = cat(2,msCmlvData.invTargetTimeMs,invTargetTimeMs);
             msCmlvData.visMatchedHighThreshID = cat(2,msCmlvData.visMatchedHighThreshID,visMatchedHighThreshID);
@@ -328,10 +345,14 @@ for im = 1:nmice
             msCmlvData.tInvAudTargets = tInvAudTargets;
             msCmlvData.hit = hit;
             msCmlvData.miss = miss;
+            msCmlvData.fa = fa;
             msCmlvData.invHit = invHit;
             msCmlvData.invMiss = invMiss;
             msCmlvData.valRT = valRT;
             msCmlvData.invRT = invRT;
+            msCmlvData.lastStimRT = lastStimRT;
+            msCmlvData.oneStimBackRT = oneStimBackRT;
+            msCmlvData.twoStimBackRT = twoStimBackRT;
             msCmlvData.valTargetTimeMs = targetTimeMs;
             msCmlvData.invTargetTimeMs = invTargetTimeMs;
             msCmlvData.visMatchedHighThreshID = visMatchedHighThreshID;
@@ -945,12 +966,17 @@ for im = 1:nmice
         figAxForm([],0)
         title('Visual Trials')
         if visAttnP < 0.05
-            text(mean(x), mean(y),sprintf('* p = %s',...
-                num2str(round(visAttnP,3,'significant'))))
+            text(mean(x), mean(y),sprintf('* p = %s (%s)',...
+                num2str(round(visAttnP,3,'significant')),...
+                num2str(round(y(1)-y(2),3,'significant'))))
         else
-            text(mean(x), mean(y),sprintf('p = %s',...
-                num2str(round(visAttnP,3,'significant'))))
+            text(mean(x), mean(y),sprintf('p = %s (%s)',...
+                num2str(round(visAttnP,3,'significant')),...
+                num2str(round(y(1)-y(2),3,'significant'))))
         end
+        disp(sprintf('vis all: p = %s (%s)',...
+            num2str(round(visAttnP,3,'significant')),...
+            num2str(round(y(1)-y(2),3,'significant'))))
         subplot 122
         x = 1:2;
         y = cat(2,valHR_aud,invHR_aud).*100;
@@ -964,12 +990,17 @@ for im = 1:nmice
         figAxForm([],0)
         title('Auditory Trials')
         if audAttnP < 0.05
-            text(mean(x), mean(y),sprintf('* p = %s',...
-                num2str(round(audAttnP,3,'significant'))))
+            text(mean(x), mean(y),sprintf('* p = %s (%s)',...
+                num2str(round(audAttnP,3,'significant')),...
+                num2str(round(y(1)-y(2),3,'significant'))))
         else
-            text(mean(x), mean(y),sprintf('p = %s',...
-                num2str(round(audAttnP,3,'significant'))))
+            text(mean(x), mean(y),sprintf('p = %s (%s)',...
+                num2str(round(audAttnP,3,'significant')),...
+                num2str(round(y(1)-y(2),3,'significant'))))
         end
+        disp(sprintf('aud all: p = %s (%s)',...
+            num2str(round(audAttnP,3,'significant')),...
+            num2str(round(y(1)-y(2),3,'significant'))))
         %%
         visAttnP = belowThreshAttnTest(visHighThreshDeg,...
             msCmlvData.tVisTargets,msCmlvData.tInvVisTargets,...
@@ -1123,9 +1154,18 @@ for im = 1:nmice
             h.MarkerFaceColor = threshColors{i};
             hold on
             if matchedHighThreshTest_vis(i) < 0.05
-                text(mean(x), mean(y),sprintf('* p = %s',num2str(round(matchedHighThreshTest_vis(i),3,'significant'))))
+                text(mean(x), mean(y),sprintf('* p = %s (%s)',...
+                    num2str(round(matchedHighThreshTest_vis(i),3,'significant')),...
+                    num2str(round(y(1)-y(2),3,'significant'))))
             else
-                text(mean(x), mean(y),sprintf('p = %s',num2str(round(matchedHighThreshTest_vis(i),3,'significant'))))
+                text(mean(x), mean(y),sprintf('p = %s (%s)',...
+                    num2str(round(matchedHighThreshTest_vis(i),3,'significant')),...
+                    num2str(round(y(1)-y(2),3,'significant'))))
+            end
+            if i == 1
+                disp(sprintf('vis below: p = %s (%s)',...
+                    num2str(round(matchedHighThreshTest_vis(i),3,'significant')),...
+                    num2str(round(y(1)-y(2),3,'significant'))))
             end
         end
         figXAxis([],'',[0 3],x,{'Valid';'Invalid'});
@@ -1140,9 +1180,18 @@ for im = 1:nmice
             h.MarkerFaceColor = threshColors{i};
             hold on
             if matchedHighThreshTest_aud(i) < 0.05
-                text(mean(x), mean(y),sprintf('* p = %s',num2str(round(matchedHighThreshTest_aud(i),3,'significant'))))
+                text(mean(x), mean(y),sprintf('* p = %s (%s)',...
+                    num2str(round(matchedHighThreshTest_aud(i),3,'significant')),...
+                    num2str(round(y(1)-y(2),3,'significant'))))
             else
-                text(mean(x), mean(y),sprintf('p = %s',num2str(round(matchedHighThreshTest_aud(i),3,'significant'))))
+                text(mean(x), mean(y),sprintf('p = %s (%s)',...
+                    num2str(round(matchedHighThreshTest_aud(i),3,'significant')),...
+                    num2str(round(y(1)-y(2),3,'significant'))))
+            end
+            if i == 1
+                disp(sprintf('aud below: p = %s (%s)',...
+                    num2str(round(matchedHighThreshTest_aud(i),3,'significant')),...
+                    num2str(round(y(1)-y(2),3,'significant'))))
             end
         end
         figXAxis([],'',[0 3],x,{'Valid';'Invalid'});
@@ -1151,12 +1200,146 @@ for im = 1:nmice
         title('Auditory Trials')
 
         print(fullfile(fnout,[fileName 'allDataMatchedHRxCue']),'-dpdf')
-        %%
+        %% reaction times
+        
         setFigParams4Print('landscape')
         set(0,'defaultAxesFontSize',12)
         figure
+        h = cdfplot(msCmlvData.valRT(msCmlvData.valRT > 0 & msCmlvData.valRT < 500));
+        h.Color = cueColors{valid};
+        hold on
+        h = cdfplot(msCmlvData.invRT(msCmlvData.invRT > 0 & msCmlvData.invRT < 500));
+        h.Color = cueColors{invalid};
+        h = cdfplot(msCmlvData.lastStimRT(msCmlvData.lastStimRT > 0 & ...
+            msCmlvData.lastStimRT < 500 & msCmlvData.fa & ...
+             ~(msCmlvData.invHit |msCmlvData.invMiss)));
+        h.Color = cueColors{valid};
+        h.LineStyle = '--';
+        figXAxis([],'Reaction Time (ms)',[0 600])
+        figYAxis([],'Fraction of Hits',[0 1])
+        figAxForm
+        title('All Trials (0 < RT < 500)') 
+        legend({'Valid','Invalid'},'location','northeastoutside')        
+        print(fullfile(fnout,[fileName 'reactTimeDistributionAllTrials']),'-dpdf')
+        
+        setFigParams4Print('landscape')
+        set(0,'defaultAxesFontSize',12)
+        figure
+        suptitle({mouseName,' (0 < RT < 540)'})
+        subplot 221
+        ind = ~msCmlvData.hit & ~msCmlvData.miss & msCmlvData.tAudTargets > 0;
+        d = cat(2,msCmlvData.lastStimRT(ind & msCmlvData.lastStimRT > 0),...
+            msCmlvData.oneStimBackRT(ind & msCmlvData.oneStimBackRT < 540));
+        h = histogram(d,[0:20:540],'Normalization','probability');
+        h.FaceColor = [0.75 0.75 0];
+        hold on
+        ind = msCmlvData.valRT > 0 & msCmlvData.valRT < 540 & msCmlvData.tVisTargets > 0;
+        h = histogram(msCmlvData.valRT(ind),[0:20:540],'Normalization','probability');
+        h.FaceColor = cueColor{valid};
+        hold on
+        ind = msCmlvData.invRT > 0 & msCmlvData.invRT < 540 & msCmlvData.tInvVisTargets > 0;
+        h = histogram(msCmlvData.invRT(ind),[0:20:540],'Normalization','probability');
+        h.FaceColor = cueColor{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 540])
+        figYAxis([],'Fraction of Trials',[0 0.2])
+        figAxForm([],0)
+        title('All Visual Trials (Auditory FA)') 
+        legend({'FA','Valid','Invalid'},'location','northwest')  
+        
+        subplot 222
+        ind = ~msCmlvData.hit & ~msCmlvData.miss & msCmlvData.tVisTargets > 0;
+        d = cat(2,msCmlvData.lastStimRT(ind & msCmlvData.lastStimRT > 0),...
+            msCmlvData.oneStimBackRT(ind & msCmlvData.oneStimBackRT < 540));
+        h = histogram(d,[0:20:540],'Normalization','probability');
+        h.FaceColor = [0.75 0.75 0];
+        hold on
+        ind = msCmlvData.valRT > 0 & msCmlvData.valRT < 540 & msCmlvData.tAudTargets > 0;
+        h = histogram(msCmlvData.valRT(ind),[0:20:540],'Normalization','probability');
+        h.FaceColor = cueColor{valid};
+        hold on
+        ind = msCmlvData.invRT > 0 & msCmlvData.invRT < 540 & msCmlvData.tInvAudTargets > 0;
+        h = histogram(msCmlvData.invRT(ind),[0:20:540],'Normalization','probability');
+        h.FaceColor = cueColor{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 540])
+        figYAxis([],'Fraction of Trials',[0 0.2])
+        figAxForm([],0)
+        title('All Auditory Trials (Visual FA)') 
+        
+        subplot 223
+        ind = ~msCmlvData.hit & ~msCmlvData.miss & msCmlvData.tAudTargets > 0;
+        d = cat(2,msCmlvData.lastStimRT(ind & msCmlvData.lastStimRT > 0),...
+            msCmlvData.oneStimBackRT(ind & msCmlvData.oneStimBackRT < 540));
+        h = histogram(d,[0:20:540],'Normalization','probability');
+        h.FaceColor = [0.75 0.75 0];
+        hold on
+        ind = msCmlvData.valRT > 0 & msCmlvData.valRT < 540 & msCmlvData.tVisTargets == 23;
+        h = histogram(msCmlvData.valRT(ind),[0:20:540],'Normalization','probability');
+        h.FaceColor = cueColor{valid};
+        hold on
+        ind = msCmlvData.invRT > 0 & msCmlvData.invRT < 540 & msCmlvData.tInvVisTargets == 23;
+        h = histogram(msCmlvData.invRT(ind),[0:20:540],'Normalization','probability');
+        h.FaceColor = cueColor{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 540])
+        figYAxis([],'Fraction of Trials',[0 0.2])
+        figAxForm([],0)
+        title('23 deg Visual Trials (Auditory FA)')   
+        
+        subplot 224
+        ind = ~msCmlvData.hit & ~msCmlvData.miss & msCmlvData.tAudTargets > 0;
+        d = cat(2,msCmlvData.lastStimRT(ind & msCmlvData.lastStimRT > 0),...
+            msCmlvData.oneStimBackRT(ind & msCmlvData.oneStimBackRT < 540));
+        h = histogram(d,[0:20:540],'Normalization','probability');
+        h.FaceColor = [0.75 0.75 0];
+        hold on
+        ind = msCmlvData.valRT > 0 & msCmlvData.valRT < 540 & msCmlvData.tVisTargets == 90;
+        h = histogram(msCmlvData.valRT(ind),[0:20:540],'Normalization','probability');
+        h.FaceColor = cueColor{valid};
+        hold on
+        ind = msCmlvData.invRT > 0 & msCmlvData.invRT < 540 & msCmlvData.tInvVisTargets == 90;
+        h = histogram(msCmlvData.invRT(ind),[0:20:540],'Normalization','probability');
+        h.FaceColor = cueColor{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 540])
+        figYAxis([],'Fraction of Trials',[0 0.2])
+        figAxForm([],0)
+        title('90 deg Visual Trials (Auditory FA)')   
+        print(fullfile(fnout,[fileName 'reactTimeHistogram']),'-dpdf','-fillpage')
+
+
+        [valVisRTs_matched, invVisRTs_matched] = getMatchedReactTimes(...
+            msCmlvData.tVisTargets,msCmlvData.tInvVisTargets,...
+            msCmlvData.valRT,msCmlvData.invRT,...
+            msCmlvData.hit,msCmlvData.invHit);
+        [valAudRTs_matched, invAudRTs_matched] = getMatchedReactTimes(...
+            msCmlvData.tAudTargets,msCmlvData.tInvAudTargets,...
+            msCmlvData.valRT,msCmlvData.invRT,...
+            msCmlvData.hit,msCmlvData.invHit);
+        
+        setFigParams4Print('portrait')
+        set(0,'defaultAxesFontSize',12)
+        figure
         suptitle(mouseName)
-        subplot 121
+        subplot 221
+        h = cdfplot(valVisRTs_matched);
+        h.Color = cueColors{valid};
+        hold on
+        h = cdfplot(invVisRTs_matched);
+        h.Color = cueColors{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 600])
+        figYAxis([],'Fraction of Hits',[0 1])
+        figAxForm
+        title('Visual Trials')        
+        subplot 222
+        h = cdfplot(valAudRTs_matched);
+        h.Color = cueColors{valid};
+        hold on
+        h = cdfplot(invAudRTs_matched);
+        h.Color = cueColors{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 600])
+        figYAxis([],'Fraction of Hits',[0 1])
+        figAxForm
+        title('Auditory Trials')
+                
+        subplot 223
         x = visTargetsBinned(visInd);
         xerr = visTargetsSte(visInd);
         y = valVisRT(visInd);
@@ -1179,7 +1362,7 @@ for im = 1:nmice
         figAxForm
         title('Visual Trials')
 
-        subplot 122
+        subplot 224
         x = audTargetsBinned(audInd);
         xerr = audTargetsSte(audInd);
         y = valAudRT(audInd);
@@ -1202,118 +1385,117 @@ for im = 1:nmice
         figAxForm
         title('Auditory Trials')
 
-
-        print(fullfile(fnout,[fileName 'reactTimeByDifficulty']),'-dpdf')
+        print(fullfile(fnout,[fileName 'reactTimeByDifficulty']),'-dpdf','-fillpage')
 
         %%
-        [~,~,valTimeGroup] = histcounts(msCmlvData.valTargetTimeMs,timeBins);
-        [~,~,invTimeGroup] = histcounts(msCmlvData.invTargetTimeMs,timeBins);
-        nTimeBins = length(timeBins)-1;
-
-        nVis_timeBins = nan(2,nTimeBins);
-        nInvVis_timeBins = nan(2,nTimeBins);
-        nAud_timeBins = nan(2,nTimeBins);
-        nInvAud_timeBins = nan(2,nTimeBins);
-        meanTimePerBin = nan(2,nTimeBins);
-        errTimePerBin = nan(2,nTimeBins);
-        for ibin = 1:nTimeBins
-            invInd = invTimeGroup == ibin & msCmlvData.tInvVisTargets > 0;
-            if sum(invInd) >= minTrN_ms
-                invTargets = unique(msCmlvData.tInvVisTargets(invInd));
-                valInd = valTimeGroup == ibin & ismember(msCmlvData.tVisTargets,invTargets);
-                nVis_timeBins(1,ibin) = sum(msCmlvData.hit(valInd));
-                nVis_timeBins(2,ibin) = sum(msCmlvData.miss(valInd));
-                nInvVis_timeBins(1,ibin) = sum(msCmlvData.invHit(invInd));
-                nInvVis_timeBins(2,ibin) = sum(msCmlvData.invMiss(invInd));
-                meanTimePerBin(visualTrials,ibin) = nanmean(...
-                    cat(2,msCmlvData.valTargetTimeMs(valInd),...
-                    msCmlvData.invTargetTimeMs(invInd)));
-                errTimePerBin(visualTrials,ibin) = ste(...
-                    cat(2,msCmlvData.valTargetTimeMs(valInd),...
-                    msCmlvData.invTargetTimeMs(invInd)),2);
-            end
-
-            invInd = invTimeGroup == ibin & msCmlvData.tInvAudTargets > 0;
-            if sum(invInd) >= minTrN_ms
-                invTargets = unique(msCmlvData.tInvAudTargets(invInd));
-                valInd = valTimeGroup == ibin & ismember(msCmlvData.tAudTargets,invTargets);
-                nAud_timeBins(1,ibin) = sum(msCmlvData.hit(valInd));
-                nAud_timeBins(2,ibin) = sum(msCmlvData.miss(valInd));
-                nInvAud_timeBins(1,ibin) = sum(msCmlvData.invHit(invInd));
-                nInvAud_timeBins(2,ibin) = sum(msCmlvData.invMiss(invInd));
-                meanTimePerBin(auditoryTrials,ibin) = nanmean(...
-                    cat(2,msCmlvData.valTargetTimeMs(valInd),...
-                    msCmlvData.invTargetTimeMs(invInd)));
-                errTimePerBin(auditoryTrials,ibin) = ste(...
-                    cat(2,msCmlvData.valTargetTimeMs(valInd),...
-                    msCmlvData.invTargetTimeMs(invInd)),2);
-            end
-        end
-
-        ind = ~isnan(sum(nVis_timeBins));
-        [visHR_timeBins,visCI_timeBins] = binofit(nVis_timeBins(1,ind),...
-            sum(nVis_timeBins(:,ind),1));
-        [invVisHR_timeBins,invVisCI_timeBins] = binofit(nInvVis_timeBins(1,ind),...
-            sum(nInvVis_timeBins(:,ind),1));
-        if any(ind)
-            [audHR_timeBins,audCI_timeBins] = binofit(nAud_timeBins(1,ind),...
-                sum(nAud_timeBins(:,ind),1));
-            [invAudHR_timeBins,invAudCI_timeBins] = binofit(nInvAud_timeBins(1,ind),...
-                sum(nInvAud_timeBins(:,ind),1));
-        else
-            audHR_timeBins = nan(1,2);
-            audCI_timeBins = nan(2,2);
-            invAudHR_timeBins = nan(1,2);
-            invAudCI_timeBins = nan(2,2);
-        end
-
-        setFigParams4Print('landscape')
-        set(0,'defaultAxesFontSize',12)
-        figure
-        suptitle(mouseName)
-        subplot 121
-        ind = ~isnan(meanTimePerBin(visualTrials,:));
-        x = meanTimePerBin(visualTrials,ind);
-        xerr = errTimePerBin(visualTrials,ind);
-        y = visHR_timeBins.*100;
-        ylerr = y - (visCI_timeBins(:,1)'.*100);
-        yuerr = (visCI_timeBins(:,2)'.*100) - y;
-        h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
-        h.Color = cueColors{valid};
-        h.MarkerFaceColor = [1 1 1];
-        hold on
-        y = invVisHR_timeBins.*100;
-        ylerr = y - (invVisCI_timeBins(:,1)'.*100);
-        yuerr = (invVisCI_timeBins(:,2)'.*100) - y;
-        h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
-        h.Color = cueColors{invalid};
-        h.MarkerFaceColor = [1 1 1];
-        figXAxis([],'Target Time From Start (ms)',timeLim,timeBins,timeBins)
-        figYAxis([],'HR (%)',HR_lim)
-        figAxForm
-        title('Visual Trials')
-        subplot 122
-        ind = ~isnan(meanTimePerBin(auditoryTrials,:));
-        x = meanTimePerBin(auditoryTrials,ind);
-        xerr = errTimePerBin(auditoryTrials,ind);
-        y = audHR_timeBins.*100;
-        ylerr = y - (audCI_timeBins(:,1)'.*100);
-        yuerr = (audCI_timeBins(:,2)'.*100) - y;
-        h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
-        h.Color = cueColors{valid};
-        h.MarkerFaceColor = [1 1 1];
-        hold on
-        y = invAudHR_timeBins.*100;
-        ylerr = y - (invAudCI_timeBins(:,1)'.*100);
-        yuerr = (invAudCI_timeBins(:,2)'.*100) - y;
-        h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
-        h.Color = cueColors{invalid};
-        h.MarkerFaceColor = [1 1 1];
-        figXAxis([],'Target Time From Start (ms)',timeLim,timeBins,timeBins)
-        figYAxis([],'HR (%)',HR_lim)
-        figAxForm
-        title('Auditory Trials')
-
-        print(fullfile(fnout,[fileName 'HRbyTrialLength']),'-dpdf')
+%         [~,~,valTimeGroup] = histcounts(msCmlvData.valTargetTimeMs,timeBins);
+%         [~,~,invTimeGroup] = histcounts(msCmlvData.invTargetTimeMs,timeBins);
+%         nTimeBins = length(timeBins)-1;
+% 
+%         nVis_timeBins = nan(2,nTimeBins);
+%         nInvVis_timeBins = nan(2,nTimeBins);
+%         nAud_timeBins = nan(2,nTimeBins);
+%         nInvAud_timeBins = nan(2,nTimeBins);
+%         meanTimePerBin = nan(2,nTimeBins);
+%         errTimePerBin = nan(2,nTimeBins);
+%         for ibin = 1:nTimeBins
+%             invInd = invTimeGroup == ibin & msCmlvData.tInvVisTargets > 0;
+%             if sum(invInd) >= minTrN_ms
+%                 invTargets = unique(msCmlvData.tInvVisTargets(invInd));
+%                 valInd = valTimeGroup == ibin & ismember(msCmlvData.tVisTargets,invTargets);
+%                 nVis_timeBins(1,ibin) = sum(msCmlvData.hit(valInd));
+%                 nVis_timeBins(2,ibin) = sum(msCmlvData.miss(valInd));
+%                 nInvVis_timeBins(1,ibin) = sum(msCmlvData.invHit(invInd));
+%                 nInvVis_timeBins(2,ibin) = sum(msCmlvData.invMiss(invInd));
+%                 meanTimePerBin(visualTrials,ibin) = nanmean(...
+%                     cat(2,msCmlvData.valTargetTimeMs(valInd),...
+%                     msCmlvData.invTargetTimeMs(invInd)));
+%                 errTimePerBin(visualTrials,ibin) = ste(...
+%                     cat(2,msCmlvData.valTargetTimeMs(valInd),...
+%                     msCmlvData.invTargetTimeMs(invInd)),2);
+%             end
+% 
+%             invInd = invTimeGroup == ibin & msCmlvData.tInvAudTargets > 0;
+%             if sum(invInd) >= minTrN_ms
+%                 invTargets = unique(msCmlvData.tInvAudTargets(invInd));
+%                 valInd = valTimeGroup == ibin & ismember(msCmlvData.tAudTargets,invTargets);
+%                 nAud_timeBins(1,ibin) = sum(msCmlvData.hit(valInd));
+%                 nAud_timeBins(2,ibin) = sum(msCmlvData.miss(valInd));
+%                 nInvAud_timeBins(1,ibin) = sum(msCmlvData.invHit(invInd));
+%                 nInvAud_timeBins(2,ibin) = sum(msCmlvData.invMiss(invInd));
+%                 meanTimePerBin(auditoryTrials,ibin) = nanmean(...
+%                     cat(2,msCmlvData.valTargetTimeMs(valInd),...
+%                     msCmlvData.invTargetTimeMs(invInd)));
+%                 errTimePerBin(auditoryTrials,ibin) = ste(...
+%                     cat(2,msCmlvData.valTargetTimeMs(valInd),...
+%                     msCmlvData.invTargetTimeMs(invInd)),2);
+%             end
+%         end
+% 
+%         ind = ~isnan(sum(nVis_timeBins));
+%         [visHR_timeBins,visCI_timeBins] = binofit(nVis_timeBins(1,ind),...
+%             sum(nVis_timeBins(:,ind),1));
+%         [invVisHR_timeBins,invVisCI_timeBins] = binofit(nInvVis_timeBins(1,ind),...
+%             sum(nInvVis_timeBins(:,ind),1));
+%         if any(ind)
+%             [audHR_timeBins,audCI_timeBins] = binofit(nAud_timeBins(1,ind),...
+%                 sum(nAud_timeBins(:,ind),1));
+%             [invAudHR_timeBins,invAudCI_timeBins] = binofit(nInvAud_timeBins(1,ind),...
+%                 sum(nInvAud_timeBins(:,ind),1));
+%         else
+%             audHR_timeBins = nan(1,2);
+%             audCI_timeBins = nan(2,2);
+%             invAudHR_timeBins = nan(1,2);
+%             invAudCI_timeBins = nan(2,2);
+%         end
+% 
+%         setFigParams4Print('landscape')
+%         set(0,'defaultAxesFontSize',12)
+%         figure
+%         suptitle(mouseName)
+%         subplot 121
+%         ind = ~isnan(meanTimePerBin(visualTrials,:));
+%         x = meanTimePerBin(visualTrials,ind);
+%         xerr = errTimePerBin(visualTrials,ind);
+%         y = visHR_timeBins.*100;
+%         ylerr = y - (visCI_timeBins(:,1)'.*100);
+%         yuerr = (visCI_timeBins(:,2)'.*100) - y;
+%         h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
+%         h.Color = cueColors{valid};
+%         h.MarkerFaceColor = [1 1 1];
+%         hold on
+%         y = invVisHR_timeBins.*100;
+%         ylerr = y - (invVisCI_timeBins(:,1)'.*100);
+%         yuerr = (invVisCI_timeBins(:,2)'.*100) - y;
+%         h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
+%         h.Color = cueColors{invalid};
+%         h.MarkerFaceColor = [1 1 1];
+%         figXAxis([],'Target Time From Start (ms)',timeLim,timeBins,timeBins)
+%         figYAxis([],'HR (%)',HR_lim)
+%         figAxForm
+%         title('Visual Trials')
+%         subplot 122
+%         ind = ~isnan(meanTimePerBin(auditoryTrials,:));
+%         x = meanTimePerBin(auditoryTrials,ind);
+%         xerr = errTimePerBin(auditoryTrials,ind);
+%         y = audHR_timeBins.*100;
+%         ylerr = y - (audCI_timeBins(:,1)'.*100);
+%         yuerr = (audCI_timeBins(:,2)'.*100) - y;
+%         h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
+%         h.Color = cueColors{valid};
+%         h.MarkerFaceColor = [1 1 1];
+%         hold on
+%         y = invAudHR_timeBins.*100;
+%         ylerr = y - (invAudCI_timeBins(:,1)'.*100);
+%         yuerr = (invAudCI_timeBins(:,2)'.*100) - y;
+%         h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
+%         h.Color = cueColors{invalid};
+%         h.MarkerFaceColor = [1 1 1];
+%         figXAxis([],'Target Time From Start (ms)',timeLim,timeBins,timeBins)
+%         figYAxis([],'HR (%)',HR_lim)
+%         figAxForm
+%         title('Auditory Trials')
+% 
+%         print(fullfile(fnout,[fileName 'HRbyTrialLength']),'-dpdf')
     end
 end
