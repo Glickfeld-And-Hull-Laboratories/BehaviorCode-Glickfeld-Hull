@@ -24,7 +24,7 @@ end
 nTrial = length(input.tNStimAccepted);
 tTrialN = input.trialSinceReset;
 
-  stim1On_mat = unique(celleqel2mat_padded(input.tStimOneGratingOnTimeMs));
+  stim1On_mat = unique(celleqel2mat_padded(input.nStimOneFramesOn));
   az1_mat = unique(celleqel2mat_padded(input.tStimOneGratingAzimuthDeg));
   el1_mat = unique(celleqel2mat_padded(input.tStimOneGratingElevationDeg));
   dir1_mat = unique(celleqel2mat_padded(input.tStimOneGratingDirectionDeg));
@@ -38,7 +38,7 @@ tTrialN = input.trialSinceReset;
   mask1_dir_mat = unique(celleqel2mat_padded(input.tMaskOneGratingDirectionDeg));
   mask1_con_mat = unique(celleqel2mat_padded(input.tMaskOneGratingContrast));
 
-  stim2On_mat = unique(celleqel2mat_padded(input.tStimTwoGratingOnTimeMs));
+  stim2On_mat = unique(celleqel2mat_padded(input.nStimTwoFramesOn));
   az2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingAzimuthDeg));
   el2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingElevationDeg));
   dir2_mat = unique(celleqel2mat_padded(input.tStimTwoGratingDirectionDeg));
@@ -52,7 +52,7 @@ tTrialN = input.trialSinceReset;
   mask2_dir_mat = unique(celleqel2mat_padded(input.tMaskTwoGratingDirectionDeg));
   mask2_con_mat = unique(celleqel2mat_padded(input.tMaskTwoGratingContrast));
 
-  isi_mat = unique(celleqel2mat_padded(input.tISITimeMs));
+  isi_mat = unique(celleqel2mat_padded(input.nFramesISI));
 
   if input.doWheelSpeed
     for itrial = 1:nTrial
@@ -88,7 +88,7 @@ if tTrialN > 1
   tStr1 = ['Stim One:'];
         if input.stimOneDoVisualStim
           tStr1 = sprintf( [tStr1 '\n',...
-                 'Time On (ms): %s \n' ,...
+                 'Frames On: %s \n' ,...
         				 'Az/El (deg): %s/%s \n',...
         				 'Diameter (deg): %s \n', ...
         				 'Direction (deg): %s \n', ...
@@ -117,7 +117,7 @@ if tTrialN > 1
       tStr2 = ['Stim Two:'];
       if input.stimTwoDoVisualStim
           tStr2 = sprintf( [tStr2 '\n', ... 
-                 'Time On (ms): %s \n',...
+                 'Frames On: %s \n',...
                  'Az/El (deg): %s/%s \n',...
                  'Diameter (deg): %s \n', ...
                  'Direction (deg): %s \n', ...
@@ -165,7 +165,7 @@ if tTrialN > 1
         tMaskStr2 = sprintf( ['No Mask Two \n']);
       end
 
-      tStrISI = sprintf('ISI (ms): %s', mat2str(isi_mat));
+      tStrISI = sprintf('ISI (frames): %s', mat2str(isi_mat));
 
         text(0, 0.6, tStr1, ...
              'VerticalAlignment', 'top', ...
