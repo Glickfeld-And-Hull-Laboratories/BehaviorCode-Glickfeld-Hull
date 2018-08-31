@@ -962,6 +962,7 @@
               </action>
 
               <action type="if" condition="tDoRandSoundFreq">
+                <action type="report" message="tDoRandSoundFreq is $tDoRandSoundFreq"></action>
                 <action type="assignment" variable="tTempStim1" value= "disc_rand(1,5)"/> <!-- hard coded for 5 sounds -->
                 <action type="if" condition="tTempStim1 == 1">
                   <action type="assignment" variable="tStimOneSound1Amplitude" value= "stimOneSound1Amplitude"/>
@@ -969,34 +970,39 @@
                   <action type="assignment" variable="tStimOneSound3Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound4Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound5Amplitude" value= "0"/>
+                  <action type="report" message="tStimOneSound1Amplitude is $stimOneSound1Amplitude"></action>
                 </action>
-                <action type="if" condition="tTempStim1 == 1">
+                <action type="if" condition="tTempStim1 == 2">
                   <action type="assignment" variable="tStimOneSound1Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound2Amplitude" value= "stimOneSound2Amplitude"/>
                   <action type="assignment" variable="tStimOneSound3Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound4Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound5Amplitude" value= "0"/>
+                  <action type="report" message="tStimOneSound2Amplitude is $stimOneSound2Amplitude"></action>
                 </action>
-                <action type="if" condition="tTempStim1 == 1">
+                <action type="if" condition="tTempStim1 == 3">
                   <action type="assignment" variable="tStimOneSound1Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound2Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound3Amplitude" value= "stimOneSound3Amplitude"/>
                   <action type="assignment" variable="tStimOneSound4Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound5Amplitude" value= "0"/>
+                  <action type="report" message="tStimOneSound3Amplitude is $stimOneSound3Amplitude"></action>
                 </action>
-                <action type="if" condition="tTempStim1 == 1">
+                <action type="if" condition="tTempStim1 == 4">
                   <action type="assignment" variable="tStimOneSound1Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound2Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound3Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound4Amplitude" value= "stimOneSound4Amplitude"/>
                   <action type="assignment" variable="tStimOneSound5Amplitude" value= "0"/>
+                  <action type="report" message="tStimOneSound4Amplitude is $stimOneSound4Amplitude"></action>
                 </action>
-                <action type="if" condition="tTempStim1 == 1">
+                <action type="if" condition="tTempStim1 == 5">
                   <action type="assignment" variable="tStimOneSound1Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound2Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound3Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound4Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimOneSound5Amplitude" value= "stimOneSound5Amplitude"/>
+                  <action type="report" message="tStimOneSound5Amplitude is $stimOneSound5Amplitude"></action>
                 </action> 
                 <action type="if" condition="matchStimOneParameters">
                   <action type="assignment" variable="tStimTwoSound1Amplitude" value= "tStimOneSound1Amplitude"/>
@@ -1007,40 +1013,45 @@
                 </action>
                 <action type="if" condition="!matchStimOneParameters">
                   <action type="assignment" variable="tTempStim2" value= "disc_rand(1,5)"/>
-                  <action type="if" condition="tTempStim1 == 1">
+                  <action type="if" condition="tTempStim2 == 1">
                   <action type="assignment" variable="tStimTwoSound1Amplitude" value= "stimTwoSound1Amplitude"/>
                   <action type="assignment" variable="tStimTwoSound2Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound3Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound4Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound5Amplitude" value= "0"/>
+                  <action type="report" message="tStimTwoSound1Amplitude is $stimTwoSound1Amplitude"></action>
                 </action>
-                <action type="if" condition="tTempStim1 == 1">
+                <action type="if" condition="tTempStim2 == 2">
                   <action type="assignment" variable="tStimTwoSound1Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound2Amplitude" value= "stimTwoSound2Amplitude"/>
                   <action type="assignment" variable="tStimTwoSound3Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound4Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound5Amplitude" value= "0"/>
+                  <action type="report" message="tStimTwoSound2Amplitude is $stimTwoSound2Amplitude"></action>
                 </action>
-                <action type="if" condition="tTempStim1 == 1">
+                <action type="if" condition="tTempStim2 == 3">
                   <action type="assignment" variable="tStimTwoSound1Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound2Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound3Amplitude" value= "stimTwoSound3Amplitude"/>
                   <action type="assignment" variable="tStimTwoSound4Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound5Amplitude" value= "0"/>
+                  <action type="report" message="tStimTwoSound3Amplitude is $stimTwoSound3Amplitude"></action>
                 </action>
-                <action type="if" condition="tTempStim1 == 1">
+                <action type="if" condition="tTempStim2 == 4">
                   <action type="assignment" variable="tStimTwoSound1Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound2Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound3Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound4Amplitude" value= "stimTwoSound4Amplitude"/>
                   <action type="assignment" variable="tStimTwoSound5Amplitude" value= "0"/>
+                  <action type="report" message="tStimTwoSound4Amplitude is $stimTwoSound4Amplitude"></action>
                 </action>
-                <action type="if" condition="tTempStim1 == 1">
+                <action type="if" condition="tTempStim2 == 5">
                   <action type="assignment" variable="tStimTwoSound1Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound2Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound3Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound4Amplitude" value= "0"/>
                   <action type="assignment" variable="tStimTwoSound5Amplitude" value= "stimTwoSound5Amplitude"/>
+                  <action type="report" message="tStimTwoSound5Amplitude is $stimTwoSound5Amplitude"></action>
                 </action> 
               </action>
             </action>
