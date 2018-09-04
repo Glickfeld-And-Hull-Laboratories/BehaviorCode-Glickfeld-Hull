@@ -1390,6 +1390,8 @@
             <action type="if" condition="tMaskTwoGratingContrast &lt; 0">
               <action type="assignment" variable="tMaskTwoGratingContrast" value= "0"/>
             </action>
+            <action type="report" message="tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast"></action>
+            <action type="report" message="tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg"></action>
 
             <action type="if" condition="tDoMask">
                <action type="if" condition="tStimOneGratingContrast + tMaskOneGratingContrast &gt; 1">
@@ -1398,6 +1400,11 @@
                 <action type="if" condition="tStimTwoGratingContrast + tMaskTwoGratingContrast &gt; 1">
                   <action type="assignment" variable="tMaskTwoGratingContrast" value= "0"/>
                 </action>  
+            </action>
+
+             <action type="if" condition="!tDoMask">
+              <action type="assignment" variable="tMaskOneGratingContrast" value= "0"/>
+              <action type="assignment" variable="tMaskTwoGratingContrast" value= "0"/>
             </action>
 
             <!-- frame conversion -->
@@ -1473,7 +1480,7 @@
               <action type="assignment" variable="speedIntervalUS" value="speedIntervalMS*1000"/>
             </action>
 
-            <action type="report" message="In ITI, waiting $tItiWaitFrames, then wait for press"></action>
+            <action type="report" message="In ITI, waiting $tItiWaitFrames"></action>
 			
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="StimOneOn"></transition>
@@ -1500,6 +1507,8 @@
             <action type="play_sound" sound="stimOneSound5"/>
             <action type="assignment" variable="cStimOneOn" value="counter" />
             <action type="assignment" variable="mwStimOneOnMs" value="now()/1000" />
+
+            <action type="report" message="StimOne on"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimOneOn + nStimOneFramesOn)" target="StimOneOff"></transition>
@@ -1536,6 +1545,8 @@
             <action type="play_sound" sound="stimTwoSound5"/>
             <action type="assignment" variable="cStimTwoOn" value="counter" />
             <action type="assignment" variable="mwStimTwoOnMs" value="now()/1000" />
+
+            <action type="report" message="StimTwo on"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimTwoOn + nStimOneFramesOn)" target="StimTwoOff"></transition>

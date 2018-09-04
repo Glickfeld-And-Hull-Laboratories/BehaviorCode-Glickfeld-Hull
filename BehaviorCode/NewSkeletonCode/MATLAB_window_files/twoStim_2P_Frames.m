@@ -321,22 +321,22 @@ end
 if input.tStimOneGratingContrast{trN} > 0
     stim1Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimOneGratingContrast{trN}.*100, input.tStimOneGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
 else
-    stim1Str = sprintf('none');
+    stim1Str = sprintf('Stim1: none');
 end
 if input.tMaskOneGratingContrast{trN} > 0
-    mask1Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskOneGratingContrast{trN}*100, input.tMaskOneGratingDirectionDeg{trN}, input.tMaskTwoGratingOnTimeMs{trN});
+    mask1Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskOneGratingContrast{trN}*100, input.tMaskOneGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
 else
-    mask1Str = sprintf('none');
+    mask1Str = sprintf('Mask1: none');
 end
 if input.tStimTwoGratingContrast{trN} > 0
-    stim2Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimTwoGratingContrast{trN}.*100, input.tStimTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
+    stim2Str = sprintf('Stim2: con %g%%, dir %g%, %g% ms', input.tStimTwoGratingContrast{trN}.*100, input.tStimTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
 else
-    stim2Str = sprintf('none');
+    stim2Str = sprintf('Stim2: none');
 end
 if input.tMaskTwoGratingContrast{trN} > 0
-    mask2Str = sprintf('Mask1: con %g%%, dir %g%, %g% ms', input.tMaskTwoGratingContrast{trN}*100, input.tMaskTwoGratingDirectionDeg{trN}, input.tMaskTwoGratingOnTimeMs{trN});
+    mask2Str = sprintf('Mask2: con %g%%, dir %g%, %g% ms', input.tMaskTwoGratingContrast{trN}*100, input.tMaskTwoGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
 else
-    mask2Str = sprintf('none');
+    mask2Str = sprintf('Mask2: none');
 end
 isiStr = sprintf('ISI: %g%ms', input.tISITimeMs{trN});
 

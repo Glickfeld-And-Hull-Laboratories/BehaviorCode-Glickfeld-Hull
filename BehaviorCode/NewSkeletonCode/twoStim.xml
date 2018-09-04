@@ -12,7 +12,7 @@
               ws_durationUS="speedIntervalUS"
               wheel_speed="wheelSpeed"
               doCB="doCerebellarStim"
-              quadrature='quadrature'/>
+              quadrature="quadrature"/>
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -1198,6 +1198,14 @@
                   <action type="assignment" variable="tMaskTwoGratingContrast" value= "0"/>
                 </action>  
             </action>
+
+            <action type="if" condition="!tDoMask">
+              <action type="assignment" variable="tMaskOneGratingContrast" value= "0"/>
+              <action type="assignment" variable="tMaskTwoGratingContrast" value= "0"/>
+            </action>
+
+            <action type="report" message="tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast"></action>
+            <action type="report" message="tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg"></action>
 
             <action type="assignment" 
             variable="tItiTimeMs" 
