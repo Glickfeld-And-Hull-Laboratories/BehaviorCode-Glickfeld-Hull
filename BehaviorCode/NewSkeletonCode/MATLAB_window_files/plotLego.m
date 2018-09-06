@@ -252,6 +252,9 @@ if isfield(input,'doContrastDiscrim')
   elseif input.doSizeDiscrim
     taskStr = sprintf(['MaxSize: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
       input.gratingMaxDiameterDeg, input.gratingDiameterSPO, input.gratingMaxDiameterDiff, input.gratingDiameterDiffSPO);
+  elseif input.doOriDiscrim
+    taskStr = sprintf(['MaxOriDiff: %d ; SPO: %2.2f \n'] ,...
+      input.gratingMaxDirectionDiff, input.gratingDirectionDiffSPO);  
   end
 else
   taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
@@ -530,6 +533,8 @@ if nCorr>0  %&& input.doTestRobot==0,
       else
         contDiffV = chop(celleqel2mat_padded(input.tGratingDiameterDeg) - celleqel2mat_padded(input.dGratingDiameterDeg),2);
       end
+    elseif input.doOriDiscrim
+      contDiffV = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.targetGratingDirection),2);
     end
   else
     if input.gratingContrastDiffSPO<10
@@ -594,6 +599,10 @@ if nCorr>0  %&& input.doTestRobot==0,
         end
       elseif input.doSizeDiscrim
         possDiffV = double(input.gratingMaxDiameterDiff) ./ (2 .^ (lev./double(input.gratingDiameterDiffSPO)))+1;
+        minX = min(possDiffV,[],2);
+        maxX = max(possDiffV,[],2);
+      elseif input.doOriDiscrim
+        possDiffV = double(input.gratingMaxDirectionDiff) ./ (2 .^ (lev./double(input.gratingDirectionDiffSPO)))+1;
         minX = min(possDiffV,[],2);
         maxX = max(possDiffV,[],2);
       end
@@ -690,6 +699,9 @@ if nCorr>0  %&& input.doTestRobot==0,
              xlabel('Size Difference (R-L)')
             end
            title('Decision Time by Size Difference')
+        elseif input.doOriDiscrim
+           xlabel('Ori Difference')
+           title('Decision Time by Ori Difference')
         end
       else
         if input.gratingContrastDiffSPO<10
@@ -773,6 +785,10 @@ if nCorr>0 && input.doTestRobot==0,
            else
              xlabel('Size Difference (R-L)')
             end
+           title('Percent Correct by Size Difference')
+        elseif input.doOriDiscrim
+          if input.gratingDiameterDiffSPO<10
+           xlabel('Ori Difference')
            title('Percent Correct by Size Difference')
         end
       else
@@ -866,6 +882,9 @@ if isfield(input,'doContrastDiscrim')
       differenceRight = chop(celleqel2mat_padded(input.rightGratingDiameterDeg) - celleqel2mat_padded(input.leftGratingDiameterDeg),2);
     elseif isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
         differenceRight =chop(celleqel2mat_padded(input.rightGratingDiameterDeg) ./ celleqel2mat_padded(input.leftGratingDiameterDeg),2);
+    end
+  elseif input.doOriDiscrim
+      differenceRight = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.targetGratingDirection),2);
     end
   end
 else
@@ -1003,6 +1022,11 @@ if min(differenceRight) < 0
         set(gca, 'XTick', [-input.gratingMaxDiameterDeg:5:input.gratingMaxDiameterDeg], ...
                  'YTick', [0:0.25:1],...
                  'XGrid', 'on');
+    elseif input.doOriDiscrim
+        xlabel('Ori Difference')
+        set(gca, 'XTick', [-input.gratingMaxDirectionDeg:5:input.gratingMaxDirectionDeg], ...
+                 'YTick', [0:0.25:1],...
+                 'XGrid', 'on');
     end
   else
     xlabel('Contrast Difference (R-L)')
@@ -1020,6 +1044,8 @@ else
       xlabel('Contrast Difference (R/L)')
     elseif input.doSizeDiscrim
       xlabel('Size Difference (R/L)')
+    elseif input.doOriDiscrim
+      xlabel('Ori Difference')
     end
   else
     xlabel('Contrast Difference (R/L)')
@@ -1067,6 +1093,8 @@ if nCorr>0 %&& input.doTestRobot==0,
       contTargetV = celleqel2mat_padded(input.tGratingContrast);
     elseif input.doSizeDiscrim
       contTargetV = celleqel2mat_padded(input.tGratingDiameterDeg);
+    elseif input.doOriDiscrim
+      contTargetV = abs(celleqel2mat_padded(input.tGratingDirectionStart)-double(input.targetGratingDirection));
     end
   else
     contTargetV = celleqel2mat_padded(input.tGratingContrast).*100;
@@ -1128,6 +1156,9 @@ if nCorr>0 %&& input.doTestRobot==0,
     elseif input.doSizeDiscrim
       minX = 1;
       maxX = 100;
+    elseif input.doOriDiscrim
+      minX = 1;
+      maxX = 45;
     end
     xLimm = [minX maxX];
     if ~(xLimm(1)==0),
@@ -1155,6 +1186,9 @@ if nCorr>0 %&& input.doTestRobot==0,
          elseif input.doSizeDiscrim
            xlabel('Target Size')
            title('Percent Correct by Target Size')
+         elseif input.doOriDiscrim
+           xlabel('Abs Ori diff')
+           title('Percent Correct by Ori Diff')
          end
         else
           xlabel('Target Contrast')
