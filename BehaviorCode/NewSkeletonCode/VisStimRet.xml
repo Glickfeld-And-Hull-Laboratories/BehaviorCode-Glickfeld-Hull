@@ -857,7 +857,11 @@
              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg"/>
              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
            </action>
-
+            
+            <!-- check for tGratingContrast>1 -->
+            <action type="if" condition="tGratingContrast>1">
+                <action type="assignment" variable="tGratingContrast" value= "1"/>
+            </action>    
 	      	<!-- check for errors in feature combos 
 	      		<action type="if" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2)) &gt; 2">
 	      			<action type="assert" condition= "1 = 1" message="Too many stim features selected for matrix mode"

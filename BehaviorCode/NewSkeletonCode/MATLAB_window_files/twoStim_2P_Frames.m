@@ -353,6 +353,10 @@ fprintf(1,'%s; %s; %s; %s\n', ...
 input = exptRunSubfunctions(ds, input, { @plotTwoStim_2P_Frames });
 
 
+input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
+                              '~/Documents/MWorks/Data', ...
+                              mat2str(input.subjectNum), input.saveTime);
+save(input.savedDataName, 'input');
 
 %% save variables for next trial
 retval = input;
