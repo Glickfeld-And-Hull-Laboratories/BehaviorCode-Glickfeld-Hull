@@ -67,7 +67,7 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
         
         tooShortTrials = trialTimeMs < minTrialLengthMs;
         if any(tooShortTrials)
-            mworks = trialChopper(mworks,find(~tooShortTrials));
+            mworks = trialChopper(mworks,~tooShortTrials);
             if isfield(mworks,'nFramesOn')
                 frameRate = mworks.frameRateHz;
 

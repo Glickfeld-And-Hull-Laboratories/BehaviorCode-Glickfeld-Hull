@@ -1,11 +1,11 @@
 clear all
 close all
 
-ms2analyze = {'613';'614';'625';'668';'750'};
+ms2analyze = {'750'};
 exampleDay = 10;
 doExampleDay = false;
-doLoadPreviousDataset = false;
-doCheck4NewDates = true;
+doLoadPreviousDataset = true;
+doCheck4NewDates = false;
 doRewarded = true;
 doPlot = true;
 %%
@@ -1304,7 +1304,88 @@ for im = 1:nmice
         title('90 deg Visual Trials (Auditory FA)')   
         print(fullfile(fnout,[fileName 'reactTimeHistogram']),'-dpdf','-fillpage')
 
-
+setFigParams4Print('landscape')
+        set(0,'defaultAxesFontSize',12)
+        figure
+        suptitle({mouseName,' (0 < RT < 540)'})
+        subplot 221
+        ind = ~msCmlvData.hit & ~msCmlvData.miss & msCmlvData.tAudTargets > 0;
+        d = cat(2,msCmlvData.lastStimRT(ind & msCmlvData.lastStimRT > 0),...
+            msCmlvData.oneStimBackRT(ind & msCmlvData.oneStimBackRT < 540));
+        h = cdfplot(d);
+        h.Color = [0.75 0.75 0];
+        hold on
+        ind = msCmlvData.valRT > 0 & msCmlvData.valRT < 540 & msCmlvData.tVisTargets > 0;
+        h = cdfplot(msCmlvData.valRT(ind));
+        h.Color = cueColor{valid};
+        hold on
+        ind = msCmlvData.invRT > 0 & msCmlvData.invRT < 540 & msCmlvData.tInvVisTargets > 0;
+        h = cdfplot(msCmlvData.invRT(ind));
+        h.Color = cueColor{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 540])
+        figYAxis([],'Fraction of Trials',[0 1])
+        figAxForm([])
+        title('All Visual Trials (Auditory FA)') 
+        legend({'FA','Valid','Invalid'},'location','northwest')  
+        
+        subplot 222
+        ind = ~msCmlvData.hit & ~msCmlvData.miss & msCmlvData.tVisTargets > 0;
+        d = cat(2,msCmlvData.lastStimRT(ind & msCmlvData.lastStimRT > 0),...
+            msCmlvData.oneStimBackRT(ind & msCmlvData.oneStimBackRT < 540));
+        h = cdfplot(d);
+        h.Color = [0.75 0.75 0];
+        hold on
+        ind = msCmlvData.valRT > 0 & msCmlvData.valRT < 540 & msCmlvData.tAudTargets > 0;
+        h = cdfplot(msCmlvData.valRT(ind));
+        h.Color = cueColor{valid};
+        hold on
+        ind = msCmlvData.invRT > 0 & msCmlvData.invRT < 540 & msCmlvData.tInvAudTargets > 0;
+        h = cdfplot(msCmlvData.invRT(ind));
+        h.Color = cueColor{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 540])
+        figYAxis([],'Fraction of Trials',[0 1])
+        figAxForm([])
+        title('All Auditory Trials (Visual FA)') 
+        
+        subplot 223
+        ind = ~msCmlvData.hit & ~msCmlvData.miss & msCmlvData.tAudTargets > 0;
+        d = cat(2,msCmlvData.lastStimRT(ind & msCmlvData.lastStimRT > 0),...
+            msCmlvData.oneStimBackRT(ind & msCmlvData.oneStimBackRT < 540));
+        h = cdfplot(d);
+        h.Color = [0.75 0.75 0];
+        hold on
+        ind = msCmlvData.valRT > 0 & msCmlvData.valRT < 540 & msCmlvData.tVisTargets == 23;
+        h = cdfplot(msCmlvData.valRT(ind));
+        h.Color = cueColor{valid};
+        hold on
+        ind = msCmlvData.invRT > 0 & msCmlvData.invRT < 540 & msCmlvData.tInvVisTargets == 23;
+        h = cdfplot(msCmlvData.invRT(ind));
+        h.Color = cueColor{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 540])
+        figYAxis([],'Fraction of Trials',[0 1])
+        figAxForm([])
+        title('23 deg Visual Trials (Auditory FA)')   
+        
+        subplot 224
+        ind = ~msCmlvData.hit & ~msCmlvData.miss & msCmlvData.tAudTargets > 0;
+        d = cat(2,msCmlvData.lastStimRT(ind & msCmlvData.lastStimRT > 0),...
+            msCmlvData.oneStimBackRT(ind & msCmlvData.oneStimBackRT < 540));
+        h = cdfplot(d);
+        h.Color = [0.75 0.75 0];
+        hold on
+        ind = msCmlvData.valRT > 0 & msCmlvData.valRT < 540 & msCmlvData.tVisTargets == 90;
+        h = cdfplot(msCmlvData.valRT(ind));
+        h.Color = cueColor{valid};
+        hold on
+        ind = msCmlvData.invRT > 0 & msCmlvData.invRT < 540 & msCmlvData.tInvVisTargets == 90;
+        h = cdfplot(msCmlvData.invRT(ind));
+        h.Color = cueColor{invalid};
+        figXAxis([],'Reaction Time (ms)',[0 540])
+        figYAxis([],'Fraction of Trials',[0 1])
+        figAxForm([])
+        title('90 deg Visual Trials (Auditory FA)')   
+        print(fullfile(fnout,[fileName 'reactTimeCDF_visual']),'-dpdf','-fillpage')
+        
         [valVisRTs_matched, invVisRTs_matched] = getMatchedReactTimes(...
             msCmlvData.tVisTargets,msCmlvData.tInvVisTargets,...
             msCmlvData.valRT,msCmlvData.invRT,...
