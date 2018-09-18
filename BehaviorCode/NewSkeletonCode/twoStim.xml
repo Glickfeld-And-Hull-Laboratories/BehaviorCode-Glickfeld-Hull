@@ -77,6 +77,7 @@
       <variable tag="speedIntervalMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Wheel Speed"/>
       <variable tag="wheelSpeed" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Wheel Speed"/>
       <variable tag="sendElectrophysSync" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Ephys"/>
+      <variable tag="sendPClampSync" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Ephys"/>
 
     </folder>
     <folder tag="Stimuli">
@@ -516,7 +517,9 @@
             <action type="assignment" variable="tMaskNumber" value="svMaskNumber"/>  <!-- choose a value from selection var, 0-origin -->
             <action type="assignment" variable="tMaskNumber2" value="svMaskNumber2"/>  <!-- choose a value from selection var, 0-origin -->
 
-            <action type="assignment" variable="MIO0" value="0"></action>
+            <action type="if" condition="sendPClampSync">
+              <action type="assignment" variable="MIO0" value="1"/>
+            </action>
                                   
             <action type="if" condition="doBlock2">
               <action type="if" condition="!doBlock2SeparateOdds">
@@ -1240,7 +1243,7 @@
 
             <action type="if" condition="tDoRandISITime">
               <action type="assignment" variable="maxISITime"  
-                      value="isiTimeMs * pow(isiTimeSPO,isiTimeN)"/>
+                      value="isiTimeMs * pow(isiTimeSPO,isiTimeN-1)"/>
             </action>  
 
             <action type="if" condition="!tDoRandISITime">
@@ -1248,19 +1251,20 @@
                       value="isiTimeMs"/>
             </action>
 
-            <action type="if" condition="!isFirstTrial"> 
-              <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
-                <action type="assignment" variable="tempMs"  
-                      value="(maxStimOnTime+maxISITime)-lastTrialTimeMs"/>
-              </action>
+            
+            <action type="if" condition="sendPClampSync"> 
+                <action type="assignment" variable="tempMs" value="maxISITime-tISITimeMs"/>
             </action>
 
-              
-            <action type="if" condition="tempMs &gt;= 0"> 
-                <!--add to ITI-->
-              <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
+            <action type="report" message="maxISI is $maxISITime"/>
+
+            <action type="if" condition="doExtendItiOnShortPrevTrial == 1"> 
+              <action type="if" condition="!isFirstTrial"> 
+                <action type="assignment" variable="tempMs"  
+                     value="(maxStimOnTime+maxISITime)-lastTrialTimeMs"/> 
+                <action type="assignment" tag="-" variable="tItiWaitTimeMs" value="itiTimeMs+tempMs"></action>
+              </action>
             </action>
-            
 
             <!-- if trialLaser, send params to controller -->
             <action type="if" condition="tTrialLaserPowerMw > 0">
@@ -1275,6 +1279,8 @@
               <action type="assignment" variable="DoWheelSpeed" value="doWheelSpeed"/>
               <action type="assignment" variable="speedIntervalUS" value="speedIntervalMS*1000"/>
             </action>
+
+            <action type="assignment" variable="MIO0" value="0"></action>
 
             <action type="report" message="In ITI, waiting $tItiWaitTimeMs, then wait for press"></action>
 			
@@ -1370,8 +1376,13 @@
 
           <task_system_state tag="StimTwoOff" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
-            <action type="start_timer" timer="stimOffTimer" timebase="" duration="100" duration_units="ms"/>
+            <action type="if" condition="sendPClampSync">
+              <action type="start_timer" timer="stimOffTimer" timebase="" duration="tempMs+1200" duration_units="ms"/>
+              <action type="report" message="time is $tempMs"/>
+            </action>
+            <action type="if" condition="!sendPClampSync">
+              <action type="start_timer" timer="stimOffTimer" timebase="" duration="100" duration_units="ms"/>
+            </action>
 
             <action type="dequeue_stimulus" stimulus="stimTwo"></action>
             <action type="dequeue_stimulus" stimulus="maskTwo"></action>
