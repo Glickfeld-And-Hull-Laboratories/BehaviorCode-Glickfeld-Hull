@@ -125,7 +125,7 @@ fprintf(1,'Con: T=%0.2f, D=%0.2f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', 
 elseif input.doSizeDiscrim
 fprintf(1,'Size: T=%2.0f, D=%2.0f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', input.tGratingDiameterDeg{trN}, input.dGratingDiameterDeg{trN}, tLeftStr, outcomeStr, decisionTime, input.tBlock2TrialNumber{trN}+1, rewS)
 elseif input.doOriDiscrim
-fprintf(1,'Ori: T=%2.0f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', abs(input.targetGratingDirection - input.tGratingDirectionStart{trN}), tLeftStr, outcomeStr, decisionTime, input.tBlock2TrialNumber{trN}+1, rewS)
+fprintf(1,'Ori: T=%2.0f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', abs(input.gratingTargetDirection - input.tGratingDirectionStart{trN}), tLeftStr, outcomeStr, decisionTime, input.tBlock2TrialNumber{trN}+1, rewS)
 end
 % input.savedDataName = sprintf('%s/data-i%03s-%s.mat', ...
 %                               '~/Documents/MWorks/Data', ...

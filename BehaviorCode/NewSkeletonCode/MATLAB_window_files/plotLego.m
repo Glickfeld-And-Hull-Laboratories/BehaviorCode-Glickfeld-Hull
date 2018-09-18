@@ -534,7 +534,7 @@ if nCorr>0  %&& input.doTestRobot==0,
         contDiffV = chop(celleqel2mat_padded(input.tGratingDiameterDeg) - celleqel2mat_padded(input.dGratingDiameterDeg),2);
       end
     elseif input.doOriDiscrim
-      contDiffV = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.targetGratingDirection),2);
+      contDiffV = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
     end
   else
     if input.gratingContrastDiffSPO<10
@@ -626,12 +626,16 @@ if nCorr>0  %&& input.doTestRobot==0,
     hold on
     xLimm = [minX maxX];
     uqDiff = uqDiff;
-
+    
+    if input.doContrastDiscrim
     if input.gratingContrastDiffSPO<10
       sc_num = 1;
     else
       sc_num = 100;
-    end 
+    end
+    else
+    sc_num = 1; 
+    end
     
     pH = plot((sc_num * uqDiff), cell2mat(corrDiffCell));
     if nLeft>0,
@@ -884,7 +888,7 @@ if isfield(input,'doContrastDiscrim')
         differenceRight =chop(celleqel2mat_padded(input.rightGratingDiameterDeg) ./ celleqel2mat_padded(input.leftGratingDiameterDeg),2);
     end
   elseif input.doOriDiscrim
-      differenceRight = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.targetGratingDirection),2);
+      differenceRight = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
     end
   end
 else
@@ -1024,7 +1028,7 @@ if min(differenceRight) < 0
                  'XGrid', 'on');
     elseif input.doOriDiscrim
         xlabel('Ori Difference')
-        set(gca, 'XTick', [-input.gratingMaxDirectionDeg:5:input.gratingMaxDirectionDeg], ...
+        set(gca, 'XTick', [-input.gratingMaxDirectionDiff:5:input.gratingMaxDirectionDiff], ...
                  'YTick', [0:0.25:1],...
                  'XGrid', 'on');
     end
@@ -1094,7 +1098,7 @@ if nCorr>0 %&& input.doTestRobot==0,
     elseif input.doSizeDiscrim
       contTargetV = celleqel2mat_padded(input.tGratingDiameterDeg);
     elseif input.doOriDiscrim
-      contTargetV = abs(celleqel2mat_padded(input.tGratingDirectionStart)-double(input.targetGratingDirection));
+      contTargetV = abs(celleqel2mat_padded(input.tGratingDirectionStart)-double(input.gratingTargetDirection));
     end
   else
     contTargetV = celleqel2mat_padded(input.tGratingContrast).*100;
