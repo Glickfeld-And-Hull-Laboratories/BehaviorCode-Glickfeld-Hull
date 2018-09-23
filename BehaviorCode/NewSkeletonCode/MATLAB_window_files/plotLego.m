@@ -100,8 +100,7 @@ noGoInd = find(noGoIx);
 noGoCorrIx(noGoInd(noGoCorr)) = 1;
 noGoCorrIx(noGoInd(noGoInc)) = 0;
 
-
-% Left bias indexing
+%Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
 tLeftResponse = celleqel2mat_padded(input.tLeftResponse);
 tRightResponse = celleqel2mat_padded(input.tRightResponse);
@@ -403,11 +402,7 @@ lh4= refline(0,0.5);
 set(lh4, 'LineStyle', '--');
     
 title('Bias Plot: Red = Resp, Black = Pres, Blue = NoGo');
-if ~input.doOriDiscrim
 ylabel('Left (%)');
-else
-ylabel('Right (%)');
-end
 
 set(gca, 'YLim', [0 1], ...
          'YTick', [0,0.25,0.5,0.75,1]);
@@ -1061,11 +1056,7 @@ else
   end
 end
 
-if ~input.doOriDiscrim
 ylabel('% Right/Ignore')
-else
-ylabel('% Left/Ignore')
-end
 
 grid on
 

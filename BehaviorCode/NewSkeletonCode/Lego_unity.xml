@@ -1859,27 +1859,50 @@
                         <action type="if" condition="tLastTrialAbort">
                             <action type="play_sound" sound="stationaryPeriodSound"/>
                         </action>
-
-                        <action type="if" condition="trackMotion &gt;= leftDecisionThreshold">
-                            <action type="if" condition="invertDirection">
-                                <action type="assignment" variable="tLeftResponse" value="0"/>
-                                <action type="assignment" variable="tRightResponse" value="1"/>
+                        <action type="if" condition="!doOriDiscrim">
+                            <action type="if" condition="trackMotion &gt;= leftDecisionThreshold">
+                                <action type="if" condition="invertDirection">
+                                    <action type="assignment" variable="tLeftResponse" value="0"/>
+                                    <action type="assignment" variable="tRightResponse" value="1"/>
+                                </action>
+                                <action type="if" condition="!invertDirection">
+                                    <action type="assignment" variable="tLeftResponse" value="1"/>
+                                    <action type="assignment" variable="tRightResponse" value="0"/>
+                                </action>
                             </action>
-                            <action type="if" condition="!invertDirection">
-                                <action type="assignment" variable="tLeftResponse" value="1"/>
-                                <action type="assignment" variable="tRightResponse" value="0"/>
+                            <action type="if" condition="trackMotion &lt;= rightDecisionThreshold">
+                                <action type="if" condition="invertDirection">
+                                    <action type="assignment" variable="tLeftResponse" value="1"/>
+                                    <action type="assignment" variable="tRightResponse" value="0"/>
+                                </action>
+                                <action type="if" condition="!invertDirection">
+                                    <action type="assignment" variable="tLeftResponse" value="0"/>
+                                    <action type="assignment" variable="tRightResponse" value="1"/>
+                                </action>
                             </action>
                         </action>
-                        <action type="if" condition="trackMotion &lt;= rightDecisionThreshold">
-                            <action type="if" condition="invertDirection">
-                                <action type="assignment" variable="tLeftResponse" value="1"/>
-                                <action type="assignment" variable="tRightResponse" value="0"/>
+                        <action type="if" condition="doOriDiscrim">
+                            <action type="if" condition="trackMotion &gt;= leftDecisionThreshold">
+                                <action type="if" condition="invertDirection">
+                                    <action type="assignment" variable="tLeftResponse" value="1"/>
+                                    <action type="assignment" variable="tRightResponse" value="0"/>
+                                </action>
+                                <action type="if" condition="!invertDirection">
+                                    <action type="assignment" variable="tLeftResponse" value="0"/>
+                                    <action type="assignment" variable="tRightResponse" value="1"/>
+                                </action>
                             </action>
-                            <action type="if" condition="!invertDirection">
-                                <action type="assignment" variable="tLeftResponse" value="0"/>
-                                <action type="assignment" variable="tRightResponse" value="1"/>
+                            <action type="if" condition="trackMotion &lt;= rightDecisionThreshold">
+                                <action type="if" condition="invertDirection">
+                                    <action type="assignment" variable="tLeftResponse" value="0"/>
+                                    <action type="assignment" variable="tRightResponse" value="1"/>
+                                </action>
+                                <action type="if" condition="!invertDirection">
+                                    <action type="assignment" variable="tLeftResponse" value="1"/>
+                                    <action type="assignment" variable="tRightResponse" value="0"/>
+                                </action>
                             </action>
-                        </action>
+                        </action>    
                         
                         <action type="if" condition="doBlocks==1">
                           <action type="if" condition="tLeftTrial==1">
