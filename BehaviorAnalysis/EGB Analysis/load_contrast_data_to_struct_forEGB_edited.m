@@ -1,5 +1,5 @@
 %% create a structure for all data
-cd('Z:\2018\Behavior Code\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis')
+cd('Z:\2018\Code\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis')
 for i = 1:length(input)
     s(i).date = input{i,1}.saveTime;
 end
