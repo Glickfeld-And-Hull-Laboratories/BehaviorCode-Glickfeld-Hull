@@ -152,16 +152,22 @@ for im = 1:nMice
     msAudXGrid = logspace(log10(minI*0.1),log10(maxI*1.5),100);
     
     
-%     f = msVisFit.modelFun(msVisFit.coefEsts, msVisXGrid);
-%     oriAtHighThresh = msVisXGrid(find(f > highThreshold,1));
-%     f = msAudFit.modelFun(msAudFit.coefEsts, msAudXGrid);
-%     ampAtHighThresh = msAudXGrid(find(f > highThreshold,1));
-%     lowVisAttnTest = belowThreshAttnTest(oriAtHighThresh,msCmlvData.tVisTargets,...
-%         msCmlvData.tInvVisTargets,msCmlvData.hit,msCmlvData.miss,...
-%         msCmlvData.invHit,msCmlvData.invMiss);
-%     lowAudAttnTest = belowThreshAttnTest(ampAtHighThresh,msCmlvData.tAudTargets,...
-%         msCmlvData.tInvAudTargets,msCmlvData.hit,msCmlvData.miss,...
-%         msCmlvData.invHit,msCmlvData.invMiss);
+    f = msVisFit.modelFun(msVisFit.coefEsts, msVisXGrid);
+    oriAtHighThresh = msVisXGrid(find(f > highThreshold,1));
+    f = msAudFit.modelFun(msAudFit.coefEsts, msAudXGrid);
+    ampAtHighThresh = msAudXGrid(find(f > highThreshold,1));
+    lowVisAttnTest = belowThreshAttnTest(oriAtHighThresh,msCmlvData.tVisTargets,...
+        msCmlvData.tInvVisTargets,msCmlvData.hit,msCmlvData.miss,...
+        msCmlvData.invHit,msCmlvData.invMiss);
+    lowAudAttnTest = belowThreshAttnTest(ampAtHighThresh,msCmlvData.tAudTargets,...
+        msCmlvData.tInvAudTargets,msCmlvData.hit,msCmlvData.miss,...
+        msCmlvData.invHit,msCmlvData.invMiss);
+    highVisAttnTest = aboveThreshAttnTest(oriAtHighThresh,msCmlvData.tVisTargets,...
+        msCmlvData.tInvVisTargets,msCmlvData.hit,msCmlvData.miss,...
+        msCmlvData.invHit,msCmlvData.invMiss);
+    highAudAttnTest = aboveThreshAttnTest(ampAtHighThresh,msCmlvData.tAudTargets,...
+        msCmlvData.tInvAudTargets,msCmlvData.hit,msCmlvData.miss,...
+        msCmlvData.invHit,msCmlvData.invMiss);
         
     [valHR_highThreshold_vis, invHR_highThreshold_vis] = ...
         getMatchedHighThresholdHR(visTargetsBinned,msVisFit,highThreshold,...
@@ -181,6 +187,8 @@ for im = 1:nMice
     msHR(im).av(visualTrials).cue(valid).fitGrid = msVisXGrid;
     msHR(im).av(visualTrials).cue(valid).hiLoHR = valHR_highThreshold_vis;
     msHR(im).av(visualTrials).attnTest = visAttnTest;   
+    msHR(im).av(visualTrials).belowThreshAttnTest = lowVisAttnTest; 
+    msHR(im).av(visualTrials).aboveThreshAttnTest = highVisAttnTest;   
     msHR(im).av(visualTrials).matchedHRall = [visHRall,visInvHRall];
 %     msHR(im).av(visualTrials).threshAttnTest = lowVisAttnTest;    
     
@@ -197,6 +205,8 @@ for im = 1:nMice
     msHR(im).av(auditoryTrials).cue(valid).fitGrid = msAudXGrid;
     msHR(im).av(auditoryTrials).cue(valid).hiLoHR = valHR_highThreshold_aud;
     msHR(im).av(auditoryTrials).attnTest = audAttnTest;
+    msHR(im).av(auditoryTrials).belowThreshAttnTest = lowAudAttnTest; 
+    msHR(im).av(auditoryTrials).aboveThreshAttnTest = highAudAttnTest; 
     msHR(im).av(auditoryTrials).matchedHRall = [audHRall,audInvHRall];
 %     msHR(im).av(auditoryTrials).threshAttnTest = lowAudAttnTest;
     
@@ -229,13 +239,13 @@ for im = 1:nMice
         msHR(im).av(auditoryTrials).cue(invalid).targets;    
 end
 
-%%
-visAttnTest = nan(1,nMice);
-audAttnTest = nan(1,nMice);
-for i = 1:nMice
-    visAttnTest(i) = msHR(i).av(visualTrials).attnTest;
-    audAttnTest(i) = msHR(i).av(auditoryTrials).attnTest;
-end
+% %%
+% visAttnTest = nan(1,nMice);
+% audAttnTest = nan(1,nMice);
+% for i = 1:nMice
+%     visAttnTest(i) = msHR(i).av(visualTrials).attnTest;
+%     audAttnTest(i) = msHR(i).av(auditoryTrials).attnTest;
+% end
 
 %%
 
@@ -312,20 +322,20 @@ for iav = 1:2
             fitYerr = ste(fitsHR{iav},2);
            subplot(5,2,iav+2)
             hold on
-            h = shadedErrorBar(fitX,fitY,fitYerr,'-');
-            h.mainLine.Color = cueColor{icue};
-            h.mainLine.LineWidth = 2;
-            h.patch.FaceColor = cueColor{icue} +((1 - cueColor{icue}).*0.5);
-            h.edge(1).Color = h.patch.FaceColor;
+%             h = shadedErrorBar(fitX,fitY,fitYerr,'-');
+            h = shadedErrorBar_chooseColor(x(ind),y(ind),yerr(ind),cueColor{icue});
+%             h.mainLine.Color = cueColor{icue};
+%             h.mainLine.LineWidth = 2;
+%             h.patch.FaceColor = cueColor{icue} +((1 - cueColor{icue}).*0.5);
+%             h.edge(1).Color = h.patch.FaceColor;
         else
            subplot(5,2,iav+2)
             hold on
-%             h = errorbar(x(ind),y(ind),yerr(ind),yerr(ind),xerr(ind),xerr(ind),'o-');
-            h = shadedErrorBar(x(ind),y(ind),yerr(ind));
-            h.mainLine.Color = cueColor{icue};
-            h.mainLine.LineWidth = 2;
-            h.patch.FaceColor = cueColor{icue} +((1 - cueColor{icue}).*0.5);
-            h.edge(1).Color = h.patch.FaceColor;
+            h = shadedErrorBar_chooseColor(x(ind),y(ind),yerr(ind),cueColor{icue});
+%             h.mainLine.Color = cueColor{icue};
+%             h.mainLine.LineWidth = 2;
+%             h.patch.FaceColor = cueColor{icue} +((1 - cueColor{icue}).*0.5);
+%             h.edge(1).Color = h.patch.FaceColor;
         end
     end
 end
@@ -345,18 +355,24 @@ for im = 1:nMice
                 subplot(5,2,iav+4)
                 hold on
                 title(sprintf('Targets < %s Threshold',num2str(highThreshold.*100)))
+                attnTestP = msHR(im).av(iav).belowThreshAttnTest;
             elseif ithresh == 2
                 subplot(5,2,iav+6)
                 hold on
                 title(sprintf('Targets > %s Threshold',num2str(highThreshold.*100)))
+                attnTestP = msHR(im).av(iav).aboveThreshAttnTest;
             end
+%             if iav == 1
+%                 if visAttnTest(
             h = plot(x,y,'-');
+            if attnTestP > attnTestAlpha
+                h.LineStyle = ':';
+            end
             h.Color = hiLoColor{ithresh};
             if im == nMice
                 y = mean(hiLoHR{iav,ithresh},1);
                 yerr = ste(hiLoHR{iav,ithresh},1);
-                h = errorbar(x,y,yerr,'o-');
-                h.LineWidth = 1;
+                h = errorbar(x,y,yerr,'o');
                 h.Color = hiLoColor{ithresh};
                 h.MarkerFaceColor = [1 1 1];
                 figXAxis([],'',[0 3],x,{'Vaild';'Invalid'})
@@ -375,14 +391,15 @@ for im = 1:nMice
         h = plot(x,y,'-');
         if p < attnTestAlpha
             h.Color = 'k';
+            h.LineStyle = '-';
         else
             h.Color = [0.5 0.5 0.5];
+            h.LineStyle = ':';
         end
         if im == nMice
             y = mean(allHR{iav},1);
             yerr = ste(allHR{iav},1);
-            h = errorbar(x,y,yerr,'o-');
-            h.LineWidth = 1;
+            h = errorbar(x,y,yerr,'o');
             h.Color = 'k';
             h.MarkerFaceColor = [1 1 1];
             figXAxis([],'',[0 3],x,{'Vaild';'Invalid'})

@@ -10,10 +10,10 @@ clear all;close all
 doSave = 0;
 fnout = 'Z:\Analysis\_temp figs\180201';
 
-ms = '756';
-exptInfo = [{[];'1511';[]}];
+ms = '754';
+exptInfo = [{[];'1603';50:132}];
 nrun = size(exptInfo,2);
-exptInfo(1,:) = repmat({'180821'},[1,nrun]);
+exptInfo(1,:) = repmat({'181012'},[1,nrun]);
 
 for iexp = 1:size(exptInfo,2)
     dt = exptInfo{1,iexp};

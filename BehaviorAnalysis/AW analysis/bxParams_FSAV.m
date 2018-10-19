@@ -1,14 +1,14 @@
 %% cutoffs and binning
 early_cutoff = 0.35;
 lapse_cutoff = 0.9;
-minTrN_ms = 15;
+minTrN_ms = 20;
 minTrN_expt = 2;
 nBins = 6;
 minCyclesFA = 2;
 minTrialLengthMs = 500;
 
 visThreshAll = 30;
-highThreshold = 0.75;
+highThreshold = 0.8;
 audThreshAll = 0.015;
 
 timeBins = [0 1100 5000];
