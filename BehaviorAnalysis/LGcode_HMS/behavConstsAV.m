@@ -44,10 +44,12 @@ switch tHostname
 %             rc.isilon = rootDirIsilon;
         elseif tUsername(1:5) == 'carol'
             rc.name = 'carolyn';
-            rootDir = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\carolyn';
+            rootDir = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff';
             rc.behavData = '\\CRASH.dhe.duke.edu\data\home\andrew\Behavior\Data';
-            rc.ashleyAnalysis = fullfile(rootDir);     
-            rc.ashleyData = '\\CRASH.dhe.duke.edu\data\home\ashley\data';
+            rc.ashleyAnalysis = fullfile(rootDir,'home\ashley\Analysis');     
+            rc.ashleyData = fullfile(rootDir,'home\ashley\data');
+            rc.carolynAnalysis = fullfile(rootDir,'home\carolyn\Analysis');
+            rc.carolynData = fullfile(rootDir,'home\carolyn\Data');
         end
 end
 
