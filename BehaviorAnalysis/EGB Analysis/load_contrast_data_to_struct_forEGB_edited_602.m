@@ -75,7 +75,7 @@ end
 %% Loop through to plot each day's data, plot ignores, and crop
 % define c as trials to crop from earliest date to latest date eg. c = [123 465 222 ...] 
 %if there is a day you don't want to include, make c = 0
-c = [402, 441, 481, 480, 421]; 
+c = [198, 391, 402, 441, 481, 480, 421, 172, 485, 0, 450, 421, 466, 458, 501, 399, 452, 429, 347, 380, 326, 335]; 
 
 for i = 1:length(s) 
     s(i).SIx = s(i).SIx(1:c(i))

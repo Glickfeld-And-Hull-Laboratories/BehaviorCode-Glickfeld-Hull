@@ -89,10 +89,10 @@ pct_left_incorrect=num_left_incorrect/total_num_Ltrials
 
 left_inc_corr_mat4=[pct_left_incorrect, pct_left_correct]
 %%
-successes=s(5).SIx; %1 refers to day1, . is syntax to go in this column, SIx = success trials
-incorrects=s(5).FIx; %FIx is incorrect trials only (not ignores)
-direction=s(5).tGratingDirectionStart;
-lefttrials=s(5).tLeftTrial;
+successes=s(14).SIx; %1 refers to day1, . is syntax to go in this column, SIx = success trials
+incorrects=s(14).FIx; %FIx is incorrect trials only (not ignores)
+direction=s(14).tGratingDirectionStart;
+lefttrials=s(14).tLeftTrial;
 
 left_correct=intersect(find(successes), find(lefttrials));
 right_correct=intersect(find(successes), find(~lefttrials)); %~ is not
@@ -108,51 +108,9 @@ pct_left_correct=num_left_correct/total_num_Ltrials %pct is percent
 pct_right_correct=num_right_correct/total_num_Ltrials
 pct_left_incorrect=num_left_incorrect/total_num_Ltrials
 
-left_inc_corr_mat5=[pct_left_incorrect, pct_left_correct]
+left_inc_corr_mat14=[pct_left_incorrect, pct_left_correct]
 
 %%
-successes=s(6).SIx; %1 refers to day1, . is syntax to go in this column, SIx = success trials
-incorrects=s(6).FIx; %FIx is incorrect trials only (not ignores)
-direction=s(6).tGratingDirectionStart;
-lefttrials=s(6).tLeftTrial;
-
-left_correct=intersect(find(successes), find(lefttrials));
-right_correct=intersect(find(successes), find(~lefttrials)); %~ is not
-left_incorrect=intersect(find(incorrects), find(lefttrials));
-
-num_left_correct=length(left_correct)
-num_right_correct=length(right_correct)
-num_left_incorrect = length(left_incorrect)
-
-Ltrials_only=find(lefttrials);
-total_num_Ltrials=length(Ltrials_only); %successes serves as index of all trial bc 1 =success not success (incorrect and misses)
-pct_left_correct=num_left_correct/total_num_Ltrials %pct is percent
-pct_right_correct=num_right_correct/total_num_Ltrials
-pct_left_incorrect=num_left_incorrect/total_num_Ltrials
-
-left_inc_corr_mat6=[pct_left_incorrect, pct_left_correct]
-%%
-successes=s(7).SIx; %1 refers to day1, . is syntax to go in this column, SIx = success trials
-incorrects=s(7).FIx; %FIx is incorrect trials only (not ignores)
-direction=s(7).tGratingDirectionStart;
-lefttrials=s(7).tLeftTrial;
-
-left_correct=intersect(find(successes), find(lefttrials));
-right_correct=intersect(find(successes), find(~lefttrials)); %~ is not
-left_incorrect=intersect(find(incorrects), find(lefttrials));
-
-num_left_correct=length(left_correct)
-num_right_correct=length(right_correct)
-num_left_incorrect = length(left_incorrect)
-
-Ltrials_only=find(lefttrials);
-total_num_Ltrials=length(Ltrials_only); %successes serves as index of all trial bc 1 =success not success (incorrect and misses)
-pct_left_correct=num_left_correct/total_num_Ltrials %pct is percent
-pct_right_correct=num_right_correct/total_num_Ltrials
-pct_left_incorrect=num_left_incorrect/total_num_Ltrials
-
-left_inc_corr_mat7=[pct_left_incorrect, pct_left_correct]
-
 %PUT PLOT CODE HERE
 figure(2)
 hold on
@@ -160,9 +118,7 @@ p1=plot(ori_deg,left_inc_corr_mat1,'-o')
 p2=plot(ori_deg,left_inc_corr_mat2,'-o')
 p3=plot(ori_deg,left_inc_corr_mat3,'-o')
 p4=plot(ori_deg,left_inc_corr_mat4,'-o')
-p5=plot(ori_deg,left_inc_corr_mat5,'-o')
-p6=plot(ori_deg,left_inc_corr_mat6,'-o')
-p7=plot(ori_deg,left_inc_corr_mat7, '-o')
+p5=plot(ori_deg,left_inc_corr_mat14,'-o')
 
 %p1=plot(ori_deg,left_inc_corr_mat1,'-o')
 %p2=plot(ori_deg,left_inc_corr_mat2,'-.r*')

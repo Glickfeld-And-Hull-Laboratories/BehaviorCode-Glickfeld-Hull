@@ -5,7 +5,7 @@ cd('\\crash.dhe.duke.edu\data\home\andrew\Behavior\Data')
 mouse_name = '*602*';%should be mouse name, must be starred for dir function to work 
 first_pass_filenames = 'i602-18'; %should be mouse name and year
 start_date = '180920';
-end_date = '180928';
+end_date = '181019';
 
 dir_all = dir(mouse_name);
 mouse_idx = char(dir_all.name);
