@@ -3,29 +3,16 @@
 #  
 # Depends on RSA handshake between HullGlickN computers.
 #  Created by Andrew McKinney on 11/12/13.
-#
+# Updated by LG on 11/30/18 to connect to Isilon instead (using generic jarvis_lab account)
 
-#sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick2.local:~/Documents/MWorks/Data ~/Documents/MWorks 
-#sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick2.local:~/Documents/MWorks/BehavOutputPdfs ~/Documents/MWorks
-#sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick3.local:~/Documents/MWorks/Data ~/Documents/MWorks
-#sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick3.local:~/Documents/MWorks/BehavOutputPdfs ~/Documents/MWorks
-#sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick4.local:~/Documents/MWorks/Data ~/Documents/MWorks
-#sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick4.local:~/Documents/MWorks/BehavOutputPdfs ~/Documents/MWorks
-
-mount -t smbfs //andrew:dukegrad@crash.dhe.duke.edu/andrew/behavior ~/Desktop/Crash_Server
+mount -t smbfs //jarvis_lab@duhs-user-nc1.dhe.duke.edu/dusom_glickfeldlab/All_Staff/Behavior ~/Desktop/Isilon_Server
 for num in 1 2 3 4
 do
-    sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick$num.local:~/Documents/MWorks/Data ~/Desktop/Crash_server/ 
-    sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick$num.local:~/Documents/MWorks/BehavOutputPdfs ~/Desktop/Crash_server/
+    sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick$num.local:~/Documents/MWorks/Data ~/Desktop/Isilon_server/
+    sshpass -p hullglick rsync --ignore-existing -rv hullglick@hullglick$num.local:~/Documents/MWorks/BehavOutputPdfs ~/Desktop/Isilon_server/
 done
 
-#sshpass -p hullglick rsync --ignore-existing -rv ~/Documents/MWorks/BehavOutputPdfs ~/Desktop/Crash_server/
-#sshpass -p hullglick rsync --ignore-existing -rv ~/Documents/MWorks/Data ~/Desktop/Crash_server/
 
-#/Applications/MATLAB_R2012b.app/bin/matlab -nosplash -nodesktop -r "dailyScript([212 213 214 305 306]);"
-#/Applications/MATLAB_R2012b.app/bin/matlab -nosplash -nodesktop -r "quit"
-#rsync -rv ~/Documents/MWorks/DailyPlots ~/Desktop/Crash_server/
-
-umount ~/Desktop/Crash_Server
+umount ~/Desktop/Isilon_Server
 
 exit
