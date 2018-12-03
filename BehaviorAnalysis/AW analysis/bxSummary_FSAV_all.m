@@ -1,4 +1,4 @@
-% run eaMsBxSummary and check bxParams_FSAV before starting
+% run eaMsBxSummary_attnV1ms and check bxParams_FSAV before starting
 
 %% load data
 clear all
