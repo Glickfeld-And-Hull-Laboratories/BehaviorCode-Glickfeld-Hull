@@ -24,6 +24,7 @@
         <variable tag="doContrastDiscrim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doSizeDiscrim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doOriDiscrim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="doAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
 
         <variable tag="stationaryPeriodMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
         <variable tag="stationaryThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Control"/>
@@ -40,6 +41,12 @@
         <variable tag="doOnlyMaxDiff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doEasyStart" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="easyStartTrialNumber" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Task Control"/>
+
+        <variable tag="adaptPeriodMs" scope="global" logging="when_changed" default_value="4000" type="float" persistant="1" groups="Adapt Control"/>
+        <variable tag="adaptContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Adapt Control"/>
+        <variable tag="adaptDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Adapt Control"/>
+        <variable tag="adaptDirectionStepDeg" scope="global" logging="when_changed" default_value="90" type="float" persistant="1" groups="Adapt Control"/>
+        <variable tag="doMovementNoise" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
 
         <variable tag="doFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Feedback Motion"/>
         <variable tag="gratingTargetEccentricity" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Feedback Motion"/>
@@ -236,6 +243,7 @@
         <variable tag="abort" scope="global" logging="when_changed" default_value="0" type="integer"/>
         <variable tag="trialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="float"/>
         <variable tag="stimTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="adapterTimestampMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="actualHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       </folder>
       <folder tag="Online Display">
@@ -272,6 +280,7 @@
         <variable tag="dGratingEccentricityDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="dGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="aGratingContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="dGratingContrastDiff" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
         <variable tag="tGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="dGratingDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -279,6 +288,7 @@
         <variable tag="tGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingDirectionStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="aGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
 
@@ -383,6 +393,16 @@
               rotation="gratingDirectionDeg" 
               alpha_multiplier="dGratingContrast"></stimulus>
           </list_replicator>
+          <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
+            <stimulus type="drifting_grating" tag="adapterGrating_$mask"  direction="0" starting_phase="tGratingStartingPhaseDeg"
+              spatial_frequency="gratingSpatialFreqCPD" 
+              speed="gratingSpeedDPS" 
+              grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1" 
+              x_size="tGratingDiameterDeg" y_size="tGratingDiameterDeg" 
+              x_position="tGratingEccentricityDeg" y_position="gratingElevationDeg" 
+              rotation="aGratingDirectionDeg" 
+              alpha_multiplier="aGratingContrast"></stimulus>
+          </list_replicator>
               <stimulus type="drifting_grating" tag="rewardGrating"  direction="0" starting_phase="rewardGratingStartingPhaseDeg"
                 spatial_frequency=".000000000001" 
                 speed="gratingSpeedDPS" 
@@ -439,7 +459,9 @@
                           <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"/>
                           <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
                           <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
-                          <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+                          <action type="if" condition="!doOriDiscrim">
+                            <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
+                          </action>  
                           <action type="assignment" tag="Stationary untriggered" variable="stationaryReset" value="0"/>
                           
                           <action type="assignment" variable="stimulusOn" value="0"/>
@@ -1146,6 +1168,16 @@
                     </action>
                 </action>
 
+                <action type="if" condition="doAdapt">
+                    <action type="assignment" tag="" variable="aGratingContrast" value="adaptContrast"/>
+                    <action type="assignment" tag="" variable="tBlock2TrialNumber" value="disc_rand(0,1)"/>
+                    <action type="assignment" tag="" variable="aGratingDirectionDeg" value="adaptDirectionDeg+ (tBlock2TrialNumber*adaptDirectionStepDeg)"/>
+                </action> 
+                <action type="if" condition="!doAdapt">
+                    <action type="assignment" tag="" variable="aGratingContrast" value="0"/>
+                    <action type="assignment" tag="" variable="aGratingDirectionDeg" value="tGratingDirectionDeg"/>
+                </action> 
+
                  <action type="if" condition="doRandPhase"> 
                     <action type="assignment" tag="" variable="tGratingStartingPhaseDeg" value="gratingStartingPhaseDeg + (disc_rand(0,7)*45)"/>
                  </action>
@@ -1297,14 +1329,14 @@
                         <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
                         <action type="assignment" variable="rightDecisionThreshold" value="gratingTargetDirection"/>
                         <action type="assignment" variable="leftDecisionThreshold" value="tGratingDirectionDeg+(tGratingDirectionDeg-gratingTargetDirection)"/>
-                        <action type="assignment" variable="tFeedbackMotionSensitivity" value="feedbackMotionSensitivity * ((tGratingDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)"/>
+                        <action type="assignment" variable="tFeedbackMotionSensitivity" value="feedbackMotionSensitivity * abs((tGratingDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)"/>
                     </action>
                     
                     <action type="if" condition="tLeftTrial == 1 &amp;&amp; doOriDiscrim">
                         <action type="assignment" variable="tGratingEccentricityDeg" value="gratingEccentricityDeg"/>
                         <action type="assignment" variable="leftDecisionThreshold" value="gratingTargetDirection"/>
                         <action type="assignment" variable="rightDecisionThreshold" value="tGratingDirectionDeg+(tGratingDirectionDeg-gratingTargetDirection)"/>
-                        <action type="assignment" variable="tFeedbackMotionSensitivity" value="feedbackMotionSensitivity * ((tGratingDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)"/>
+                        <action type="assignment" variable="tFeedbackMotionSensitivity" value="feedbackMotionSensitivity * abs((tGratingDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)"/>
                     </action>
 
                     <action type="assignment" variable="tGratingEccentricityStart" value="tGratingEccentricityDeg"/>
@@ -1326,8 +1358,43 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; doAdapt" target="AdaptOn"></transition>
                         <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; tStationaryPeriodMs == 0" target="TrialStart"></transition>
                         <transition type="conditional" condition="timerExpired(itiTimerMs) &amp;&amp; tStationaryPeriodMs &gt; 0" target="WaitForInitiate"></transition>
+                      </task_system_state>
+
+                      
+                      <task_system_state tag="AdaptOn" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="report" message="**** adapting for $adaptPeriodMs ms"></action>
+                        <action type="start_timer" timer="adaptTimer" timebase="" duration="adaptPeriodMs" duration_units="ms"/> 
+
+                        <action type="if" condition="doGaussianMask">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="adapterGrating_gaussian"></action>
+                            <action type="play_dynamic_stimulus" stimulus="adapterGrating_gaussian" tag="start"></action>
+                        </action> 
+                        <action type="if" condition="doEllipseMask">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="adapterGrating_ellipse"></action>
+                            <action type="play_dynamic_stimulus" stimulus="adapterGrating_ellipse" tag="start"></action>
+                        </action>    
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" variable="adapterTimestampMs" value="now()/1000"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
+                        <transition type="conditional" condition="doMovementNoise &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="MovementNoise" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="if" condition="stationaryReset==1">
+                            <action type="play_sound" sound="stationaryPeriodSound"/>
+                        </action>
+                        <action type="assignment" tag="tQuadrature zeroed" variable="tQuadrature" value="quadrature"/>
+                        <action type="assignment" tag="Stationary triggered" variable="stationaryReset" value="1"/>    
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
+                        <transition type="conditional" condition="abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
                       </task_system_state>
 
                       <task_system_state tag="WaitForInitiate" interruptible="YES">
@@ -1346,6 +1413,12 @@
 
                       <task_system_state tag="TrialStart" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="if" condition="doAdapt">
+                            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adapterGrating_gaussian"></action>
+                            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adapterGrating_ellipse"></action>
+                            <action tag="Update Display" type="update_stimulus_display"></action>
+                        </action>    
+
                         <action type="report" message="**** Trial Starting: playing tone and beginning delay"></action>
                         <action type="play_sound" sound="startSound"/>
                         <action type="start_timer" timer="delayTimerMs" timebase="" duration="delayTimeMs" duration_units="ms"/>
@@ -1446,7 +1519,7 @@
                         </action>
 
                         <action type="if" condition="doTestRobot==0 &amp;&amp; doOriDiscrim">
-                          <action type="assignment" tag="track motion" variable="trackMotion" value="(feedbackMotionSensitivity*(tQuadrature-quadrature))+tGratingDirectionStart"/>
+                          <action type="assignment" tag="track motion" variable="trackMotion" value="(tFeedbackMotionSensitivity*(tQuadrature-quadrature))+tGratingDirectionStart"/>
                           <action type="assignment" tag="track motion" variable="dTrackMotion" value="0"/>
                         </action>
 
