@@ -160,8 +160,10 @@ elseif input.doBlock2==0,
   block2Str = 'Block2: off \n';
 end
 
-if input.doAdapt
-  block2Str = ['Block1: Adapt to ' num2str(input.adaptDirectionDeg) ' \nBlock2: Adapt to' num2str(input.adaptDirectionDeg + input.adaptDirectionStepDeg) '\n'];
+if isfield (input,'doAdapt')
+  if input.doAdapt
+    block2Str = ['Block1: Adapt to ' num2str(input.adaptDirectionDeg) ' \nBlock2: Adapt to' num2str(input.adaptDirectionDeg + input.adaptDirectionStepDeg) '\n'];
+  end
 end
 
 if isfield(input, 'doMatchToTarget')
