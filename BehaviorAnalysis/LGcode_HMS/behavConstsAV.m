@@ -6,7 +6,7 @@ tHostname = lower(hostname);
 
 switch tHostname
     case {'nuke'}
-        rc.pathStr = '\\CRASH.dhe.duke.edu\data\home\andrew\Behavior\Data';
+        rc.pathStr = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\Behavior\Data';
         rc.dataPat = 'data-i%03d-%s.mat';
         
         if tUsername(1:5) == 'linds'
@@ -26,7 +26,7 @@ switch tHostname
             rootDirCrash = '\\CRASH.dhe.duke.edu\data\home\ashley';
 %             rootDirCrashAnalysis = fullfile(rootDirCrash,'Analysis');
             rootDirIsilon = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\ashley';
-            rc.behavData = '\\CRASH.dhe.duke.edu\data\home\andrew\Behavior\Data';
+            rc.behavData = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\Behavior\Data';
             rc.ashley = rootDirIsilon;
             rc.indexFilename = fullfile(rootDirIsilon,'Analysis', '\Behavior\experimentIndexes\av-subj-days-lg.xls');
             rc.indexFilename_audCtrl = fullfile(rootDirIsilon,'Analysis', '\Behavior\experimentIndexes\v-subj-days-lg.xls');
@@ -45,7 +45,8 @@ switch tHostname
         elseif tUsername(1:5) == 'carol'
             rc.name = 'carolyn';
             rootDir = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff';
-            rc.behavData = '\\CRASH.dhe.duke.edu\data\home\andrew\Behavior\Data';
+%             rc.behavData = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\Behavior\Data';
+            rc.behavData = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\Behavior\Data';
             rc.ashleyAnalysis = fullfile(rootDir,'home\ashley\Analysis');     
             rc.ashleyData = fullfile(rootDir,'home\ashley\data');
             rc.carolynAnalysis = fullfile(rootDir,'home\carolyn\Analysis');
