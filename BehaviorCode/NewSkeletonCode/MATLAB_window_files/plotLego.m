@@ -250,6 +250,10 @@ end
 if isfield(input,'gratingMaxDiff')
   input.gratingMaxContrastDiff = input.gratingMaxDiff;
 end
+
+if ~isfield(input,'doSizeDiscrim')
+  input.doSizeDiscrim = 0;
+end
 if isfield(input,'doContrastDiscrim')
   if input.doContrastDiscrim
     taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
