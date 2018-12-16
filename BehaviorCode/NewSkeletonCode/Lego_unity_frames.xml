@@ -46,6 +46,7 @@
         <variable tag="adaptDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptDirectionStepDeg" scope="global" logging="when_changed" default_value="90" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="doMovementNoise" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="adaptZeroConPer80" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Adapt Control"/>
 
         <variable tag="doFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Feedback Motion"/>
         <variable tag="gratingTargetEccentricity" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Feedback Motion"/>
@@ -1153,9 +1154,15 @@
                 </action>
 
                 <action type="if" condition="doAdapt">
-                    <action type="assignment" tag="" variable="aGratingContrast" value="adaptContrast"/>
+                    <action type="if" condition="tSvStimNumber2 &gt;= adaptZeroConPer80">
+                        <action type="assignment" tag="" variable="aGratingContrast" value="adaptContrast"/>
+                    </action>
+                    <action type="if" condition="tSvStimNumber2 &lt; adaptZeroConPer80">
+                        <action type="assignment" tag="" variable="aGratingContrast" value="0"/>
+                    </action>   
                     <action type="assignment" tag="" variable="tBlock2TrialNumber" value="disc_rand(0,1)"/>
                     <action type="assignment" tag="" variable="aGratingDirectionDeg" value="adaptDirectionDeg+ (tBlock2TrialNumber*adaptDirectionStepDeg)"/>
+
                 </action> 
                 <action type="if" condition="!doAdapt">
                     <action type="assignment" tag="" variable="aGratingContrast" value="0"/>
