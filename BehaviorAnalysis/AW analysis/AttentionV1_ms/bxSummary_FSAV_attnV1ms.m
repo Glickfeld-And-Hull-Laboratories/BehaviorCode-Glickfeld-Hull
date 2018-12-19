@@ -84,7 +84,6 @@ HR(:) = {nan(nMice,nBins)};
 targets = cell(2,2);
 targets(:) = {nan(nMice,nBins)};
 for im = 1:nMice
-    
     msCmlvData = msSumStruct(im);
     if im == 1
         allData.cue(valid).av(visualTrials).targets = msCmlvData.tVisTargets;
@@ -123,21 +122,27 @@ for im = 1:nMice
            allData.cue(invalid).av(auditoryTrials).targets,msCmlvData.tInvAudTargets);
     end
     
-    visTargets = unique(msCmlvData.tVisTargets);
-    visTargets = visTargets(2:end);
-    audTargets = unique(msCmlvData.tAudTargets);
-    audTargets = audTargets(2:end);
+%     visTargets = unique(msCmlvData.tVisTargets);
+%     visTargets = visTargets(2:end);
+%     audTargets = unique(msCmlvData.tAudTargets);
+%     audTargets = audTargets(2:end);
 
-    visBinEdges = exp(linspace(log(min(visTargets)-1),log(max(visTargets)),nBins+1));
-    audBinEdges = exp(linspace(...
-        log(min(audTargets(audTargets > 0.00001))-...
-        (0.5*min(audTargets(audTargets > 0.00001)))),...
-        log(max(audTargets)),nBins+1));
+%     visBinEdges = exp(linspace(log(min(visTargets)-1),log(max(visTargets)),nBins+1));
+%     audBinEdges = exp(linspace(...
+%         log(min(audTargets(audTargets > 0.00001))-...
+%         (0.5*min(audTargets(audTargets > 0.00001)))),...
+%         log(max(audTargets)),nBins+1));
     [~,~,visBinInd] = histcounts(msCmlvData.tVisTargets,visBinEdges);
     [~,~,audBinInd] = histcounts(msCmlvData.tAudTargets,audBinEdges);
     [~,~,invVisBinInd] = histcounts(msCmlvData.tInvVisTargets,visBinEdges);
     [~,~,invAudBinInd] = histcounts(msCmlvData.tInvAudTargets,audBinEdges);
         
+    [visRTBinned,~,visRTtargets,~,visRTanovaP] = getBinnedRT(msCmlvData.tVisTargets,visBinEdges,...
+        nBins,minTrN_ms,msCmlvData.valRT,msCmlvData.hit);
+    [audRTBinned,~,audRTtargets,~,audRTanovaP] = getBinnedRT(msCmlvData.tAudTargets,audBinEdges,...
+        nBins,minTrN_ms,msCmlvData.valRT,msCmlvData.hit);
+    close all
+    
     nVisHits = nan(1,nBins);
     nVisMisses = nan(1,nBins);
     nAudHits = nan(1,nBins);
@@ -153,7 +158,11 @@ for im = 1:nMice
     invVisTargetsBinned = nan(1,nBins);
     invAudTargetsBinned = nan(1,nBins);
     invVisTargetsSte = nan(1,nBins);
-    invAudTargetsSte = nan(1,nBins);
+    invAudTargetsSte = nan(1,nBins);   
+%     visRTBinned = nan(1,nBins);
+%     audRTBinned = nan(1,nBins);
+%     visRTBinnedSte = nan(1,nBins);
+%     audRTBinnedSte = nan(1,nBins);
    
     for ibin = 1:nBins
         ind = (msCmlvData.hit | msCmlvData.miss) & visBinInd == ibin;
@@ -162,6 +171,8 @@ for im = 1:nMice
             nVisMisses(ibin) = sum(msCmlvData.miss & visBinInd == ibin);
             visTargetsBinned(ibin) = mean(msCmlvData.tVisTargets(ind));
             visTargetsSte(ibin) = ste(msCmlvData.tVisTargets(ind),2);
+%             visRTBinned(ibin) = mean(msCmlvData.valRT(ind & msCmlvData.hit));
+%             visRTBinnedSte(ibin) = ste(msCmlvData.valRT(ind & msCmlvData.hit),2);
         end
 
         ind = (msCmlvData.hit | msCmlvData.miss) & audBinInd == ibin;
@@ -170,6 +181,8 @@ for im = 1:nMice
             nAudMisses(ibin) = sum(msCmlvData.miss & audBinInd == ibin);
             audTargetsBinned(ibin) = mean(msCmlvData.tAudTargets(ind));
             audTargetsSte(ibin) = ste(msCmlvData.tAudTargets(ind),2);
+%             audRTBinned(ibin) = mean(msCmlvData.valRT(ind & msCmlvData.hit));
+%             audRTBinnedSte(ibin) = ste(msCmlvData.valRT(ind & msCmlvData.hit),2);
         end
 
         ind = (msCmlvData.invHit | msCmlvData.invMiss) & invVisBinInd == ibin;
@@ -205,7 +218,13 @@ for im = 1:nMice
         msCmlvData.tInvVisTargets+msCmlvData.tInvAudTargets,...
         msCmlvData.hit,msCmlvData.miss,...
         msCmlvData.invHit,msCmlvData.invMiss);
-
+    if allAttnTest < attnTestAlpha
+        allAttnPower = sampsizepwr('p',allHRall,allInvHRall,sampleSizePower,[],'tail','left');
+    else
+        allAttnPower = nan;
+    end
+    allAttnN = sum((msCmlvData.tInvVisTargets+msCmlvData.tInvAudTargets) > 0);
+        
     [visHR,visHR95ci] = binofit(nVisHits(visInd),nVisHits(visInd)+nVisMisses(visInd));
     [audHR,audHR95ci] = binofit(nAudHits(audInd),nAudHits(audInd)+nAudMisses(audInd));
     if sum(nInvVisHits(invVisInd)+nInvVisMisses(invVisInd)) > 0
@@ -231,8 +250,11 @@ for im = 1:nMice
     msVisXGrid = logspace(log10(minI*0.1),log10(maxI*1.5),100);
 
     nTrials = nAudHits(audInd)+nAudMisses(audInd);
-    msAudFit = weibullFitLG(audTargetsBinned(audInd), audHR, 0,0, {'nTrials',nTrials});
-
+    try
+        msAudFit = weibullFitLG(audTargetsBinned(audInd), audHR, 0,0, {'nTrials',nTrials});
+    catch
+        msAudFit = nan;
+    end
     maxI = max(audTargetsBinned(audInd));
     minI = min(audTargetsBinned(audInd));
     msAudXGrid = logspace(log10(minI*0.1),log10(maxI*1.5),100);
@@ -340,58 +362,52 @@ for im = 1:nMice
     
     
     
-    valRT_vis = nan(1,2);
-    invRT_vis = nan(1,2);
+    valRT_vis_loHi = nan(1,2);
+    valRT_aud_loHi = nan(1,2);
+    for ibin = 1:2
+        if ibin == 1
+            visRTInd = msCmlvData.tVisTargets > 0 &...
+                msCmlvData.tVisTargets < oriAtHighThresh;
+            audRTInd = msCmlvData.tAudTargets > 0 &...
+                msCmlvData.tAudTargets < ampAtHighThresh;
+        else
+            visRTInd = msCmlvData.tVisTargets > oriAtHighThresh;
+            audRTInd = msCmlvData.tAudTargets > ampAtHighThresh;
+        end
+        
+        valRT_vis_loHi(ibin) = mean(msCmlvData.valRT(visRTInd & msCmlvData.hit));
+        valRT_aud_loHi(ibin) = mean(msCmlvData.valRT(audRTInd & msCmlvData.hit));
+    end
     
-    invInd = msCmlvData.tInvVisTargets > 0 & ...
-        msCmlvData.tInvVisTargets < oriAtHighThresh & msCmlvData.invHit;
+    invInd = msCmlvData.tInvVisTargets > 0 & msCmlvData.invHit;
     matches = cell2mat(getMatchedValidTrialIndex(msCmlvData.tVisTargets,...
         msCmlvData.tInvVisTargets(invInd)));
     valMatchHits = ismember(matches,find(msCmlvData.hit));
     valInd = matches(valMatchHits);
-    invRT_vis(1) = mean(msCmlvData.invRT(invInd));
-    valRT_vis(1) = mean(msCmlvData.valRT(valInd));
-        
-    invInd = msCmlvData.tInvVisTargets > oriAtHighThresh & msCmlvData.invHit;    
-    matches = cell2mat(getMatchedValidTrialIndex(msCmlvData.tVisTargets,...
-        msCmlvData.tInvVisTargets(invInd)));
-    valMatchHits = ismember(matches,find(msCmlvData.hit));
-    valInd = matches(valMatchHits);
-    invRT_vis(2) = mean(msCmlvData.invRT(invInd));
-    valRT_vis(2) = mean(msCmlvData.valRT(valInd));
-    
-    valRT_aud = nan(1,2);
-    invRT_aud = nan(1,2);
-    
-    invInd = msCmlvData.tInvAudTargets > 0 & ...
-        msCmlvData.tInvAudTargets < ampAtHighThresh & msCmlvData.invHit;
+    invRT_vis = mean(msCmlvData.invRT(invInd));
+    valRT_vis = mean(msCmlvData.valRT(valInd));
+
+    invInd = msCmlvData.tInvAudTargets > 0 & msCmlvData.invHit;
     matches = cell2mat(getMatchedValidTrialIndex(msCmlvData.tAudTargets,...
         msCmlvData.tInvAudTargets(invInd)));
     valMatchHits = ismember(matches,find(msCmlvData.hit));
     valInd = matches(valMatchHits);
-    invRT_aud(1) = mean(msCmlvData.invRT(invInd));
-    valRT_aud(1) = mean(msCmlvData.valRT(valInd));
-        
-    invInd = msCmlvData.tInvAudTargets > ampAtHighThresh & msCmlvData.invHit;    
-    matches = cell2mat(getMatchedValidTrialIndex(msCmlvData.tAudTargets,...
-        msCmlvData.tInvAudTargets(invInd)));
-    valMatchHits = ismember(matches,find(msCmlvData.hit));
-    valInd = matches(valMatchHits);
-    invRT_aud(2) = mean(msCmlvData.invRT(invInd));
-    valRT_aud(2) = mean(msCmlvData.valRT(valInd));
-    
+    invRT_aud = mean(msCmlvData.invRT(invInd));
+    valRT_aud = mean(msCmlvData.valRT(valInd));
+      
     [valHR_highThreshold_vis, invHR_highThreshold_vis] = ...
-        getMatchedHighThresholdHR(visTargetsBinned,msVisFit,highThreshold,...
+        getMatchedHighThresholdHR(visTargetsBinned,msVisFitWithFA,highThreshold,...
         msCmlvData.tVisTargets,msCmlvData.tInvVisTargets,...
         msCmlvData.hit,msCmlvData.miss,msCmlvData.invHit,msCmlvData.invMiss);
     
     [valHR_highThreshold_aud, invHR_highThreshold_aud] = ...
-        getMatchedHighThresholdHR(audTargetsBinned,msAudFit,highThreshold,...
+        getMatchedHighThresholdHR(audTargetsBinned,msAudFitWithFA,highThreshold,...
         msCmlvData.tAudTargets,msCmlvData.tInvAudTargets,...
         msCmlvData.hit,msCmlvData.miss,msCmlvData.invHit,msCmlvData.invMiss);
     
     msHR(im).matchedHRall = [allHRall,allInvHRall];
     msHR(im).attnTestAll = allAttnTest;
+    msHR(im).attnTestPowerTest = allAttnN >= allAttnPower;
     msHR(im).matchedHRhiLo = [loThreshHRall,loThreshInvHRall;...
         hiThreshHRall,hiThreshInvHRall];
     msHR(im).attnTestHiLo = [loThreshAllAttnTest,hiThreshAllAttnTest];
@@ -404,6 +420,10 @@ for im = 1:nMice
     msHR(im).av(visualTrials).cue(valid).fitGrid = msVisXGrid;
     msHR(im).av(visualTrials).cue(valid).hiLoHR = valHR_highThreshold_vis;
     msHR(im).av(visualTrials).cue(valid).RT = valRT_vis;
+    msHR(im).av(visualTrials).cue(valid).RTloHi = valRT_vis_loHi;
+    msHR(im).av(visualTrials).cue(valid).RTbinned = visRTBinned;
+    msHR(im).av(visualTrials).cue(valid).RTanovaTest = visRTanovaP;
+    msHR(im).av(visualTrials).cue(valid).RTtargets = visRTtargets;
     msHR(im).av(visualTrials).attnTest = visAttnTest;   
     msHR(im).av(visualTrials).belowThreshAttnTest = lowVisAttnTest; 
     msHR(im).av(visualTrials).aboveThreshAttnTest = highVisAttnTest;   
@@ -425,6 +445,10 @@ for im = 1:nMice
     msHR(im).av(auditoryTrials).cue(valid).fitGrid = msAudXGrid;
     msHR(im).av(auditoryTrials).cue(valid).hiLoHR = valHR_highThreshold_aud;
     msHR(im).av(auditoryTrials).cue(valid).RT = valRT_aud;
+    msHR(im).av(auditoryTrials).cue(valid).RTloHi = valRT_aud_loHi;
+    msHR(im).av(auditoryTrials).cue(valid).RTbinned = audRTBinned;
+    msHR(im).av(auditoryTrials).cue(valid).RTanovaTest = audRTanovaP;
+    msHR(im).av(auditoryTrials).cue(valid).RTtargets = audRTtargets;
     msHR(im).av(auditoryTrials).attnTest = audAttnTest;
     msHR(im).av(auditoryTrials).belowThreshAttnTest = lowAudAttnTest; 
     msHR(im).av(auditoryTrials).aboveThreshAttnTest = highAudAttnTest; 
@@ -441,7 +465,7 @@ for im = 1:nMice
     msHR(im).av(visualTrials).cue(invalid).HR = invVisHR.*100;
     msHR(im).av(visualTrials).cue(invalid).HR95CI = invVisHR95ci.*100;
     msHR(im).av(visualTrials).cue(invalid).targets = invVisTargetsBinned(invVisInd);
-    msHR(im).av(visualTrials).cue(invalid).targetsErr = invVisTargetsSte(invVisInd);
+        msHR(im).av(visualTrials).cue(invalid).targetsErr = invVisTargetsSte(invVisInd);
     msHR(im).av(visualTrials).cue(invalid).hiLoHR = invHR_highThreshold_vis;
     msHR(im).av(visualTrials).cue(invalid).RT = invRT_vis;
     
@@ -522,11 +546,11 @@ for im = 1:2
     tInvVisTargets = rewSortMsData(im).av(visualTrials).cue(invalid).targets;
     tInvAudTargets = rewSortMsData(im).av(auditoryTrials).cue(invalid).targets;
     
-    visBinEdges = exp(linspace(log(min(visTargets)-1),log(max(visTargets)),nBins+1));
-    audBinEdges = exp(linspace(...
-        log(min(audTargets(audTargets > 0.00001))-...
-        (0.5*min(audTargets(audTargets > 0.00001)))),...
-        log(max(audTargets)),nBins+1));
+%     visBinEdges = exp(linspace(log(min(visTargets)-1),log(max(visTargets)),nBins+1));
+%     audBinEdges = exp(linspace(...
+%         log(min(audTargets(audTargets > 0.00001))-...
+%         (0.5*min(audTargets(audTargets > 0.00001)))),...
+%         log(max(audTargets)),nBins+1));
     [~,~,visBinInd] = histcounts(tVisTargets,visBinEdges);
     [~,~,audBinInd] = histcounts(tAudTargets,audBinEdges);
     [~,~,invVisBinInd] = histcounts(tInvVisTargets,visBinEdges);
@@ -547,7 +571,11 @@ for im = 1:2
     invVisTargetsBinned = nan(1,nBins);
     invAudTargetsBinned = nan(1,nBins);
     invVisTargetsSte = nan(1,nBins);
-    invAudTargetsSte = nan(1,nBins);   
+    invAudTargetsSte = nan(1,nBins); 
+%     visRTBinned = nan(1,nBins);
+%     audRTBinned = nan(1,nBins);
+%     visRTBinnedSte = nan(1,nBins);
+%     audRTBinnedSte = nan(1,nBins);
     for ibin = 1:nBins
         ind = (hit | miss) & visBinInd == ibin;
         if sum(ind) > minTrN_ms
@@ -555,6 +583,8 @@ for im = 1:2
             nVisMisses(ibin) = sum(miss & visBinInd == ibin);
             visTargetsBinned(ibin) = mean(tVisTargets(ind));
             visTargetsSte(ibin) = ste(tVisTargets(ind),2);
+%             visRTBinned(ibin) = mean(msCmlvData.valRT(ind & hit));
+%             visRTBinnedSte(ibin) = ste(msCmlvData.valRT(ind & hit),2);
         end
 
         ind = (hit | miss) & audBinInd == ibin;
@@ -563,6 +593,8 @@ for im = 1:2
             nAudMisses(ibin) = sum(miss & audBinInd == ibin);
             audTargetsBinned(ibin) = mean(tAudTargets(ind));
             audTargetsSte(ibin) = ste(tAudTargets(ind),2);
+%             audRTBinned(ibin) = mean(msCmlvData.valRT(ind & hit));
+%             audRTBinned(ibin) = ste(msCmlvData.valRT(ind & hit),2);
         end
 
         ind = (invHit | invMiss) & invVisBinInd == ibin;
@@ -622,14 +654,14 @@ for im = 1:2
     [valHR_highThreshold_vis, invHR_highThreshold_vis,...
         valCI_highThreshold_vis, invCI_highThreshold_vis,...
         nVal_highThreshold_vis, nInv_highThreshold_vis] = ...
-        getMatchedHighThresholdHR(visTargetsBinned,msVisFit,highThreshold,...
+        getMatchedHighThresholdHR(visTargetsBinned,msVisFitWithFA,highThreshold,...
         tVisTargets,tInvVisTargets,...
         hit,miss,invHit,invMiss);
     
     [valHR_highThreshold_aud, invHR_highThreshold_aud,...
         valCI_highThreshold_aud, invCI_highThreshold_aud,...
         nVal_highThreshold_aud, nInv_highThreshold_aud] = ...
-        getMatchedHighThresholdHR(audTargetsBinned,msAudFit,highThreshold,...
+        getMatchedHighThresholdHR(audTargetsBinned,msAudFitWithFA,highThreshold,...
         tAudTargets,tInvAudTargets,...
         hit,miss,invHit,invMiss);
     
@@ -686,6 +718,7 @@ for im = 1:2
     rewSortMsHR(im).av(auditoryTrials).valInvAllTrialsHR = [valAllHR_aud, invAllHR_aud];
     rewSortMsHR(im).av(auditoryTrials).matchedTrialN = nMatchedAud;
 end
+
 %% Summary Data Structure
 visTargets = unique(allData.cue(valid).av(visualTrials).targets);
 visTargets = visTargets(2:end);
@@ -693,6 +726,13 @@ audTargets = allData.cue(valid).av(auditoryTrials).targets;
 audTargets(audTargets < 0.0000001) = 0; % extremely small values are effectively zero, there are only a handful of trials like this
 audTargets = unique(audTargets);
 audTargets = audTargets(2:end);
+[~,sessionAttnTest] = cellfun(@(x) ttest(x(valid,:),x(invalid,:),'tail','right'),...
+    matchedHRall,'unif',0);
+sessionAttnPower = cellfun(@(x) sampsizepwr('t',...
+    [mean(x(valid,:),2), std(x(invalid,:),[],2)],...
+    mean(x(invalid,:),2)),matchedHRall);
+sessionAttnPowerTest = cellfun(@(x) size(x,2),matchedHRall) >= sessionAttnPower;
+
 for im = 1:nMice
     if im == 1
         visLR = [];
@@ -704,8 +744,19 @@ for im = 1:nMice
         audAttnP = [];
         
         allAttnP = [];
+        allAttnPower = [];
         allAttnHiLoP = [];
         allVisAudHR = [];
+        allLoHiHRDiff = [];
+        
+        visHR = [];
+        audHR = [];
+        
+        visRT = [];
+        audRT = [];
+%         valVisRTLoHiDiff = [];
+%         valAudRTLoHiDiff = [];
+        
     end
     visLR = cat(2,visLR,1 - msHR(im).av(visualTrials).cue(valid).HR(end)./100);
     audLR = cat(2,audLR,1 - msHR(im).av(auditoryTrials).cue(valid).HR(end)./100);
@@ -715,8 +766,26 @@ for im = 1:nMice
     audAttnP = cat(2,audAttnP,msHR(im).av(auditoryTrials).attnTest);
     
     allAttnP = cat(2,allAttnP,msHR(im).attnTestAll);
+    allAttnPower = cat(2,allAttnPower,msHR(im).attnTestPowerTest);
     allAttnHiLoP = cat(1,allAttnHiLoP,msHR(im).attnTestHiLo);
     allVisAudHR = cat(1,allVisAudHR,msHR(im).matchedHRall);
+    allLoHiHRDiff = cat(2,allLoHiHRDiff,...
+        msHR(im).matchedHRhiLo(:,valid) - msHR(im).matchedHRhiLo(:,invalid));
+    
+    visHR = cat(1,visHR,msHR(im).av(visualTrials).matchedHRall);
+    audHR = cat(1,audHR,msHR(im).av(auditoryTrials).matchedHRall);
+    
+    visRT = cat(1,visRT,cat(2,msHR(im).av(visualTrials).cue(valid).RT, ...
+            msHR(im).av(visualTrials).cue(invalid).RT));
+    audRT = cat(1,visRT,cat(2,msHR(im).av(auditoryTrials).cue(valid).RT, ...
+            msHR(im).av(auditoryTrials).cue(invalid).RT));
+        
+%     valVisRTLoHiDiff = cat(1,valVisRTLoHiDiff,...
+%         msHR(im).av(visualTrials).cue(valid).RT(1) - ...
+%         msHR(im).av(visualTrials).cue(valid).RT(2));
+%     valAudRTLoHiDiff = cat(1,valAudRTLoHiDiff,...
+%         msHR(im).av(auditoryTrials).cue(valid).RT(1) - ...
+%         msHR(im).av(auditoryTrials).cue(valid).RT(2));
 end
 
 bxStats = struct;
@@ -727,7 +796,11 @@ pctInvPerSession = cell2mat(cellfun(@(x,y) x./y,nInvPerExpt,nTrialsPerExpt,'unif
 bxStats.pctInv = mean(pctInvPerSession(pctInvPerSession > 0));
 bxStats.pctInvErr = ste(pctInvPerSession(pctInvPerSession > 0),2);
 
-bxStats.allAttnTest = allAttnP;
+bxStats.allAttnBinomialTest = allAttnP;
+bxStats.allAttnPowerTest = allAttnPower;
+bxStats.sessionAttnTTest = cell2mat(sessionAttnTest);
+bxStats.sessionPowerTest = sessionAttnPowerTest;
+bxStats.attnMiceInd = bxStats.allAttnBinomialTest < attnTestAlpha & bxStats.allAttnPowerTest;
 
 bxStats.av(visualTrials).targets = visTargets;
 bxStats.av(auditoryTrials).targets = audTargets;
@@ -741,6 +814,52 @@ bxStats.av(visualTrials).falseAlarmRate = mean(visFAR);
 bxStats.av(auditoryTrials).falseAlarmRate = mean(audFAR);
 bxStats.av(visualTrials).falseAlarmRateErr = ste(visFAR,2);
 bxStats.av(auditoryTrials).falseAlarmRateErr = ste(audFAR,2);
+
+[~,hiLoAttnTest] = ttest(allLoHiHRDiff(1,bxStats.attnMiceInd),...
+    allLoHiHRDiff(2,bxStats.attnMiceInd));
+bxStats.allMatchedHRDiff = allVisAudHR(:,valid) - allVisAudHR(:,invalid);
+bxStats.allMatchedLoHiHRDiff = allLoHiHRDiff;
+bxStats.loHiAttnTest = hiLoAttnTest;
+
+fprintf('Mean HR Diff/Err: %s/%s\n',...
+    num2str(mean(bxStats.allMatchedHRDiff(bxStats.attnMiceInd),1)),...
+    num2str(ste(bxStats.allMatchedHRDiff(bxStats.attnMiceInd),1)))
+fprintf('HR Diff Range: %s-%s\n',...
+    num2str(min(bxStats.allMatchedHRDiff(bxStats.attnMiceInd))),...
+    num2str(max(bxStats.allMatchedHRDiff(bxStats.attnMiceInd))))
+fprintf('Mean HR Hard Trials Diff/Err: %s/%s\n',...
+    num2str(mean(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd),2)),...
+    num2str(ste(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd),2)))
+fprintf('HR Hard Trials Diff Range: %s-%s\n',...
+    num2str(min(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd))),...
+    num2str(max(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd))))
+fprintf('Mean HR Easy Trials Diff/Err: %s/%s\n',...
+    num2str(mean(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd),2)),...
+    num2str(ste(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd),2)))
+fprintf('HR Easy Trials Diff Range: %s-%s\n',...
+    num2str(min(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd))),...
+    num2str(max(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd))))
+
+bxStats.av(visualTrials).matchedHRDiff = visHR(:,valid) - visHR(:,invalid);
+bxStats.av(auditoryTrials).matchedHRDiff = audHR(:,valid) - audHR(:,invalid);
+
+fprintf('Mean Visual HR Diff/Err: %s/%s\n',...
+    num2str(mean(bxStats.av(visualTrials).matchedHRDiff(bxStats.attnMiceInd),1)),...
+    num2str(ste(bxStats.av(visualTrials).matchedHRDiff(bxStats.attnMiceInd),1)))
+fprintf('Mean Visual HR Diff Range: %s/%s\n',...
+    num2str(min(bxStats.av(visualTrials).matchedHRDiff(bxStats.attnMiceInd))),...
+    num2str(max(bxStats.av(visualTrials).matchedHRDiff(bxStats.attnMiceInd))))
+fprintf('Mean Auditory HR Diff/Err: %s/%s\n',...
+    num2str(mean(bxStats.av(auditoryTrials).matchedHRDiff(bxStats.attnMiceInd),1)),...
+    num2str(ste(bxStats.av(auditoryTrials).matchedHRDiff(bxStats.attnMiceInd),1)))
+fprintf('Mean Auditory HR Diff Range: %s/%s\n',...
+    num2str(min(bxStats.av(auditoryTrials).matchedHRDiff(bxStats.attnMiceInd))),...
+    num2str(max(bxStats.av(auditoryTrials).matchedHRDiff(bxStats.attnMiceInd))))
+
+bxStats.av(visualTrials).RTdiff = visRT(:,valid) - visRT(:,invalid);
+bxStats.av(auditoryTrials).RTdiff = audRT(:,valid) - audRT(:,invalid);
+% bxStats.av(visualTrials).validHiLoRTdiff
+
 %%
 
 HR_pct_lim = [0 100];
@@ -749,11 +868,13 @@ HR_pct_label = [0:20:100];
 HR_lim = [0 1];
 HR_label = [0:0.2:1];
 
-FAR_lim = [0 0.1];
-FAR_label = 0:0.01:0.1;
+FAR_lim = [0 0.12];
+FAR_label = 0:0.02:0.12;
 
-RT_lim = [150 350];
-RT_label = 150:50:350;
+RT_lim = [200 400];
+RT_label = 200:50:400;
+
+msColors = brewermap(nMice,'Dark2');
 
 visLevels_lim = [min(targets{visualTrials,valid}(:))-1 110];
 visLevels_label = [11.25 22.5 45 90];
@@ -761,7 +882,7 @@ audLevels_lim = [min(targets{auditoryTrials,valid}(:))-...
     (0.5*min(audTargets(audTargets > 0.00001))) 1.1];
 audLevels_label = [0 0.001 0.01 0.1 1];
 
-attnMiceInd = bxStats.allAttnTest < attnTestAlpha;
+attnMiceInd = bxStats.attnMiceInd;
 
 %% plot HR summary
 setFigParams4Print('portrait')
@@ -941,8 +1062,8 @@ print(fullfile(fnout,'matchedHR_allTrials_allMice'),'-dpdf','-fillpage')
 
 
 %false alarm and lapse rate
-figure
-subplot 221
+FAR_LR_RT_fig = figure;
+subplot 421
 FAR = nan(nMice,2);
 for im = 1:nMice
     x = 1:2;
@@ -956,13 +1077,13 @@ for im = 1:nMice
     end
     FAR(im,:) = y;
 end
-y = mean(FAR(attnMiceInd,:),1);
-yerr = ste(FAR(attnMiceInd,:),1);
+y = mean(FAR,1);
+yerr = ste(FAR,1);
 errorbar(x,y,yerr,'k.')
 figXAxis([],'',[0 3],x,{'Vis';'Aud'})
 figYAxis([],'FA Rate',FAR_lim,FAR_label,FAR_label)
 figAxForm
-subplot 222
+subplot 422
 LR = nan(nMice,2);
 for im = 1:nMice
     x = 1:2;
@@ -977,70 +1098,107 @@ for im = 1:nMice
         h.LineStyle = ':';
     end
 end
-y = mean(LR(attnMiceInd,:),1);
-yerr = ste(LR(attnMiceInd,:),1);
+y = mean(LR,1);
+yerr = ste(LR,1);
 errorbar(x,y,yerr,'k.')
 figXAxis([],'',[0 3],x,{'Vis';'Aud'})
 figYAxis([],'Lapse Rate',FAR_lim,FAR_label,FAR_label)
 figAxForm
 
 %reaction time
-subplot 223
-RT = nan(nMice,2,2);
-for im = 1:nMice
-    x = 1:2;
-    for i = 1:2
-        y = cat(2,msHR(im).av(visualTrials).cue(valid).RT(i), ...
-            msHR(im).av(visualTrials).cue(invalid).RT(i));
+for iav = 1:2
+    subplot(4,2,iav+2)
+    RT = nan(sum(attnMiceInd),2);
+    for im = 1:nMice
+        if ~attnMiceInd(im)
+            continue
+        end
+        x = 1:2;
+        y = cat(2,msHR(im).av(iav).cue(valid).RT, ...
+            msHR(im).av(iav).cue(invalid).RT);
         hold on
-        h = plot(x,y,'-');
-        h.Color = hiLoColor{i};
+        h = plot(x,y,'k-');
+%         h.Color = msColors(im,:);
         if attnMiceInd(im)
             h.LineStyle = '-';
         else
             h.LineStyle = ':';
         end
-        RT(im,i,:) = y;
+        RT(im,:) = y;
     end
-end
-for i = 1:2
-    y = mean(squeeze(RT(:,i,:)),1);
-    yerr = ste(squeeze(RT(:,i,:)),1);
-    h = errorbar(x,y,yerr,'.');
-    h.Color = hiLoColor{i};
-end
-figXAxis([],'',[0 3],x,{'Val';'Inv'})
-figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
-figAxForm
-title('Visual Trials')
-subplot 224
-RT = nan(nMice,2,2);
-for im = 1:nMice
-    x = 1:2;
-    for i = 1:2
-        y = cat(2,msHR(im).av(auditoryTrials).cue(valid).RT(i), ...
-            msHR(im).av(auditoryTrials).cue(invalid).RT(i));
+    y = mean(squeeze(RT(:,:)),1);
+    yerr = ste(squeeze(RT(:,:)),1);
+    h = errorbar(x,y,yerr,'k.');
+    figXAxis([],'',[0 3],x,{'Val';'Inv'})
+    figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
+    figAxForm
+    
+    subplot(4,2,iav+4)
+    RT = nan(sum(attnMiceInd),nBins);
+    RTtargets = nan(nMice,nBins);
+    for im = 1:nMice
+        if ~attnMiceInd(im)
+            continue
+        end
+        x = msHR(im).av(iav).cue(valid).RTtargets;
+        y = msHR(im).av(iav).cue(valid).RTbinned;
         hold on
-        h = plot(x,y,'-');
-        h.Color = hiLoColor{i};
+        h = plot(x,y,'k.-');
+%         h.Color = msColors(im,:);
+        RT(im,:) = y;
+        RTtargets(im,:) = x;
         if attnMiceInd(im)
             h.LineStyle = '-';
         else
             h.LineStyle = ':';
         end
-        RT(im,i,:) = y;
+        if msHR(im).av(iav).cue(valid).RTanovaTest > RTanovaAlpha
+            h.Color = [0.5 0.5 0.5];
+        end
     end
+    p = anova1(RT);
+    figure(FAR_LR_RT_fig)
+    subplot(4,2,iav+4)
+    if iav == 1
+        title(sprintf('Visual Trials, ANOVA p=%s',num2str(round(p,2,'significant'))))
+        ax = gca;
+        ax.XScale = 'log';
+        figXAxis([],'Orientation Change (deg)',...
+            visLevels_lim,visLevels_label,visLevels_label)
+    else
+        title(sprintf('Auditory Trials, ANOVA p=%s',num2str(round(p,2,'significant'))))
+        ax = gca;
+        ax.XScale = 'log';
+        figXAxis([],'Tone Volume (?)',...
+            audLevels_lim,audLevels_label,audLevels_label)
+%         legend(ms2analyze(attnMiceInd))
+    end
+    figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
+    figAxForm
+    subplot(4,2,iav+6)
+    y = nanmean(RT,1);
+    yerr = ste(RT,1);
+    x = nanmean(RTtargets,1);
+    xerr = ste(RTtargets,1);
+    errorbar(x,y,yerr,yerr,xerr,xerr,'k.')
+    if iav == 1
+        title('Visual Trials')
+        ax = gca;
+        ax.XScale = 'log';
+        figXAxis([],'Orientation Change (deg)',...
+            visLevels_lim,visLevels_label,visLevels_label)
+    else
+        title('Auditory Trials')
+        ax = gca;
+        ax.XScale = 'log';
+        figXAxis([],'Tone Volume (?)',...
+            audLevels_lim,audLevels_label,audLevels_label)
+%         legend(ms2analyze(attnMiceInd))
+    end
+    figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
+    figAxForm
+    
 end
-for i = 1:2
-    y = mean(squeeze(RT(:,i,:)),1);
-    yerr = ste(squeeze(RT(:,i,:)),1);
-    h = errorbar(x,y,yerr,'.');
-    h.Color = hiLoColor{i};
-end
-figXAxis([],'',[0 3],x,{'Val';'Inv'})
-figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
-figAxForm
-title('Auditory Trials')
 print(fullfile(fnout,'FAR_LR_RT_allMice'),'-dpdf','-fillpage')
 
 % reward vs. no reward

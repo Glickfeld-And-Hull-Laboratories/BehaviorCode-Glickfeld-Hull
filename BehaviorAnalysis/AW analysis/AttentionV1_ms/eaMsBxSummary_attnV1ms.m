@@ -6,7 +6,7 @@ doCheck4NewDates = true;
 doRewarded = true;
 
 
-bxParams_FSAV
+bxParams_FSAV_attnV1ms
 rc = behavConstsAV;
 exptSummaryDir = fullfile(rc.ashley,...
     'Manuscripts','Attention V1','Mouse Info.xlsx');
@@ -67,16 +67,20 @@ for im = 1:nmice
         if iexp == 1
             exptN = 0;
         end
+        % get visual trial lapse rates
         if length(msExptInfo(iexp).visHR) > 1
             visHRCutoffPass = msExptInfo(iexp).visHR(end-1:end) < lapse_cutoff;
         else
             visHRCutoffPass = msExptInfo(iexp).visHR < lapse_cutoff;
         end
+        % get auditory trial lapse rates
         if length(msExptInfo(iexp).audHR) > 1
             audHRCutoffPass = msExptInfo(iexp).audHR(end-1:end) < lapse_cutoff;
         else
             audHRCutoffPass = msExptInfo(iexp).audHR < lapse_cutoff;
         end
+        % is it a catch trial experiment? and does it pass the lapse and
+        % early rates?
         if isnan(msExptInfo(iexp).invType)
             continue
         elseif msExptInfo(iexp).pctEarly > early_cutoff | ...
@@ -85,7 +89,8 @@ for im = 1:nmice
         end
         exptInd(iexp) = true;
         exptN = exptN+1;
-
+        
+        
 
         msExptAnalyzed(exptN).date = str2double(msExptInfo(iexp).date);
         tVisTargets = round(double(msExptInfo(iexp).tVisTargets),2,'significant');

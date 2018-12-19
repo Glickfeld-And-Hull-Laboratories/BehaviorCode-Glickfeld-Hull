@@ -2,7 +2,7 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
     rc = behavConstsAV;
     nexp = size(bxDataInfo,1);
     bxStruct = struct;
-    bxParams_FSAV;
+    bxParams_FSAV_attnV1ms;
     for iexp = 1:nexp
         fprintf(num2str(iexp))
         expDate = bxDataInfo(iexp).DateStr;
@@ -95,10 +95,8 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
         miss = strcmp(mworks.trialOutcomeCell,'ignore');
         hit = strcmp(mworks.trialOutcomeCell,'success');
         
-%         fidgets = trialTimeMs < (tOn+tOff+100);
-%         fa(fidgets) = false; 
-        
         pctEarly = sum(fa)./nTrials;
+        
         
         tVisTargets = round(double(cell2mat_padded(mworks.tGratingDirectionDeg)),2,'significant');
         visTargets = unique(tVisTargets);
@@ -110,6 +108,13 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
             visHR(i) = sum(ind & hit) ./ sum(ind & (hit | miss));
             nVis(i) = sum(ind & (hit | miss));
         end
+
+        earlyHits_vis = hit & valReactTimeCalc < visRTwindow(1) & tVisTargets > 0;
+        lateHits_vis = hit & valReactTimeCalc > visRTwindow(2) & tVisTargets > 0;
+        
+        hit(earlyHits_vis | lateHits_vis) = false;
+        miss(lateHits_vis) = true;
+        fa(earlyHits_vis) = true;
         
         tAudTargets = round(double(celleqel2mat_padded(...
             mworks.tSoundTargetAmplitude)),2,'significant');
@@ -123,6 +128,20 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
             nAud(i) = sum(ind & (hit | miss));
         end
         
+
+        earlyHits_aud = hit & valReactTimeCalc < visRTwindow(1) & tAudTargets > 0;
+        lateHits_aud = hit & valReactTimeCalc > visRTwindow(2) & tAudTargets > 0;
+        
+        hit(earlyHits_aud | lateHits_vis) = false;
+        miss(lateHits_aud) = true;
+        fa(earlyHits_aud) = true;
+
+        if any(earlyHits_vis | lateHits_vis |earlyHits_aud | lateHits_aud)
+            fprintf('Expt %s: %s/%s trials changed due to RT cutoff\n',num2str(iexp),...
+                num2str(sum(earlyHits_vis | lateHits_vis |earlyHits_aud | lateHits_aud)),...
+                num2str(length(hit)))
+        end
+
         bxStruct(iexp).date = expDate;
         bxStruct(iexp).sn = mouseName;
         bxStruct(iexp).pctEarly = pctEarly;
@@ -207,6 +226,30 @@ function bxStruct = bxFrmXLS(mouseName,bxDataInfo)
             
             bxStruct(iexp).catchCyc = catchCycCalc;
             bxStruct(iexp).invReact = invReactTimeCalc;
+
+            earlyHit_invVis = bxStruct(iexp).invHit ...
+                & bxStruct(iexp).tInvVisTargets > 0 ...
+                & invReactTimeCalc < visRTwindow(1);
+            lateHit_invVis = bxStruct(iexp).invHit ...
+                & bxStruct(iexp).tInvVisTargets > 0 ...
+                & invReactTimeCalc > visRTwindow(2);
+            earlyHit_invAud = bxStruct(iexp).invHit ...
+                & bxStruct(iexp).tInvAudTargets > 0 ...
+                & invReactTimeCalc < visRTwindow(1);
+            lateHit_invAud = bxStruct(iexp).invHit ...
+                & bxStruct(iexp).tInvAudTargets > 0 ...
+                & invReactTimeCalc > visRTwindow(2);
+
+            bxStruct(iexp).invHit(earlyHit_invVis | lateHit_invVis ...
+                | earlyHit_invAud | lateHit_invAud) = false;
+            bxStruct(iexp).invMiss(lateHit_invVis | lateHit_invAud) = true;
+
+            
+            if any(earlyHit_invVis | lateHit_invVis |earlyHit_invAud | lateHit_invAud)
+                fprintf('Expt %s: %s/%s invalid trials changed due to RT cutoff\n',num2str(iexp),...
+                    num2str(sum(earlyHit_invVis | lateHit_invVis |earlyHit_invAud | lateHit_invAud)),...
+                    num2str(sum(bxStruct(iexp).tInvVisTargets > 0 |  bxStruct(iexp).tInvAudTargets > 0)))
+            end
         else
             bxStruct(iexp).invType = nan;
             bxStruct(iexp).invHit = nan(1,nTrials);
