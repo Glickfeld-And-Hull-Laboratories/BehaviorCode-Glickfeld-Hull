@@ -20,7 +20,7 @@ switch tHostname
             rc.eyeOutputDir = fullfile(rootDir,'Behavior\EyeTracking');
 %             rc.eyeInputDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis\';
             rc.caOutputDir = fullfile(rootDir,'2P');
-            rc.ashleyAnalysis = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\ashley';
+            rc.ashleyAnalysis = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\ashley\Analysis';
         elseif tUsername(1:5) == 'ashle'
             rc.name = 'ashle';
             rootDirCrash = '\\CRASH.dhe.duke.edu\data\home\ashley';
