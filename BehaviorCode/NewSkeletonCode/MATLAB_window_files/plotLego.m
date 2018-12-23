@@ -914,30 +914,49 @@ end
 
 plotTrsB1 = differenceRight((correctIx|incorrectIx)&~block2Ix);
 nLevelsB1 = unique(plotTrsB1);
+curr100 = zeros(size(block2Ix));
+nT= size(curr100,2);
+if nT>100
+  curr100(nT-99:nT) = 1;
+end
 percentContCellB1 = cell(1,length(nLevelsB1));
+percentContCellB1_100 = cell(1,length(nLevelsB1));
 for kk=1:length(nLevelsB1)
     valB1 = nLevelsB1(kk);
     valIxB1 = differenceRight==valB1;
     totalNTrialsValB1 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
+    totalNTrialsValB1_100 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&curr100));
     if min(differenceRight) < 0
       if valB1>=0,
           ind = setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix));  
           rightNTrialsValB1 = length(ind);
+          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix)));  
+          rightNTrialsValB1_100 = length(ind2);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+          percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
       elseif valB1<0,
           ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix));
           rightNTrialsValB1 = length(ind);
+          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix)));
+          rightNTrialsValB1_100 = length(ind2);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+          percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
       end
     else
         if valB1>=1,
             ind = setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix));
             rightNTrialsValB1 = length(ind);
             percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+            ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix)));
+            rightNTrialsValB1_100 = length(ind2);
+            percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
         elseif valB1<1,
             ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix));
             rightNTrialsValB1 = length(ind);
             percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+            ind2 = intersect(find(curr100),setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix)));
+            rightNTrialsValB1_100 = length(ind2);
+            percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
         end
     end
 end
@@ -1008,6 +1027,7 @@ end
 
 nLevelsB1 = nLevelsB1(~isnan(nLevelsB1));
 pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+pH1x = plot(nLevelsB1, cell2mat(percentContCellB1_100), 'k', 'LineWidth', .5);
 if sum(block2Ix)>= 1
   pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
