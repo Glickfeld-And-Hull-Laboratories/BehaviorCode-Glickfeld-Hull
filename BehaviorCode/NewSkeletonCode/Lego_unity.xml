@@ -1162,11 +1162,17 @@
                     <action type="assignment" variable="dGratingContrast" value="0"></action>
 
                     <action type="if" condition="!doRandContrast">
-                        <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
-                    </action>
-                    <action type="if" condition="!doRandSize">
                         <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast"/>
                     </action>
+                    <action type="if" condition="!doRandSize">
+                        <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
+                    </action>
+                    <action type="if" condition="doRandContrast">
+                        <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                     </action>
+                     <action type="if" condition="doRandSize">
+                        <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))"/>
+                     </action>
                 </action>
 
                 <action type="if" condition="doAdapt">
