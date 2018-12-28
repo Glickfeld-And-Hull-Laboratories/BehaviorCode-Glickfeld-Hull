@@ -1,5 +1,5 @@
 %% create a structure for all data
-cd('Z:\2018\Code\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis')
+cd('\\crash.dhe.duke.edu\data\home\emily\2018\Code\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis')
 for i = 1:length(input)
     s(i).date = input{i,1}.saveTime;
 end
@@ -20,9 +20,20 @@ for i = 1:length(input)
 s(i).tGratingDirectionStart = celleqel2mat_padded(input{i,1}.tGratingDirectionStart);
 end
 
+for i = 1:length(input)
+s(i).doAdapt = input{i,1}.doAdapt;
+end
 
 for i = 1:length(input)
-s(i).tGratingDiameter = celleqel2mat_padded(input{i,1}.tGratingDiameterDeg);
+s(i).aGratingDirectionDeg = celleqel2mat_padded(input{i,1}.aGratingDirectionDeg);
+end
+
+for i = 1:length(input)
+s(i).tGratingDirectionStart = celleqel2mat_padded(input{i,1}.tGratingDirectionStart);
+end
+
+for i = 1:length(input)
+s(i).aGratingContrast = celleqel2mat_padded(input{i,1}.aGratingContrast);
 end
 
 for i = 1:length(input)
@@ -75,13 +86,19 @@ end
 %% Loop through to plot each day's data, plot ignores, and crop
 % define c as trials to crop from earliest date to latest date eg. c = [123 465 222 ...] 
 %if there is a day you don't want to include, make c = 0
-c = [198, 391, 402, 441, 481, 480, 421, 172, 485, 0, 450, 421, 466, 458, 501, 399, 452, 429, 347, 380, 326, 335]; 
+
+c = [348 229 225 411];
+%601 c = [0 322 291 525];
+%601 QC: c = [337,0,0,0,403,0,400,0,0,313,498,0,0,336,354,481];
+%601 nonQC: c = [337,418,374,363,403,365,400,531,329,313,498,372,448,336,354,481]
+
 
 for i = 1:length(s) 
     s(i).SIx = s(i).SIx(1:c(i))
     s(i).FIx = s(i).FIx(1:c(i))
     s(i).tGratingDirectionStart = s(i).tGratingDirectionStart(1:c(i));
-    s(i).tGratingDiameter = s(i).tGratingDiameter(1:c(i));
+    s(i).aGratingDirectionDeg = s(i).aGratingDirectionDeg(1:c(i));
+    s(i).aGratingContrast = s(i).aGratingContrast(1:c(i));
     s(i).tBlock2 = s(i).tBlock2(1:c(i));
     s(i).tLeftTrial = s(i).tLeftTrial(1:c(i));
     s(i).tRR = s(i).tRR(1:c(i));
