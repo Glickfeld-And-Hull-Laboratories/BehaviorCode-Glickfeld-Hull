@@ -21,8 +21,8 @@ minAudTarget = 0.0003;
 maxAudTarget = 1;
 visBinEdges = exp(linspace(log(minVisTarget-1),log(maxVisTarget),nBins+1));
 audBinEdges = exp(linspace(log(minAudTarget-(0.5*minAudTarget)),...
-    log(maxAudTarget),nBins+1));
-
+    log(maxAudTarget),nBins+2));
+audBinEdges = audBinEdges([1,3:end]);
 %% structure ID
 visualTrials = 1;
 auditoryTrials = 2;
