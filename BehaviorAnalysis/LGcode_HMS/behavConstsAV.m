@@ -11,15 +11,16 @@ switch tHostname
         
         if tUsername(1:5) == 'linds'
             rc.name = 'linds';
-            rootDir = '\\CRASH.dhe.duke.edu\data\home\lindsey\Analysis';
-            rc.indexFilename = fullfile(rootDir, 'Behavior\experimentIndexes\av-subj-days-lg.xls');
-            rc.fitOutputFilename = fullfile(rootDir, 'Behavior\experimentIndexes\av-subj-fits-lg.xls');
-            rc.fitOutputSummary = fullfile(rootDir, 'Behavior\output\summary');
-            rc.fitOutputPdfDir = fullfile(rootDir, 'Behavior\output\pdfFits');
-            rc.fitOutputMatDir = fullfile(rootDir, 'Behavior\output\fitMatStats');
-            rc.eyeOutputDir = fullfile(rootDir,'Behavior\EyeTracking');
+            rootDir = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\lindsey';
+            rc.indexFilename = fullfile(rootDir, 'Analysis\Behavior\experimentIndexes\av-subj-days-lg.xls');
+            rc.fitOutputFilename = fullfile(rootDir, 'Analysis\Behavior\experimentIndexes\av-subj-fits-lg.xls');
+            rc.fitOutputSummary = fullfile(rootDir, 'Analysis\Behavior\output\summary');
+            rc.fitOutputPdfDir = fullfile(rootDir, 'Analysis\Behavior\output\pdfFits');
+            rc.fitOutputMatDir = fullfile(rootDir, 'Analysis\Behavior\output\fitMatStats');
+            rc.eyeOutputDir = fullfile(rootDir,'Analysis\Behavior\EyeTracking');
 %             rc.eyeInputDir = '\\CRASH.dhe.duke.edu\data\home\ashley\Analysis\';
-            rc.caOutputDir = fullfile(rootDir,'2P');
+            rc.lindseyAnalysis = fullfile(rootDir,'Analysis\2P');
+            rc.data = fullfile(rootDir,'Data\2P_images');
             rc.ashleyAnalysis = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\ashley\Analysis';
         elseif tUsername(1:5) == 'ashle'
             rc.name = 'ashle';
