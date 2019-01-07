@@ -1010,16 +1010,24 @@ if nStims >= 1
  end
 
   % manually compute limits and tick positions
+  if sum(powerLevels<0)==0
   xLimL = [min(powerLevels(~powerLevels==0))*0.5, max(powerLevels)*1.5];
-  if length(xLimL)==1, xLimL = get(gca, 'XLim'); end
   xL1 = [floor(log10(xLimL(1))) ceil(log10(xLimL(2)))];
   xTickL = 10.^(xL1(1):1:xL1(2));
   xTickL = xTickL(xTickL>=xLimL(1) & xTickL<=xLimL(2));
-  if length(xTickL) == 0, 
+else
+  xLimL = [min(powerLevels(~powerLevels==0))*1.5, 0];
+  xTickL = [xLimL(1) xLimL(2)]; %[xTL(1)/10 xTL(1) xTL(1)]
+  TickL = chop(xTickL,2);
+  end
+  if length(xLimL)==1, xLimL = get(gca, 'XLim'); end
+  
+  if length(xTickL) == 0 
     % no log10 ticks in range, create two and set them
     xTickL = [xLimL(1) xLimL(2)]; %[xTL(1)/10 xTL(1) xTL(1)]
     xTickL = chop(xTickL,2);
   end
+
   xTLabelL = cellstr(num2str(xTickL(:)));
   
   set(gca, 'YLim', [0 100], ...

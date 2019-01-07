@@ -10,10 +10,12 @@ clear all;close all
 doSave = 0;
 fnout = 'Z:\Analysis\_temp figs\180201';
 
-ms = '756';
-exptInfo = [{[];'1511';[]}];
+ms = '682';
+%expt info includes {date, time, trial range}
+exptInfo = [{[];'1100';[]},...
+    {[];'1132';[]}];
 nrun = size(exptInfo,2);
-exptInfo(1,:) = repmat({'180821'},[1,nrun]);
+exptInfo(1,:) = repmat({'170925'},[1,nrun]);
 
 for iexp = 1:size(exptInfo,2)
     dt = exptInfo{1,iexp};

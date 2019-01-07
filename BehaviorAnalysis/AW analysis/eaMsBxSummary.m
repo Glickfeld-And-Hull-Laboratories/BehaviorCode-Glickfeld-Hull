@@ -1,10 +1,10 @@
 clear all
 close all
 
-ms2analyze = {'750'};
+ms2analyze = {'672';'682'};
 exampleDay = 10;
 doExampleDay = false;
-doLoadPreviousDataset = true;
+doLoadPreviousDataset = false;
 doCheck4NewDates = false;
 doRewarded = true;
 doPlot = true;
@@ -55,7 +55,7 @@ for im = 1:nmice
             if any(newDates)
                 msExptInfo_newDates = bxFrmXLS(mouseName,bxDataInfo(newDates));
                 msExptInfo = cat(2,msExptInfo,msExptInfo_newDates);
-                save(fullfile(fnout,[mouseName 'bxSummary_data']),'msExptInfo')
+                save(fullfile(fnout,savedDataName),'msExptInfo')
             end
             if any(~ismember({msExptInfo.date},{bxDataInfo.DateStr}))
                 dateInd = ismember({msExptInfo.date},{bxDataInfo.DateStr});
@@ -235,11 +235,16 @@ for im = 1:nmice
             sum(fa(trueFAInd & visTrials & ~invTrials))/...
             sum(nFACyc(longEnoughTrials & visTrials & ~invTrials));
         nVisFATrials = sum(nFACyc(longEnoughTrials & visTrials & ~invTrials));
+        msExptAnalyzed(exptN).av(visualTrials).nFA = [...
+            sum(fa(trueFAInd & visTrials & ~invTrials)),...
+            nVisFATrials];
         msExptAnalyzed(exptN).av(auditoryTrials).falseAlarmRate = ...
             sum(fa(trueFAInd & audTrials & ~invTrials))/...
             sum(nFACyc(longEnoughTrials & audTrials & ~invTrials));
         nAudFATrials = sum(nFACyc(longEnoughTrials & audTrials & ~invTrials));
-        
+        msExptAnalyzed(exptN).av(auditoryTrials).nFA = [...
+            sum(fa(trueFAInd & audTrials & ~invTrials)),...
+            nAudFATrials];
         HR = nan(1,length(visStim));
         for i = 1:length(visStim)
             HR(i) = sum(tVisTargets == visStim(i) & hit)./...
@@ -263,7 +268,8 @@ for im = 1:nmice
 
         msExptAnalyzed(exptN).av(visualTrials).threshold = msVisFit.thresh;
         
-        [visHR_highThreshold, invVisHR_highThreshold, highThreshExpt,visMatchHighThreshTrialInd] = ...
+        [visHR_highThreshold, invVisHR_highThreshold,~,~,~,~,...
+            highThreshExpt,visMatchHighThreshTrialInd] = ...
             getMatchedHighThresholdHR(...
             visStim,msVisFit,highThreshold,tVisTargets,tInvVisTargets,...
             hit,miss,invHit,invMiss);
@@ -288,7 +294,8 @@ for im = 1:nmice
             msAudFit = weibullFitLG([0 audStim(ind)],...
                 [msExptAnalyzed(exptN).av(auditoryTrials).falseAlarmRate audHR(ind)],...
                 1,0,{'nTrials',[nAudFATrials nAud(ind)]});        
-            [audHR_highThreshold, invAudHR_highThreshold, highThreshExpt ,audMatchHighThreshTrialInd] = ...
+            [audHR_highThreshold, invAudHR_highThreshold,~,~,~,~,...
+                highThreshExpt ,audMatchHighThreshTrialInd] = ...
                 getMatchedHighThresholdHR(...
                 audStim,msAudFit,highThreshold,tAudTargets,tInvAudTargets,...
                 hit,miss,invHit,invMiss);
@@ -363,6 +370,16 @@ for im = 1:nmice
             msCmlvData.invAudHighThreshID = invAudHighThreshID;
         end
     end
+    
+    
+    nFA_vis = zeros(1,2);
+    nFA_aud = zeros(1,2);
+    for iexp = 1:size(msExptAnalyzed,2)
+        nFA_vis = nFA_vis + msExptAnalyzed(iexp).av(visualTrials).nFA;
+        nFA_aud = nFA_aud + msExptAnalyzed(iexp).av(auditoryTrials).nFA;
+    end
+    msCmlvData.visNFAandDistractors = nFA_vis;
+    msCmlvData.audNFAandDistractors = nFA_aud;
     save(fullfile(fnout,[savedDataName 'Analyzed']),...
         'exptInd', 'msExptAnalyzed', 'msCmlvData')
     %%
@@ -923,16 +940,20 @@ for im = 1:nmice
             invAudHR95ci = nan(1,2);
         end
 
+        %% false alarm rate
+        FAR_vis = msCmlvData.visNFAandDistractors(1)./msCmlvData.visNFAandDistractors(2);
+        FAR_aud = msCmlvData.audNFAandDistractors(1)./msCmlvData.audNFAandDistractors(2);
         %% 
         nTrials = nVisHits(visInd)+nVisMisses(visInd);
-        msVisFit = weibullFitLG(visTargetsBinned(visInd), visHR, 0,0, {'nTrials',nTrials});
+%         msVisFit = weibullFitLG(visTargetsBinned(visInd),visHR, 0,0, {'nTrials',nTrials});
+        msVisFit = weibullFitLG([0 visTargetsBinned(visInd)],[FAR_vis visHR], 0,0, {'nTrials',[nFA_vis(2) nTrials]});
 
         maxI = max(visTargetsBinned(visInd));
         minI = min(visTargetsBinned(visInd));
         msVisXGrid = logspace(log10(minI*0.1),log10(maxI*1.5),100);
 
         nTrials = nAudHits(audInd)+nAudMisses(audInd);
-        msAudFit = weibullFitLG(audTargetsBinned(audInd), audHR, 0,0, {'nTrials',nTrials});
+        msAudFit = weibullFitLG([0 audTargetsBinned(audInd)], [FAR_aud audHR], 0,0, {'nTrials',[nFA_aud(2) nTrials]});
 
         maxI = max(audTargetsBinned(audInd));
         minI = min(audTargetsBinned(audInd));

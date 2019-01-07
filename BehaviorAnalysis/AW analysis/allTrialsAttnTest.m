@@ -1,4 +1,5 @@
-function [p, valHR, invHR, valCI, invCI] = allTrialsAttnTest(tValTargets,tInvTargets,hit,miss,invHit,invMiss)
+function [p, valHR, invHR, valCI, invCI] = allTrialsAttnTest(tValTargets,...
+    tInvTargets,hit,miss,invHit,invMiss)
 
 invInd = tInvTargets > 0;
 nInvHit = sum(invInd & invHit);

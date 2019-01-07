@@ -100,8 +100,7 @@ noGoInd = find(noGoIx);
 noGoCorrIx(noGoInd(noGoCorr)) = 1;
 noGoCorrIx(noGoInd(noGoInc)) = 0;
 
-
-% Left bias indexing
+%Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
 tLeftResponse = celleqel2mat_padded(input.tLeftResponse);
 tRightResponse = celleqel2mat_padded(input.tRightResponse);
@@ -159,6 +158,12 @@ if input.doBlock2==1,
   end
 elseif input.doBlock2==0,
   block2Str = 'Block2: off \n';
+end
+
+if isfield (input,'doAdapt')
+  if input.doAdapt
+    block2Str = ['Block1: Adapt to ' num2str(input.adaptDirectionDeg) ' \nBlock2: Adapt to' num2str(input.adaptDirectionDeg + input.adaptDirectionStepDeg) '\n'];
+  end
 end
 
 if isfield(input, 'doMatchToTarget')
@@ -244,6 +249,10 @@ end
 
 if isfield(input,'gratingMaxDiff')
   input.gratingMaxContrastDiff = input.gratingMaxDiff;
+end
+
+if ~isfield(input,'doSizeDiscrim')
+  input.doSizeDiscrim = 0;
 end
 if isfield(input,'doContrastDiscrim')
   if input.doContrastDiscrim
@@ -404,6 +413,7 @@ set(lh4, 'LineStyle', '--');
     
 title('Bias Plot: Red = Resp, Black = Pres, Blue = NoGo');
 ylabel('Left (%)');
+
 set(gca, 'YLim', [0 1], ...
          'YTick', [0,0.25,0.5,0.75,1]);
 
@@ -534,7 +544,7 @@ if nCorr>0  %&& input.doTestRobot==0,
         contDiffV = chop(celleqel2mat_padded(input.tGratingDiameterDeg) - celleqel2mat_padded(input.dGratingDiameterDeg),2);
       end
     elseif input.doOriDiscrim
-      contDiffV = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.targetGratingDirection),2);
+      contDiffV = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
     end
   else
     if input.gratingContrastDiffSPO<10
@@ -626,12 +636,16 @@ if nCorr>0  %&& input.doTestRobot==0,
     hold on
     xLimm = [minX maxX];
     uqDiff = uqDiff;
-
+    
+    if input.doContrastDiscrim
     if input.gratingContrastDiffSPO<10
       sc_num = 1;
     else
       sc_num = 100;
-    end 
+    end
+    else
+    sc_num = 1; 
+    end
     
     pH = plot((sc_num * uqDiff), cell2mat(corrDiffCell));
     if nLeft>0,
@@ -884,7 +898,7 @@ if isfield(input,'doContrastDiscrim')
         differenceRight =chop(celleqel2mat_padded(input.rightGratingDiameterDeg) ./ celleqel2mat_padded(input.leftGratingDiameterDeg),2);
     end
   elseif input.doOriDiscrim
-      differenceRight = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.targetGratingDirection),2);
+      differenceRight = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
     end
   end
 else
@@ -900,30 +914,49 @@ end
 
 plotTrsB1 = differenceRight((correctIx|incorrectIx)&~block2Ix);
 nLevelsB1 = unique(plotTrsB1);
+curr100 = zeros(size(block2Ix));
+nT= size(curr100,2);
+if nT>100
+  curr100(nT-99:nT) = 1;
+end
 percentContCellB1 = cell(1,length(nLevelsB1));
+percentContCellB1_100 = cell(1,length(nLevelsB1));
 for kk=1:length(nLevelsB1)
     valB1 = nLevelsB1(kk);
     valIxB1 = differenceRight==valB1;
     totalNTrialsValB1 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
+    totalNTrialsValB1_100 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&curr100));
     if min(differenceRight) < 0
       if valB1>=0,
           ind = setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix));  
           rightNTrialsValB1 = length(ind);
+          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix)));  
+          rightNTrialsValB1_100 = length(ind2);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+          percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
       elseif valB1<0,
           ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix));
           rightNTrialsValB1 = length(ind);
+          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix)));
+          rightNTrialsValB1_100 = length(ind2);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+          percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
       end
     else
         if valB1>=1,
             ind = setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix));
             rightNTrialsValB1 = length(ind);
             percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+            ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix)));
+            rightNTrialsValB1_100 = length(ind2);
+            percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
         elseif valB1<1,
             ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix));
             rightNTrialsValB1 = length(ind);
             percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+            ind2 = intersect(find(curr100),setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix)));
+            rightNTrialsValB1_100 = length(ind2);
+            percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
         end
     end
 end
@@ -994,6 +1027,7 @@ end
 
 nLevelsB1 = nLevelsB1(~isnan(nLevelsB1));
 pH1 = plot(nLevelsB1, cell2mat(percentContCellB1), 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+pH1x = plot(nLevelsB1, cell2mat(percentContCellB1_100), 'k', 'LineWidth', .5);
 if sum(block2Ix)>= 1
   pH2 = plot(nLevelsB2, cell2mat(percentContCellB2), 'Color', yColor, 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
@@ -1024,7 +1058,7 @@ if min(differenceRight) < 0
                  'XGrid', 'on');
     elseif input.doOriDiscrim
         xlabel('Ori Difference')
-        set(gca, 'XTick', [-input.gratingMaxDirectionDeg:5:input.gratingMaxDirectionDeg], ...
+        set(gca, 'XTick', [-input.gratingMaxDirectionDiff:5:input.gratingMaxDirectionDiff], ...
                  'YTick', [0:0.25:1],...
                  'XGrid', 'on');
     end
@@ -1094,7 +1128,7 @@ if nCorr>0 %&& input.doTestRobot==0,
     elseif input.doSizeDiscrim
       contTargetV = celleqel2mat_padded(input.tGratingDiameterDeg);
     elseif input.doOriDiscrim
-      contTargetV = abs(celleqel2mat_padded(input.tGratingDirectionStart)-double(input.targetGratingDirection));
+      contTargetV = abs(celleqel2mat_padded(input.tGratingDirectionStart)-double(input.gratingTargetDirection));
     end
   else
     contTargetV = celleqel2mat_padded(input.tGratingContrast).*100;

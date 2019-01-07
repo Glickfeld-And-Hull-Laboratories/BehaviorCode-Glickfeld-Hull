@@ -1,14 +1,14 @@
-function [p, valHR, invHR, valCI, invCI] = belowThreshAttnTest(thresh,tValTargets,tInvTargets,...
+function [p, valHR, invHR, valCI, invCI] = aboveThreshAttnTest(thresh,tValTargets,tInvTargets,...
     hit,miss,invHit,invMiss)
     
-    tInvBelowThresh = tInvTargets > 0 & tInvTargets <= thresh;
+    tInvAboveThresh = tInvTargets > 0 & tInvTargets > thresh;
     
-    nInvHit = sum(tInvBelowThresh & invHit);
-    nInvMiss = sum(tInvBelowThresh & invMiss);
+    nInvHit = sum(tInvAboveThresh & invHit);
+    nInvMiss = sum(tInvAboveThresh & invMiss);
     [invHR, invCI] = binofit(nInvHit,nInvHit+nInvMiss);
     
     matches = cell2mat(getMatchedValidTrialIndex(tValTargets,...
-        tInvTargets(tInvBelowThresh)));
+        tInvTargets(tInvAboveThresh)));
     
     nValHit = sum(hit(matches));
     nValMiss = sum(miss(matches));
