@@ -25,6 +25,7 @@ if useRandSeed
     load(fullfile(fnout,'bxStats'))
     rng(bxStats.randGeneratorSeed);
 end
+
 %% compile data
 
 trainRew = strcmp(exptSummaryInfo.TrainingType,'Reward');
