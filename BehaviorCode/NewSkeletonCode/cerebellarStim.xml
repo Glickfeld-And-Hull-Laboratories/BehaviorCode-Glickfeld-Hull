@@ -258,7 +258,7 @@
 
           <transition type="conditional" tag="camera starts" condition="counter - tCounter > 0 &amp;&amp; DoCerebellarStim == 1" target="CheckCriteria"></transition>
           <transition type="conditional" tag="If exceeding iTi and not doing cerebellar visual stim, move to send stim" 
-            condition="(counter - tCounter) >= itiNFrames &amp;&amp; DoCerebellarStim == 0" target="SendStim" ></transition>
+            condition="(counter - tCounter) > 0 &amp;&amp; DoCerebellarStim == 0" target="SendStim" ></transition>
               <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
               , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames &amp;&amp; DoCerebellarStim == 1" target="EndTrial" ></transition>
       </task_system_state>
