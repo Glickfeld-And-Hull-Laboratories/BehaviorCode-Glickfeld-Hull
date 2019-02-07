@@ -136,6 +136,8 @@
         <variable tag="minDiscrimTarget" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="doRandContrast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
         <variable tag="nRandContrast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="conDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Structure"/>
+        <variable tag="doLogCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
 
         <variable tag="gratingMaxDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingDiameterSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
@@ -1140,8 +1142,14 @@
                      <action type="assignment" variable="dGratingDiameterDeg" value="tGratingDiameterDeg / dGratingDiameterDiff"></action>
 
                      <action type="if" condition="doRandContrast">
-                        <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
-                        <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                        <action type="if" condition="doLogCon">
+                            <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                            <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                        </action>
+                        <action type="if" condition="!doLogCon">
+                            <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast + (disc_rand(-1,1)*conDiff)"/>
+                            <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast + (disc_rand(-1,1)*conDiff)"/>
+                        </action>    
                      </action>
 
                      <action type="if" condition="!doRandContrast">
