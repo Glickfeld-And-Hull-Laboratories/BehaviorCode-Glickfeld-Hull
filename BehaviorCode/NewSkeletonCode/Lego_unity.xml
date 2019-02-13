@@ -46,6 +46,10 @@
         <variable tag="adaptContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptDirectionStepDeg" scope="global" logging="when_changed" default_value="90" type="float" persistant="1" groups="Adapt Control"/>
+        <variable tag="doDynamicAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="doDynamicPhase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="doDynamicOri" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="dynAdaptPeriodMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="doMovementNoise" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptZeroConPer80" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Adapt Control"/>
 
@@ -292,6 +296,9 @@
         <variable tag="tGratingDirectionStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="aGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tAGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="aGratingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tempRand" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
         <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
 
@@ -397,7 +404,7 @@
               alpha_multiplier="dGratingContrast"></stimulus>
           </list_replicator>
           <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
-            <stimulus type="drifting_grating" tag="adapterGrating_$mask"  direction="0" starting_phase="tGratingStartingPhaseDeg"
+            <stimulus type="drifting_grating" tag="adapterGrating_$mask"  direction="0" starting_phase="aGratingPhaseDeg"
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1" 
@@ -1196,7 +1203,9 @@
                         <action type="assignment" tag="" variable="aGratingContrast" value="0"/>
                     </action>
                     <action type="assignment" tag="" variable="tBlock2TrialNumber" value="disc_rand(0,1)"/>
-                    <action type="assignment" tag="" variable="aGratingDirectionDeg" value="adaptDirectionDeg+ (tBlock2TrialNumber*adaptDirectionStepDeg)"/>
+                    <action type="assignment" tag="" variable="tAGratingDirectionDeg" value="adaptDirectionDeg+ (tBlock2TrialNumber*adaptDirectionStepDeg)"/>
+                    <action type="assignment" tag="" variable="aGratingDirectionDeg" value="tAGratingDirectionDeg"/>
+                    <action type="assignment" tag="" variable="aGratingPhaseDeg" value="0"/>
                 </action> 
                 <action type="if" condition="!doAdapt">
                     <action type="assignment" tag="" variable="aGratingContrast" value="0"/>
@@ -1405,8 +1414,50 @@
                         <action tag="Update Display" type="update_stimulus_display"></action>
                         <action type="assignment" variable="adapterTimestampMs" value="now()/1000"/>
 
+                        <action type="if" condition="doDynamicAdapt">
+                            <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptPeriodMs" duration_units="ms"/>
+                        </action>     
+
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doMovementNoise &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="DynamicAdapt" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        
+                        <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptPeriodMs" duration_units="ms"/>
+
+                        <action type="if" condition="doDynamicPhase">
+                            <!-- <action type="assignment" variable="aGratingPhaseDeg" value="disc_rand(0,7) * 45"/> -->
+                            <action type="assignment" variable="aGratingPhaseDeg" value="aGratingPhaseDeg + 180"/> 
+                        </action>
+                        <action type="if" condition="doDynamicOri">
+                            <action type="assignment" variable="tempRand" value="disc_rand(0,15)"/>
+                            <action type="if" condition="tempRand &lt;= 7">
+                                <action type="assignment" variable="aGratingDirectionDeg" value="tempRand * 22.5"/>
+                            </action>
+                            <action type="if" condition="tempRand &gt; 7">
+                                <action type="assignment" variable="aGratingDirectionDeg" value="tAGratingDirectionDeg"/>
+                            </action>    
+                        </action>
+
+                        <action type="report" message="**** $aGratingDirectionDeg"></action>  
+
+                        <action type="if" condition="doGaussianMask">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="adapterGrating_gaussian"></action>
+                            <action type="play_dynamic_stimulus" stimulus="adapterGrating_gaussian" tag="start"></action>
+                        </action> 
+                        <action type="if" condition="doEllipseMask">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="adapterGrating_ellipse"></action>
+                            <action type="play_dynamic_stimulus" stimulus="adapterGrating_ellipse" tag="start"></action>
+                        </action>    
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
                         <transition type="conditional" condition="doMovementNoise &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
                       </task_system_state>
 
