@@ -120,6 +120,7 @@
       </folder>
       <folder tag="Stimuli">
         <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="targetSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
         <variable tag="goSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
         <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
         <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
@@ -375,6 +376,7 @@
         </variables>
         <sounds tag="Sounds">
           <sound tag="startSound" type="wav_file" path="wavs/1000Hz_pt3s.wav" amplitude="startSoundVolume"></sound>
+          <sound tag="targetSound" type="wav_file" path="wavs/1000Hz_pt3s.wav" amplitude="targetSoundVolume"></sound>
           <sound tag="goSound" type="wav_file" path="wavs/1000Hz_pt3s.wav" amplitude="goSoundVolume"></sound>
           <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="correctSoundVolume"></sound>
           <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>
@@ -1518,6 +1520,7 @@
                           <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
                         </action>
                         <action type="report" message="*****-=STIMULI ON=-*****"></action>
+                        <action type="play_sound" sound="targetSound"/>
                         <action type="assignment" variable="stimulusOn" value="1"/>
                         <action type="assignment" tag="set stimIsOff to 0" variable="stimIsOff" value="0"/>
                         <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
