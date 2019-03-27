@@ -795,7 +795,7 @@ for im = 1:nMice
 end
 
 bxStats = struct;
-bxStats.randGeneratorSeed = rng;
+% bxStats.randGeneratorSeed = rng;
 bxStats.nTrialsPerSessionRange = [min(cell2mat(nTrialsPerExpt)),...
     max(cell2mat(nTrialsPerExpt))];
 

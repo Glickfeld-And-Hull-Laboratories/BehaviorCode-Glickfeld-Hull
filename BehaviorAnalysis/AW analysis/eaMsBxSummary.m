@@ -1,16 +1,16 @@
 clear all
 close all
 
-ms2analyze = {'672';'682'};
+ms2analyze = {'758'};
 exampleDay = 10;
 doExampleDay = false;
-doLoadPreviousDataset = false;
-doCheck4NewDates = false;
-doRewarded = true;
+doLoadPreviousDataset = true;
+doCheck4NewDates = true;
+doRewarded = false;
 doPlot = true;
 %%
 nmice = length(ms2analyze);
-bxParams_FSAV
+bxParams_FSAV_attnV1ms
 
 rc = behavConstsAV;
 
