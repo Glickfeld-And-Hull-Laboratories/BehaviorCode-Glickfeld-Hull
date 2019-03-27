@@ -40,6 +40,7 @@
         <variable tag="invertDirection" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doOnlyMaxDiff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doEasyStart" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="doEasyStartWithFeedback" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="easyStartTrialNumber" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Task Control"/>
 
         <variable tag="adaptPeriodMs" scope="global" logging="when_changed" default_value="4000" type="float" persistant="1" groups="Adapt Control"/>
@@ -301,6 +302,7 @@
         <variable tag="aGratingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tempRand" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
 
+        <variable tag="tDoFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean"/>
         <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
 
         <variable tag="isNotTooFast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -1064,10 +1066,15 @@
     </action>
 </action>
 <!-- added preblock where all early trials are easy -->
+<action type="assignment" variable="tDoFeedbackMotion" value="doFeedbackMotion"/> 
 <action type="if" condition="tNTrialsCompleted &lt; easyStartTrialNumber &amp;&amp; doEasyStart">
     <action type="assignment" variable="tStimulusNumber" value="0"/>
     <action type="assignment" variable="tStimulusNumber2" value="0"/>
-</action>    
+    <action type="if" condition="doEasyStartWithFeedback">
+        <action type="assignment" variable="tDoFeedbackMotion" value="1"/>
+    </action>     
+</action> 
+
 
 <action type="report" message="tLeftTrial is $tLeftTrial!!!!"></action>
 <!-- error checking                -->
@@ -1606,7 +1613,7 @@
                           <action type="assignment" tag="track motion" variable="trackMotion" value="1000"/>
                         </action>
 
-                        <action type="if" condition="doFeedbackMotion==1">
+                        <action type="if" condition="tDoFeedbackMotion==1">
                           <action type="if" condition="doContrastDiscrim || doContrastDetect || doSizeDiscrim">  
                             <action type="if" condition="(tLeftTrial &amp;&amp; trackMotion &lt;= gratingTargetEccentricity) || (tLeftTrial == 0 &amp;&amp; trackMotion &gt;= gratingTargetEccentricity)">
                               <action type="assignment" tag="Move stimulus" variable="tGratingEccentricityDeg" value="trackMotion"/>
@@ -1711,7 +1718,7 @@
                       <task_system_state tag="Reward" interruptible="YES">
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        <action type="if" condition="doFeedbackMotion==0">
+                        <action type="if" condition="tDoFeedbackMotion==0">
                         	<action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
                         	<action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
                             <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
@@ -1798,14 +1805,14 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="EndTrial"></transition>
+                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; tDoFeedbackMotion == 0" target="EndTrial"></transition>
                         <transition type="timer_expired" timer="stimTimer" target="EndTrial"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Incorrect" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
-                        <action type="if" condition="doFeedbackMotion==0">
+                        <action type="if" condition="tDoFeedbackMotion==0">
                         	<action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
                         	<action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
                             <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
