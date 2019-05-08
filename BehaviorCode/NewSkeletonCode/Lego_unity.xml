@@ -50,7 +50,9 @@
         <variable tag="doDynamicAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
         <variable tag="doDynamicPhase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
         <variable tag="doDynamicOri" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="doDynamicFlash" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
         <variable tag="dynAdaptPeriodMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Adapt Control"/>
+        <variable tag="dynAdaptFlashOffMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="doMovementNoise" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptZeroConPer80" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Adapt Control"/>
 
@@ -301,6 +303,7 @@
         <variable tag="tAGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="aGratingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tempRand" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="flashOn" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
         <variable tag="tDoFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean"/>
         <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -1410,6 +1413,7 @@
                       <task_system_state tag="AdaptOn" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="report" message="**** adapting for $adaptPeriodMs ms"></action>
+                        <action type="report" message="**** $aGratingDirectionDeg"></action>  
                         <action type="start_timer" timer="adaptTimer" timebase="" duration="adaptPeriodMs" duration_units="ms"/> 
 
                         <action type="if" condition="doGaussianMask">
@@ -1425,19 +1429,21 @@
 
                         <action type="if" condition="doDynamicAdapt">
                             <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptPeriodMs" duration_units="ms"/>
+                            <action type="if" condition="doDynamicFlash">
+                                <action type="assignment" variable="flashOn" value="1"/>
+                            </action> 
                         </action>     
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
-                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; !doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdaptOff"></transition>
                         <transition type="conditional" condition="doMovementNoise &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
                       </task_system_state>
 
                       <task_system_state tag="DynamicAdapt" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        
-                        <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptPeriodMs" duration_units="ms"/>
-
+                    
                         <action type="if" condition="doDynamicPhase">
                             <!-- <action type="assignment" variable="aGratingPhaseDeg" value="disc_rand(0,7) * 45"/> -->
                             <action type="assignment" variable="aGratingPhaseDeg" value="aGratingPhaseDeg + 180"/> 
@@ -1452,8 +1458,6 @@
                             </action>    
                         </action>
 
-                        <action type="report" message="**** $aGratingDirectionDeg"></action>  
-
                         <action type="if" condition="doGaussianMask">
                             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="adapterGrating_gaussian"></action>
                             <action type="play_dynamic_stimulus" stimulus="adapterGrating_gaussian" tag="start"></action>
@@ -1461,8 +1465,28 @@
                         <action type="if" condition="doEllipseMask">
                             <action tag="Queue Stimulus" type="queue_stimulus" stimulus="adapterGrating_ellipse"></action>
                             <action type="play_dynamic_stimulus" stimulus="adapterGrating_ellipse" tag="start"></action>
-                        </action>    
+                        </action>
+
+                        <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptPeriodMs" duration_units="ms"/>
                         <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" variable="flashOn" value="1"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; !doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdaptOff"></transition>
+                        <transition type="conditional" condition="doMovementNoise &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="DynamicAdaptOff" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adapterGrating_gaussian"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adapterGrating_ellipse"></action>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+
+                        <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptFlashOffMs" duration_units="ms"/>
+                        <action type="assignment" variable="flashOn" value="0"/>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
@@ -1480,6 +1504,9 @@
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
                         <transition type="conditional" condition="abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; !doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; doDynamicFlash &amp;&amp; !flashOn &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; doDynamicFlash &amp;&amp; flashOn &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdaptOff"></transition>
                       </task_system_state>
 
                       <task_system_state tag="WaitForInitiate" interruptible="YES">
