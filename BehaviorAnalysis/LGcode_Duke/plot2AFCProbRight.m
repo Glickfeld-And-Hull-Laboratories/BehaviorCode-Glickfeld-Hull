@@ -20,7 +20,20 @@ for id = 1:size(dates,1)
         if ~isempty(mat_use{id})
             load(fullfile(behav_path,expt_mat(mat_use{id}).name))
         else 
-            error('Too many mat files')
+            x = zeros(1,size(expt_mat,1));
+            for im = 1:size(expt_mat,1)
+                load(fullfile(behav_path,expt_mat(im).name))
+                if isfield(input,'trialOutcomeCell')
+                    x(1,im) = 1;
+                end
+            end
+            if sum(x,2) == 1
+                load(fullfile(behav_path,expt_mat(find(x==1)).name))
+            elseif sum(x,2)>1
+                error('Too many mat files')
+            elseif sum(x,2)==0
+                error('No mat files')
+            end
         end
     else
         load(fullfile(behav_path,expt_mat.name))
