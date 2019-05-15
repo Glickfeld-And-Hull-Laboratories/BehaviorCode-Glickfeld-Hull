@@ -745,7 +745,7 @@
                 </action> 
               </action> 
 
-              <action type="if" condition="tDoRandStimOnTime">
+              <action type="if" condition="tDoRandStimOnTime &amp;&amp; !tBlock2TrialNumber">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingOnTimeStepN"/>
                 <action type="assignment" variable="tStimOneGratingOnTimeMs" value= "stimOneGratingOnTimeMs * pow(stimOneGratingOnTimeStepLog,tTempStim1)"/>
                 <action type="if" condition="matchStimOneParameters">
@@ -755,7 +755,9 @@
                   <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % stimTwoGratingOnTimeStepN"/>
                   <action type="assignment" variable="tStimTwoGratingOnTimeMs" value= "stimTwoGratingOnTimeMs * pow(stimTwoGratingOnTimeStepLog,tTempStim2)"/>
                 </action>
-                <action type="if" condition="doBlock2">
+              </action>  
+
+                <action type="if" condition="doBlock2 &amp;&amp; block2DoRandStimOnTime">
                   <action type="if" condition="tBlock2TrialNumber">
                     <action type="if" condition="!block2MatchB1VisStim">
                       <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % block2StimOneGratingOnTimeStepN"/>
@@ -770,7 +772,7 @@
                     </action>
                   </action>
                 </action> 
-              </action> 
+              
 
               <action type="if" condition="tDoRandCon">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingContrastStepN"/>
@@ -1549,7 +1551,7 @@
             <action type="report" message="StimTwo on"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimTwoOn + nStimOneFramesOn)" target="StimTwoOff"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimTwoOn + nStimTwoFramesOn)" target="StimTwoOff"></transition>
           </task_system_state>
 
           <task_system_state tag="StimTwoOff" interruptible="YES">
