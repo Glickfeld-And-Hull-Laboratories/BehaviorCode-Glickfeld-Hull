@@ -94,9 +94,9 @@ for ipow = 1:nPow
     subplot(n,n2,ipow)
     errorbar([ratios;ratios]', pct_right(:,:,ipow)',(pct_right(:,:,ipow)-squeeze(ci_right(1,:,:,ipow)))',(squeeze(ci_right(2,:,:,ipow))-pct_right(:,:,ipow))', '-o')
     set(gca,'Xscale','log')
-    title([mouse '- n = ' num2str(sum(totR(1,:,ipow),2)) ' Control, ' num2str(sum(totR(2,:,ipow),2)) ' LED = ' num2str(pows(ipow)) ' mW'])
+    title(['n = ' num2str(sum(totR(1,:,ipow),2)) ' Con, ' num2str(sum(totR(2,:,ipow),2)) ' LED = ' num2str(pows(ipow)) ' mW; ' num2str(length(datelist{ipow})) ' days'])
     hold on
-    text(0.01, .7, num2str(datelist{ipow}'))
+    %text(0.01, .7, num2str(datelist{ipow}'))
     xlabel('Contrast ratio (R/L)')
     ylabel('Fraction Right Choices')
 end
@@ -117,10 +117,11 @@ if nPow>1
     subplot(n,n2,tPow)
     errorbar([ratios;ratios]', pct_right_all(:,:)',(pct_right_all(:,:)-squeeze(ci_right_all(1,:,:)))',(squeeze(ci_right_all(2,:,:))-pct_right_all(:,:))', '-o')
     set(gca,'Xscale','log')
-    title([mouse '- n = ' num2str(sum(tot_all(1,:),2)) ' Control, ' num2str(sum(tot_all(2,:),2)) ' All LED powers'])
+    title([mouse '- n = ' num2str(sum(tot_all(1,:),2)) ' Con, ' num2str(sum(tot_all(2,:),2)) ' All LED powers'])
     xlabel('Contrast ratio (R/L)')
     ylabel('Fraction Right Choices')
 end
+suptitle(mouse)
 print(['\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\lindsey\Analysis\Behavior\2AFC\' mouse '_Summary.pdf'],'-dpdf','-bestfit'); 
 
 
