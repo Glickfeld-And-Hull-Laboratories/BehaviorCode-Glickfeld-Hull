@@ -882,7 +882,9 @@ axH  = subplot(spSz{:},10);
 hold on
 if isfield(input,'doContrastDiscrim')
   if input.doContrastDiscrim
-    if input.gratingContrastDiffSPO > 10
+    if input.doContrastDetect
+      differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
+    elseif input.gratingContrastDiffSPO > 10
       differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
     elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
       differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
@@ -910,7 +912,6 @@ else
     differenceRight =chop(celleqel2mat_padded(input.rightGratingContrast) ./ celleqel2mat_padded(input.leftGratingContrast),2);
   end
 end
-
 
 plotTrsB1 = differenceRight((correctIx|incorrectIx)&~block2Ix);
 nLevelsB1 = unique(plotTrsB1);
@@ -1006,7 +1007,6 @@ for kk=1:length(nLevelsNoGo)
   percentContCellNoGo{kk} = totalNTrialsValNoGo/totalNTrialsVal;
 end
 
-
 if min(differenceRight) < 0
     minX = min(differenceRight);
     maxX = max(differenceRight);
@@ -1042,6 +1042,7 @@ else
   vH = plot([0 0],[0 1]);
 end
 set(vH, 'Color', 'g');
+
 set(gca, 'XLim', [minX maxX], ...
          'YLim', [0 1]);
 if min(differenceRight) < 0
