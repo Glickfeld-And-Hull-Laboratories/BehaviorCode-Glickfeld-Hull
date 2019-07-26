@@ -25,6 +25,8 @@
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>      
       <variable tag="doRandDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doContingentAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>      
+      <variable tag="doAsynchronousAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Trial Structure"/>
@@ -110,6 +112,7 @@
 
       <variable tag="tDoContingentAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAsynchronousAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="nAdaptCond" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tDoRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoRandDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -298,7 +301,13 @@
             <action type="assignment" variable="nAdaptStimOnFrames" value="ceil((adaptStimOnTimeMs/1000)*frameRateHz)"></action>
             <action type="assignment" variable="nTestFrames" value="ceil((testStimOnTimeMs/1000)*frameRateHz)"></action>
 
-            <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % 3) == 0">
+            <action type="if" condition="doContingentAdapt &amp;&amp; !doAsynchronousAdapt | !doContingentAdapt &amp;&amp; doAsynchronousAdapt">
+              <action type="assignment" variable="nAdaptCond" value="2"></action>
+            </action>
+            <action type="if" condition="doContingentAdapt &amp;&amp; doAsynchronousAdapt">
+              <action type="assignment" variable="nAdaptCond" value="3"></action>
+            </action>
+            <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % nAdaptCond) == 0">
               <action type="assignment" variable="tAdaptGratingContrast" value="0"></action>
               <action type="assignment" variable="tAdaptGratingDirectionDeg" value="adaptGratingDirectionDeg"></action>
               <action type="assignment" variable="tAdaptMaskGratingContrast" value="0"></action>
@@ -307,19 +316,29 @@
               <action type="assignment" variable="tDoAsynchronousAdapt" value="0"></action>
             </action>
 
-            <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % 3) &gt; 0">
+            <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % nAdaptCond) &gt; 0">
               <action type="assignment" variable="tAdaptGratingContrast" value="adaptGratingContrast"></action>
               <action type="assignment" variable="tAdaptGratingDirectionDeg" value="adaptGratingDirectionDeg"></action>
               <action type="assignment" variable="tAdaptMaskGratingContrast" value="adaptMaskGratingContrast"></action>
               <action type="assignment" variable="tAdaptMaskGratingDirectionDeg" value="adaptGratingDirectionDeg+adaptMaskGratingDirectionDegDiff"></action>
-              <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % 3) == 1">
-                <action type="assignment" variable="tDoContingentAdapt" value="1"></action>
-                <action type="assignment" variable="tDoAsynchronousAdapt" value="0"></action>
-              </action>
-              <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % 3) == 2">
+              <action type="if" condition="nAdaptCond == 3">
+                <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % nAdaptCond) == 1">
+                  <action type="assignment" variable="tDoContingentAdapt" value="1"></action>
+                  <action type="assignment" variable="tDoAsynchronousAdapt" value="0"></action>
+                </action>
+                <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % nAdaptCond) == 2">
+                  <action type="assignment" variable="tDoContingentAdapt" value="0"></action>
+                  <action type="assignment" variable="tDoAsynchronousAdapt" value="1"></action>
+                </action>
+               </action> 
+               <action type="if" condition="nAdaptCond == 2 &amp;&amp; doAsynchronousAdapt">
                 <action type="assignment" variable="tDoContingentAdapt" value="0"></action>
                 <action type="assignment" variable="tDoAsynchronousAdapt" value="1"></action>
-              </action>
+               </action>
+               <action type="if" condition="nAdaptCond == 2 &amp;&amp; doContingentAdapt">
+                <action type="assignment" variable="tDoContingentAdapt" value="1"></action>
+                <action type="assignment" variable="tDoAsynchronousAdapt" value="0"></action>
+               </action>
             </action>
 
             <action type="assignment" variable="tDoRandCon" value="doRandCon"></action>
