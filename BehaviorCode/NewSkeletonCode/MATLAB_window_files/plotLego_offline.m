@@ -91,7 +91,7 @@ juiceTimesMsV = cellfun(@sum, input.juiceTimesMsCell);
 juiceTimesMsV(juiceTimesMsV==0) = NaN;
 
 % stimulus str            
-stimStr = strcat(mat2str(input.gratingHeightDeg), ' x ', mat2str(input.gratingWidthDeg), ' deg, ', ...
+stimStr = strcat(mat2str(input.gratingMaxDiameterDeg), ' deg, ', ...
     num2str(input.gratingSpatialFreqCPD), ' cpd, ', mat2str(input.gratingEccentricityDeg), ' deg');
 
 if input.gratingSpeedDPS > 0,

@@ -429,16 +429,16 @@
   <sounds tag="Sounds">
     <sound tag="stimOneSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tStimOneSoundAmplitude"></sound>
     <sound tag="stimTwoSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="tStimTwoSoundAmplitude"></sound>
-    <sound tag="stimOneSound1" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/2khz_1sec.wav" amplitude="tStimOneSound1Amplitude"></sound>
-    <sound tag="stimTwoSound1" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/2khz_1sec.wav" amplitude="tStimTwoSound1Amplitude"></sound>
+    <sound tag="stimOneSound1" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/1khz_1sec.wav" amplitude="tStimOneSound1Amplitude"></sound>
+    <sound tag="stimTwoSound1" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/1khz_1sec.wav" amplitude="tStimTwoSound1Amplitude"></sound>
     <sound tag="stimOneSound2" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5khz_1sec.wav" amplitude="tStimOneSound2Amplitude"></sound>
     <sound tag="stimTwoSound2" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5khz_1sec.wav" amplitude="tStimTwoSound2Amplitude"></sound>
     <sound tag="stimOneSound3" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10khz_1sec.wav" amplitude="tStimOneSound3Amplitude"></sound>
     <sound tag="stimTwoSound3" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10khz_1sec.wav" amplitude="tStimTwoSound3Amplitude"></sound>
     <sound tag="stimOneSound4" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/15khz_1sec.wav" amplitude="tStimOneSound4Amplitude"></sound>
     <sound tag="stimTwoSound4" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/15khz_1sec.wav" amplitude="tStimTwoSound4Amplitude"></sound>
-    <sound tag="stimOneSound5" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/18khz_1sec.wav" amplitude="tStimOneSound5Amplitude"></sound>
-    <sound tag="stimTwoSound5" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/18khz_1sec.wav" amplitude="tStimTwoSound5Amplitude"></sound>
+    <sound tag="stimOneSound5" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/20khz_1sec.wav" amplitude="tStimOneSound5Amplitude"></sound>
+    <sound tag="stimTwoSound5" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/20khz_1sec.wav" amplitude="tStimTwoSound5Amplitude"></sound>
 
   </sounds>
   <stimuli tag="Stimuli">
@@ -745,7 +745,7 @@
                 </action> 
               </action> 
 
-              <action type="if" condition="tDoRandStimOnTime">
+              <action type="if" condition="tDoRandStimOnTime &amp;&amp; !tBlock2TrialNumber">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingOnTimeStepN"/>
                 <action type="assignment" variable="tStimOneGratingOnTimeMs" value= "stimOneGratingOnTimeMs * pow(stimOneGratingOnTimeStepLog,tTempStim1)"/>
                 <action type="if" condition="matchStimOneParameters">
@@ -755,7 +755,9 @@
                   <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % stimTwoGratingOnTimeStepN"/>
                   <action type="assignment" variable="tStimTwoGratingOnTimeMs" value= "stimTwoGratingOnTimeMs * pow(stimTwoGratingOnTimeStepLog,tTempStim2)"/>
                 </action>
-                <action type="if" condition="doBlock2">
+              </action>  
+
+                <action type="if" condition="doBlock2 &amp;&amp; block2DoRandStimOnTime">
                   <action type="if" condition="tBlock2TrialNumber">
                     <action type="if" condition="!block2MatchB1VisStim">
                       <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % block2StimOneGratingOnTimeStepN"/>
@@ -770,7 +772,7 @@
                     </action>
                   </action>
                 </action> 
-              </action> 
+              
 
               <action type="if" condition="tDoRandCon">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingContrastStepN"/>
@@ -1549,7 +1551,7 @@
             <action type="report" message="StimTwo on"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimTwoOn + nStimOneFramesOn)" target="StimTwoOff"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimTwoOn + nStimTwoFramesOn)" target="StimTwoOff"></transition>
           </task_system_state>
 
           <task_system_state tag="StimTwoOff" interruptible="YES">

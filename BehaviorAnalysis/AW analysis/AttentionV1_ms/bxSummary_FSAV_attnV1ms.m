@@ -1,8 +1,8 @@
 % run eaMsBxSummary_attnV1ms and check bxParams_FSAV before starting
-
 %% load data
 clear all
 close all
+useRandSeed = true;
 rc = behavConstsAV;
 exptSummaryDir = fullfile(rc.ashley,...
     'Manuscripts','Attention V1','Mouse Info.xlsx');
@@ -20,6 +20,12 @@ exMsInd = find(strcmp(ms2analyze,exampleMouse));
 bxParams_FSAV_attnV1ms
 
 doPlot = true;
+
+if useRandSeed
+    load(fullfile(fnout,'bxStats'))
+    rng(bxStats.randGeneratorSeed);
+end
+
 %% compile data
 
 trainRew = strcmp(exptSummaryInfo.TrainingType,'Reward');
@@ -777,7 +783,7 @@ for im = 1:nMice
     
     visRT = cat(1,visRT,cat(2,msHR(im).av(visualTrials).cue(valid).RT, ...
             msHR(im).av(visualTrials).cue(invalid).RT));
-    audRT = cat(1,visRT,cat(2,msHR(im).av(auditoryTrials).cue(valid).RT, ...
+    audRT = cat(1,audRT,cat(2,msHR(im).av(auditoryTrials).cue(valid).RT, ...
             msHR(im).av(auditoryTrials).cue(invalid).RT));
         
 %     valVisRTLoHiDiff = cat(1,valVisRTLoHiDiff,...
@@ -789,6 +795,7 @@ for im = 1:nMice
 end
 
 bxStats = struct;
+bxStats.randGeneratorSeed = rng;
 bxStats.nTrialsPerSessionRange = [min(cell2mat(nTrialsPerExpt)),...
     max(cell2mat(nTrialsPerExpt))];
 
@@ -830,15 +837,15 @@ fprintf('HR Diff Range: %s-%s\n',...
 fprintf('Mean HR Hard Trials Diff/Err: %s/%s\n',...
     num2str(mean(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd),2)),...
     num2str(ste(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd),2)))
-fprintf('HR Hard Trials Diff Range: %s-%s\n',...
-    num2str(min(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd))),...
-    num2str(max(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd))))
+% fprintf('HR Hard Trials Diff Range: %s-%s\n',...
+%     num2str(min(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd))),...
+%     num2str(max(bxStats.allMatchedLoHiHRDiff(1,bxStats.attnMiceInd))))
 fprintf('Mean HR Easy Trials Diff/Err: %s/%s\n',...
     num2str(mean(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd),2)),...
     num2str(ste(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd),2)))
-fprintf('HR Easy Trials Diff Range: %s-%s\n',...
-    num2str(min(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd))),...
-    num2str(max(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd))))
+% fprintf('HR Easy Trials Diff Range: %s-%s\n',...
+%     num2str(min(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd))),...
+%     num2str(max(bxStats.allMatchedLoHiHRDiff(2,bxStats.attnMiceInd))))
 
 bxStats.av(visualTrials).matchedHRDiff = visHR(:,valid) - visHR(:,invalid);
 bxStats.av(auditoryTrials).matchedHRDiff = audHR(:,valid) - audHR(:,invalid);
@@ -857,8 +864,29 @@ fprintf('Mean Auditory HR Diff Range: %s/%s\n',...
     num2str(max(bxStats.av(auditoryTrials).matchedHRDiff(bxStats.attnMiceInd))))
 
 bxStats.av(visualTrials).RTdiff = visRT(:,valid) - visRT(:,invalid);
+[~,bxStats.av(visualTrials).RTdiffTest] = ttest(visRT(bxStats.attnMiceInd,valid),...
+    visRT(bxStats.attnMiceInd,invalid),'tail','right');
 bxStats.av(auditoryTrials).RTdiff = audRT(:,valid) - audRT(:,invalid);
-% bxStats.av(visualTrials).validHiLoRTdiff
+[~,bxStats.av(auditoryTrials).RTdiffTest] = ttest(audRT(bxStats.attnMiceInd,valid),...
+    audRT(bxStats.attnMiceInd,invalid),'tail','right');
+bxStats.RTdiffAV = visRT(:,valid) - audRT(:,valid);
+[~,bxStats.RTdiffAVTest] = ttest(visRT(bxStats.attnMiceInd,valid),...
+    audRT(bxStats.attnMiceInd,valid),'tail','right');
+
+fprintf('Mean Visual RT Diff Mean/Err: %s/%s; p=%s\n',...
+    num2str(mean(bxStats.av(visualTrials).RTdiff(bxStats.attnMiceInd),1)),...
+    num2str(ste(bxStats.av(visualTrials).RTdiff(bxStats.attnMiceInd),1)),...
+    num2str(round(bxStats.av(visualTrials).RTdiffTest,2,'significant')))
+fprintf('Mean Auditory RT Diff Mean/Err: %s/%s; p=%s\n',...
+    num2str(mean(bxStats.av(auditoryTrials).RTdiff(bxStats.attnMiceInd),1)),...
+    num2str(ste(bxStats.av(auditoryTrials).RTdiff(bxStats.attnMiceInd),1)),...
+    num2str(round(bxStats.av(auditoryTrials).RTdiffTest,2,'significant')))
+fprintf('Mean Vis-Aud RT Diff Mean/Err: %s/%s; p=%s\n',...
+    num2str(mean(bxStats.RTdiffAV(bxStats.attnMiceInd),1)),...
+    num2str(ste(bxStats.RTdiffAV(bxStats.attnMiceInd),1)),...
+    num2str(round(bxStats.RTdiffAVTest,2,'significant')))
+
+save(fullfile(fnout,'bxStats'),'bxStats')
 
 %%
 
@@ -1063,7 +1091,7 @@ print(fullfile(fnout,'matchedHR_allTrials_allMice'),'-dpdf','-fillpage')
 
 %false alarm and lapse rate
 FAR_LR_RT_fig = figure;
-subplot 421
+subplot 521
 FAR = nan(nMice,2);
 for im = 1:nMice
     x = 1:2;
@@ -1083,7 +1111,7 @@ errorbar(x,y,yerr,'k.')
 figXAxis([],'',[0 3],x,{'Vis';'Aud'})
 figYAxis([],'FA Rate',FAR_lim,FAR_label,FAR_label)
 figAxForm
-subplot 422
+subplot 522
 LR = nan(nMice,2);
 for im = 1:nMice
     x = 1:2;
@@ -1106,8 +1134,9 @@ figYAxis([],'Lapse Rate',FAR_lim,FAR_label,FAR_label)
 figAxForm
 
 %reaction time
+RTanovaTestAV = nan(1,2);
 for iav = 1:2
-    subplot(4,2,iav+2)
+    subplot(5,2,iav+2)
     RT = nan(sum(attnMiceInd),2);
     for im = 1:nMice
         if ~attnMiceInd(im)
@@ -1133,7 +1162,7 @@ for iav = 1:2
     figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
     figAxForm
     
-    subplot(4,2,iav+4)
+    subplot(5,2,iav+4)
     RT = nan(sum(attnMiceInd),nBins);
     RTtargets = nan(nMice,nBins);
     for im = 1:nMice
@@ -1157,8 +1186,9 @@ for iav = 1:2
         end
     end
     p = anova1(RT);
+    RTanovaTestAV(iav) = p;
     figure(FAR_LR_RT_fig)
-    subplot(4,2,iav+4)
+    subplot(5,2,iav+4)
     if iav == 1
         title(sprintf('Visual Trials, ANOVA p=%s',num2str(round(p,2,'significant'))))
         ax = gca;
@@ -1175,7 +1205,7 @@ for iav = 1:2
     end
     figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
     figAxForm
-    subplot(4,2,iav+6)
+    subplot(5,2,iav+6)
     y = nanmean(RT,1);
     yerr = ste(RT,1);
     x = nanmean(RTtargets,1);
@@ -1199,6 +1229,25 @@ for iav = 1:2
     figAxForm
     
 end
+subplot 529
+RT = nan(sum(attnMiceInd),2);
+for im = 1:nMice
+    if ~attnMiceInd(im)
+        continue
+    end
+    for iav = 1:2
+        RT(im,iav) = msHR(im).av(iav).cue(valid).RT;
+    end
+    hold on
+    plot(1:2,RT(im,:),'k-');
+end
+y = mean(RT,1);
+yerr = ste(RT,1);
+errorbar(1:2,y,yerr,'k')
+figXAxis([],'',[0 3],1:2,{'Vis';'Aud'})
+figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
+figAxForm
+
 print(fullfile(fnout,'FAR_LR_RT_allMice'),'-dpdf','-fillpage')
 
 % reward vs. no reward
@@ -1341,7 +1390,15 @@ if doPlot
     end
     print(fullfile(fnout,'compareTrainingTypes'),'-dpdf','-fillpage')
 end
+
+%% add some stats to structure
+bxStats.av(visualTrials).RTanova = RTanovaTestAV(visualTrials);
+bxStats.av(auditoryTrials).RTanova = RTanovaTestAV(auditoryTrials);
+
+save(fullfile(fnout,'bxStats'),'bxStats')
 %% example mouse
+sessionAttnFig = figure;
+[nSessRows,nSessCols] = optimizeSubplotDim(nMice);
 for im = 1:nMice
     mouseName = ms2analyze{im};
     fn = fullfile(rc.ashleyAnalysis,mouseName,'behavior');
@@ -1374,7 +1431,7 @@ for im = 1:nMice
 
                 subplot(4,2,iav)
                 hold on
-                h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'o-');
+                h = errorbar(x,y,ylerr,yuerr,xerr,xerr,'.');
                 h.Color = cueColor{icue};
                 h.LineWidth = 1;
                 h.MarkerFaceColor = [1 1 1];
@@ -1475,5 +1532,20 @@ for im = 1:nMice
         figAxForm
         title('All Matched Trials')
         print(fullfile(fnout,['bxSummary_exampleMouse_' ms2analyze{im}]),'-dpdf','-fillpage')
+        
+        figure(sessionAttnFig)
+        subplot(nSessRows,nSessCols,im)
+        h = plot(x,y,'k.');
+        hold on
+        h = errorbar(nanmean(x(ind)),nanmean(y(ind)),...
+            ste(y(ind),2),ste(y(ind),2),ste(x(ind),2),ste(x(ind),2),'k.');
+        h.LineWidth = 1;
+        plot(HR_lim,HR_lim,'k--')
+        figXAxis([],'Valid Hit Rate (%)',HR_lim,HR_label,HR_label)
+        figYAxis([],'Invalid Hit Rate (%)',HR_lim,HR_label,HR_label)
+        figAxForm
+        title(ms2analyze{im})
     end
 end
+figure(sessionAttnFig)
+print(fullfile(fnout,'bxSummary_sessionAttn_allMice'),'-dpdf','-fillpage')

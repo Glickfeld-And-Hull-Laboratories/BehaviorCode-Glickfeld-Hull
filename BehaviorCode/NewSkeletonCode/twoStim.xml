@@ -12,7 +12,9 @@
               ws_durationUS="speedIntervalUS"
               wheel_speed="wheelSpeed"
               doCB="doCerebellarStim"
+              trial_laser_powerMw="tTrialLaserPowerMw"
               quadrature="quadrature"/>
+
     <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
@@ -365,6 +367,8 @@
       <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="laserDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="laserDurationMS" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="tBlock2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tBlock2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tBlock2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -377,7 +381,8 @@
     <variable tag="mwStimOneOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     <variable tag="mwStimOneOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     <variable tag="mwStimTwoOnMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-    <variable tag="mwStimTwoOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>    
+    <variable tag="mwStimTwoOffMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+    <variable tag="predictOutputUs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>    
 
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tNStimAccepted2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -532,6 +537,8 @@
             <action type="if" condition="!doBlock2">
               <action type="assignment" variable="tBlock2TrialNumber" value="0"/>         
             </action>
+
+            <action type="report" message="tBlock2TrialNumber is $tBlock2TrialNumber"/>
 
             <!-- set default variables -->
             <action type="assignment" variable="tISITimeMs" value="isiTimeMs"></action>
@@ -705,6 +712,7 @@
                   </action>
                 </action> 
               </action> 
+
 
               <action type="if" condition="tDoRandStimOnTime">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingOnTimeStepN"/>
@@ -1148,7 +1156,60 @@
                   </action>
                 </action>
               </action>
-            </action>     
+
+              <action type="if" condition="tDoRandCon &amp;&amp; tDoRandDiameter">
+                <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % (stimOneGratingContrastStepN * stimOneGratingDiameterStepN)"/>
+                <action type="if" condition="tTempStim1 &lt; stimOneGratingContrastStepN">
+                  <action type="assignment" variable="tStimOneGratingContrast" value= "stimOneGratingContrast * pow(stimOneGratingContrastSPO,tTempStim1)"/>
+                  <action type="assignment" variable="tStimOneGratingDiameterDeg" value= "stimOneGratingDiameterDeg"/>
+                </action>
+                <action type="if" condition="tTempStim1 &gt;= stimOneGratingContrastStepN">
+                  <action type="assignment" variable="tStimOneGratingContrast" value= "stimOneGratingContrast* pow(stimOneGratingContrastSPO, ((tTempStim1) % stimOneGratingContrastStepN))"/>
+                  <action type="assignment" variable="tStimOneGratingDiameterDeg" value= "tStimOneGratingDiameterDeg * pow(stimOneGratingDiameterSPO, (floor(tTempStim1 / stimOneGratingDiameterStepN)))"/>
+                </action>
+                <action type="if" condition="matchStimOneParameters">
+                  <action type="assignment" variable="tStimTwoGratingContrast" value= "tStimOneGratingContrast"/>
+                  <action type="assignment" variable="tStimTwoGratingDiameterDeg" value= "tStimOneGratingDiameterDeg"/>
+                </action>
+
+
+                <!--
+                <action type="if" condition="!matchStimOneParameters">
+                  <action type="assignment" variable="tTempStim2" value= "tStimulusNumber % (stimTwoGratingDirectionStepN * isiTimeN)"/>
+                  <action type="if" condition="tTempStim2 &lt; stimTwoGratingDirectionStepN">
+                    <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))"/>
+                  </action>  
+                  <action type="if" condition="tTempStim2 &gt;= stimTwoGratingDirectionStepN">
+                    <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "stimTwoGratingDirectionDeg+ (stimTwoGratingDirectionStepDeg * ((tTempStim2) % stimTwoGratingDirectionStepN))"/>
+                  </action>  
+                </action>
+                <action type="if" condition="doBlock2">
+                  <action type="if" condition="tBlock2TrialNumber">
+                    <action type="if" condition="!block2MatchB1VisStim">
+                      <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % (block2StimOneGratingDirectionStepN * block2ISITimeN)"/>
+                      <action type="if" condition="tTempStim1 &lt; block2StimOneGratingDirectionStepN">
+                        <action type="assignment" variable="tStimOneGratingDirectionDeg" value= "block2StimOneGratingDirectionDeg + (block2StimOneGratingDirectionStepDeg * (tTempStim1))"/>
+                        <action type="assignment" variable="tISITimeMs" value= "block2ISITimeMs"/>
+                      </action>
+                      <action type="if" condition="tTempStim1 &gt;= block2StimOneGratingDirectionStepN">
+                        <action type="assignment" variable="tStimOneGratingDirectionDeg" value= "block2StimOneGratingDirectionDeg+ (block2StimOneGratingDirectionStepDeg * ((tTempStim1) % block2StimOneGratingDirectionStepN))"/>
+                        <action type="assignment" variable="tISITimeMs" value= "block2ISITimeMs * pow(block2ISITimeSPO, (floor(tTempStim1 / block2StimOneGratingDirectionStepN)))"/>
+                      </action>
+                      <action type="if" condition="matchStimOneParameters">
+                        <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "tStimOneGratingDirectionDeg"/>
+                      </action>
+                      <action type="if" condition="!matchStimOneParameters">
+                        <action type="assignment" variable="tTempStim2" value= "tStimulusNumber % (block2StimTwoGratingDirectionStepN * block2ISITimeN)"/>
+                        <action type="if" condition="tTempStim2 &lt; block2StimTwoGratingDirectionStepN">
+                          <action type="assignment" variable="tStimTwoGratingDirectionDeg" value= "block2StimTwoGratingDirectionDeg + (block2StimTwoGratingDirectionStepDeg * (tTempStim2))"/>
+                        </action>
+                      </action> 
+                    </action>
+                  </action>
+                </action> -->
+              </action>
+            </action> 
+            
 
             <action type="if" condition="!tStimOneDoVisualStim">
               <action type="assignment" variable="tStimOneGratingContrast" value= "0"/>
@@ -1266,11 +1327,6 @@
               </action>
             </action>
 
-            <!-- if trialLaser, send params to controller -->
-            <action type="if" condition="tTrialLaserPowerMw > 0">
-              <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
-              <action type="assignment" tag="Send laser paramsto controller" variable="sendLaserParams" value="0"></action>
-            </action>
             
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
 
@@ -1286,14 +1342,47 @@
 			
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="Queue Visual Stimulus" condition="timerExpired(InterTrialTimer)" target="StimOneOn"></transition>
+
+
           </task_system_state>
+
+          
+                
                   
           <task_system_state tag="StimOneOn" interruptible="YES">
+            
+            <!-- if trialLaser, send params to controller -->
+            <action type="report" message="in stim on"/>
+            <action type="if" condition="tBlock2TrialNumber &amp;&amp; block2DoTrialLaser">
+              <action type="report" message="send laser params"></action>
+              <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
+              <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
+            </action>
+
+            <action type="if" condition="tBlock2TrialNumber &amp;&amp; block2DoTrialLaser">
+              <action type="assignment" tag="set trial laser power" variable="tTrialLaserPowerMw" value="tBlock2TrialLaserPowerMw"></action>
+              <action type="report" message="Block2 is on; tTrialLaserPowerMw is $tTrialLaserPowerMw"></action>
+            </action>  
+            <action type="if" condition="!tBlock2TrialNumber || !block2DoTrialLaser">
+              <action type="assignment" tag="set trial laser power" variable="tTrialLaserPowerMw" value="0"></action>
+            </action> 
+
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
-            <action type="assignment" variable="ntrials" value="ntrials + 1"/>
+            <action type="if" condition="tTrialLaserPowerMw > 0">
+                <action type="if" condition="optic_device == 'led' ">
+                    <action type="assignment" variable="laserTrigger" value="1"></action>
+                </action>
+                <action type="if" condition="optic_device != 'led' ">
+                    <action type="assignment" variable="laserTrigger" value="1"></action>
+                </action>
+                <action type="assignment" variable="laserDuration" value="laserDurationMS"/>
+                <action type="report" message="-----Laser Duration is to $laserDuration"/>
+              <action type="report" message="********* SENDING LASER TRIGGER *********"/>
+              <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
+            </action>
 
-            <action type="start_timer" timer="stimTimer" timebase="" duration="tStimOneGratingOnTimeMs" duration_units="ms"/>
+            <action type="assignment" variable="ntrials" value="ntrials + 1"/>
 
           	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="stimOne"></action> 
           	<action type="play_dynamic_stimulus" stimulus="stimOne" tag="StimOn"></action>
@@ -1306,7 +1395,9 @@
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
               <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
             </action>
-            <action type="update_stimulus_display" tag="justincase"></action>
+            <action type="update_stimulus_display" tag="justincase" predicted_output_time="predictOutputUs"></action>
+            <action type="start_timer" timer="stimTimer" timebase="" duration="tStimOneGratingOnTimeMs" duration_units="ms"/>
+
             <action type="play_sound" sound="stimOneSound"/>
             <action type="assignment" variable="mwStimOneOnMs" value="now()/1000" />
             <action type="if" condition="sendElectrophysSync">
@@ -1377,7 +1468,7 @@
           <task_system_state tag="StimTwoOff" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="if" condition="sendPClampSync">
-              <action type="start_timer" timer="stimOffTimer" timebase="" duration="tempMs+1200" duration_units="ms"/>
+              <action type="start_timer" timer="stimOffTimer" timebase="" duration="tempMs+500" duration_units="ms"/>
               <action type="report" message="time is $tempMs"/>
             </action>
             <action type="if" condition="!sendPClampSync">
@@ -1400,7 +1491,28 @@
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Queue Visual Stimulus" condition="timerExpired(stimOffTimer)" target="EndTrial"></transition>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="!sendPClampSync &amp;&amp; timerExpired(stimOffTimer)" target="EndTrial"></transition>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="sendPClampSync &amp;&amp; timerExpired(stimOffTimer)" target="LaserOff"></transition>
+          </task_system_state>
+
+          <task_system_state tag="LaserOff" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+            <action type="if" condition="laserTrigger"> 
+              <action type="if" condition="optic_device == 'led' ">
+                  <action type="assignment" variable="laserTrigger" value="0"></action>
+                  <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+              </action>
+              <action type="if" condition="optic_device != 'led' ">
+                  <action type="assignment" variable="laserTrigger" value="0"></action>
+              </action>
+              <action type="report" message="********* Turning off LASER TRIGGER *********"/>
+            </action>
+
+            <action type="start_timer" timer="laserOffTimer" timebase="" duration="700" duration_units="ms"/>
+
+          <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="timerExpired(laserOffTimer)" target="EndTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrial" interruptible="YES">
@@ -1466,6 +1578,10 @@
 
         </task_system>
       </trial>
+      <action type="assignment" tag="" variable="laserTrigger" value="0"/>
+      <action type="if" condition="optic_device == 'led' ">
+          <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>
+      </action>
       <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
       <action type="dequeue_stimulus" stimulus="stimTwo"></action>
       <action tag="Update Stimulus" type="update_stimulus_display"></action>

@@ -40,12 +40,19 @@
         <variable tag="invertDirection" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doOnlyMaxDiff" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="doEasyStart" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Control"/>
+        <variable tag="doEasyStartWithFeedback" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Control"/>
         <variable tag="easyStartTrialNumber" scope="global" logging="when_changed" default_value="20" type="integer" persistant="1" groups="Task Control"/>
 
         <variable tag="adaptPeriodMs" scope="global" logging="when_changed" default_value="4000" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptDirectionStepDeg" scope="global" logging="when_changed" default_value="90" type="float" persistant="1" groups="Adapt Control"/>
+        <variable tag="doDynamicAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="doDynamicPhase" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="doDynamicOri" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="doDynamicFlash" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
+        <variable tag="dynAdaptPeriodMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Adapt Control"/>
+        <variable tag="dynAdaptFlashOffMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Adapt Control"/>
         <variable tag="doMovementNoise" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Adapt Control"/>
         <variable tag="adaptZeroConPer80" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Adapt Control"/>
 
@@ -116,6 +123,7 @@
       </folder>
       <folder tag="Stimuli">
         <variable tag="startSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
+        <variable tag="targetSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
         <variable tag="goSoundVolume" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
         <variable tag="correctSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
         <variable tag="incorrectSoundVolume" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sounds"/>
@@ -136,6 +144,8 @@
         <variable tag="minDiscrimTarget" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="doRandContrast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Visual Stimuli"/>
         <variable tag="nRandContrast" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Visual Stimuli"/>
+        <variable tag="conDiff" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Trial Structure"/>
+        <variable tag="doLogCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Trial Structure"/>
 
         <variable tag="gratingMaxDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Visual Stimuli"/>
         <variable tag="gratingDiameterSPO" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Visual Stimuli"/>
@@ -290,7 +300,12 @@
         <variable tag="tGratingDirectionStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="aGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tAGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="aGratingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tempRand" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="flashOn" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
 
+        <variable tag="tDoFeedbackMotion" scope="global" logging="when_changed" default_value="0" type="boolean"/>
         <variable tag="tRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
 
         <variable tag="isNotTooFast" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -366,6 +381,7 @@
         </variables>
         <sounds tag="Sounds">
           <sound tag="startSound" type="wav_file" path="wavs/1000Hz_pt3s.wav" amplitude="startSoundVolume"></sound>
+          <sound tag="targetSound" type="wav_file" path="wavs/1000Hz_pt3s.wav" amplitude="targetSoundVolume"></sound>
           <sound tag="goSound" type="wav_file" path="wavs/1000Hz_pt3s.wav" amplitude="goSoundVolume"></sound>
           <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav" amplitude="correctSoundVolume"></sound>
           <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav" amplitude="incorrectSoundVolume"></sound>
@@ -395,7 +411,7 @@
               alpha_multiplier="dGratingContrast"></stimulus>
           </list_replicator>
           <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="mask">
-            <stimulus type="drifting_grating" tag="adapterGrating_$mask"  direction="0" starting_phase="tGratingStartingPhaseDeg"
+            <stimulus type="drifting_grating" tag="adapterGrating_$mask"  direction="0" starting_phase="aGratingPhaseDeg"
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingSpeedDPS" 
               grating_type="sinusoid" mask="$mask" std_dev="0.3" mean="0.1" 
@@ -460,6 +476,7 @@
                           <action type="assignment" tag="set counter2 to 0" variable="counter2" value="0"/>
                           <action type="assignment" tag="set tCounter2 to 0" variable="tCounter2" value="0"/>
                           <action type="assignment" tag="set ttCounter2 to 0" variable="ttCounter2" value="0"/>
+                          <action type="assignment" tag="set tTrialLaserPowerMw_trigger to 0" variable="tTrialLaserPowerMw_trigger" value="0"/>
                           <action type="if" condition="!doOriDiscrim">
                             <action type="assignment" tag="set quadrature back to 0" variable="quadrature" value="0"/>
                           </action>  
@@ -1053,10 +1070,15 @@
     </action>
 </action>
 <!-- added preblock where all early trials are easy -->
+<action type="assignment" variable="tDoFeedbackMotion" value="doFeedbackMotion"/> 
 <action type="if" condition="tNTrialsCompleted &lt; easyStartTrialNumber &amp;&amp; doEasyStart">
     <action type="assignment" variable="tStimulusNumber" value="0"/>
     <action type="assignment" variable="tStimulusNumber2" value="0"/>
-</action>    
+    <action type="if" condition="doEasyStartWithFeedback">
+        <action type="assignment" variable="tDoFeedbackMotion" value="1"/>
+    </action>     
+</action> 
+
 
 <action type="report" message="tLeftTrial is $tLeftTrial!!!!"></action>
 <!-- error checking                -->
@@ -1140,8 +1162,14 @@
                      <action type="assignment" variable="dGratingDiameterDeg" value="tGratingDiameterDeg / dGratingDiameterDiff"></action>
 
                      <action type="if" condition="doRandContrast">
-                        <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
-                        <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                        <action type="if" condition="doLogCon">
+                            <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                            <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                        </action>
+                        <action type="if" condition="!doLogCon">
+                            <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast + (disc_rand(-1,1)*conDiff)"/>
+                            <action type="assignment" tag="" variable="dGratingContrast" value="gratingMaxContrast + (disc_rand(-1,1)*conDiff)"/>
+                        </action>    
                      </action>
 
                      <action type="if" condition="!doRandContrast">
@@ -1168,7 +1196,12 @@
                         <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg"/>
                     </action>
                     <action type="if" condition="doRandContrast">
-                        <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                        <action type="if" condition="doLogCon">
+                            <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))"/>
+                        </action>
+                        <action type="if" condition="!doLogCon">
+                            <action type="assignment" tag="" variable="tGratingContrast" value="gratingMaxContrast + (disc_rand(-1,1)*conDiff)"/>
+                        </action>
                      </action>
                      <action type="if" condition="doRandSize">
                         <action type="assignment" tag="" variable="tGratingDiameterDeg" value="gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))"/>
@@ -1183,7 +1216,9 @@
                         <action type="assignment" tag="" variable="aGratingContrast" value="0"/>
                     </action>
                     <action type="assignment" tag="" variable="tBlock2TrialNumber" value="disc_rand(0,1)"/>
-                    <action type="assignment" tag="" variable="aGratingDirectionDeg" value="adaptDirectionDeg+ (tBlock2TrialNumber*adaptDirectionStepDeg)"/>
+                    <action type="assignment" tag="" variable="tAGratingDirectionDeg" value="adaptDirectionDeg+ (tBlock2TrialNumber*adaptDirectionStepDeg)"/>
+                    <action type="assignment" tag="" variable="aGratingDirectionDeg" value="tAGratingDirectionDeg"/>
+                    <action type="assignment" tag="" variable="aGratingPhaseDeg" value="0"/>
                 </action> 
                 <action type="if" condition="!doAdapt">
                     <action type="assignment" tag="" variable="aGratingContrast" value="0"/>
@@ -1379,6 +1414,7 @@
                       <task_system_state tag="AdaptOn" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="report" message="**** adapting for $adaptPeriodMs ms"></action>
+                        <action type="report" message="**** $aGratingDirectionDeg"></action>  
                         <action type="start_timer" timer="adaptTimer" timebase="" duration="adaptPeriodMs" duration_units="ms"/> 
 
                         <action type="if" condition="doGaussianMask">
@@ -1392,8 +1428,70 @@
                         <action tag="Update Display" type="update_stimulus_display"></action>
                         <action type="assignment" variable="adapterTimestampMs" value="now()/1000"/>
 
+                        <action type="if" condition="doDynamicAdapt">
+                            <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptPeriodMs" duration_units="ms"/>
+                            <action type="if" condition="doDynamicFlash">
+                                <action type="assignment" variable="flashOn" value="1"/>
+                            </action> 
+                        </action>     
+
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; !doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdaptOff"></transition>
+                        <transition type="conditional" condition="doMovementNoise &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="DynamicAdapt" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    
+                        <action type="if" condition="doDynamicPhase">
+                            <!-- <action type="assignment" variable="aGratingPhaseDeg" value="disc_rand(0,7) * 45"/> -->
+                            <action type="assignment" variable="aGratingPhaseDeg" value="aGratingPhaseDeg + 180"/> 
+                        </action>
+                        <action type="if" condition="doDynamicOri">
+                            <action type="assignment" variable="tempRand" value="disc_rand(0,15)"/>
+                            <action type="if" condition="tempRand &lt;= 7">
+                                <action type="assignment" variable="aGratingDirectionDeg" value="tempRand * 22.5"/>
+                            </action>
+                            <action type="if" condition="tempRand &gt; 7">
+                                <action type="assignment" variable="aGratingDirectionDeg" value="tAGratingDirectionDeg"/>
+                            </action>    
+                        </action>
+
+                        <action type="if" condition="doGaussianMask">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="adapterGrating_gaussian"></action>
+                            <action type="play_dynamic_stimulus" stimulus="adapterGrating_gaussian" tag="start"></action>
+                        </action> 
+                        <action type="if" condition="doEllipseMask">
+                            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="adapterGrating_ellipse"></action>
+                            <action type="play_dynamic_stimulus" stimulus="adapterGrating_ellipse" tag="start"></action>
+                        </action>
+
+                        <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptPeriodMs" duration_units="ms"/>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+                        <action type="assignment" variable="flashOn" value="1"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; !doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdaptOff"></transition>
+                        <transition type="conditional" condition="doMovementNoise &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
+                      </task_system_state>
+
+                      <task_system_state tag="DynamicAdaptOff" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adapterGrating_gaussian"></action>
+                        <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adapterGrating_ellipse"></action>
+                        <action tag="Update Display" type="update_stimulus_display"></action>
+
+                        <action type="start_timer" timer="dynAdaptTimer" timebase="" duration="dynAdaptFlashOffMs" duration_units="ms"/>
+                        <action type="assignment" variable="flashOn" value="0"/>
+
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
                         <transition type="conditional" condition="doMovementNoise &amp;&amp; abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
                       </task_system_state>
 
@@ -1407,6 +1505,9 @@
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="timer_expired" timer="adaptTimer" target="TrialStart"></transition>
                         <transition type="conditional" condition="abs(quadrature-tQuadrature) &gt; stationaryThreshold" target="MovementNoise"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; !doDynamicFlash &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; doDynamicFlash &amp;&amp; !flashOn &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdapt"></transition>
+                        <transition type="conditional" condition="doDynamicAdapt &amp;&amp; doDynamicFlash &amp;&amp; flashOn &amp;&amp; timerExpired(dynAdaptTimer)" target="DynamicAdaptOff"></transition>
                       </task_system_state>
 
                       <task_system_state tag="WaitForInitiate" interruptible="YES">
@@ -1454,6 +1555,7 @@
                           <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
                         </action>
                         <action type="report" message="*****-=STIMULI ON=-*****"></action>
+                        <action type="play_sound" sound="targetSound"/>
                         <action type="assignment" variable="stimulusOn" value="1"/>
                         <action type="assignment" tag="set stimIsOff to 0" variable="stimIsOff" value="0"/>
                         <action type="report" message="In Reaction Time for $reactionTimeMs ms "></action>
@@ -1539,7 +1641,7 @@
                           <action type="assignment" tag="track motion" variable="trackMotion" value="1000"/>
                         </action>
 
-                        <action type="if" condition="doFeedbackMotion==1">
+                        <action type="if" condition="tDoFeedbackMotion==1">
                           <action type="if" condition="doContrastDiscrim || doContrastDetect || doSizeDiscrim">  
                             <action type="if" condition="(tLeftTrial &amp;&amp; trackMotion &lt;= gratingTargetEccentricity) || (tLeftTrial == 0 &amp;&amp; trackMotion &gt;= gratingTargetEccentricity)">
                               <action type="assignment" tag="Move stimulus" variable="tGratingEccentricityDeg" value="trackMotion"/>
@@ -1644,7 +1746,7 @@
                       <task_system_state tag="Reward" interruptible="YES">
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
-                        <action type="if" condition="doFeedbackMotion==0">
+                        <action type="if" condition="tDoFeedbackMotion==0">
                         	<action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
                         	<action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
                             <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
@@ -1731,14 +1833,14 @@
                         </action>
 
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; doFeedbackMotion == 0" target="EndTrial"></transition>
+                        <transition type="conditional" condition="timerExpired(rewardTimerUs) &amp;&amp; tDoFeedbackMotion == 0" target="EndTrial"></transition>
                         <transition type="timer_expired" timer="stimTimer" target="EndTrial"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Incorrect" interruptible="YES">
                         <action_marker _unmoveable="1" tag="Actions"></action_marker>
                         <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action> 
-                        <action type="if" condition="doFeedbackMotion==0">
+                        <action type="if" condition="tDoFeedbackMotion==0">
                         	<action type="dequeue_stimulus" stimulus="targetGrating_gaussian"></action>
                         	<action type="dequeue_stimulus" stimulus="distractorGrating_gaussian"></action>
                             <action type="dequeue_stimulus" stimulus="targetGrating_ellipse"></action>
