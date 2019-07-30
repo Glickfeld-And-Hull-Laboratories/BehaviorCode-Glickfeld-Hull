@@ -23,34 +23,10 @@ end_date = end_date(end);
 
 for date = start_date:end_date
 load(mouse_dates{date});
-if ~isfield(input,'doDynamicAdapt')
-    input.doDynamicAdapt = 0;
-end
-if ~isfield(input,'doDynamicPhase')
-    input.doDynamicPhase = 0;
-end
-if ~isfield(input,'doDynamicOri')
-    input.doDynamicOri = 0;
-end
-if ~isfield(input,'doDynamicFlash')
-    input.doDynamicFlash = 0;
-end
-if ~isfield(input,'dynAdaptPeriodMs')
-    input.dynAdaptPeriodMs = 0;
-end
-if ~isfield(input,'dynAdaptFlashOffMs')
-    input.dynAdaptFlashOffMs = 0;
-end
 days_to_analyze{date-(start_date-1)} = input; %days_to_analyze is a cell array full of structures
 % days_to_analyze(date-(start_date-1)) = input;
-
 end
 % celleqel2mat_padded(days_to_analyze);
-
-
-
-
-
 
 days_to_analyze = days_to_analyze';
 input = days_to_analyze;  %just a name change

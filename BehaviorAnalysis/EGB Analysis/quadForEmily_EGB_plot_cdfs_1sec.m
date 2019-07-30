@@ -182,10 +182,10 @@ qVals_interest = qVals_final(:,find(qTimes_final==-4000):find(qTimes_final==4000
 figure
 plot(qTimes_interesting,qVals_interest)
 hold on
-title({'Sample Quadrature Trace'})
+title({'i1402 Quadrature Traces','7187 trials'})
 xlabel('Time (ms)')
 ylabel('Quadrature Position (ticks)')
-v = vline(0,'-k','Target Stim On')
+v = vline_EGB(0,'-k','Target Stim On')
 hold off
 
 %%
@@ -207,11 +207,11 @@ hold off
 
 %% Choose only trials with minimal movement during adapt period. Try threshold of 100 ticks sum abs diff? 
 
-qVals_pre = qVals_final(:,find(qTimes_final==-1400):find(qTimes_final==0));
+qVals_pre = qVals_final(:,find(qTimes_final==-4000):find(qTimes_final==0));
 qVals_pre_sum = nansum(abs(diff(qVals_pre,1,2)),2);
 
 qVals_sum = nansum(abs(diff(qVals_final,1,2)),2);
-qVals_idx = find(qVals_pre_sum<50);
+qVals_idx = find(qVals_pre_sum<100);
 qVals_final_idx = qVals_final(qVals_idx,:);
 
 % qTimes_interest = find(qTimes_final==-1400):find(qTimes_final==0);
@@ -219,25 +219,26 @@ qVals_final_idx = qVals_final(qVals_idx,:);
 
 qTimes_interest = find(qTimes_final==-4000):find(qTimes_final==4000);
 qTimes_interesting = [-4000:1:4000];
+qVals_interesting = qVals_final(:,find(qTimes_final==-4000):find(qTimes_final==4000));
 qVals_interest = qVals_final_idx(:,qTimes_interest);
 
 figure
 plot(qTimes_interesting,qVals_interest)
 hold on
 ylim([-400,300]);
-title({'Sample Quadrature Trace'})
+title({'i1402 Quadrature Traces', 'Only Trials with <100 ticks movement in 4s before Target Stim On', 'n=6875 trials'})
 xlabel('Time (ms)')
 ylabel('Quadrature Position (ticks)')
-v = vline(0,'-k','Target Stim On')
+v = vline_EGB(0,'-k','Target Stim On')
 hold off
 
 figure
-plot(qTimes_interesting,qVals_pre)
+plot(qTimes_interesting,qVals_interesting)
 hold on
-title({'Sample Quadrature Trace'})
+title({'i1402 Quadrature Traces', 'n=7187 trials'})
 xlabel('Time (ms)')
 ylabel('Quadrature Position (ticks)')
-v = vline(0,'-k','Target Stim On')
+v = vline_EGB(0,'-k','Target Stim On')
 hold off
 
 %% Plot CDF for indexed qVals - movement QC

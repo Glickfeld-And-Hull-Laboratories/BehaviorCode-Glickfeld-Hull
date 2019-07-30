@@ -6,41 +6,51 @@
 for i = 1:length(input)
 Asuccesses = double(strcmp(input.trialOutcomeCell,'success'));
 end
+Asuccesses=Asuccesses(qVals_idx);
 
 for i = 1:length(input)
 Aincorrects = double(strcmp(input.trialOutcomeCell,'incorrect'));
 end
+Aincorrects=Aincorrects(qVals_idx);
 
 for i = 1:length(input)
 Aignores = double(strcmp(input.trialOutcomeCell,'ignore'));
 end
+Aignores=Aignores(qVals_idx);
 
 Aori = double(cell2mat(input.tGratingDirectionStart));
+Aori = Aori(qVals_idx);
+
 Alefttrials = double(cell2mat(input.tGratingDirectionStart));
+Alefttrials = Alefttrials(qVals_idx);
+
 NoAdapt = double(cell2mat(input.aGratingContrast));
+NoAdapt = NoAdapt(qVals_idx);
 NoAdapt = ~NoAdapt;
+
 Aadaptori = double(cell2mat(input.aGratingDirectionDeg)); 
+Aadaptori = Aadaptori(qVals_idx);
 
 A90Trials = Asuccesses(Aadaptori==90 & NoAdapt==0);
-A90Trials =A90Trials(A90_qVals_idx);
+% A90Trials =A90Trials(A90_qVals_idx);
 A90Oris = Aori(Aadaptori==90 & NoAdapt==0);
-A90Oris = A90Oris(A90_qVals_idx);
+% A90Oris = A90Oris(A90_qVals_idx);
 A90Ignores = Aignores(Aadaptori==90 & NoAdapt==0);
-numIgnores90 = sum(A90Ignores(A90_qVals_idx));
+numIgnores90 = sum(A90Ignores);
 
 A0Trials = Asuccesses(Aadaptori==0 & NoAdapt==0);
-A0Trials = A0Trials(A0_qVals_idx);
+% A0Trials = A0Trials(A0_qVals_idx);
 A0Oris = Aori(Aadaptori==0 & NoAdapt==0);
-A0Oris = A0Oris(A0_qVals_idx);
+% A0Oris = A0Oris(A0_qVals_idx);
 A0Ignores = (Aignores(Aadaptori==0 & NoAdapt==0));
-numIgnores0 = sum(A0Ignores(A0_qVals_idx));
+numIgnores0 = sum(A0Ignores);
 
 AnaTrials = Asuccesses(NoAdapt==1);
-AnaTrials = AnaTrials(Ana_qVals_idx);
+% AnaTrials = AnaTrials(Ana_qVals_idx);
 AnaOris = Aori(NoAdapt==1);
-AnaOris = AnaOris(Ana_qVals_idx);
+% AnaOris = AnaOris(Ana_qVals_idx);
 AnaIgnores = Aignores(NoAdapt==1);
-numIgnoresNA = sum(AnaIgnores(Ana_qVals_idx));
+numIgnoresNA = sum(AnaIgnores);
 
 Auniqueori = unique(Aori);
 
@@ -109,10 +119,10 @@ hold on
 ylim([0,1])
 errorbar(Auniqueori,A0pctL,A0CI(1,:),A0CI(2,:),'g','LineWidth',1.5)
 errorbar(Auniqueori,AnapctL,AnaCI(1,:),AnaCI(2,:),'b','LineWidth',1.5)
-title({'Psychometric Function per Adaptation Condition'; 'Paradigm: Flashing Adapt'; 'Subject: i1401'; 'n=4089 trials'})
+title({'Psychometric Function per Adaptation Condition'; 'Paradigm: Flashing Adapt'; 'Subject: i1402'; 'n=6672 trials'})
 xlabel('Target Orientation (degrees)')
 ylabel('% Left Response')
-legend('90 deg adapter, n=1457','0 deg adapter, n=1496','no adapter, n=1137')
+legend('90 deg adapter, n=2241','0 deg adapter, n=2253','no adapter, n=2178')
 hold off
 
 % idx = logical([1 1 1 1 0 0 1 1 1 1]); 
