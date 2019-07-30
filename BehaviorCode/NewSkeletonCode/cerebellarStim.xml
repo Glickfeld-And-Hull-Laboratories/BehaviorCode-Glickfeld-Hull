@@ -258,6 +258,7 @@
           <action type="assignment" tag="Clear stimulusOn" variable="soundstimulusOn" value="0"></action>
           <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action>
 
+          <action type="report" message="In ITI..."></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
 
           <transition type="conditional" tag="camera starts" condition="counter - tCounter > 0 &amp;&amp; DoCerebellarStim == 1" target="CheckCriteria"></transition>
@@ -303,12 +304,13 @@
               <action type="assignment" variable="MouseIsRunning" value="0"/>
             </action>
           </action>
+          <action type="report" message="Checking criteria- is mouse running?"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
 
             <transition type="conditional" tag="if passing criteria, move to Delay Stim" condition="DoStimulusReverse &amp;&amp; MouseIsRunning == 1 &amp;&amp; counter - tCounter >= runNFrames" target="ReverseDelay"></transition>
           <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="DoStimulusReverse &amp;&amp; MouseIsStill == 1 &amp;&amp; counter - tCounter >= stationaryNFrames" target="ReverseVStim"></transition>
-          <transition type="conditional" tag="if passing criteria, move to Delay Stim" condition="DoTactileStim &amp;&amp; MouseIsRunning == 1 &amp;&amp; counter - tCounter >= runNFrames" target="TactileStimDelay"></transition>
-          <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="DoTactileStim &amp;&amp; MouseIsStill == 1 &amp;&amp; counter - tCounter >= stationaryNFrames" target="TactileStimDelay"></transition>
+          <transition type="conditional" tag="if passing criteria, move to Delay Stim" condition="DoTactileStim &amp;&amp; MouseIsRunning == 0 &amp;&amp; counter - tCounter >= runNFrames" target="TactileStimDelay"></transition>
+          <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="DoTactileStim &amp;&amp; MouseIsStill == 0 &amp;&amp; counter - tCounter >= stationaryNFrames" target="TactileStimDelay"></transition>
 
             <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
               , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames" target="EndTrial" ></transition>
