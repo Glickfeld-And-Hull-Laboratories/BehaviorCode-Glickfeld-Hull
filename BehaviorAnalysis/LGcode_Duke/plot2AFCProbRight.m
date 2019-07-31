@@ -3,7 +3,7 @@ close all
 
 %%
 behav_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\Behavior\Data';
-mouse = 'i442';
+mouse = 'i443';
 ds= [mouse '_exptList'];
 eval(ds)
 doFit = 0;
@@ -14,7 +14,7 @@ fprintf([mouse '\n'])
 clear temp;
 good_exp = [];
 for id = 1:size(dates,1)
-    fprintf([num2str(dates(id,:)) '\n'])
+    fprintf([num2str(dates(id,:))])
     expt_mat = dir(fullfile(behav_path, ['data-' mouse '-' num2str(dates(id,:)) '-*']));
     if size(expt_mat,1) > 1
         if ~isempty(mat_use{id})
@@ -55,7 +55,12 @@ for id = 1:size(dates,1)
             temp(id).tTrialLaserPowerMw = double(input.block2TrialLaserPowerMw).*ones(size(celleqel2mat_padded(input.tTrialLaserPowerMw)));
             temp(id).date = dates(id,:).*ones(size(celleqel2mat_padded(input.tTrialLaserPowerMw)));
             good_exp = [good_exp id];
+            fprintf('- good\n')
+        else
+            fprintf('\n')
         end
+    else
+        fprintf('\n')
     end
 end
 
