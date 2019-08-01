@@ -269,7 +269,7 @@ else
   taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
       input.gratingMaxContrast, input.gratingContrastSPO, input.gratingMaxContrastDiff, input.gratingContrastDiffSPO);
 end
-        if doFeedbackMotion
+        if input.doFeedbackMotion
             FB_str = 'On';
         else
             FB_str = 'Off';
@@ -1091,7 +1091,7 @@ else
   end
 end
 
-if doOriDiscrim
+if input.doOriDiscrim
     ylabel('% Left/Ignore')
 else
     ylabel('% Right/Ignore')
