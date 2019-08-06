@@ -37,6 +37,20 @@ input.savedDataName = sprintf('~/Documents/MWorks/Data/data-i%03d-%s.mat', ...
 nTrial = length(input.trialOutcomeCell);
 block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
 
+block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
+block1Ix = block2Ix==0;
+
+if isfield(input,'isNoGo')
+noGoIx = cell2mat_padded(input.isNoGo);
+else
+noGoIx = zeros(size(block2Ix));
+end
+zeroConIx = zeros(size(block2Ix));
+if input.doZeroConTrials
+  totCon = sum(celleqel2mat_padded(input.tGratingContrast)+celleqel2mat_padded(input.dGratingContrast),1);
+  zeroConIx(find(totCon==0)) = 1;
+end
+
 correctIx = strcmp(input.trialOutcomeCell, 'success');
 incorrectIx = strcmp(input.trialOutcomeCell, 'incorrect');
 ignoreIx = strcmp(input.trialOutcomeCell, 'ignore');
@@ -53,20 +67,13 @@ else
   leftTrPer80Str = [];
 end
 
-block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
-block1Ix = block2Ix==0;
-
-if isfield(input,'isNoGo')
-noGoIx = cell2mat_padded(input.isNoGo);
-else
-noGoIx = zeros(size(block2Ix));
-end
-
 leftTrialIx = celleqel2mat_padded(input.tLeftTrial);
 leftTrialIx(find(noGoIx)) = 0;
+leftTrialIx(find(zeroConIx)) = 0;
 leftTrNs = find(leftTrialIx);
 rightTrialIx = ~leftTrialIx;
 rightTrialIx(find(noGoIx)) = 0;
+rightTrialIx(find(zeroConIx)) = 0;
 rightTrNs = find(rightTrialIx);
 leftTrialIx = logical(leftTrialIx);
 nLeft = sum(leftTrialIx);
