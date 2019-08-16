@@ -712,29 +712,29 @@ if nCorr>0  %&& input.doTestRobot==0,
        if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
            if input.gratingContrastDiffSPO<10
-             xlabel('Contrast Difference (R/L)')
+             xlabel('Contrast Ratio (T/D)')
            else
-             xlabel('Contrast Difference (R-L)')
+             xlabel('Contrast Difference (T-D)')
             end
-           title('Decision Time by Contrast Difference')
+           title('Decision Time by Contrast Ratio')
         elseif input.doSizeDiscrim
           if input.gratingDiameterDiffSPO<10
-             xlabel('Size Difference (R/L)')
+             xlabel('Size Difference (T/D)')
            else
-             xlabel('Size Difference (R-L)')
+             xlabel('Size Difference (T-D)')
             end
-           title('Decision Time by Size Difference')
+           title('Decision Time by Size Ratio')
         elseif input.doOriDiscrim
            xlabel('Ori Difference')
            title('Decision Time by Ori Difference')
         end
       else
         if input.gratingContrastDiffSPO<10
-         xlabel('Contrast Difference (R/L)')
+         xlabel('Contrast Ratio (T/D)')
         else
-         xlabel('Contrast Difference (R-L)')
+         xlabel('Contrast Difference (T-D)')
         end
-      title('Decision Time by Contrast Difference')
+      title('Decision Time by Contrast Ratio')
       end     
 end
 %%%%%%%%%%%%%%%%%
@@ -799,18 +799,18 @@ if nCorr>0 && input.doTestRobot==0,
        if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
            if input.gratingContrastDiffSPO<10
-             xlabel('Contrast Difference (R/L)')
+             xlabel('Contrast Ratio (T/D)')
            else
-             xlabel('Contrast Difference (R-L)')
+             xlabel('Contrast Difference (T-D)')
             end
-           title('Percent Correct by Contrast Difference')
+           title('Percent Correct by Contrast Ratio')
         elseif input.doSizeDiscrim
           if input.gratingDiameterDiffSPO<10
-             xlabel('Size Difference (R/L)')
+             xlabel('Size Ratio (T/D)')
            else
-             xlabel('Size Difference (R-L)')
+             xlabel('Size Difference (T-D)')
             end
-           title('Percent Correct by Size Difference')
+           title('Percent Correct by Size Ratio')
         elseif input.doOriDiscrim
           if input.gratingDiameterDiffSPO<10
            xlabel('Ori Difference')
@@ -818,11 +818,11 @@ if nCorr>0 && input.doTestRobot==0,
         end
       else
         if input.gratingContrastDiffSPO<10
-         xlabel('Contrast Difference (R/L)')
+         xlabel('Contrast Ratio (T/D)')
         else
-         xlabel('Contrast Difference (R-L)')
+         xlabel('Contrast Difference (T-D)')
         end
-      title('Percent Correct by Contrast Difference')
+      title('Percent Correct by Contrast RAtio')
       end
 end
 
