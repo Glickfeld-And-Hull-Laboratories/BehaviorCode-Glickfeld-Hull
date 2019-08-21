@@ -420,11 +420,12 @@
               <action type="assignment" variable="itiRewardUnexpectEveryN" value="round(100/itiRewardUnexpectPercent)"/>
             </action>
 
-            <action type="if" condition="rewardOmissionPercent != 0 &amp;&amp; (success % rewardOmissionEveryN == 0)  ">
+<!-- old code for choosing omission
+           <action type="if" condition="rewardOmissionPercent != 0 &amp;&amp; (success % rewardOmissionEveryN == 0)  ">
               <action type="assignment" variable="tOmissionRewardNum" value="(int)(disc_rand(1,rewardOmissionEveryN)) + success"/>
               <action type="report" message="the tOmissionRewardNum is $tOmissionRewardNum"/>
             </action>
-
+-->
             <action type="if" condition="rewardUnexpectPercent != 0 &amp;&amp; ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ">
               <action type="assignment" variable="tUnexpectRewardNum" value="(int)(disc_rand(0,rewardUnexpectEveryN-1)) + (success+ignore+failure)"/>
               <action type="report" message="the tUnexpectRewardNum is $tUnexpectRewardNum"/>
@@ -455,6 +456,12 @@
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
               </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
             <!-- level 1b: b2 sep odds on -->
@@ -462,6 +469,12 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level1))">
                 <action type="assignment" variable="tStimulusNumber" value="0"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level1"/>
             </action>
@@ -477,6 +490,12 @@
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
               </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level2"/>
             <!-- level 2b: b2 sep odds on -->
@@ -484,6 +503,12 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level2))">
                 <action type="assignment" variable="tStimulusNumber" value="1"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level2"/>
             </action>
@@ -498,6 +523,12 @@
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
               </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level3"/>
             <!-- level3b: b2 sep odds on -->
@@ -505,6 +536,12 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level3))">
                 <action type="assignment" variable="tStimulusNumber" value="2"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level3"/>
             </action>
@@ -519,6 +556,12 @@
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
               </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level4"/>
             <!-- level4b: b2 sep odds on -->
@@ -526,6 +569,12 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level4))">
                 <action type="assignment" variable="tStimulusNumber" value="3"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level4"/>
             </action>
@@ -540,6 +589,12 @@
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
               </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level5"/>
             <!-- level5b: b2 sep odds on -->
@@ -547,6 +602,12 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level5))">
                 <action type="assignment" variable="tStimulusNumber" value="4"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level5"/>
             </action>
@@ -561,6 +622,12 @@
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
               </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level6"/>
             <!-- level6b: b2 sep odds on -->
@@ -568,6 +635,12 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level6))">
                 <action type="assignment" variable="tStimulusNumber" value="5"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level6"/>
             </action>
@@ -582,6 +655,12 @@
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
               </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level7"/>
             <!-- level7b: b2 sep odds on -->
@@ -589,6 +668,12 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level7))">
                 <action type="assignment" variable="tStimulusNumber" value="6"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level7"/>
             </action>
@@ -603,6 +688,12 @@
               <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
               </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level8"/>
             <!-- level8b: b2 sep odds on -->
@@ -610,6 +701,12 @@
               <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+block2TrPer80Level8))">
                 <action type="assignment" variable="tStimulusNumber" value="7"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= rewardOmissionEveryN-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level8"/>
             </action>
@@ -1335,13 +1432,11 @@
             <action type="assignment" tag="interRewardInterval minimum to juiceTime" variable="tInterRewardIntervalMs" value="interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )"></action>
             <action type="start_timer" tag="Start interRewardIntervalTimer" timer="interRewardIntervalTimer" timebase="" duration="tInterRewardIntervalMs" duration_units="ms"></action>
 
-            <action type="if" condition="success == tOmissionRewardNum">
-              <action type="assignment" variable="tRewardOmissionTrial" value="1"/>
+            <action type="if" condition="tRewardOmissionTrial">
               <action type="report" message="~~~~~Omitted Reward~~~~~for $success success trial."/>
             </action>
 
-            <action type="if" condition="success != tOmissionRewardNum">
-              <action type="assignment" variable="tRewardOmissionTrial" value="0"/>
+            <action type="if" condition="!tRewardOmissionTrial">
               <action type="assignment" tag="Start reward" variable="juice" value="tTotalRewardTimeUs"></action>
             </action>
 
