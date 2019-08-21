@@ -25,7 +25,7 @@
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>      
       <variable tag="doRandDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
-      <variable tag="doContingentAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>      
+      <variable tag="doContingentAdapt" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
       <variable tag="doAsynchronousAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Trial Structure"/>
@@ -112,7 +112,7 @@
 
       <variable tag="tDoContingentAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAsynchronousAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
-      <variable tag="nAdaptCond" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="nAdaptCond" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
 
       <variable tag="tDoRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoRandDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -301,7 +301,9 @@
             <action type="assignment" variable="nAdaptStimOnFrames" value="ceil((adaptStimOnTimeMs/1000)*frameRateHz)"></action>
             <action type="assignment" variable="nTestFrames" value="ceil((testStimOnTimeMs/1000)*frameRateHz)"></action>
 
-            <action type="if" condition="doContingentAdapt &amp;&amp; !doAsynchronousAdapt | !doContingentAdapt &amp;&amp; doAsynchronousAdapt">
+            <action type="assignment" variable="nAdaptCond" value="1"></action>
+
+            <action type="if" condition="doContingentAdapt &amp;&amp; !doAsynchronousAdapt || !doContingentAdapt &amp;&amp; doAsynchronousAdapt">
               <action type="assignment" variable="nAdaptCond" value="2"></action>
             </action>
             <action type="if" condition="doContingentAdapt &amp;&amp; doAsynchronousAdapt">
