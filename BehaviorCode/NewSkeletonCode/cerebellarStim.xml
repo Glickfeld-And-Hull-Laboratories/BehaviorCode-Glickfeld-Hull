@@ -86,8 +86,8 @@
       <variable tag="ReverseNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="stationaryNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="runNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="minTactileStimDelayNFrames" scope="global" logging="when_changed" default_value="3" type="float" persistant="0"/>
-      <variable tag="maxTactileStimDelayNFrames" scope="global" logging="when_changed" default_value="30" type="float" persistant="0"/>
+      <variable tag="minTactileStimDelayNFrames" scope="global" logging="when_changed" default_value="3" type="float" persistant="1"/>
+      <variable tag="maxTactileStimDelayNFrames" scope="global" logging="when_changed" default_value="30" type="float" persistant="1"/>
     </folder>
 
     <folder tag="Task Status">
@@ -132,6 +132,7 @@
       <variable tag="lastTrialMouseStill" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="lastTrialMouseRun" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTactileStimDelayFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="didSendStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -206,6 +207,7 @@
           <action type="assignment" variable="MouseIsRunning" value="0"/>
           <action type="assignment" variable="tDotDirectionDeg" value="DotDirectionDeg"/>
           <action type="assignment" variable="Imaging" value="1"/>
+          <action type="assignment" variable="didSendStim" value="0"/>
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
               <action type="report" message="** Stopping after completing $stopAfterNTrials trials"></action>
@@ -356,7 +358,9 @@
       <task_system_state tag="SendStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tCounter" value="counter"></action>
+            <action type="assignment" variable="didSendStim" value="1"/>
               <action type="if" condition="DoTactileStim == 1">
+                <action type="assignment" variable="lastTrialStimOn" value="1"/>
                 <action type="report" message="*** Sending Tactile Stimulus -- Staying in Post-Stim State for $TStimNFrames scans."></action>
                 <action type="assignment" variable="cTactileStimTurnedOn" value="counter"/>
                 <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
