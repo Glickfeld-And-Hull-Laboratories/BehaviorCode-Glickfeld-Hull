@@ -268,7 +268,7 @@
             condition="(counter - tCounter) > 0 &amp;&amp; DoCerebellarStim == 0 &amp;&amp; !DoTactileStim" target="SendStim" ></transition>
               <transition type="conditional" tag="If exceeding iTi and not doing cerebellar visual stim, and doing tactile stim, move to check criteria" 
             condition="(counter - tCounter) > 0 &amp;&amp; DoCerebellarStim == 0 &amp;&amp; DoTactileStim" target="CheckCriteria" ></transition><transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
-              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames &amp;&amp; DoCerebellarStim == 1" target="EndTrial" ></transition>
+              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames &amp;&amp; DoCerebellarStim == 1 &amp;&amp; DoMovingDot == 1" target="EndTrial" ></transition>
       </task_system_state>
 
       <task_system_state tag="CheckCriteria" interruptible="YES">
@@ -315,7 +315,7 @@
           <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="DoTactileStim &amp;&amp; MouseIsStill == 1 &amp;&amp; counter - tCounter >= stationaryNFrames" target="TactileStimDelay"></transition>
 
             <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
-              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames" target="EndTrial" ></transition>
+              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames &amp;&amp; DoMovingDot == 1" target="EndTrial" ></transition>
       </task_system_state>
 
 
@@ -388,9 +388,9 @@
 
       <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="report" message="Last trial stim on is $lastTrialStimOn !!!!!!!"></action>
+            <!--action type="report" message="Last trial stim on is $lastTrialStimOn !!!!!!!"></action-->
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            <action type="if" condition="tDotDirectionDeg == 0">
+            <action type="if" condition="tDotDirectionDeg == 0 &amp;&amp; DoMovingDot == 1">
               <action type="assignment" variable="lastTrialStimOn" value="0"/>
             </action>
             <action type="if" condition="MouseIsStill == 1">
@@ -425,6 +425,7 @@
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
             <action type="report" message="*** Trial Ends *** tTrialsDoneSinceStart =$tTrialsDoneSinceStart"></action>
+            <action type="report" message="_____________________________________________________________________________________"></action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="0"></action>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
 
