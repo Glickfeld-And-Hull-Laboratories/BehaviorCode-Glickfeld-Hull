@@ -814,7 +814,7 @@ if nCorr>0 && input.doTestRobot==0,
         elseif input.doOriDiscrim
           if input.gratingDiameterDiffSPO<10
            xlabel('Ori Difference')
-           title('Percent Correct by Size Difference')
+           title('Percent Correct by Ori Difference')
         end
       else
         if input.gratingContrastDiffSPO<10
