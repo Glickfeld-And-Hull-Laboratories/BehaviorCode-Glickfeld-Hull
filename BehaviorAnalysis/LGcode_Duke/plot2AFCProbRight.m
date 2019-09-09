@@ -39,7 +39,19 @@ for id = 1:size(dates,1)
         load(fullfile(behav_path,expt_mat.name))
     end
     if ~input.doFeedbackMotion
+        if isfield(input,'doEasyStartWithFeedback')
+            if input.doEasyStartWithFeedback
+                if ~isempty(trials{id})
+                    if trials{id}(1)<21
+                        trials{id}(1) = 21;
+                    end
+                else
+                    trials{id} = [21 length(input.tGratingContrast)];
+                end
+            end
+        end
         [s b] = selectCalc(input,trials{id});
+        fprintf(['- s = ' num2str(chop(s,2)) '; b = ' num2str(chop(b,2))])
         if s>=0.9 & abs(b)<0.1
             if ~isempty(trials{id})
                 input = trialChopper(input,trials{id});
@@ -88,6 +100,8 @@ for ipow = 1:nPow
     end
     datelist{ipow} = unique(input.date(find(pow_mat==pows(ipow))));
 end
+
+%% plot
 figure;
 if nPow > 1
     tPow = nPow+1;
