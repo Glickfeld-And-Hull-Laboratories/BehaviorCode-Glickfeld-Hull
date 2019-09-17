@@ -17,3 +17,4 @@ mat_use = cell(1,size(trials,1));
 mat_use{3} = [2];
 mat_use{22} = [2]; 
 mat_use{42} = [1];
+pow_use = [2 3];
