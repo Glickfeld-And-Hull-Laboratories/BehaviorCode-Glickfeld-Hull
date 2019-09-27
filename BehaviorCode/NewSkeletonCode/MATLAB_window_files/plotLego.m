@@ -37,6 +37,20 @@ input.savedDataName = sprintf('~/Documents/MWorks/Data/data-i%03d-%s.mat', ...
 nTrial = length(input.trialOutcomeCell);
 block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
 
+block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
+block1Ix = block2Ix==0;
+
+if isfield(input,'isNoGo')
+noGoIx = cell2mat_padded(input.isNoGo);
+else
+noGoIx = zeros(size(block2Ix));
+end
+zeroConIx = zeros(size(block2Ix));
+if input.doZeroConTrials
+  totCon = sum(celleqel2mat_padded(input.tGratingContrast)+celleqel2mat_padded(input.dGratingContrast),1);
+  zeroConIx(find(totCon==0)) = 1;
+end
+
 correctIx = strcmp(input.trialOutcomeCell, 'success');
 incorrectIx = strcmp(input.trialOutcomeCell, 'incorrect');
 ignoreIx = strcmp(input.trialOutcomeCell, 'ignore');
@@ -53,20 +67,13 @@ else
   leftTrPer80Str = [];
 end
 
-block2Ix = celleqel2mat_padded(input.tBlock2TrialNumber);
-block1Ix = block2Ix==0;
-
-if isfield(input,'isNoGo')
-noGoIx = cell2mat_padded(input.isNoGo);
-else
-noGoIx = zeros(size(block2Ix));
-end
-
 leftTrialIx = celleqel2mat_padded(input.tLeftTrial);
 leftTrialIx(find(noGoIx)) = 0;
+leftTrialIx(find(zeroConIx)) = 0;
 leftTrNs = find(leftTrialIx);
 rightTrialIx = ~leftTrialIx;
 rightTrialIx(find(noGoIx)) = 0;
+rightTrialIx(find(zeroConIx)) = 0;
 rightTrNs = find(rightTrialIx);
 leftTrialIx = logical(leftTrialIx);
 nLeft = sum(leftTrialIx);
@@ -269,7 +276,11 @@ else
   taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
       input.gratingMaxContrast, input.gratingContrastSPO, input.gratingMaxContrastDiff, input.gratingContrastDiffSPO);
 end
-
+        if input.doFeedbackMotion
+            FB_str = 'On';
+        else
+            FB_str = 'Off';
+        end
         tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
                          'Stim On Time: \t%5d ms \n', ...
                          'Thresholds (L,R):\t%4.0f, %4.0f pulses\n', ...
@@ -281,7 +292,7 @@ end
                          'Stim: %s \n', ...
                          blockStr, ...
                          block2Str, ...
-                         'Motion Sensitivity: \t%2.3f \n'], ...
+                         ['Feedback' FB_str ', Motion Sensitivity: \t%2.3f \n']], ...
                         input.reactionTimeMs/1000, ...
                         input.itiTimeMs, ...
                         input.stimOnTimeMs, ...
@@ -701,29 +712,29 @@ if nCorr>0  %&& input.doTestRobot==0,
        if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
            if input.gratingContrastDiffSPO<10
-             xlabel('Contrast Difference (R/L)')
+             xlabel('Contrast Ratio (T/D)')
            else
-             xlabel('Contrast Difference (R-L)')
+             xlabel('Contrast Difference (T-D)')
             end
-           title('Decision Time by Contrast Difference')
+           title('Decision Time by Contrast Ratio')
         elseif input.doSizeDiscrim
           if input.gratingDiameterDiffSPO<10
-             xlabel('Size Difference (R/L)')
+             xlabel('Size Difference (T/D)')
            else
-             xlabel('Size Difference (R-L)')
+             xlabel('Size Difference (T-D)')
             end
-           title('Decision Time by Size Difference')
+           title('Decision Time by Size Ratio')
         elseif input.doOriDiscrim
            xlabel('Ori Difference')
            title('Decision Time by Ori Difference')
         end
       else
         if input.gratingContrastDiffSPO<10
-         xlabel('Contrast Difference (R/L)')
+         xlabel('Contrast Ratio (T/D)')
         else
-         xlabel('Contrast Difference (R-L)')
+         xlabel('Contrast Difference (T-D)')
         end
-      title('Decision Time by Contrast Difference')
+      title('Decision Time by Contrast Ratio')
       end     
 end
 %%%%%%%%%%%%%%%%%
@@ -788,30 +799,30 @@ if nCorr>0 && input.doTestRobot==0,
        if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
            if input.gratingContrastDiffSPO<10
-             xlabel('Contrast Difference (R/L)')
+             xlabel('Contrast Ratio (T/D)')
            else
-             xlabel('Contrast Difference (R-L)')
+             xlabel('Contrast Difference (T-D)')
             end
-           title('Percent Correct by Contrast Difference')
+           title('Percent Correct by Contrast Ratio')
         elseif input.doSizeDiscrim
           if input.gratingDiameterDiffSPO<10
-             xlabel('Size Difference (R/L)')
+             xlabel('Size Ratio (T/D)')
            else
-             xlabel('Size Difference (R-L)')
+             xlabel('Size Difference (T-D)')
             end
-           title('Percent Correct by Size Difference')
+           title('Percent Correct by Size Ratio')
         elseif input.doOriDiscrim
           if input.gratingDiameterDiffSPO<10
            xlabel('Ori Difference')
-           title('Percent Correct by Size Difference')
+           title('Percent Correct by Ori Difference')
         end
       else
         if input.gratingContrastDiffSPO<10
-         xlabel('Contrast Difference (R/L)')
+         xlabel('Contrast Ratio (T/D)')
         else
-         xlabel('Contrast Difference (R-L)')
+         xlabel('Contrast Difference (T-D)')
         end
-      title('Percent Correct by Contrast Difference')
+      title('Percent Correct by Contrast RAtio')
       end
 end
 
@@ -1087,8 +1098,11 @@ else
   end
 end
 
-ylabel('% Right/Ignore')
-
+if input.doOriDiscrim
+    ylabel('% Left/Ignore')
+else
+    ylabel('% Right/Ignore')
+end
 grid on
 
 maxCell = length(nLevelsB1);
