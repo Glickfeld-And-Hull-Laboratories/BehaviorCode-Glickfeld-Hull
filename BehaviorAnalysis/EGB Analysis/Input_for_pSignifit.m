@@ -22,10 +22,11 @@ for i=1:length(days_to_include)
     tIgnore = [tIgnore s(i).tIgnore];
 end
 
+%for pct correct instead of pct left
+% ori = abs(ori);
 
+%% 1 mat for ea adapt condition, 1;s=that adapt condition, 0;s=not
 
-%%
-%1 mat for ea adapt condition, 1;s=that adapt condition, 0;s=not
 NoAdaptTrials = logical(~Acontrast);
 Adapt90Trials = nan(1,length(Acontrast));
 Adapt0Trials = nan(1,length(Acontrast));
@@ -43,8 +44,7 @@ for i=1:length(Acontrast)
     end
 end
 
-%%
-%For loop for each orientation to output NumCorrect and NumTrials (correct + incorrect) per ori. Do vars for each adapt
+%% For loop for each orientation to output NumCorrect and NumTrials (correct + incorrect) per ori. Do vars for each adapt
 %condition
 uniqueori = unique(ori);
 
@@ -63,8 +63,7 @@ A0TrialsCorrect = successes(Aori==0 & NoAdaptTrials==0 & tIgnore==0);
 A0TrialsIncorrect = incorrects(Aori==0 & NoAdaptTrials==0 & tIgnore==0);
 A0Oris = ori(Aori==0 & NoAdaptTrials==0 & tIgnore==0);
 
-%%
-%array of # of left response, and total # trials for each ori
+%% For % LEFT! (Yes/No task) - array of # of left response, and total # trials for each ori
 NoAdaptLperOri=nan(1,length(uniqueori)); 
 A90LperOri=nan(1,length(uniqueori));
 A0LperOri=nan(1,length(uniqueori));
@@ -85,20 +84,62 @@ for ori=1:length(uniqueori)
     A0NumperOri(ori) = sum(A0TrialsCorrect(A0Oris==uniqueori(ori))) + sum(A0TrialsIncorrect(A0Oris==uniqueori(ori)));
 end
 
-idx = logical([1 1 1 1 0 0 1 1 1 1]);
+% idx = logical([1 1 1 1 0 0 1 1 1 1]);
+% 
+% output = vertcat(uniqueori(idx),NoAdaptLperOri(idx),NoAdaptNumperOri(idx))';
+% output90 = vertcat(uniqueori(idx),A90LperOri(idx),A90NumperOri(idx))';
+% output0 = vertcat(uniqueori(idx),A0LperOri(idx),A0NumperOri(idx))';
+output = vertcat(uniqueori,NoAdaptLperOri,NoAdaptNumperOri)';
+output90 = vertcat(uniqueori,A90LperOri,A90NumperOri)';
+output0 = vertcat(uniqueori,A0LperOri,A0NumperOri)';
 
-output = vertcat(uniqueori(idx),NoAdaptLperOri(idx),NoAdaptNumperOri(idx))';
-output90 = vertcat(uniqueori(idx),A90LperOri(idx),A90NumperOri(idx))';
-output0 = vertcat(uniqueori(idx),A0LperOri(idx),A0NumperOri(idx))';
 options = struct;
 options.sigmoidName    = 'logistic';
 options.expType        = 'YesNo';
+
+
+%% For % CORRECT (2AFC) - array of # of CORRECT response, and total # trials for each ori
+
+NoAdaptCperOri=nan(1,length(uniqueori)); 
+A90CperOri=nan(1,length(uniqueori));
+A0CperOri=nan(1,length(uniqueori));
+
+NoAdaptNumperOri=nan(1,length(uniqueori)); 
+A90NumperOri=nan(1,length(uniqueori));
+A0NumperOri=nan(1,length(uniqueori));
+
+for ori=1:length(uniqueori) 
+    
+    
+    NoAdaptCperOri(ori) = sum(NoAdaptTrialsCorrect(NoAdaptOris==uniqueori(ori)));
+    A90CperOri(ori) = sum(A90TrialsCorrect(A90Oris==uniqueori(ori)));
+    A0CperOri(ori) = sum(A0TrialsCorrect(A0Oris==uniqueori(ori)));
+    
+    NoAdaptNumperOri(ori) = sum(NoAdaptTrialsCorrect(NoAdaptOris==uniqueori(ori))) + sum(NoAdaptTrialsIncorrect(NoAdaptOris==uniqueori(ori)));
+    A90NumperOri(ori) = sum(A90TrialsCorrect(A90Oris==uniqueori(ori))) + sum(A90TrialsIncorrect(A90Oris==uniqueori(ori)));
+    A0NumperOri(ori) = sum(A0TrialsCorrect(A0Oris==uniqueori(ori))) + sum(A0TrialsIncorrect(A0Oris==uniqueori(ori)));
+end
+
+% idx = logical([0 1 1 1 1]);
+% 
+% output = vertcat(uniqueori(idx),NoAdaptCperOri(idx),NoAdaptNumperOri(idx))';
+% output90 = vertcat(uniqueori(idx),A90CperOri(idx),A90NumperOri(idx))';
+% output0 = vertcat(uniqueori(idx),A0CperOri(idx),A0NumperOri(idx))';
+output = vertcat(uniqueori,NoAdaptCperOri,NoAdaptNumperOri)';
+output90 = vertcat(uniqueori,A90CperOri,A90NumperOri)';
+output0 = vertcat(uniqueori,A0CperOri,A0NumperOri)';
+
+options = struct;
+options.sigmoidName    = 'logistic';
+options.expType        = '2AFC';
+options.confP = .95;
+
 %%
 cd('C:\Users\emily2\Documents\Repositories\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis\EGB Analysis\psignifit-master\psignifit-master')
 
-result=psignifit(output,options);
-result90=psignifit(output90,options);
-result0=psignifit(output0,options);
+result=psignifit_EGB(output,options);
+result90=psignifit_EGB(output90,options);
+result0=psignifit_EGB(output0,options);
 
 plotOptions= struct;
 plotOptions.dataColor      = [1,0,0];
@@ -113,13 +154,14 @@ figure; plotPsych(result)
 hold on
 plotPsych(result90,plotOptions)
 plotPsych2(result0,plotOptions2)
-title({'Logistic Fit for Psychometric Curve'; 'Paradigm: Flashing Adapt'; 'Subject: i1401'})
+title({'Logistic Fit for Psychometric Curve, % Correct'; 'Subject: i1401, 100ms Adapt'})
 xlabel('Target Orientation (degrees)')
-ylabel('% Left Response')
-legend('no adapter, n=1137','90 deg adapter, n=1457','0 deg adapter, n=1496')
+ylabel('% Correct')
+legend('no adapter, n=352','90 deg adapter, n=732','0 deg adapter, n=668')
 hold off
 
 Stimlevel= -45:0.5:45;
+% Stimlevel = 0:0.5:45;
 slope = getSlope(result, Stimlevel);
 [slope_max, max_idx]=max(slope);
 slope90 = getSlope(result90, Stimlevel);
@@ -132,21 +174,21 @@ plot(Stimlevel, slope,'b')
 hold on
 plot(Stimlevel, slope90, 'r')
 plot(Stimlevel, slope0, 'g')
-ylim([0,.05]);
-title({'Slopes'; 'Paradigm: Flashing Adapt'; 'Subject: i1401'})
+ylim([0,.08]);
+title({'Slopes'; 'Paradigm: 4sec adapt'; 'Subject: i1401, 100 ms Adapt'})
 xlabel('Target Orientation (degrees)')
 ylabel('Slope of Psych Curve Fit')
-legend('no adapter, n=1137','90 deg adapter, n=1457','0 deg adapter, n=1496')
-vline(Stimlevel(max_idx),'b:')
-hline(slope_max,'b:')
-vline(Stimlevel(max_idx90),'r:')
-hline(slope_max90,'r:')
-vline(Stimlevel(max_idx0),'g:')
-hline(slope_max0,'g:')
+legend('no adapter, n=352','90 deg adapter, n=732','0 deg adapter, n=668')
+vline_EGB(Stimlevel(max_idx),'b:')
+hline_EGB(slope_max,'b:')
+vline_EGB(Stimlevel(max_idx90),'r:')
+hline_EGB(slope_max90,'r:')
+vline_EGB(Stimlevel(max_idx0),'g:')
+hline_EGB(slope_max0,'g:')
 hold off
 
-cd('Z:\home\emily\2018-19\Figures\Joint_Lab_mtg_06.13.19\4s_Adapt');
-save('4sec_Adapt_psignifit_workspace');
+% cd('Z:\home\emily\2018-19\Figures\Joint_Lab_mtg_06.13.19\4s_Adapt');
+% save('4sec_Adapt_psignifit_workspace');
 
 %%
 %%Quantify difference in max slope
@@ -177,4 +219,5 @@ b.CData(3,:) = [0 1 0];
 title({'Slopes of Psychometric Fits Across Conditions'; 'Paradigm: 4s Static Adapt'; 'Subjects: i601,i1401'; '12/03-02/07'})
 ylabel('Slope of Psych Curve Fit')
 hold off
+
 
