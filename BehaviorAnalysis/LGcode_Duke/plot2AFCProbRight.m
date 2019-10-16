@@ -6,7 +6,7 @@ behav_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\Behavior
 mouse = 'i443';
 ds= [mouse '_exptList'];
 eval(ds)
-doFit = 0;
+doFit = 1;
 fprintf([mouse '\n'])
 
 %%
@@ -39,7 +39,19 @@ for id = 1:size(dates,1)
         load(fullfile(behav_path,expt_mat.name))
     end
     if ~input.doFeedbackMotion
+        if isfield(input,'doEasyStartWithFeedback')
+            if input.doEasyStartWithFeedback
+                if ~isempty(trials{id})
+                    if trials{id}(1)<21
+                        trials{id}(1) = 21;
+                    end
+                else
+                    trials{id} = [21 length(input.tGratingContrast)];
+                end
+            end
+        end
         [s b] = selectCalc(input,trials{id});
+        fprintf(['- s = ' num2str(chop(s,2)) '; b = ' num2str(chop(b,2))])
         if s>=0.9 & abs(b)<0.1
             if ~isempty(trials{id})
                 input = trialChopper(input,trials{id});
@@ -88,6 +100,8 @@ for ipow = 1:nPow
     end
     datelist{ipow} = unique(input.date(find(pow_mat==pows(ipow))));
 end
+
+%% plot
 figure;
 if nPow > 1
     tPow = nPow+1;
@@ -106,28 +120,64 @@ for ipow = 1:nPow
     ylabel('Fraction Right Choices')
 end
 
-
-tot_all = zeros(2, length(ratios));
-totR_all = zeros(2, length(ratios));
-pct_right_all = zeros(2,length(ratios));
-ci_right_all = zeros(2,2,length(ratios));
-for irat = 1:length(ratios)
-    for ib = 1:2
-        tot_all(ib,irat) = sum(ratio_mat==ratios(irat) & IiX==0 & b2Ix==ib-1);
-        totR_all(ib,irat) = sum(ratio_mat==ratios(irat) & IiX==0 & b2Ix==ib-1 & tRight);
-        [pct_right_all(ib,irat) ci_right_all(:,ib,irat)] = binofit(totR_all(ib,irat),tot_all(ib,irat));
+if length(pow_use) == nPow 
+    tot_all = zeros(2, length(ratios));
+    totR_all = zeros(2, length(ratios));
+    pct_right_all = zeros(2,length(ratios));
+    ci_right_all = zeros(2,2,length(ratios));
+    for irat = 1:length(ratios)
+        for ib = 1:2
+            tot_all(ib,irat) = sum(ratio_mat==ratios(irat) & IiX==0 & b2Ix==ib-1);
+            totR_all(ib,irat) = sum(ratio_mat==ratios(irat) & IiX==0 & b2Ix==ib-1 & tRight);
+            [pct_right_all(ib,irat) ci_right_all(:,ib,irat)] = binofit(totR_all(ib,irat),tot_all(ib,irat));
+        end
     end
+    if nPow>1
+        subplot(n,n2,tPow)
+        errorbar([ratios;ratios]', pct_right_all(:,:)',(pct_right_all(:,:)-squeeze(ci_right_all(1,:,:)))',(squeeze(ci_right_all(2,:,:))-pct_right_all(:,:))', '-o')
+        set(gca,'Xscale','log')
+        title([mouse '- n = ' num2str(sum(tot_all(1,:),2)) ' Con, ' num2str(sum(tot_all(2,:),2)) ' All LED powers'])
+        xlabel('Contrast ratio (R/L)')
+        ylabel('Fraction Right Choices')
+    end
+    suptitle(mouse)
+else
+    tot_all = zeros(2, length(ratios));
+    totR_all = zeros(2, length(ratios));
+    pct_right_all = zeros(2,length(ratios));
+    ci_right_all = zeros(2,2,length(ratios));
+    for irat = 1:length(ratios)
+        for ib = 1:2
+            for ipow = 1:length(pow_use)
+                tot_all(ib,irat) = tot_all(ib,irat) + sum(ratio_mat==ratios(irat) & IiX==0 & b2Ix==ib-1 & pow_mat==pow_use(ipow));
+                totR_all(ib,irat) = totR_all(ib,irat) + sum(ratio_mat==ratios(irat) & IiX==0 & b2Ix==ib-1 & tRight & pow_mat==pow_use(ipow));
+                [pct_right_all(ib,irat) ci_right_all(:,ib,irat)] = binofit(totR_all(ib,irat),tot_all(ib,irat));
+            end
+        end
+    end
+    if nPow>1
+        subplot(n,n2,tPow)
+        errorbar([ratios;ratios]', pct_right_all(:,:)',(pct_right_all(:,:)-squeeze(ci_right_all(1,:,:)))',(squeeze(ci_right_all(2,:,:))-pct_right_all(:,:))', '-o')
+        set(gca,'Xscale','log')
+        title([mouse '- n = ' num2str(sum(tot_all(1,:),2)) ' Con, ' num2str(sum(tot_all(2,:),2)) ': LED powers = ' num2str(pow_use) ' mW'])
+        xlabel('Contrast ratio (R/L)')
+        ylabel('Fraction Right Choices')
+    end
+    suptitle(mouse)
 end
-if nPow>1
-    subplot(n,n2,tPow)
-    errorbar([ratios;ratios]', pct_right_all(:,:)',(pct_right_all(:,:)-squeeze(ci_right_all(1,:,:)))',(squeeze(ci_right_all(2,:,:))-pct_right_all(:,:))', '-o')
-    set(gca,'Xscale','log')
-    title([mouse '- n = ' num2str(sum(tot_all(1,:),2)) ' Con, ' num2str(sum(tot_all(2,:),2)) ' All LED powers'])
-    xlabel('Contrast ratio (R/L)')
-    ylabel('Fraction Right Choices')
-end
-suptitle(mouse)
 print(['\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\lindsey\Analysis\Behavior\2AFC\' mouse '_Summary.pdf'],'-dpdf','-bestfit'); 
+
+ind_use =[];
+for ipow = 1:length(pow_use)
+    ind_use = [ind_use find(pow_mat==pow_use(ipow))];
+end
+ratio_mat = ratio_mat(ind_use);
+b2Ix = b2Ix(ind_use);
+IiX = IiX(ind_use);
+tRight = tRight(ind_use);
+save(['\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\lindsey\Analysis\Behavior\2AFC\' mouse '_trialInfo.mat'],'ratio_mat', 'b2Ix', 'IiX', 'tRight');
+
+
 
 
 if doFit
