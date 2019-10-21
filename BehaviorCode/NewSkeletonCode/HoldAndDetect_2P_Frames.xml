@@ -293,6 +293,7 @@
       <variable tag="rewardUnexpectEveryN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="itiRewardUnexpectEveryN" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="NumRewardOmissionPer80" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="NumRewardOmissionPer80Block2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79"
@@ -424,9 +425,11 @@
             <!-- if block2 then determine the number of reward omission trials per block-->
             <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
               <action type="assignment" variable="NumRewardOmissionPer80" value="round(((rewardOmissionPercent/100)*trPer80Level1)/2)"/>
+              <action type="assignment" variable="NumRewardOmissionPer80Block2" value="80-NumRewardOmissionPer80"/>
             </action>
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
               <action type="assignment" variable="NumRewardOmissionPer80" value="round((rewardOmissionPercent/100)*trPer80Level1)"/>
+              <action type="assignment" variable="NumRewardOmissionPer80Block2" value="80-NumRewardOmissionPer80"/>
             </action>
 
            <!-- if only doing block1 then choose reward omission trial in blocks of size rewardOmissionEveryN  -->
@@ -465,37 +468,39 @@
             </action>
 
             <!-- level 1 -->
-            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))">
+            <action type="if" condition="(tSvStimNumber &lt; (trPer80Level1))">  <!-- if this is a block1 trial or if doBlock2SeparateOdds==0 -->
+              <action type="report" message="level 1 if cond ID 0"/>
               <action type="assignment" variable="tStimulusNumber" value="0"/>
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &gt; (((int)trPer80Level1-1)/2))"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
-                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
+                <action type="report" message="level 1 if cond ID 1"/>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0"> 
-              <!--<action type="if" condition="!doBlock2 || tBlock2TrialNumber == 0"> -->
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+                <action type="report" message="level 1 if cond ID 2"/>
               </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber"> <!-- no reward omission trials in block 2 -->
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+                <action type="report" message="level 1 if cond ID 3"/>
               </action>
             </action>
             <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
             <!-- level 1b: b2 sep odds on -->
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
-              <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &gt; (tTempStimOdds+block2TrPer80Level1))">
-                <action type="assignment" variable="tStimulusNumber" value="0"/>
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-              </action>
+              <action type="report" message="level 1 if cond ID 4"/>
+              <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber) &gt; ((int)trPer80Level1-1))"/>
+              <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              <action type="assignment" variable="tStimulusNumber" value="0"/>
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+                <action type="report" message="level 1 if cond ID 5"/>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+                <action type="report" message="level 1 if cond ID 6"/>
               </action>
-              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level1"/>
             </action>
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level1"/>
 
 
 
