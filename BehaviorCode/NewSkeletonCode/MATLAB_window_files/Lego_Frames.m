@@ -70,7 +70,12 @@ varsOneValEachTrial = { ...
     'cAdaptOn',...
     'aGratingContrast',...
     'tFeedbackMotionSensitivity',...
-  };
+    'aGratingDirectionDeg', ...
+    'aGratingPhaseDeg', ...
+    'tAGratingDirectionDeg', ...
+    'tDoFeedbackMotion',...
+    'flashOn',...
+    'cAdaptOn_all'};
 
 exptSetupBridge;
 
@@ -131,8 +136,26 @@ catch
     input.quadratureValues{trN} = NaN;
 end
 
-fprintf(1,'Contrast: T=%0.2f, D=%0.2f, %s, %s, React: %0.0f ms, Rew: %2.0f\n ', input.tGratingContrast{trN}, input.dGratingContrast{trN}, tLeftStr, outcomeStr, decisionTime, rewS)
+try
+    input.flashOn{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'flashOn', 'all', [], 1);
+    input.flashOn{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'flashOn', 'all', 1) ;
+catch
+    input.flashOn{trN} = NaN;
+    input.flashOn{trN} = NaN;
+end
+try
+    input.cAdaptOn_all{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'cAdaptOn_all', 'all', [], 1);
+    input.cAdaptOn_all{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'cAdaptOn_all', 'all', 1) ;
+catch
+    input.cAdaptOn_all{trN} = NaN;
+    input.cAdaptOn_all{trN} = NaN;
+end
 
+if input.doContrastDiscrim
+fprintf(1,'Con: T=%0.2f, D=%0.2f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', input.tGratingContrast{trN}, input.dGratingContrast{trN}, tLeftStr, outcomeStr, decisionTime, input.tBlock2TrialNumber{trN}+1, rewS)
+elseif input.doOriDiscrim
+fprintf(1,'Ori: T=%2.0f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', abs(input.gratingTargetDirection - input.tGratingDirectionStart{trN}), tLeftStr, outcomeStr, decisionTime, input.tBlock2TrialNumber{trN}+1, rewS)
+end
 
 %itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));
 %fprintf(1,'Hold %d, req %d, react %d, %s%s %s- %d rew %dms\n', ...

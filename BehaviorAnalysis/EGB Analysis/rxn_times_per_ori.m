@@ -142,26 +142,47 @@ end
 
 
 %%
-idx = logical([1 1 1 1 0 0 1 1 1 1]); 
-figure; errorbar(uniqueori(idx),AnaRxnTimeSPerOri(idx),AnaSemSPerOri(1,idx),AnaSemSPerOri(1,idx),'b','LineWidth',1.5)
+% idx = logical([1 1 1 1 0 0 1 1 1 1]); 
+% figure; errorbar(uniqueori(idx),AnaRxnTimeSPerOri(idx),AnaSemSPerOri(1,idx),AnaSemSPerOri(1,idx),'b','LineWidth',1.5)
+% hold on
+% errorbar(uniqueori(idx),A90RxnTimeSPerOri(idx),A90SemSPerOri(1,idx),A90SemSPerOri(1,idx),'r','LineWidth',1.5)
+% errorbar(uniqueori(idx),A0RxnTimeSPerOri(idx),A0SemSPerOri(1,idx),A0SemSPerOri(1,idx),'g','LineWidth',1.5)
+% title({'Mean Reaction Time per Orientation - Success Trials'; 'Paradigm: Flashing Adapt'; 'Subject: i1401'; 'n=3364 trials'})
+% xlabel('Target Orientation (degrees)')
+% ylabel('Mean Reaction Time (s)')
+% legend('no adapter, n=949','90 deg adapter, n=1205','0 deg adapter, n=1210')
+% hold off
+% 
+% 
+% figure; errorbar(uniqueori(idx),AnaRxnTimeIPerOri(idx),AnaSemIPerOri(1,idx),AnaSemIPerOri(1,idx),'b','LineWidth',1.5)
+% hold on
+% errorbar(uniqueori(idx),A90RxnTimeIPerOri(idx),A90SemIPerOri(1,idx),A90SemIPerOri(1,idx),'r','LineWidth',1.5)
+% errorbar(uniqueori(idx),A0RxnTimeIPerOri(idx),A0SemIPerOri(1,idx),A0SemIPerOri(1,idx),'g','LineWidth',1.5)
+% title({'Mean Reaction Time per Orientation - Incorrect Trials'; 'Paradigm: Flashing Adapt'; 'Subject: i1401'; 'n=726 trials'})
+% xlabel('Target Orientation (degrees)')
+% ylabel('Mean Reaction Time (s)')
+% legend('no adapter, n=188','90 deg adapter, n=252','0 deg adapter, n=286')
+% hold off
+
+figure; errorbar(uniqueori,AnaRxnTimeSPerOri,AnaSemSPerOri(1,:),AnaSemSPerOri(1,:),'b','LineWidth',1.5)
 hold on
-errorbar(uniqueori(idx),A90RxnTimeSPerOri(idx),A90SemSPerOri(1,idx),A90SemSPerOri(1,idx),'r','LineWidth',1.5)
-errorbar(uniqueori(idx),A0RxnTimeSPerOri(idx),A0SemSPerOri(1,idx),A0SemSPerOri(1,idx),'g','LineWidth',1.5)
-title({'Mean Reaction Time per Orientation - Success Trials'; 'Paradigm: Flashing Adapt'; 'Subject: i1401'; 'n=3364 trials'})
+errorbar(uniqueori,A90RxnTimeSPerOri,A90SemSPerOri(1,:),A90SemSPerOri(1,:),'r','LineWidth',1.5)
+errorbar(uniqueori,A0RxnTimeSPerOri,A0SemSPerOri(1,:),A0SemSPerOri(1,:),'g','LineWidth',1.5)
+title({'Mean Reaction Time per Orientation - Success Trials'; 'Subject: i1402'; 'n=7089 trials'})
 xlabel('Target Orientation (degrees)')
 ylabel('Mean Reaction Time (s)')
-legend('no adapter, n=949','90 deg adapter, n=1205','0 deg adapter, n=1210')
+legend('no adapter, n=4260','90 deg adapter, n=1449','0 deg adapter, n=1380')
 hold off
 
 
-figure; errorbar(uniqueori(idx),AnaRxnTimeIPerOri(idx),AnaSemIPerOri(1,idx),AnaSemIPerOri(1,idx),'b','LineWidth',1.5)
+figure; errorbar(uniqueori,AnaRxnTimeIPerOri,AnaSemIPerOri(1,:),AnaSemIPerOri(1,:),'b','LineWidth',1.5)
 hold on
-errorbar(uniqueori(idx),A90RxnTimeIPerOri(idx),A90SemIPerOri(1,idx),A90SemIPerOri(1,idx),'r','LineWidth',1.5)
-errorbar(uniqueori(idx),A0RxnTimeIPerOri(idx),A0SemIPerOri(1,idx),A0SemIPerOri(1,idx),'g','LineWidth',1.5)
-title({'Mean Reaction Time per Orientation - Incorrect Trials'; 'Paradigm: Flashing Adapt'; 'Subject: i1401'; 'n=726 trials'})
+errorbar(uniqueori,A90RxnTimeIPerOri,A90SemIPerOri(1,:),A90SemIPerOri(1,:),'r','LineWidth',1.5)
+errorbar(uniqueori,A0RxnTimeIPerOri,A0SemIPerOri(1,:),A0SemIPerOri(1,:),'g','LineWidth',1.5)
+title({'Mean Reaction Time per Orientation - Incorrect Trials'; 'Subject: i1401'; 'n=1019 trials'})
 xlabel('Target Orientation (degrees)')
 ylabel('Mean Reaction Time (s)')
-legend('no adapter, n=188','90 deg adapter, n=252','0 deg adapter, n=286')
+legend('no adapter, n=421','90 deg adapter, n=315','0 deg adapter, n=283')
 hold off
 
 
