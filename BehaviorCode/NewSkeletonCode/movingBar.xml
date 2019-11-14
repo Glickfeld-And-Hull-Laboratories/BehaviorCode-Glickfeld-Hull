@@ -1,9 +1,16 @@
 <?xml version="1.0"?>
 <monkeyml version="1.0">
   <io_devices tag="IO Devices">
-    <iodevice tag="LabJackU6" priority="" type="LabJackU6"       
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6"
+      pulse_duration="juice"
       strobed_digital_word="strobedDigitalWord"
-      counter="counter"/>
+      counter="counter"
+      optic_device="optic_device"
+      do2led="do2led" led_seq="led_seq" LED_duration="LED_durationMS" led1_status="led1_status" led2_status="led2_status"
+      do_wheelspeed="DoWheelSpeed"
+      ws_durationUS="speedIntervalUS"
+      wheel_speed="wheelSpeed"
+      doCB="doCerebellarStim"/>
       <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
       <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
     </io_devices>
@@ -11,6 +18,7 @@
       <folder tag="Behavioral Control">
         <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
         <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="ExptStruct"/>
+        <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"></variable>
       </folder>
 
       <folder tag="Stimuli">
@@ -22,12 +30,27 @@
         <variable tag="monitorXDeg" scope="global" logging="when_changed" persistant="1" default_value="80" type="any" groups="Monitor"/>
         <variable tag="monitorYDeg" scope="global" logging="when_changed" persistant="1" default_value="60" type="any" groups="Monitor"/>
       </folder>
-
+      
+      <folder tag="Online Display">
+          <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      </folder>
+      
+      <folder tag="Hardware variables">
+          <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+          <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
+          <variable tag="juice" full_name="juice" scope="global" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
+          <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="global" type="integer" logging="when_changed" persistant="0"/>
+          <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Hardware"/>
+          <variable tag="LED_durationMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Hardware"/>
+          <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Hardware"/>
+          <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Hardware"/>
+          <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0" groups="Hardware"/>
+      </folder>
       <folder tag="Internal Variables">
-        <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
+        
         <variable tag="cITIStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="cStimOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tStimStartTime" scope="global" logging="when_changed" persistant="0" type="float" default_value="0"/>
-        <variable tag="tBackgroundLuminance" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tXStartPos" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tYStartPos" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tXSizeDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -39,17 +62,24 @@
         <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
         <variable type="selection" tag="svSeqStimNumber" values="0,1,2,3" selection="sequential_ascending" nsamples="4" sampling_method="samples"/>
+      
+        <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Wheel"/>
+        <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Wheel"/>
+        <variable tag="speedIntervalMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Wheel"/>
+        <variable tag="wheelSpeed" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Wheel"/>
+        <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       </folder>
     </variables>  
 
     <stimuli tag="Stimuli">
-      <stimulus type="blank_screen" tag="background" color="tBackgroundLuminance,tBackgroundLuminance,tBackgroundLuminance"></stimulus>
+      <stimulus type="blank_screen" tag="background" color="backgroundLuminance,backgroundLuminance,backgroundLuminance"></stimulus>
       <stimulus type="frame_list" tag="bar" stimulus_group="bar_frames" ending="" ended="" loop="YES" repeats="0" autoplay="YES"></stimulus>
       <stimulus_group tag="bar_frames">
           <stimulus type="rectangle" tag="bar_frame" color="1,1,1" x_size="tXSizeDeg" y_size="tYSizeDeg" 
             x_position="tXStartPos + (tXDirection * ((nextFrameTime() - tStimStartTime) * (barSpeedDegPerSec / 1e6)))" 
             y_position="tYStartPos + (tYDirection * ((nextFrameTime() - tStimStartTime) * (barSpeedDegPerSec / 1e6)))" 
-            rotation="tBarOrientationDeg" alpha_multiplier="1"></stimulus>
+            rotation="0" alpha_multiplier="1"></stimulus>
       </stimulus_group>
     </stimuli>
 
@@ -58,7 +88,6 @@
     <resources tag="Resources"></resources>
     <experiment tag="Experiment" full_name="">
       <protocol tag="New Protocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
-        <action type="assignment" variable="tBackgroundLuminance" value= "backgroundLuminance"/>
         <action type="queue_stimulus" stimulus="background"></action>
 
         <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
@@ -71,7 +100,13 @@
               <task_system tag="TS" full_name="TS" description="" interruptible="YES" >
                 <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
                   <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
+                  
+                  <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+                  <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+                  <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+                  
+                  <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+                  
                   <action type="assignment" variable="cITIStart" value="counter"></action>
                   <!-- reset selection var -->
                   <action type="if" condition="tTrialsDoneSinceStart == 0">  
@@ -112,13 +147,14 @@
                       <action type="assignment" variable="tYDirection" value="1"></action>
                     </action> 
                   </action>
-
+                  
+                  <action type="report" message="Orientation is $tBarOrientationDeg"/>
 
                   <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                   <transition type="conditional" tag="If nScansOff, move to StimOn" condition="counter >= nScansOff+cITIStart" target="StimOn"></transition>
                 </task_system_state>
 
-                <task_system_state tag="Stim On" interruptible="YES">
+                <task_system_state tag="StimOn" interruptible="YES">
                   <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
                   <action type="assignment" variable="cStimOn" value="counter"></action>
@@ -128,8 +164,8 @@
                   <action tag="Update display" type="update_stimulus_display" predicted_output_time=""></action>                 
 
                   <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-                  <transition type="conditional" tag="If finished X sweep, end Trial" condition="tStartXPos ~= 0 &amp;&amp; counter > cStimOn + ceil(frameRateHz * (monitorXDeg/barSpeedDegPerSec))" target="EndTrial"></transition>
-                  <transition type="conditional" tag="If finished Y sweep, end Trial" condition="tStartYPos ~= 0 &amp;&amp; counter > cStimOn + ceil(frameRateHz * (monitorYDeg/barSpeedDegPerSec))" target="EndTrial"></transition>
+                  <transition type="conditional" tag="If finished X sweep, end Trial" condition="tXStartPos != 0 &amp;&amp; counter > cStimOn + ceil(frameRateHz * (monitorXDeg/barSpeedDegPerSec))" target="EndTrial"></transition>
+                  <transition type="conditional" tag="If finished Y sweep, end Trial" condition="tYStartPos != 0 &amp;&amp; counter > cStimOn + ceil(frameRateHz * (monitorYDeg/barSpeedDegPerSec))" target="EndTrial"></transition>
                 </task_system_state>
 
                 <task_system_state tag="EndTrial" interruptible="YES">
@@ -137,17 +173,17 @@
                   <action tag="Dequeue bar" type="dequeue_stimulus" stimulus="bar"></action>
                   <action tag="Update display" type="update_stimulus_display" predicted_output_time=""></action>
 
-                  <action type="if" condition="tNStimAccepted &lt; 3">
-                    <action type="next_selection" selection="svSeqStimNumber"/>
-                    <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
-                  </action>
-                  <action type="if" condition="tNStimAccepted &gt;= 3">
+                  <action type="next_selection" selection="svSeqStimNumber"/>
+                  <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+                  
+                  <action type="if" condition="tNStimAccepted == 4">
                     <action type="reset_selection" selection="svSeqStimNumber"/>
                     <action type="assignment" variable="tNStimAccepted" value="0"></action>
                   </action>
                   <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
             
-
+                  <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
+                    
                   <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
                   <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
                   <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
@@ -156,8 +192,6 @@
                   <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="1"></action>
                   <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="0"></action>
                   
-                  <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
-
                   <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                   <transition type="yield" tag="return to parent task system"></transition>
                 </task_system_state>
