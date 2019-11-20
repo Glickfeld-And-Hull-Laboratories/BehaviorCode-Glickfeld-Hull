@@ -1649,6 +1649,8 @@
                           <action type="assignment" tag="set robotGoLeft" variable="robotGoLeft" value="robotLeftProb >= rand(0,1)"/>
                         </action>
 
+                        <action type="start_timer" timer="idleTimer" timebase="" duration="10" duration_units="ms"/>
+
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" condition="counter-cStimOn &gt;= nFramesOn &amp;&amp; !stimIsOff" target="StimOff"></transition>
                         <transition type="conditional" condition="counter-cStimOn &gt;= nFramesReact &amp;&amp; !isNoGo" target="Ignore"></transition>
@@ -1676,7 +1678,7 @@
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; !isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Reward"></transition>
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
-                        <transition type="direct" target="Reaction"></transition>
+                        <transition type="timer_expired" timer="idleTimer" target="Reaction"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Reward" interruptible="YES">
