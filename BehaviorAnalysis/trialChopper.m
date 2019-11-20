@@ -14,7 +14,7 @@ if nargin>1,
         trEnd = tr(2);
         iX = trStart:trEnd;
     else
-        iX = tr;
+        iX = logical(tr);
     end
     if nargin>2,
         rTs = randTrials;
@@ -33,8 +33,6 @@ if isfield(ds, 'trialOutcomeCell')
     nTrs = length(ds.trialOutcomeCell);
 elseif isfield(ds, 'tGratingContrast')
     nTrs = length(ds.tGratingContrast);
-elseif isfield(ds,'counterValues')
-    nTrs = length(ds.counterValues);
 end
 
 for i=1:nFNs,
