@@ -4,6 +4,7 @@ successes=s(1).SIx; %1 refers to day1, . is syntax to go in this column, SIx = s
 incorrects=s(1).FIx; %FIx is incorrect trials only (not ignores)
 direction=s(1).tGratingDirectionStart;
 lefttrials=s(1).tLeftTrial;
+ori=s(1).aGratingDirectionDeg;
 
 left_correct=intersect(find(successes), find(lefttrials));
 right_correct=intersect(find(successes), find(~lefttrials)); %~ is not

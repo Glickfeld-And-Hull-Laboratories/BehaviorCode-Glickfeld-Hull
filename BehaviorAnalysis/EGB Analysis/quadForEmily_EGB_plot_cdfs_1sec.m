@@ -1,4 +1,4 @@
-%Drag single day data file over
+%Drag single day data file over (or collapsed across days)
 
 Iix = find(strcmp(input.trialOutcomeCell, 'ignore')); %command strcmp says match "trialOutcomeCell" when it says "ignore"
 %Find all ignore trials
@@ -138,86 +138,209 @@ end
 %plotting
 
 qVals_final = qVals_final';
+%% Plot segmentsof QVals for diff adapter conditions
+%Extract data from input
+for i = 1:length(input)
+successes = double(strcmp(input.trialOutcomeCell,'success'));
+end
 
-CorrLTrials = find(LeftTrials==1 & TrialOutcomeMat==1); %output is trial #s that satisfy these conditions 
-IncorrLTrials = find(LeftTrials==1 & TrialOutcomeMat==0);
-CorrRTrials = find(LeftTrials==0 & TrialOutcomeMat==1);
-IncorrRTrials = find(LeftTrials==0 & TrialOutcomeMat==0);
+for i = 1:length(input)
+incorrects = double(strcmp(input.trialOutcomeCell,'incorrect'));
+end
 
-AllCorrTrials = find(TrialOutcomeMat==1);
-AllIncorrTrials = find(TrialOutcomeMat==0);
-AllTrials = find(TrialOutcomeMat==1 | TrialOutcomeMat==0);%%ONLY SHOWING UP CORR TRIALS FOR SOME REASON
-
-
-qVals_CorrLTrials = qVals_final(CorrLTrials,:);
-qVals_IncorrLTrials = qVals_final(IncorrLTrials,:);
-qVals_CorrRTrials = qVals_final(CorrRTrials,:);
-qVals_IncorrRTrials = qVals_final(IncorrRTrials,:);
-
-qVals_AllCorr = qVals_final(AllCorrTrials,:);
-qVals_AllIncorr = qVals_final(AllIncorrTrials,:);
-qVals_AllTrials = qVals_final(AllTrials,:);
+for i = 1:length(input)
+ignores = double(strcmp(input.trialOutcomeCell,'ignore'));
+end
 
 
-qVals_CorrL_1sec = qVals_CorrLTrials(:,find(qTimes_final==-1000):find(qTimes_final==0));
-qVals_IncorrL_1sec = qVals_IncorrLTrials(:,find(qTimes_final==-1000):find(qTimes_final==0));
-qVals_CorrR_1sec = qVals_CorrRTrials(:,find(qTimes_final==-1000):find(qTimes_final==0));
-qVals_IncorrR_1sec = qVals_IncorrRTrials(:,find(qTimes_final==-1000):find(qTimes_final==0));
+NoAdapt = double(cell2mat(input.aGratingContrast));
+NoAdapt = NoAdapt(Tix);
+NoAdapt = ~NoAdapt;
 
-qVals_AllCorr_1sec = qVals_AllCorr(:,find(qTimes_final==-1000):find(qTimes_final==0));
-qVals_AllIncorr_1sec = qVals_AllIncorr(:,find(qTimes_final==-1000):find(qTimes_final==0));
-qVals_AllTrials_4sec = qVals_AllTrials(:,find(qTimes_final==-4000):find(qTimes_final==0)); 
+Acontrast = double(cell2mat(input.aGratingDirectionDeg));
+Acontrast = Acontrast(Tix);
+
+Anatrials = find(NoAdapt==1);
+
+A90trials = find(NoAdapt==0 & Acontrast==90);
+
+A0trials = find(NoAdapt==0 & Acontrast==0);
+
+qVals_Ana = qVals_final(Anatrials,:);
+qVals_A90 = qVals_final(A90trials,:);
+qVals_A0 = qVals_final(A0trials,:);
+% qVals_A0 = qVals_final(A0trials(1:142),:); %Had to crop off last trial for some reason; qVals_final missing 1
+
+qVals_Ana_pre = qVals_Ana(:,find(qTimes_final==-1400):find(qTimes_final==0));
+qVals_A90_pre = qVals_A90(:,find(qTimes_final==-1400):find(qTimes_final==0));
+qVals_A0_pre = qVals_A0(:,find(qTimes_final==-1400):find(qTimes_final==0));
+
+qTimes_interest = find(qTimes_final==-4000):find(qTimes_final==4000);
+qTimes_interesting = [-4000:1:4000];
+qVals_interest = qVals_final(:,find(qTimes_final==-4000):find(qTimes_final==4000));
+
+figure
+plot(qTimes_interesting,qVals_interest)
+hold on
+title({'i1402 Quadrature Traces','4893 trials'})
+xlabel('Time (ms)')
+ylabel('Quadrature Position (ticks)')
+v = vline_EGB(0,'-k','Target Stim On')
+hold off
+
+%%
+qVals_Ana_sum = sum(abs(diff(qVals_Ana_pre,1,2)),2); 
+qVals_A90_sum = sum(abs(diff(qVals_A90_pre,1,2)),2); 
+qVals_A0_sum = sum(abs(diff(qVals_A0_pre,1,2)),2); 
+
+figure
+cdfplot(qVals_Ana_sum)
+hold on
+cdfplot(qVals_A90_sum)
+cdfplot(qVals_A0_sum)
+hold on
+title({'CDF of Sum of Abs Diff in Quad Position per Trial'; 'Flashing Adapt'; 'Subject: i1401'; '05/22/19'})
+xlabel('Sum of Abs Diff of Quad Position')
+ylabel('F(x)')
+legend('No adapter, n=1581','90 deg adapter, n=1653','0 deg adapter, n=1659')
+hold off
+
+%% Choose only trials with minimal movement during adapt period. Try threshold of 100 ticks sum abs diff? 
+
+qVals_pre = qVals_final(:,find(qTimes_final==-4000):find(qTimes_final==0));
+qVals_pre_sum = nansum(abs(diff(qVals_pre,1,2)),2);
+
+qVals_sum = nansum(abs(diff(qVals_final,1,2)),2);
+qVals_idx = find(qVals_pre_sum<25);
+qVals_final_idx = qVals_final(qVals_idx,:);
+
+% qTimes_interest = find(qTimes_final==-1400):find(qTimes_final==0);
+% qTimes_interesting = [-1400:1:0];
+
+qTimes_interest = find(qTimes_final==-4000):find(qTimes_final==4000);
+qTimes_interesting = [-4000:1:4000];
+qVals_interesting = qVals_final(:,find(qTimes_final==-4000):find(qTimes_final==4000));
+qVals_interest = qVals_final_idx(:,qTimes_interest);
+
+figure
+plot(qTimes_interesting,qVals_interest)
+hold on
+ylim([-400,300]);
+title({'i1402 Quadrature Traces', 'Only Trials with <25 ticks movement in 4s before Target Stim On', 'n=4581 trials'})
+xlabel('Time (ms)')
+ylabel('Quadrature Position (ticks)')
+v = vline_EGB(0,'-k','Target Stim On')
+hold off
+
+figure
+plot(qTimes_interesting,qVals_interesting)
+hold on
+title({'i1402 Quadrature Traces', 'n=4581 trials'})
+xlabel('Time (ms)')
+ylabel('Quadrature Position (ticks)')
+v = vline_EGB(0,'-k','Target Stim On')
+hold off
+
+%% Plot CDF for indexed qVals - movement QC
+Ana_qVals_idx = find(qVals_Ana_sum<25);
+A90_qVals_idx = find(qVals_A90_sum<25);
+A0_qVals_idx = find(qVals_A0_sum<25);
+
+qVals_Ana_pre_idx = qVals_Ana_pre(Ana_qVals_idx,:);
+qVals_Ana_sum = sum(abs(diff(qVals_Ana_pre_idx,1,2)),2);
+
+qVals_A90_pre_idx = qVals_A90_pre(A90_qVals_idx,:);
+qVals_A90_sum = sum(abs(diff(qVals_A90_pre_idx,1,2)),2); 
+
+qVals_A0_pre_idx = qVals_A0_pre(A0_qVals_idx,:);
+qVals_A0_sum = sum(abs(diff(qVals_A0_pre_idx,1,2)),2); 
+
+figure
+cdfplot(qVals_Ana_sum)
+hold on
+cdfplot(qVals_A90_sum)
+cdfplot(qVals_A0_sum)
+hold on
+title({'CDF of Sum of Abs Diff in Quad Position per Trial'; 'Flashing Adapt'; 'Subject: i1401'; '06/14/19'})
+xlabel('Sum of Abs Diff of Quad Position')
+ylabel('F(x)')
+legend('No adapter, n=88','90 deg adapter, n=70','0 deg adapter, n=44')
+hold off
+
+% clearvars -except Ana_qVals_idx A90_qVals_idx A0_qVals_idx input
 
 
-qVals_CorrL_stimsec = qVals_CorrLTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
-qVals_IncorrL_stimsec = qVals_IncorrLTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
-qVals_CorrR_stimsec = qVals_CorrRTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
-qVals_IncorrR_stimsec = qVals_IncorrRTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
+%% Get trials & then qVals for correct & incorrect left & right
+% CorrLTrials = find(LeftTrials==1 & TrialOutcomeMat==1); %output is trial #s that satisfy these conditions 
+% IncorrLTrials = find(LeftTrials==1 & TrialOutcomeMat==0);
+% CorrRTrials = find(LeftTrials==0 & TrialOutcomeMat==1);
+% IncorrRTrials = find(LeftTrials==0 & TrialOutcomeMat==0);
+% AllCorrTrials = find(TrialOutcomeMat==1);
+% AllIncorrTrials = find(TrialOutcomeMat==0);
+% AllTrials = find(TrialOutcomeMat==1 | TrialOutcomeMat==0);%%ONLY SHOWING UP CORR TRIALS FOR SOME REASON
 
-qVals_AllCorr_stimsec = qVals_AllCorr(:,find(qTimes_final==0):find(qTimes_final==1000));
-qVals_AllIncorr_stimsec = qVals_AllIncorr(:,find(qTimes_final==0):find(qTimes_final==1000));
-qVals_AllTrials_stimsec = qVals_AllTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
+% qVals_CorrLTrials = qVals_final(CorrLTrials,:);
+% qVals_IncorrLTrials = qVals_final(IncorrLTrials,:);
+% qVals_CorrRTrials = qVals_final(CorrRTrials,:);
+% qVals_IncorrRTrials = qVals_final(IncorrRTrials,:);
+% qVals_AllCorr = qVals_final(AllCorrTrials,:);
+% qVals_AllIncorr = qVals_final(AllIncorrTrials,:);
+% qVals_AllTrials = qVals_final(AllTrials,:);
 
-
-%figure; plot(qVals_AllCorr_2sec(1,:))
-%figure; plot(diff(qVals_AllCorr_2sec(1,:)))
+% qVals_CorrL_1sec = qVals_CorrLTrials(:,find(qTimes_final==-1000):find(qTimes_final==0));
+% qVals_IncorrL_1sec = qVals_IncorrLTrials(:,find(qTimes_final==-1000):find(qTimes_final==0));
+% qVals_CorrR_1sec = qVals_CorrRTrials(:,find(qTimes_final==-1000):find(qTimes_final==0));
+% qVals_IncorrR_1sec = qVals_IncorrRTrials(:,find(qTimes_final==-1000):find(qTimes_final==0));
+% 
+% qVals_AllCorr_1sec = qVals_AllCorr(:,find(qTimes_final==-1000):find(qTimes_final==0));
+% qVals_AllIncorr_1sec = qVals_AllIncorr(:,find(qTimes_final==-1000):find(qTimes_final==0));
+% qVals_AllTrials_4sec = qVals_AllTrials(:,find(qTimes_final==-4000):find(qTimes_final==0)); 
+% 
+% 
+% qVals_CorrL_stimsec = qVals_CorrLTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
+% qVals_IncorrL_stimsec = qVals_IncorrLTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
+% qVals_CorrR_stimsec = qVals_CorrRTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
+% qVals_IncorrR_stimsec = qVals_IncorrRTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
+% 
+% qVals_AllCorr_stimsec = qVals_AllCorr(:,find(qTimes_final==0):find(qTimes_final==1000));
+% qVals_AllIncorr_stimsec = qVals_AllIncorr(:,find(qTimes_final==0):find(qTimes_final==1000));
+% qVals_AllTrials_stimsec = qVals_AllTrials(:,find(qTimes_final==0):find(qTimes_final==1000));
 
 %QdiffTest = diff(qVals_AllCorr_2sec,1,2);
 %QdiffSum = sum(abs(QdiffTest),2);
+% 
+% qVals_CorrL_sum = sum(abs(diff(qVals_CorrL_1sec,1,2)),2); 
+% qVals_IncorrL_sum = sum(abs(diff(qVals_IncorrL_1sec,1,2)),2);
+% qVals_CorrR_sum = sum(abs(diff(qVals_CorrR_1sec,1,2)),2);
+% qVals_IncorrR_sum = sum(abs(diff(qVals_IncorrR_1sec,1,2)),2);
+% qVals_AllCorr_sum = sum(abs(diff(qVals_AllCorr_1sec,1,2)),2);
+% qVals_AllIncorr_sum = sum(abs(diff(qVals_AllIncorr_1sec,1,2)),2);
+% qVals_AllTrials_sum = sum(abs(diff(qVals_AllTrials_4sec,1,2)),2);
 
-qVals_CorrL_sum = sum(abs(diff(qVals_CorrL_1sec,1,2)),2); 
-qVals_IncorrL_sum = sum(abs(diff(qVals_IncorrL_1sec,1,2)),2);
-qVals_CorrR_sum = sum(abs(diff(qVals_CorrR_1sec,1,2)),2);
-qVals_IncorrR_sum = sum(abs(diff(qVals_IncorrR_1sec,1,2)),2);
-
-qVals_AllCorr_sum = sum(abs(diff(qVals_AllCorr_1sec,1,2)),2);
-qVals_AllIncorr_sum = sum(abs(diff(qVals_AllIncorr_1sec,1,2)),2);
-qVals_AllTrials_sum = sum(abs(diff(qVals_AllTrials_4sec,1,2)),2);
-
-figure;
-cdfplot(qVals_AllTrials_sum)
+% figure;
+% cdfplot(qVals_AllTrials_sum)
 
 %qVals_AllTrials_sum(find(isnan(qVals_AllTrials_sum))) = 0
-%%
-qVals_CorrL_Stimsum = sum(abs(diff(qVals_CorrL_stimsec,1,2)),2); 
-qVals_IncorrL_Stimsum = sum(abs(diff(qVals_IncorrL_stimsec,1,2)),2);
-qVals_CorrR_Stimsum = sum(abs(diff(qVals_CorrR_stimsec,1,2)),2);
-qVals_IncorrR_Stimsum = sum(abs(diff(qVals_IncorrR_stimsec,1,2)),2);
 
-qVals_AllCorr_Stimsum = sum(abs(diff(qVals_AllCorr_stimsec,1,2)),2);
-qVals_AllIncorr_Stimsum = sum(abs(diff(qVals_AllIncorr_stimsec,1,2)),2);
-qVals_AllTrials_Stimsum = sum(abs(diff(qVals_AllTrials_stimsec,1,2)),2);
+% qVals_CorrL_Stimsum = sum(abs(diff(qVals_CorrL_stimsec,1,2)),2); 
+% qVals_IncorrL_Stimsum = sum(abs(diff(qVals_IncorrL_stimsec,1,2)),2);
+% qVals_CorrR_Stimsum = sum(abs(diff(qVals_CorrR_stimsec,1,2)),2);
+% qVals_IncorrR_Stimsum = sum(abs(diff(qVals_IncorrR_stimsec,1,2)),2);
+% 
+% qVals_AllCorr_Stimsum = sum(abs(diff(qVals_AllCorr_stimsec,1,2)),2);
+% qVals_AllIncorr_Stimsum = sum(abs(diff(qVals_AllIncorr_stimsec,1,2)),2);
+% qVals_AllTrials_Stimsum = sum(abs(diff(qVals_AllTrials_stimsec,1,2)),2);
 
 %%
 figure(8)
 cdfplot(qVals_AllTrials_Stimsum)
-%%
+
 figure(5)
 cdfplot(qVals_AllCorr_sum)
 
 figure(6)
 cdfplot(qVals_AllIncorr_sum)
-%%
+
 figure(1)
 cdfplot(qVals_CorrL_sum)
 
@@ -271,7 +394,3 @@ histogram(qVals_AllTrials_sum, 'BinWidth', 10, 'Normalization', 'probability')
 xlim([0 200])
 ylim([0 0.5])
 
-%%
-%TrueLeftTrials = find(LeftTrials==1);
-%TrueRightTrials = find(LeftTrials==0);
-%%

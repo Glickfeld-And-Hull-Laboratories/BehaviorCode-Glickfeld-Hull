@@ -37,6 +37,7 @@
       <variable tag="itiIntervalMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="checkMovementMs" scope="global" logging="when_changed" default_value="500" type="integer" persistant="1"/>
       <variable tag="DoSoundStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="DoStimulusReverse" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="DoTactileStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="DoSolenoid" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="DoCerebellarStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -85,6 +86,8 @@
       <variable tag="ReverseNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="stationaryNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="runNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="minTactileStimDelayNFrames" scope="global" logging="when_changed" default_value="3" type="float" persistant="1"/>
+      <variable tag="maxTactileStimDelayNFrames" scope="global" logging="when_changed" default_value="30" type="float" persistant="1"/>
     </folder>
 
     <folder tag="Task Status">
@@ -128,6 +131,8 @@
       <variable tag="lastTrialStimOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="lastTrialMouseStill" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="lastTrialMouseRun" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tTactileStimDelayFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="didSendStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -202,6 +207,7 @@
           <action type="assignment" variable="MouseIsRunning" value="0"/>
           <action type="assignment" variable="tDotDirectionDeg" value="DotDirectionDeg"/>
           <action type="assignment" variable="Imaging" value="1"/>
+          <action type="assignment" variable="didSendStim" value="0"/>
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
               <action type="report" message="** Stopping after completing $stopAfterNTrials trials"></action>
@@ -254,13 +260,15 @@
           <action type="assignment" tag="Clear stimulusOn" variable="soundstimulusOn" value="0"></action>
           <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action>
 
+          <action type="report" message="In ITI..."></action>
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
 
           <transition type="conditional" tag="camera starts" condition="counter - tCounter > 0 &amp;&amp; DoCerebellarStim == 1" target="CheckCriteria"></transition>
-          <transition type="conditional" tag="If exceeding iTi and not doing cerebellar visual stim, move to send stim" 
-            condition="(counter - tCounter) > 0 &amp;&amp; DoCerebellarStim == 0" target="SendStim" ></transition>
-              <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
-              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames &amp;&amp; DoCerebellarStim == 1" target="EndTrial" ></transition>
+          <transition type="conditional" tag="If exceeding iTi and not doing cerebellar visual stim, and not doing tactile stim, move to send stim" 
+            condition="(counter - tCounter) > 0 &amp;&amp; DoCerebellarStim == 0 &amp;&amp; !DoTactileStim" target="SendStim" ></transition>
+              <transition type="conditional" tag="If exceeding iTi and not doing cerebellar visual stim, and doing tactile stim, move to check criteria" 
+            condition="(counter - tCounter) > 0 &amp;&amp; DoCerebellarStim == 0 &amp;&amp; DoTactileStim" target="CheckCriteria" ></transition><transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
+              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames &amp;&amp; DoCerebellarStim == 1 &amp;&amp; DoMovingDot == 1" target="EndTrial" ></transition>
       </task_system_state>
 
       <task_system_state tag="CheckCriteria" interruptible="YES">
@@ -298,13 +306,16 @@
               <action type="assignment" variable="MouseIsRunning" value="0"/>
             </action>
           </action>
+          <action type="report" message="Checking criteria- is mouse running?"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
 
-            <transition type="conditional" tag="if passing criteria, move to Delay Stim" condition="MouseIsRunning == 1 &amp;&amp; counter - tCounter >= runNFrames" target="ReverseDelay"></transition>
-          <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="MouseIsStill == 1 &amp;&amp; counter - tCounter >= stationaryNFrames" target="ReverseVStim"></transition>
+            <transition type="conditional" tag="if passing criteria, move to Delay Stim" condition="DoStimulusReverse &amp;&amp; MouseIsRunning == 1 &amp;&amp; counter - tCounter >= runNFrames" target="ReverseDelay"></transition>
+          <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="DoStimulusReverse &amp;&amp; MouseIsStill == 1 &amp;&amp; counter - tCounter >= stationaryNFrames" target="ReverseVStim"></transition>
+          <transition type="conditional" tag="if passing criteria, move to Delay Stim" condition="DoTactileStim &amp;&amp; MouseIsRunning == 1 &amp;&amp; counter - tCounter >= runNFrames" target="TactileStimDelay"></transition>
+          <transition type="conditional" tag="if still long enough, move to reverse Visual Stim" condition="DoTactileStim &amp;&amp; MouseIsStill == 1 &amp;&amp; counter - tCounter >= stationaryNFrames" target="TactileStimDelay"></transition>
 
             <transition type="conditional" tag="If exceeding MovingDotTotalNFrames, move to end of trial
-              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames" target="EndTrial" ></transition>
+              , move to EndTrial" condition="(counter - tCounter) >= MovingDotTotalNFrames &amp;&amp; DoMovingDot == 1" target="EndTrial" ></transition>
       </task_system_state>
 
 
@@ -314,6 +325,15 @@
             <action type="report" message="***Delay reverse of $ReverseDelayNFrames ***"/>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="if past delay, move to reverse" condition="counter - tCounter >= ReverseDelayNFrames" target="ReverseVStim"></transition>
+      </task_system_state>
+
+      <task_system_state tag="TactileStimDelay" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="assignment" variable="tCounter" value="counter"></action>
+            <action type="assignment" variable="tTactileStimDelayFrames" value="disc_rand(minTactileStimDelayNFrames,maxTactileStimDelayNFrames)"></action>
+            <action type="report" message="***Delay airpuff $tTactileStimDelayFrames ***"/>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="if past delay, move to reverse" condition="counter - tCounter >= tTactileStimDelayFrames" target="SendStim"></transition>
       </task_system_state>
 
       <task_system_state tag="ReverseVStim" interruptible="YES">
@@ -338,7 +358,9 @@
       <task_system_state tag="SendStim" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tCounter" value="counter"></action>
+            <action type="assignment" variable="didSendStim" value="1"/>
               <action type="if" condition="DoTactileStim == 1">
+                <action type="assignment" variable="lastTrialStimOn" value="1"/>
                 <action type="report" message="*** Sending Tactile Stimulus -- Staying in Post-Stim State for $TStimNFrames scans."></action>
                 <action type="assignment" variable="cTactileStimTurnedOn" value="counter"/>
                 <action type="assignment" variable="juice" value="tTactileStimulusDurationUs"/>
@@ -366,9 +388,9 @@
 
       <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-            <action type="report" message="Last trial stim on is $lastTrialStimOn !!!!!!!"></action>
+            <!--action type="report" message="Last trial stim on is $lastTrialStimOn !!!!!!!"></action-->
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            <action type="if" condition="tDotDirectionDeg == 0">
+            <action type="if" condition="tDotDirectionDeg == 0 &amp;&amp; DoMovingDot == 1">
               <action type="assignment" variable="lastTrialStimOn" value="0"/>
             </action>
             <action type="if" condition="MouseIsStill == 1">
@@ -403,6 +425,7 @@
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
             <action type="report" message="*** Trial Ends *** tTrialsDoneSinceStart =$tTrialsDoneSinceStart"></action>
+            <action type="report" message="_____________________________________________________________________________________"></action>
             <action type="assignment" tag="Set trialStart" variable="trialStart" value="0"></action>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
 
