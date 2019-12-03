@@ -1,9 +1,8 @@
 %% cutoffs and binning
 early_cutoff = 0.35;
-lapse_cutoff = 0.9;
+lapse_cutoff = 0.8;
 minTrN_ms = 20;
 minTrN_expt = 2;
-minTrN_timebin = 5;
 nBins = 6;
 minCyclesFA = 2;
 minTrialLengthMs = 500;
@@ -15,10 +14,6 @@ highThreshold = 0.8;
 audThreshAll = 0.015;
 
 timeBins = [0 1100 5000];
-
-targetTimeBins = [0 1200 5000];
-
-maxCycles = 8;
 
 minVisTarget = 8;
 maxVisTarget = 90;
@@ -33,8 +28,7 @@ visualTrials = 1;
 auditoryTrials = 2;
 valid  = 1;
 invalid = 2;
-hits = 1;
-misses = 2;
+
 %% colors & lines
 cueColor = {[0 0 0];[.5 .5 1]};
 AVColor = {[0 0 0];[0.5 0.5 0.5]};

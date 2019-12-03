@@ -1,7 +1,7 @@
 clear all
 close all
 
-ms2analyze = {'758'};
+ms2analyze = {'764'};
 exampleDay = 10;
 doExampleDay = false;
 doLoadPreviousDataset = true;
@@ -282,7 +282,6 @@ for im = 1:nmice
         invVisHighThreshID(tInvVisTargets < highThreshExpt & tInvVisTargets > 0) = 1;
         visMatchedHighThreshID = visMatchHighThreshTrialInd(visMatchHighThreshTrialInd > 0 & (hit | miss));
         visMatchedHighThreshOutcome = hit(visMatchHighThreshTrialInd > 0 & (hit | miss));
-        
         
         audHR = msExptInfo(iexp).audHR;
         ind = nAud > minTrN_expt;
