@@ -851,19 +851,8 @@ bxStats.allAttnBinomialTest = allAttnP;
 bxStats.allAttnPowerTest = allAttnPower;
 bxStats.sessionAttnTTest = cell2mat(sessionAttnTest);
 bxStats.sessionPowerTest = sessionAttnPowerTest;
-bxStats.attnMiceInd = bxStats.allAttnBinomialTest < attnTestAlpha & bxStats.allAttnPowerTest;
+% bxStats.attnMiceInd = bxStats.allAttnBinomialTest < attnTestAlpha & bxStats.allAttnPowerTest;
 
-fprintf('%s +/- %s (%s-%s) sessions per mouse\n', num2str(mean(bxStats.nSessionsPerMouse)),...
-    num2str(ste(bxStats.nSessionsPerMouse,2)),num2str(min(bxStats.nSessionsPerMouse)),...
-    num2str(max(bxStats.nSessionsPerMouse)))
-fprintf('%s +/- %s (%s-%s) sessions per attn mouse\n', ...
-    num2str(mean(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))),...
-    num2str(ste(bxStats.nSessionsPerMouse(bxStats.attnMiceInd),2)),...
-    num2str(min(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))),...
-    num2str(max(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))))
-fprintf('%s +/- %s (%s-%s) sessions per mouse\n', num2str(mean(bxStats.nTrialsPerMouse)),...
-    num2str(ste(bxStats.nTrialsPerMouse,2)),num2str(min(bxStats.nTrialsPerMouse)),...
-    num2str(max(bxStats.nTrialsPerMouse)))
 
 bxStats.av(visualTrials).targets = visTargets;
 bxStats.av(auditoryTrials).targets = audTargets;
@@ -878,11 +867,28 @@ bxStats.av(auditoryTrials).falseAlarmRate = mean(audFAR);
 bxStats.av(visualTrials).falseAlarmRateErr = ste(visFAR,2);
 bxStats.av(auditoryTrials).falseAlarmRateErr = ste(audFAR,2);
 
+bxStats.av(visualTrials).attnTest = visAttnP;
+bxStats.av(auditoryTrials).attnTest = audAttnP;
+bxStats.attnMiceInd = bxStats.av(visualTrials).attnTest < attnTestAlpha & bxStats.av(auditoryTrials).attnTest;
+
 [~,hiLoAttnTest] = ttest(allLoHiHRDiff(1,bxStats.attnMiceInd),...
     allLoHiHRDiff(2,bxStats.attnMiceInd));
 bxStats.allMatchedHRDiff = allVisAudHR(:,valid) - allVisAudHR(:,invalid);
 bxStats.allMatchedLoHiHRDiff = allLoHiHRDiff;
 bxStats.loHiAttnTest = hiLoAttnTest;
+
+
+fprintf('%s +/- %s (%s-%s) sessions per mouse\n', num2str(mean(bxStats.nSessionsPerMouse)),...
+    num2str(ste(bxStats.nSessionsPerMouse,2)),num2str(min(bxStats.nSessionsPerMouse)),...
+    num2str(max(bxStats.nSessionsPerMouse)))
+fprintf('%s +/- %s (%s-%s) sessions per attn mouse\n', ...
+    num2str(mean(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))),...
+    num2str(ste(bxStats.nSessionsPerMouse(bxStats.attnMiceInd),2)),...
+    num2str(min(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))),...
+    num2str(max(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))))
+fprintf('%s +/- %s (%s-%s) sessions per mouse\n', num2str(mean(bxStats.nTrialsPerMouse)),...
+    num2str(ste(bxStats.nTrialsPerMouse,2)),num2str(min(bxStats.nTrialsPerMouse)),...
+    num2str(max(bxStats.nTrialsPerMouse)))
 
 fprintf('Mean HR Diff/Err: %s/%s\n',...
     num2str(mean(bxStats.allMatchedHRDiff(bxStats.attnMiceInd),1)),...
@@ -947,8 +953,6 @@ fprintf('Mean Vis-Aud RT Diff Mean/Err: %s/%s; p=%s\n',...
 [~,bxStats.RTAVTest_loHi(2)] = ttest(visRT_loHi(bxStats.attnMiceInd,2),...
     audRT_loHi(bxStats.attnMiceInd,2));
 
-bxStats.av(visualTrials).attnTest = visAttnP;
-bxStats.av(auditoryTrials).attnTest = audAttnP;
 
 normHR_rew = nan(1,sum(bxStats.attnMiceInd));
 normHR_norew = nan(1,sum(bxStats.attnMiceInd));
@@ -1572,28 +1576,14 @@ print(fullfile(fnout,'HR_timeBinned'),'-dpdf','-fillpage')
 
 figure
 suptitle('Valid and Invalid HR matched for difficulty within modality')
-x = 1:maxCycles;
+x = minCycles:maxCycles;
 for iav = 1:2
-    timeBinHR_val = nan(nMice,maxCycles);
-    timeBinHR_inv = nan(nMice,maxCycles);
+    timeBinHR_val = nan(nMice,length(x));
+    timeBinHR_inv = nan(nMice,length(x));
     for im = 1:nMice
-        y = msHR(im).av(iav).cue(valid).HR_cycbinned;
+        y = msHR(im).av(iav).cue(valid).HR_cycbinned(x);
         timeBinHR_val(im,:) = y;
-        subplot(3,2,iav)
-        hold on
-        ind = ~isnan(y);
-        h = plot(x(ind),y(ind),'-');
-        if attnMiceInd(im)
-        h.Color = 'k'
-            h.LineStyle = '-';
-        elseif ~isempty(h)
-        h.Color = 'k'
-            h.LineStyle = ':';
-        end
-        
-        y = msHR(im).av(iav).cue(invalid).HR_cycbinned;
-        timeBinHR_inv(im,:) = y;
-        subplot(3,2,iav+2)
+        subplot(4,2,iav)
         hold on
         ind = ~isnan(y);
         h = plot(x(ind),y(ind),'-');
@@ -1601,22 +1591,36 @@ for iav = 1:2
         h.Color = 'k';
             h.LineStyle = '-';
         elseif ~isempty(h)
-        h.Color = 'k'
+        h.Color = 'k';
+            h.LineStyle = ':';
+        end
+        
+        y = msHR(im).av(iav).cue(invalid).HR_cycbinned(x);
+        timeBinHR_inv(im,:) = y;
+        subplot(4,2,iav+2)
+        hold on
+        ind = ~isnan(y);
+        h = plot(x(ind),y(ind),'-');
+        if attnMiceInd(im)
+        h.Color = 'k';
+            h.LineStyle = '-';
+        elseif ~isempty(h)
+        h.Color = 'k';
             h.LineStyle = ':';
         end
     end
-    subplot(3,2,iav)
-    figXAxis([],'Stim Number',[0 maxCycles+1],1:maxCycles,1:maxCycles)
+    subplot(4,2,iav)
+    figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
     figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
     figAxForm
     title([avLabel{iav} '-Valid'])
-    subplot(3,2,iav+2)
-    figXAxis([],'Stim Number',[0 maxCycles+1],1:maxCycles,1:maxCycles)
+    subplot(4,2,iav+2)
+    figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
     figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
     figAxForm
     title([avLabel{iav} '-Invalid'])
     
-    subplot(3,2,iav+4)
+    subplot(4,2,iav+4)
     hold on
     y = nanmean(timeBinHR_val(attnMiceInd,:),1);
     yerr = ste(timeBinHR_val(attnMiceInd,:),1);
@@ -1624,22 +1628,88 @@ for iav = 1:2
     y = nanmean(timeBinHR_inv(attnMiceInd,:),1);
     yerr = ste(timeBinHR_inv(attnMiceInd,:),1);
     errorbar(x,y,yerr,'.-')
-    figXAxis([],'Stim Number',[0 maxCycles+1],1:maxCycles,1:maxCycles)
+    figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
     figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
     figAxForm
     legend({'Val','Inv'},'location','northeastoutside')
+    
+    subplot(4,2,iav+6)
+    hold on
+    y = nanmean(timeBinHR_val(attnMiceInd,:)-timeBinHR_inv(attnMiceInd,:),1);
+    yerr = ste(timeBinHR_val(attnMiceInd,:)-timeBinHR_inv(attnMiceInd,:),1);
+    errorbar(x,y,yerr,'.-')
+    figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
+    figYAxis([],'Valid-Invalid Hit Rate (%)',[0-.1 1],0:.2:1)
+    figAxForm
+    hline(0,'k:')
+
 end
 print(fullfile(fnout,'HR_av_cycBinned'),'-dpdf','-fillpage')
 
 figure
 colors = brewermap(nMice,'Set2');
+suptitle('Visual Only')
+x = minCycles:maxCycles;
+timeBinHR_sub = nan(nMice,length(x));
+for im = 1:nMice
+    if attnMiceInd(im)
+        subplot 221
+    else
+        subplot 222
+    end
+    y = msHR(im).av(visualTrials).cue(valid).HR_cycbinned(x)-...
+        msHR(im).av(visualTrials).cue(invalid).HR_cycbinned(x);
+    timeBinHR_sub(im,:) = y;
+    hold on
+    ind = ~isnan(y);
+    h = plot(x(ind),y(ind),'-');
+    h.Color = 'k';
+    if attnMiceInd(im)
+        h.LineStyle = '-';
+    else
+        h.LineStyle = ':';
+    end
+end
+subplot 221
+figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
+figYAxis([],'Hit Rate (%)',[-0.7 0.7])
+figAxForm
+hline(0,'k:')
+title('Attention')
+subplot 222
+figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
+figYAxis([],'Hit Rate (%)',[-0.7 0.7])
+figAxForm
+hline(0,'k:')
+title('No Attention')    
+subplot 223
+hold on
+y = nanmean(timeBinHR_sub(attnMiceInd,:),1);
+yerr = ste(timeBinHR_sub(attnMiceInd,:),1);
+errorbar(x,y,yerr,'.-')
+figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
+figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.7 0.7])
+figAxForm
+hline(0,'k:')
+subplot 224
+hold on
+y = nanmean(timeBinHR_sub(~attnMiceInd,:),1);
+yerr = ste(timeBinHR_sub(~attnMiceInd,:),1);
+errorbar(x,y,yerr,'.-')
+figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
+figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.7 0.7])
+figAxForm
+hline(0,'k:')
+print(fullfile(fnout,'HR_visonly_cycBinned'),'-dpdf','-fillpage')
+
+figure
 x = minCycles:maxCycles;
 timeBinHR_val = nan(nMice,length(x));
 timeBinHR_inv = nan(nMice,length(x));
 for im = 1:nMice
     y = msHR(im).HR_cycbinned(valid,x);
     timeBinHR_val(im,:) = y;
-    subplot(2,2,1)
+    subplot(3,2,1)
     hold on
     ind = ~isnan(y);
     h = plot(x(ind),y(ind),'-');
@@ -1652,7 +1722,7 @@ for im = 1:nMice
 
     y = msHR(im).HR_cycbinned(invalid,x);
     timeBinHR_inv(im,:) = y;
-    subplot(2,2,2)
+    subplot(3,2,2)
     hold on
     ind = ~isnan(y);
     h = plot(x(ind),y(ind),'-');
@@ -1663,17 +1733,17 @@ for im = 1:nMice
         h.LineStyle = ':';
     end
 end
-subplot(2,2,1)
+subplot(3,2,1)
 figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
 figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
 figAxForm
 title('All-Valid')
-subplot(2,2,2)
+subplot(3,2,2)
 figXAxis([],'Stim Number',[0 maxCycles+1],x,x)
 figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
 figAxForm
 title('All-Invalid')
-subplot(2,2,3)
+subplot(3,2,3)
 hold on
 y = nanmean(timeBinHR_val(attnMiceInd,:),1);
 yerr = ste(timeBinHR_val(attnMiceInd,:),1);
@@ -1685,7 +1755,7 @@ figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
 figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
 figAxForm
 legend({'Val','Inv'},'location','northeastoutside')
-subplot(2,2,4)
+subplot(3,2,4)
 hold on
 y = nanmean(timeBinHR_val(attnMiceInd,:)-timeBinHR_inv(attnMiceInd,:),1);
 yerr = ste(timeBinHR_val(attnMiceInd,:)-timeBinHR_inv(attnMiceInd,:),1);
@@ -1694,15 +1764,51 @@ ind=0;
 h =[];
 for im = find(attnMiceInd)
     ind = ind+1;
-    h=plot(x,timeBinHR_val(im,:)-timeBinHR_inv(im,:),'-');
+    y = timeBinHR_val(im,:)-timeBinHR_inv(im,:);
+    h=plot(x(~isnan(y)),y(~isnan(y)),'-');
     h.Color = colors(im,:);
     L(ind) = h;
+    h.LineWidth = 2;
 end
 figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
-figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.1 0.5],-0.1:0.1:0.5)
+figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.5 0.5])
 figAxForm
 hline(0,'k:')
 legend(L,bxStats.mouseNames(attnMiceInd),'location','northeastoutside')
+
+subplot(3,2,5)
+hold on
+y = nanmean(timeBinHR_val(~attnMiceInd,:),1);
+yerr = ste(timeBinHR_val(~attnMiceInd,:),1);
+errorbar(x,y,yerr,'.-')
+y = nanmean(timeBinHR_inv(~attnMiceInd,:),1);
+yerr = ste(timeBinHR_inv(~attnMiceInd,:),1);
+errorbar(x,y,yerr,'.-')
+figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
+figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
+figAxForm
+legend({'Val','Inv'},'location','northeastoutside')
+subplot(3,2,6)
+hold on
+y = nanmean(timeBinHR_val(~attnMiceInd,:)-timeBinHR_inv(~attnMiceInd,:),1);
+yerr = ste(timeBinHR_val(~attnMiceInd,:)-timeBinHR_inv(~attnMiceInd,:),1);
+errorbar(x,y,yerr,'.-')
+ind=0;
+h =[];
+for im = find(~attnMiceInd)
+    ind = ind+1;
+    y = timeBinHR_val(im,:)-timeBinHR_inv(im,:);
+    h=plot(x(~isnan(y)),y(~isnan(y)),'-');
+    h.Color = colors(im,:);
+    h.LineWidth = 2;
+    L(ind) = h;
+end
+figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
+figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.5 0.5])
+figAxForm
+hline(0,'k:')
+legend(L,bxStats.mouseNames(~attnMiceInd),'location','northeastoutside')
+
 print(fullfile(fnout,'HR_cycBinned'),'-dpdf','-fillpage')
 
 %% add some stats to structure
