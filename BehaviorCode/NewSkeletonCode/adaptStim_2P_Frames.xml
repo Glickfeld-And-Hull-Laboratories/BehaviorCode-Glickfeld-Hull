@@ -27,6 +27,7 @@
       <variable tag="doRandDir" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doContingentAdapt" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>      
       <variable tag="doAsynchronousAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doSingleStimAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Trial Structure"/>
       <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Trial Structure"/>
@@ -112,6 +113,7 @@
 
       <variable tag="tDoContingentAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tDoAsynchronousAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="tDoSingleStimAdapt" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="nAdaptCond" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
 
       <variable tag="tDoRandCon" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
@@ -303,11 +305,16 @@
 
             <action type="assignment" variable="nAdaptCond" value="1"></action>
 
-            <action type="if" condition="doContingentAdapt &amp;&amp; !doAsynchronousAdapt || !doContingentAdapt &amp;&amp; doAsynchronousAdapt">
-              <action type="assignment" variable="nAdaptCond" value="2"></action>
+            <action type="if" condition="!doSingleStimAdapt">
+              <action type="if" condition="doContingentAdapt &amp;&amp; !doAsynchronousAdapt || !doContingentAdapt &amp;&amp; doAsynchronousAdapt">
+                <action type="assignment" variable="nAdaptCond" value="2"></action>
+              </action>
+              <action type="if" condition="doContingentAdapt &amp;&amp; doAsynchronousAdapt">
+                <action type="assignment" variable="nAdaptCond" value="3"></action>
+              </action>
             </action>
-            <action type="if" condition="doContingentAdapt &amp;&amp; doAsynchronousAdapt">
-              <action type="assignment" variable="nAdaptCond" value="3"></action>
+            <action type="if" condition="doSingleStimAdapt">
+              <action type="assignment" variable="nAdaptCond" value="2"></action>
             </action>
             <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % nAdaptCond) == 0">
               <action type="assignment" variable="tAdaptGratingContrast" value="0"></action>
@@ -316,6 +323,7 @@
               <action type="assignment" variable="tAdaptMaskGratingDirectionDeg" value="adaptGratingDirectionDeg+adaptMaskGratingDirectionDegDiff"></action>
               <action type="assignment" variable="tDoContingentAdapt" value="0"></action>
               <action type="assignment" variable="tDoAsynchronousAdapt" value="0"></action>
+              <action type="assignment" variable="tDoSingleStimAdapt" value="0"></action>
             </action>
 
             <action type="if" condition="(floor(ntrials/trialsPerAdaptBlock) % nAdaptCond) &gt; 0">
@@ -336,10 +344,17 @@
                <action type="if" condition="nAdaptCond == 2 &amp;&amp; doAsynchronousAdapt">
                 <action type="assignment" variable="tDoContingentAdapt" value="0"></action>
                 <action type="assignment" variable="tDoAsynchronousAdapt" value="1"></action>
+                <action type="assignment" variable="tDoSingleStimAdapt" value="0"></action>
                </action>
                <action type="if" condition="nAdaptCond == 2 &amp;&amp; doContingentAdapt">
                 <action type="assignment" variable="tDoContingentAdapt" value="1"></action>
                 <action type="assignment" variable="tDoAsynchronousAdapt" value="0"></action>
+                <action type="assignment" variable="tDoSingleStimAdapt" value="0"></action>
+               </action>
+               <action type="if" condition="nAdaptCond == 2 &amp;&amp; doSingleStimAdapt">
+                <action type="assignment" variable="tDoContingentAdapt" value="0"></action>
+                <action type="assignment" variable="tDoAsynchronousAdapt" value="0"></action>
+                <action type="assignment" variable="tDoSingleStimAdapt" value="1"></action>
                </action>
             </action>
 
@@ -404,8 +419,9 @@
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; tDoContingentAdapt" target="ContingentAdapt"></transition>
             <transition type="conditional" tag="Queue Adapt" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; tDoAsynchronousAdapt" target="AsynchronousAdapt"></transition>
-            <transition type="conditional" tag="If first trial, counter = 20 and ITI over, queue no Adapt" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; isFirstTrial &amp;&amp; counter > 19 &amp;&amp; !tDoContingentAdapt &amp;&amp; !tDoAsynchronousAdapt" target="NoAdapt"></transition>
-            <transition type="conditional" tag="Queue no Adapt" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; !tDoContingentAdapt &amp;&amp; !tDoAsynchronousAdapt" target="NoAdapt"></transition>
+            <transition type="conditional" tag="Queue Adapt" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; tDoSingleStimAdapt" target="AsynchronousAdapt"></transition>
+            <transition type="conditional" tag="If first trial, counter = 20 and ITI over, queue no Adapt" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; isFirstTrial &amp;&amp; counter > 19 &amp;&amp; !tDoContingentAdapt &amp;&amp; !tDoAsynchronousAdapt &amp;&amp; !tDoSingleStimAdapt" target="NoAdapt"></transition>
+            <transition type="conditional" tag="Queue no Adapt" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; !tDoContingentAdapt &amp;&amp; !tDoAsynchronousAdapt &amp;&amp; !tDoSingleStimAdapt" target="NoAdapt"></transition>
           </task_system_state>
                 
           <task_system_state tag="AsynchronousAdapt" interruptible="YES">
@@ -432,7 +448,8 @@
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="go to mask" condition="counter &gt;= (cAdaptTemp + nAdaptStimOnFrames)" target="AsynchronousAdapt2"></transition>
+            <transition type="conditional" tag="go to mask" condition="counter &gt;= (cAdaptTemp + nAdaptStimOnFrames) &amp;&amp; tDoAsynchronousAdapt" target="AsynchronousAdapt2"></transition>
+            <transition type="conditional" tag="go to mask" condition="counter &gt;= (cAdaptTemp + nAdaptStimOnFrames) &amp;&amp; tDoSingleStimAdapt" target="AdaptBlank"></transition>
             <transition type="conditional" tag="go to test" condition="counter &gt;= (cAdaptStart + nAdaptFrames)" target="testStimOn"></transition>
           </task_system_state>
 
@@ -454,7 +471,22 @@
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="go to mask" condition="counter &gt;= (cAdaptTemp + nAdaptStimOnFrames)" target="AsynchronousAdapt"></transition>
+            <transition type="conditional" tag="go to grating" condition="counter &gt;= (cAdaptTemp + nAdaptStimOnFrames)" target="AsynchronousAdapt"></transition>
+            <transition type="conditional" tag="go to test" condition="counter &gt;= (cAdaptStart + nAdaptFrames)" target="testStimOn"></transition>
+          </task_system_state>
+
+          <task_system_state tag="AdaptBlank" interruptible="YES">
+            <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adaptGrating"></action>
+
+            <action type="if" condition="doPhotodiode">
+              <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
+              <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
+              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
+            </action>
+            <action type="update_stimulus_display" tag="justincase"></action> 
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="go to grating" condition="counter &gt;= (cAdaptTemp + nAdaptStimOnFrames)" target="AsynchronousAdapt"></transition>
             <transition type="conditional" tag="go to test" condition="counter &gt;= (cAdaptStart + nAdaptFrames)" target="testStimOn"></transition>
           </task_system_state>
 
