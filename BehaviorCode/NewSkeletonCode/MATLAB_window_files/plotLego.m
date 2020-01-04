@@ -719,6 +719,7 @@ end
 
 axH = subplot(spSz{:},8);
 hold on;
+
 if nCorr>0 && input.doTestRobot==0,
     plotTrs = contDiffV(correctIx|incorrectIx);
     uqDiff = unique(plotTrs);
@@ -734,7 +735,7 @@ if nCorr>0 && input.doTestRobot==0,
     didNoGoIx = celleqel2mat_padded(input.didNoGo);
     plotTrsNoGo = contDiffV(~noGoIx&didNoGoIx);
     if find(didNoGoIx)
-      nLevelsNoGo = unique(plotTrsNoGo);
+      nLevelsNoGo = plotTrsNoGo;
       for kk=1:length(nLevelsNoGo)
         valNoGo = nLevelsNoGo(kk);
         valIx = contDiffV==valNoGo;
@@ -743,7 +744,7 @@ if nCorr>0 && input.doTestRobot==0,
         percentContCellNoGoByDiff{kk} = totalNTrialsValNoGo/totalNTrialsVal;
       end
     end
-
+    if input.doOriDiscrim == 0 
     if ~find(uqDiff <=0)
       pH = plot(uqDiff, cell2mat(percentCell));
     else
@@ -753,7 +754,7 @@ if nCorr>0 && input.doTestRobot==0,
       pH = plot(uqDiff, percentCell);
     end
     if length(plotTrsNoGo)>0
-       pH1 = plot(unique(abs(sc_num * nLevelsNoGo)), cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
+       pH1 = plot(sc_num * nLevelsNoGo, cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
        set(pH1, ...
         'LineWidth', 1.5, ...
         'Marker', '.', ...
@@ -798,7 +799,7 @@ if nCorr>0 && input.doTestRobot==0,
       title('Percent Correct by Contrast RAtio')
       end
 end
-
+end
 
 %%%%%%%%%%%%%%%%
 %% 9 - cdf of decision times
