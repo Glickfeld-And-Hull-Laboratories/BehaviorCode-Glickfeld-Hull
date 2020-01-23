@@ -235,6 +235,9 @@
       <variable tag="block2MaskOneGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
       <variable tag="block2MaskOneGratingDirectionStepN" scope="global" logging="when_changed" default_value="12" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
       <variable tag="block2MaskOneGratingDirectionStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
+      <variable tag="block2MaskOneGratingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
+      <variable tag="block2MaskOneGratingPhaseStepN" scope="global" logging="when_changed" default_value="12" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
+      <variable tag="block2MaskOneGratingPhaseStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
 
       <variable tag="block2MatchStimOneParameters" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Block 2 Stimulus Two Parameters"/>
       <variable tag="block2StimTwoDoVisualStim" scope="global" logging="when_changed" default_value="500" type="float" persistant="1" groups="Block 2 Stimulus Two Parameters"/>
@@ -281,6 +284,9 @@
       <variable tag="block2MaskTwoGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
       <variable tag="block2MaskTwoGratingDirectionStepN" scope="global" logging="when_changed" default_value="12" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
       <variable tag="block2MaskTwoGratingDirectionStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
+      <variable tag="block2MaskTwoGratingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
+      <variable tag="block2MaskTwoGratingPhaseStepN" scope="global" logging="when_changed" default_value="12" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
+      <variable tag="block2MaskTwoGratingPhaseStepDeg" scope="global" logging="when_changed" default_value="30" type="float" persistant="1" groups="Block 2 Mask Parameters"/>
 
       <variable tag="Do2LED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Alternating LED"/>
       <variable tag="LED_sequence" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="1" groups="Alternating LED"/>
@@ -666,7 +672,6 @@
                     <action type="assignment" variable="tDoRandPhase" value="block2DoRandPhase"></action>
                     <action type="assignment" variable="tDoRandMaskCon" value="block2DoRandMaskCon"></action>
                     <action type="assignment" variable="tDoRandMaskDir" value="block2DoRandMaskDir"></action> 
-                    <action type="assignment" variable="tDoRandMaskDir" value="block2DoRandMaskPhase"></action> 
                     <action type="assignment" variable="tDoRandMaskPhase" value="block2DoRandMaskPhase"></action> 
                     <action type="assignment" variable="tDoRandSoundAmp" value="block2DoRandSoundAmp"></action> 
                     <action type="assignment" variable="tDoRandSoundFreq" value="block2DoRandSoundFreq"></action> 
@@ -1291,14 +1296,15 @@
                           <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value= "maskTwoGratingPhaseDeg+ (maskTwoGratingPhaseStepDeg * ((tTempMask2) % maskTwoGratingPhaseStepN))"/>
                           <action type="assignment" variable="tMaskTwoGratingContrast" value= "maskTwoGratingContrast * pow(maskTwoGratingContrastStepLog, (floor(tTempMask2 / maskTwoGratingPhaseStepN)))"/>
                         </action>
-                        <action type="if" condition="doZeroCon &amp;&amp; floor(tTempMask1 / maskTwoGratingPhaseStepN) == maskTwoGratingContrastStepN-1">
+                        <action type="if" condition="doZeroCon &amp;&amp; floor(tTempMask1 / maskTwoGratingPhaseStepN) == maskTwoGratingContrastStepN-1"/>
                         <action type="assignment" variable="tMaskTwoGratingContrast" value= "0"/>
                       </action>  
                       </action>
 
                   </action>
+                </action>
                 </action> 
-            </action>  
+             
 
             <action type="if" condition="tDoMatrix">
 
