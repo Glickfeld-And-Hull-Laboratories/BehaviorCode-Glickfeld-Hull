@@ -1188,6 +1188,9 @@
                         </action>
                       </action> 
                     </action> 
+                    <action type="if" condition="tMaskOneGratingContrast==0 || tStimOneGratingContrast==0">
+                      <action type="assignment" variable="tDoRandMaskPhase" value= "0"/>
+                    </action>  
 
                     <action type="if" condition="tDoRandMaskDir &amp;&amp; !tDoRandMaskCon">
                       <action type="assignment" variable="tTempMask1" value= "tMaskNumber % maskOneGratingDirectionStepN"/>
@@ -1271,33 +1274,23 @@
 
                     <action type="if" condition="tDoRandMaskPhase &amp;&amp; tDoRandMaskCon">
                       <action type="assignment" variable="tTempMask1" value= "tMaskNumber % (maskOneGratingPhaseStepN * maskOneGratingContrastStepN)"/>
-                      <action type="if" condition="tTempMask1 &lt; maskOneGratingPhaseStepN">
+                      <action type="if" condition="tTempMask1 &lt; maskOneGratingContrastStepN">
+                        <action type="assignment" variable="tMaskOneGratingPhaseDeg" value= "maskOneGratingPhaseDeg"/>
+                      </action>
+                      <action type="if" condition="tTempMask1 &gt;= maskOneGratingContrastStepN">
                         <action type="assignment" variable="tMaskOneGratingPhaseDeg" value= "maskOneGratingPhaseDeg + (maskOneGratingPhaseStepDeg * (tTempMask1))"/>
-                        <action type="assignment" variable="tMaskOneGratingContrast" value= "maskOneGratingContrast"/>
-                      </action>
-                      <action type="if" condition="tTempMask1 &gt;= maskOneGratingPhaseStepN">
-                        <action type="assignment" variable="tMaskOneGratingPhaseDeg" value= "maskOneGratingPhaseDeg+ (maskOneGratingPhaseStepDeg * ((tTempMask1) % maskOneGratingPhaseStepN))"/>
-                        <action type="assignment" variable="tMaskOneGratingContrast" value= "maskOneGratingContrast * pow(maskOneGratingContrastStepLog, (floor(tTempMask1 / maskOneGratingPhaseStepN)))"/>
-                      </action>
-                      <action type="if" condition="doZeroCon &amp;&amp; floor(tTempMask1 / maskOneGratingPhaseStepN) == maskOneGratingContrastStepN-1">
-                        <action type="assignment" variable="tMaskOneGratingContrast" value= "0"/>
                       </action>
                       <action type="if" condition="matchStimOneParameters">
                         <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value= "tMaskOneGratingPhaseDeg"/>
-                        <action type="assignment" variable="tMaskTwoGratingContrast" value= "tMaskOneGratingContrast"/>
                       </action>
                       <action type="if" condition="!matchStimOneParameters">
                         <action type="assignment" variable="tTempMask2" value= "tMaskNumber % (maskTwoGratingPhaseStepN * maskTwoGratingContrastStepN)"/>
-                        <action type="if" condition="tTempMask2 &lt; maskTwoGratingPhaseStepN">
-                          <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value= "maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * (tTempMask2))"/>
-                          <action type="assignment" variable="tMaskTwoGratingContrast" value= "maskTwoGratingContrast"/>
+                        <action type="if" condition="tTempMask2 &lt; maskTwoGratingContrastStepN">
+                          <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value= "maskTwoGratingPhaseDeg"/>
                         </action>  
-                        <action type="if" condition="tTempMask2 &gt;= maskTwoGratingPhaseStepN">
-                          <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value= "maskTwoGratingPhaseDeg+ (maskTwoGratingPhaseStepDeg * ((tTempMask2) % maskTwoGratingPhaseStepN))"/>
-                          <action type="assignment" variable="tMaskTwoGratingContrast" value= "maskTwoGratingContrast * pow(maskTwoGratingContrastStepLog, (floor(tTempMask2 / maskTwoGratingPhaseStepN)))"/>
+                        <action type="if" condition="tTempMask2 &gt;= maskTwoGratingContrastStepN">
+                          <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value="maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * (tTempMask2))"/>
                         </action>
-                        <action type="if" condition="doZeroCon &amp;&amp; floor(tTempMask1 / maskTwoGratingPhaseStepN) == maskTwoGratingContrastStepN-1"/>
-                        <action type="assignment" variable="tMaskTwoGratingContrast" value= "0"/>
                       </action>  
                       </action>
 
