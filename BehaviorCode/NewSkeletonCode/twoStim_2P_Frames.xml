@@ -1293,7 +1293,7 @@
                         <action type="assignment" variable="tMaskOneGratingPhaseDeg" value= "maskOneGratingPhaseDeg"/>
                       </action>
                       <action type="if" condition="tTempMask1 &gt;= maskOneGratingContrastStepN">
-                        <action type="assignment" variable="tMaskOneGratingPhaseDeg" value= "maskOneGratingPhaseDeg + (maskOneGratingPhaseStepDeg * (tTempMask1))"/>
+                        <action type="assignment" variable="tMaskOneGratingPhaseDeg" value= "maskOneGratingPhaseDeg + (maskOneGratingPhaseStepDeg * (floor(tTempMask1 / maskOneGratingContrastStepN)))"/>
                       </action>
                       <action type="if" condition="matchStimOneParameters">
                         <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value= "tMaskOneGratingPhaseDeg"/>
@@ -1304,7 +1304,7 @@
                           <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value= "maskTwoGratingPhaseDeg"/>
                         </action>  
                         <action type="if" condition="tTempMask2 &gt;= maskTwoGratingContrastStepN">
-                          <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value="maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * (tTempMask2))"/>
+                          <action type="assignment" variable="tMaskTwoGratingPhaseDeg" value= "maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * (floor(tTempMask2 / maskTwoGratingContrastStepN)))"/>
                         </action>
                       </action>  
                       </action>
