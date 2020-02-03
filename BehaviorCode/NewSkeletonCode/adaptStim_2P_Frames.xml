@@ -165,7 +165,8 @@
   </variables>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
-    <stimulus type="drifting_grating" tag="adaptGrating"  direction="0" starting_phase="gratingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="adaptGrating"  direction="0" autoplay="YES"
+              starting_phase="gratingPhaseDeg" 
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingTemporalFreqCPS/gratingSpatialFreqCPD" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -173,7 +174,8 @@
               x_position="gratingAzimuthDeg" y_position="gratingElevationDeg" 
               rotation="tAdaptGratingDirectionDeg" 
               alpha_multiplier="tAdaptGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="adaptMask"  direction="0" starting_phase="gratingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="adaptMask"  direction="0" autoplay="YES"
+              starting_phase="gratingPhaseDeg" 
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingTemporalFreqCPS/gratingSpatialFreqCPD" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -181,7 +183,8 @@
               x_position="gratingAzimuthDeg" y_position="gratingElevationDeg" 
               rotation="tAdaptMaskGratingDirectionDeg" 
               alpha_multiplier="tAdaptMaskGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="testGrating"  direction="0" starting_phase="gratingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="testGrating"  direction="0" autoplay="YES"
+              starting_phase="gratingPhaseDeg" 
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingTemporalFreqCPS/gratingSpatialFreqCPD" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -189,7 +192,8 @@
               x_position="gratingAzimuthDeg" y_position="gratingElevationDeg" 
               rotation="tTestStimGratingDirectionDeg" 
               alpha_multiplier="tTestStimGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="testMask"  direction="0" starting_phase="gratingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="testMask"  direction="0" autoplay="YES"
+              starting_phase="gratingPhaseDeg" 
               spatial_frequency="gratingSpatialFreqCPD" 
               speed="gratingTemporalFreqCPS/gratingSpatialFreqCPD" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -197,7 +201,8 @@
               x_position="gratingAzimuthDeg" y_position="gratingElevationDeg" 
               rotation="tTestMaskGratingDirectionDeg" 
               alpha_multiplier="tTestMaskGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="photoDiodeGrating"  direction="0" starting_phase="0"
+    <stimulus type="drifting_grating" tag="photoDiodeGrating"  direction="0" autoplay="YES"
+              starting_phase="0"
               spatial_frequency=".000000000001" 
               speed="0" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -205,7 +210,8 @@
               x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" 
               rotation="0" 
               alpha_multiplier="photoStimulusContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="photoDiodeMask"  direction="0" starting_phase="1"
+    <stimulus type="drifting_grating" tag="photoDiodeMask"  direction="0" autoplay="YES"
+              starting_phase="1"
               spatial_frequency="photoMaskSpatialFreq" 
               speed="0" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -257,7 +263,6 @@
 
             <action type="if" condition="doPhotodiode">
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
-              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action> 
               <action type="update_stimulus_display" tag="justincase"></action>
             </action>
             
@@ -433,12 +438,10 @@
 
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adaptMask"></action> 
           	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="adaptGrating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="adaptGrating" tag="AdaptOn"></action>  
 
             <action type="if" condition="doPhotodiode">
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
-              <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
             </action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="assignment" variable="cAdaptTemp" value="counter" />
@@ -456,12 +459,10 @@
           <task_system_state tag="AsynchronousAdapt2" interruptible="YES">
             <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="adaptGrating"></action> 
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="adaptMask"></action> 
-            <action type="play_dynamic_stimulus" stimulus="adaptMask" tag="AdaptOn"></action>  
 
             <action type="if" condition="doPhotodiode">
               <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
-              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
             </action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="assignment" variable="cAdaptTemp" value="counter" />
@@ -481,7 +482,6 @@
             <action type="if" condition="doPhotodiode">
               <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
-              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
             </action>
             <action type="update_stimulus_display" tag="justincase"></action> 
 
@@ -498,14 +498,11 @@
             </action>
 
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="adaptMask"></action> 
-            <action type="play_dynamic_stimulus" stimulus="adaptMask" tag="AdaptOn"></action>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="adaptGrating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="adaptGrating" tag="AdaptOn"></action>  
 
             <action type="if" condition="doPhotodiode">
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
-              <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
             </action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="assignment" variable="cAdaptTemp" value="counter" />
@@ -526,7 +523,6 @@
             <action type="if" condition="doPhotodiode">
               <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
-              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
             </action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="assignment" variable="cAdaptTemp" value="counter" />
@@ -556,14 +552,11 @@
             <action type="update_stimulus_display" tag="justincase"></action>
             
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="testGrating"></action> 
-            <action type="play_dynamic_stimulus" stimulus="testGrating" tag="StimOn"></action>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="testMask"></action> 
-            <action type="play_dynamic_stimulus" stimulus="testMask" tag="StimOn"></action>
             
             <action type="if" condition="doPhotodiode">
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
               <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
-              <action type="play_dynamic_stimulus" stimulus="photoDiodeGrating" tag="StimOn"></action>
             </action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="assignment" variable="cTestOn" value="counter" />
@@ -587,7 +580,6 @@
             <action type="if" condition="doPhotodiode">
               <action tag="dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeGrating"></action>
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeMask"></action>
-              <action type="play_dynamic_stimulus" stimulus="photoDiodeMask" tag="StimOn"></action>  
             </action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="assignment" variable="cTestOff" value="counter" />

@@ -464,7 +464,8 @@
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
-    <stimulus type="drifting_grating" tag="stimOne"  direction="0" starting_phase="tStimOneGratingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="stimOne"  direction="0" autoplay="YES"
+              starting_phase="tStimOneGratingPhaseDeg" 
               spatial_frequency="tStimOneGratingSpatialFreqCPD" 
               speed="tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -472,7 +473,8 @@
               x_position="tStimOneGratingAzimuthDeg" y_position="tStimOneGratingElevationDeg" 
               rotation="tStimOneGratingDirectionDeg" 
               alpha_multiplier="tStimOneGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="stimTwo"  direction="0" starting_phase="tStimTwoGratingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="stimTwo"  direction="0" autoplay="YES" 
+              starting_phase="tStimTwoGratingPhaseDeg" 
               spatial_frequency="tStimTwoGratingSpatialFreqCPD" 
               speed="tStimTwoGratingTemporalFreqCPS/tStimTwoGratingSpatialFreqCPD" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -480,7 +482,8 @@
               x_position="tStimTwoGratingAzimuthDeg" y_position="tStimTwoGratingElevationDeg" 
               rotation="tStimTwoGratingDirectionDeg" 
               alpha_multiplier="tStimTwoGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="maskOne"  direction="0" starting_phase="tMaskOneGratingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="maskOne"  direction="0" autoplay="YES"
+              starting_phase="tMaskOneGratingPhaseDeg" 
               spatial_frequency="tStimOneGratingSpatialFreqCPD" 
               speed="tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -488,7 +491,8 @@
               x_position="tStimOneGratingAzimuthDeg" y_position="tStimOneGratingElevationDeg" 
               rotation="tMaskOneGratingDirectionDeg" 
               alpha_multiplier="tMaskOneGratingContrast"></stimulus>
-    <stimulus type="drifting_grating" tag="maskTwo"  direction="0" starting_phase="tMaskTwoGratingPhaseDeg" 
+    <stimulus type="drifting_grating" tag="maskTwo"  direction="0" autoplay="YES"
+              starting_phase="tMaskTwoGratingPhaseDeg" 
               spatial_frequency="tStimTwoGratingSpatialFreqCPD" 
               speed="tStimTwoGratingTemporalFreqCPS/tStimTwoGratingSpatialFreqCPD" 
               grating_type="sinusoid" mask="gaussian" std_dev="0.3" mean="0.1" 
@@ -1574,10 +1578,8 @@
             <action type="assignment" variable="ntrials" value="ntrials + 1"/>
 
           	<action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="stimOne"></action> 
-          	<action type="play_dynamic_stimulus" stimulus="stimOne" tag="StimOn"></action>
             <action type="if" condition="doMask">
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="maskOne"></action> 
-              <action type="play_dynamic_stimulus" stimulus="maskOne" tag="StimOn"></action>
             </action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="play_sound" sound="stimOneSound"/>
@@ -1612,10 +1614,8 @@
           <task_system_state tag="StimTwoOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="stimTwo"></action> 
-            <action type="play_dynamic_stimulus" stimulus="stimTwo" tag="StimOn"></action>
             <action type="if" condition="doMask"> 
               <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="maskTwo"></action>  
-              <action type="play_dynamic_stimulus" stimulus="maskTwo" tag="StimOn"></action>
             </action>
             <action type="update_stimulus_display" tag="justincase"></action>
             <action type="play_sound" sound="stimTwoSound"/>
