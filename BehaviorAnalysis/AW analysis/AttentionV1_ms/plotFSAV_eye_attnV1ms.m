@@ -11,6 +11,12 @@ fnin = fullfile(rc.caOutputDir, ds,[titleStr '_eye_']);
 load([fnin 'eyeStruct'])
 
 fnout = fullfile(rc.ashley,'Manuscripts','Attention V1','Matlab Figs');
+if strcmp(ds,'FSAV_attentionV1')
+    printTag = '';
+else
+    printTag = 'noAttn_';
+end
+
 if useRandSeed
     load(fullfile(fnout,'eyeStats'))
     rng(eyeStats.randGeneratorSeed);
@@ -46,6 +52,9 @@ for im = 1:nMice
     target_alltemp = cell(3,1);
     
     for iexp = 1:nexp
+        if isempty(d.expt(iexp).date)
+            continue
+        end
         de = d.expt(iexp);
         for ipos = 1:3
             for iav = 1:2
@@ -55,14 +64,14 @@ for im = 1:nMice
                 start_long_temp{ipos,iav} = cat(2,start_long_temp{ipos,iav},...
                     dp.align(1).longTC);
                 target_temp{ipos,iav} = cat(2,target_temp{ipos,iav},...
-                    dp.align(2).TC);
+                    dp.align(4).TC);
                 
                 start_short_alltemp{ipos} = cat(2,start_short_alltemp{ipos},...
                     dp.align(1).shortTC);
                 start_long_alltemp{ipos} = cat(2,start_long_alltemp{ipos},...
                     dp.align(1).longTC);
                 target_alltemp{ipos} = cat(2,target_alltemp{ipos},...
-                    dp.align(2).TC);
+                    dp.align(4).TC);
             end
         end
     end
@@ -240,10 +249,10 @@ for im = 1:nMice
     end
     figure(eyeFig_AV)
     print(fullfile(fnout,...
-        ['eyeSummary_exampleMouse_AV_' mice{im}]),'-dpdf','-fillpage')
+        [printTag 'eyeSummary_exampleMouse_AV_' mice{im}]),'-dpdf','-fillpage')
     figure(eyeFig_all)
     print(fullfile(fnout,...
-        ['eyeSummary_exampleMouse_allTrials_' mice{im}]),'-dpdf','-fillpage')
+        [printTag 'eyeSummary_exampleMouse_allTrials_' mice{im}]),'-dpdf','-fillpage')
 end
 %% quantify positions for each mouse
 earlyAntiResp = cellfun(@(x) mean(x(eyeRespWinFr,:),1),...
@@ -386,7 +395,7 @@ for ipos = 1:3
     figAxForm
 end
 
-print(fullfile(fnout,'eyeSummary_AV_allAttnMice'),'-dpdf','-fillpage')
+print(fullfile(fnout,[printTag 'eyeSummary_AV_allAttnMice']),'-dpdf','-fillpage')
 
 figure
 for ipos = 1:3
