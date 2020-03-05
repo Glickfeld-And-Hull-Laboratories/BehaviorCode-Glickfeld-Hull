@@ -160,8 +160,9 @@ end
 
 if input.doBlock2==1,
   block2Str = 'Block2: on \n';
+  b2TrPer80Str = ['[' num2str([input.block2TrPer80Level1 input.block2TrPer80Level2 input.block2TrPer80Level3 input.block2TrPer80Level4 input.block2TrPer80Level5 input.block2TrPer80Level6 input.block2TrPer80Level7 input.block2TrPer80Level8]) ']' ];
   if input.block2DoTrialLaser==1,
-    block2Str = sprintf('Block2: on, Trial Laser Power:%5.2fmW \n', double(input.block2TrialLaserPowerMw));
+    block2Str = sprintf('Block2: on, Trial Laser Power:%5.2fmW \n b2TrPer80: %s \n', double(input.block2TrialLaserPowerMw), b2TrPer80Str);
   end
 elseif input.doBlock2==0,
   block2Str = 'Block2: off \n';
