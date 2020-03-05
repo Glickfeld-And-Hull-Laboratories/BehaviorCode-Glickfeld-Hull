@@ -3,7 +3,7 @@ close all
 
 %%
 behav_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\Behavior\Data';
-mouse = 'i460';
+mouse = 'i461';
 ds= [mouse '_exptList'];
 eval(ds)
 doFit = 1;
