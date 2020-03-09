@@ -41,9 +41,10 @@ for im = 1:nMice
     fn = fullfile(rc.ashleyAnalysis,mouseName,'behavior');
     load(fullfile(fn,[mouseName,'bxSummary_dataAnalyzed_attnV1ms']))
     msSumStruct = cat(1,msSumStruct,msCmlvData);
-%     if im == exMsInd
-%         exMsExptInfo = msExptAnalyzed;
-%     end
+    msExptStruct(im) = {msExptAnalyzed};
+    if im == exMsInd
+        exMsExptInfo = msExptAnalyzed;
+    end
     load(fullfile(fn,[mouseName,'bxSummary_data.mat']))
     msExpt = msExptInfo(exptInd);
     nTrialsPerExpt{im} = cellfun(@length,{msExpt.hit});
@@ -1049,6 +1050,7 @@ hiLoHR = cell(2,2);
 hiLoHR(:) = {nan(nMice,2)};
 allHR = cell(1,2);
 allHR(:) = {nan(nMice,2)};
+L = [];
 for im = 1:nMice
     for iav = 1:2
         for ithresh = 1:2
@@ -1101,11 +1103,16 @@ for im = 1:nMice
             y = mean(allHR{iav}(attnMiceInd,:),1);
             yerr = ste(allHR{iav}(attnMiceInd,:),1);
             h = errorbar(x,y,yerr,'.');
-            h.Color = 'k';
+            L(1) = h;
+            y = mean(allHR{iav}(~attnMiceInd,:),1);
+            yerr = ste(allHR{iav}(~attnMiceInd,:),1);
+            h = errorbar(x,y,yerr,'.');
+            L(2) = h;
             figXAxis([],'',[0 3],x,{'Vaild';'Invalid'})
             figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
             figAxForm
             title(sprintf('All Trials, alpha = %s',num2str(round(attnTestAlpha,2,'significant'))))
+            legend(L,{'Attn','No Attn'},'location','southwest')
         end
     end
 end
@@ -1207,13 +1214,15 @@ for im = 1:nMice
     end
     FAR(im,:) = y;
 end
-y = mean(FAR(attnMiceInd,:),1);
-yerr = ste(FAR(attnMiceInd,:),1);
+% y = mean(FAR(attnMiceInd,:),1);
+% yerr = ste(FAR(attnMiceInd,:),1);
+y = mean(FAR,1);
+yerr = ste(FAR,1);
 errorbar(x,y,yerr,'k.')
 figXAxis([],'',[0 3],x,{'Vis';'Aud'})
 figYAxis([],'FA Rate',FAR_lim,FAR_label,FAR_label)
 figAxForm
-[~,p] = ttest(FAR(attnMiceInd,1),FAR(attnMiceInd,2));
+[~,p] = ttest(FAR(:,1),FAR(:,2));
 title(sprintf('p = %s',num2str(round(p,2,'significant'))))
 subplot 522
 LR = nan(nMice,2);
@@ -1230,24 +1239,24 @@ for im = 1:nMice
         h.LineStyle = ':';
     end
 end
-y = mean(LR(attnMiceInd,:),1);
-yerr = ste(LR(attnMiceInd,:),1);
+y = mean(LR,1);
+yerr = ste(LR,1);
 errorbar(x,y,yerr,'k.')
 figXAxis([],'',[0 3],x,{'Vis';'Aud'})
 figYAxis([],'Lapse Rate',FAR_lim,FAR_label,FAR_label)
 figAxForm
-[~,p] = ttest(LR(attnMiceInd,1),LR(attnMiceInd,2));
+[~,p] = ttest(LR(:,1),LR(:,2));
 title(sprintf('p = %s',num2str(round(p,2,'significant'))))
 
 %reaction time
 RTanovaTestAV = nan(1,2);
 for iav = 1:2
     subplot(5,2,iav+2)
-    RT = nan(sum(attnMiceInd),2);
+    RT = nan(length(attnMiceInd),2);
     for im = 1:nMice
-        if ~attnMiceInd(im)
-            continue
-        end
+%         if ~attnMiceInd(im)
+%             continue
+%         end
         x = 1:2;
         y = cat(2,msHR(im).av(iav).cue(valid).RT, ...
             msHR(im).av(iav).cue(invalid).RT);
@@ -1261,21 +1270,24 @@ for iav = 1:2
         end
         RT(im,:) = y;
     end
-    y = mean(squeeze(RT(:,:)),1);
-    yerr = ste(squeeze(RT(:,:)),1);
-    h = errorbar(x,y,yerr,'k.');
+    y = mean(squeeze(RT(attnMiceInd,:)),1);
+    yerr = ste(squeeze(RT(attnMiceInd,:)),1);
+    h = errorbar(x,y,yerr,'.');
+    y = mean(squeeze(RT(~attnMiceInd,:)),1);
+    yerr = ste(squeeze(RT(~attnMiceInd,:)),1);
+    h = errorbar(x,y,yerr,'.');
     figXAxis([],'',[0 3],x,{'Val';'Inv'})
     figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
     figAxForm
     [~,p] = ttest(RT(:,1),RT(:,2),'tail','right');
     title(sprintf('%s, p=%s',avLabel{iav},num2str(p)))
     subplot(5,2,iav+4)
-    RT = nan(sum(attnMiceInd),nBins);
+    RT = nan(length(attnMiceInd),nBins);
     RTtargets = nan(nMice,nBins);
     for im = 1:nMice
-        if ~attnMiceInd(im)
-            continue
-        end
+%         if ~attnMiceInd(im)
+%             continue
+%         end
         x = msHR(im).av(iav).cue(valid).RTtargets;
         y = msHR(im).av(iav).cue(valid).RTbinned;
         hold on
@@ -1313,10 +1325,11 @@ for iav = 1:2
     figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
     figAxForm
     subplot(5,2,iav+6)
-    y = nanmean(RT,1);
-    yerr = ste(RT,1);
-    x = nanmean(RTtargets,1);
-    xerr = ste(RTtargets,1);
+    ind = sum(~isnan(RT),1) > 3;
+    y = nanmean(RT(:,ind),1);
+    yerr = ste(RT(:,ind),1);
+    x = nanmean(RTtargets(:,ind),1);
+    xerr = ste(RTtargets(:,ind),1);
     errorbar(x,y,yerr,yerr,xerr,xerr,'k.')
     if iav == 1
         title('Visual Trials')
@@ -1336,30 +1349,14 @@ for iav = 1:2
     figAxForm
     
 end
-% subplot 529
-% RT = nan(sum(attnMiceInd),2);
-% for im = 1:nMice
-%     if ~attnMiceInd(im)
-%         continue
-%     end
-%     for iav = 1:2
-%         RT(im,iav) = msHR(im).av(iav).cue(valid).RT;
-%     end
-%     hold on
-%     plot(1:2,RT(im,:),'k-');
-% end
-% y = mean(RT,1);
-% yerr = ste(RT,1);
-% errorbar(1:2,y,yerr,'k')
-% figXAxis([],'',[0 3],1:2,{'Vis';'Aud'})
-% figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
-% figAxForm
+
 for irt = 1:2
     subplot(5,2,8+irt)
-    y = cat(2,visRT_loHi(bxStats.attnMiceInd,irt),audRT_loHi(bxStats.attnMiceInd,irt));
+    y = cat(2,visRT_loHi(:,irt),audRT_loHi(:,irt));
     yerr = ste(y,1);
-    plot(1:2,y,'k-')
+    plot(1:2,y(attnMiceInd,:),'k-')
     hold on
+    plot(1:2,y(~attnMiceInd,:),'k:')
     errorbar(1:2,mean(y,1),yerr,'.')
     figXAxis([],'',[0 3],1:2,{'Vis';'Aud'})
     figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
@@ -1818,6 +1815,7 @@ bxStats.av(auditoryTrials).RTanova = RTanovaTestAV(auditoryTrials);
 save(fullfile(fnout,'bxStats'),'bxStats')
 %% example mouse
 sessionAttnFig = figure;
+sessionVisAttnFig = figure;
 [nSessRows,nSessCols] = optimizeSubplotDim(nMice);
 for im = 1:nMice
     mouseName = ms2analyze{im};
@@ -1966,7 +1964,173 @@ for im = 1:nMice
         figYAxis([],'Invalid Hit Rate (%)',HR_lim,HR_label,HR_label)
         figAxForm
         title(sprintf('%s, p=%s',ms2analyze{im},num2str(round(p,2,'significant'))))
+        
+        figure(sessionVisAttnFig)
+        subplot(nSessRows,nSessCols,im)
+        x = matchedHR{visualTrials,im}(valid,:);
+        y = matchedHR{visualTrials,im}(invalid,:);
+        h = plot(x,y,'k.');
+        [~,p] = ttest(x,y,'tail','right');
+        hold on
+        h = errorbar(nanmean(x(ind)),nanmean(y(ind)),...
+            ste(y(ind),2),ste(y(ind),2),ste(x(ind),2),ste(x(ind),2),'k.');
+        h.LineWidth = 1;
+        plot(HR_lim,HR_lim,'k--')
+        figXAxis([],'Valid Hit Rate (%)',HR_lim,HR_label,HR_label)
+        figYAxis([],'Invalid Hit Rate (%)',HR_lim,HR_label,HR_label)
+        figAxForm
+        title(sprintf('%s, p=%s',ms2analyze{im},num2str(round(p,2,'significant'))))
     end
 end
 figure(sessionAttnFig)
 print(fullfile(fnout,'bxSummary_sessionAttn_allMice'),'-dpdf','-fillpage')
+figure(sessionVisAttnFig)
+print(fullfile(fnout,'bxSummary_sessionAttn_vis_allMice'),'-dpdf','-fillpage')
+
+%% training history
+daysBins = [0:20:140 300];
+nBins = length(daysBins)-1;
+daysBins_label = cat(2,cellfun(@num2str,num2cell(10:20:140),'unif',0),{'>150'});
+date_firstDay = getDateFromNumberForm(...
+    cellfun(@str2num,exptSummaryInfo.FirstDay)');
+date_firstAV= getDateFromNumberForm(...
+    cellfun(@str2num,exptSummaryInfo.FirstAV)');
+date_firstInv = getDateFromNumberForm(...
+    cellfun(@str2num,exptSummaryInfo.FirstInvalid)');
+
+msTrainHistory = struct;
+msTrainHistory.attn(1).name = 'Attn';
+msTrainHistory.attn(2).name = 'No Attn';
+
+msTrainHistory.mouseName = ms2analyze;
+msTrainHistory.matchHRDiff_vis = bxStats.av(visualTrials).matchedHRDiff;
+msTrainHistory.days2AV = days(date_firstAV-date_firstDay);
+msTrainHistory.days2Inv = days(date_firstInv-date_firstDay);
+msTrainHistory.daysAV2Inv = days(date_firstInv-date_firstAV);
+for im = 1:nMice
+    d = msExptStruct{im};
+    exptDates = getDateFromNumberForm(cell2mat({d.date}));
+    msTrainHistory.inv_daysSinceFirst{im} = days(exptDates-date_firstInv(im));
+    thresh = nan(1,length(exptDates));
+    for iexp = 1:size(d,2)
+        thresh(iexp) = d(iexp).av(visualTrials).threshold;
+    end
+    msTrainHistory.threshold_vis{im} = thresh;
+    msTrainHistory.matchHRDiff_vis_expt{im} = ...
+        matchedHR{visualTrials,im}(valid,:)-matchedHR{visualTrials,im}(invalid,:);
+    
+end
+
+msTrainHistory.attn(1).matchHRDiff_vis_binned = nan(1,nBins);
+msTrainHistory.attn(1).matchHRDiff_vis_binned_err = nan(1,nBins);
+daysSinceFirstID = discretize(...
+    cell2mat(msTrainHistory.inv_daysSinceFirst(attnMiceInd)),daysBins);
+matchHRDiff = cell2mat(msTrainHistory.matchHRDiff_vis_expt(attnMiceInd));
+for ibin = 1:nBins
+    ind = daysSinceFirstID == ibin;
+    msTrainHistory.attn(1).matchHRDiff_vis_binned(ibin) = nanmean(matchHRDiff(ind));
+    msTrainHistory.attn(1).matchHRDiff_vis_binned_err(ibin) = ste(matchHRDiff(ind),2);
+end
+
+msTrainHistory.attn(2).matchHRDiff_vis_binned = nan(1,nBins);
+msTrainHistory.attn(2).matchHRDiff_vis_binned_err = nan(1,nBins);
+daysSinceFirstID = discretize(...
+    cell2mat(msTrainHistory.inv_daysSinceFirst(~attnMiceInd)),daysBins);
+matchHRDiff = cell2mat(msTrainHistory.matchHRDiff_vis_expt(~attnMiceInd));
+for ibin = 1:nBins
+    ind = daysSinceFirstID == ibin;
+    msTrainHistory.attn(2).matchHRDiff_vis_binned(ibin) = nanmean(matchHRDiff(ind));
+    msTrainHistory.attn(2).matchHRDiff_vis_binned_err(ibin) = ste(matchHRDiff(ind),2);
+end
+
+figure
+subplot 411
+for im = 1:nMice
+    subplot 411
+    hold on
+    x = msTrainHistory.inv_daysSinceFirst{im};
+    [sortX,sortInd] = sort(x);
+    y = msTrainHistory.matchHRDiff_vis_expt{im}(sortInd);
+    ind = ~isnan(y);
+    h=plot(sortX(ind),y(ind),'k-','MarkerSize',20);
+    if attnMiceInd(im)
+        h.LineStyle = '-';
+    else
+        h.LineStyle = ':';
+    end
+    subplot 412
+    hold on
+    y = msTrainHistory.threshold_vis{im}(sortInd);
+    h=plot(sortX(ind),y(ind),'k-','MarkerSize',20);
+    if attnMiceInd(im)
+        h.LineStyle = '-';
+    else
+        h.LineStyle = ':';
+    end
+end
+subplot 411
+x = 10:20:160;
+for i = 1:2
+    y = msTrainHistory.attn(i).matchHRDiff_vis_binned;
+    ind = ~isnan(y);
+    h = plot(x(ind),y(ind),'-','LineWidth',3);
+    if i==1
+        h.LineStyle = '-';
+    else
+        h.LineStyle = ':';
+    end
+end
+figXAxis([],'Days Since First Invalid',[0 290],x,daysBins_label)
+figYAxis([],'Val-Inv HR (Visual Only)',[-0.5 1])
+figAxForm([],0)
+subplot 412
+figXAxis([],'Days Since First Invalid',[0 290])
+figYAxis([],'Threshold (Visual)',[0 50])
+figAxForm([],0)
+
+subplot 425
+x = msTrainHistory.days2AV(attnMiceInd);
+y = msTrainHistory.matchHRDiff_vis(attnMiceInd);
+plot(x,y,'.','MarkerSize',20)
+hold on
+x = msTrainHistory.days2AV(~attnMiceInd);
+y = msTrainHistory.matchHRDiff_vis(~attnMiceInd);
+plot(x,y,'.','MarkerSize',20)
+figXAxis([],'Days to first AV Day',[0 200])
+figYAxis([],'Val-Inv HR (Visual Only)',[-0.2 0.5])
+figAxForm
+hold on
+hline(0,'k:')
+legend({'Attn','No Attn'},'location','northeastoutside')
+
+subplot 426
+x = msTrainHistory.days2Inv(attnMiceInd);
+y = msTrainHistory.matchHRDiff_vis(attnMiceInd);
+plot(x,y,'.','MarkerSize',20)
+hold on
+x = msTrainHistory.days2Inv(~attnMiceInd);
+y = msTrainHistory.matchHRDiff_vis(~attnMiceInd);
+plot(x,y,'.','MarkerSize',20)
+figXAxis([],'Days to first Invalid Day',[0 200])
+figYAxis([],'Val-Inv HR (Visual Only)',[-0.2 0.5])
+figAxForm
+hold on
+hline(0,'k:')
+legend({'Attn','No Attn'},'location','northeastoutside')
+
+subplot 427
+x = msTrainHistory.daysAV2Inv(attnMiceInd);
+y = msTrainHistory.matchHRDiff_vis(attnMiceInd);
+plot(x,y,'.','MarkerSize',20)
+hold on
+x = msTrainHistory.daysAV2Inv(~attnMiceInd);
+y = msTrainHistory.matchHRDiff_vis(~attnMiceInd);
+plot(x,y,'.','MarkerSize',20)
+figXAxis([],'First AV to first Invalid Day',[0 200])
+figYAxis([],'Val-Inv HR (Visual Only)',[-0.2 0.5])
+figAxForm
+hold on
+hline(0,'k:')
+legend({'Attn','No Attn'},'location','northeastoutside')
+
+print(fullfile(fnout,'bxSummary_trainingHistory'),'-dpdf','-fillpage')
