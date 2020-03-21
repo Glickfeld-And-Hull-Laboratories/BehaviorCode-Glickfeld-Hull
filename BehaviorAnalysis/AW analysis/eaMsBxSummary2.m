@@ -1,16 +1,18 @@
 clear all
 close all
 
+mouseType = 'PV-Cre';
+
 doLoadPreviousDataset = true;
-doCheck4NewDates = false;
-doRewarded = true;
+doCheck4NewDates = true;
+doRewarded = false;
 
 
 bxParams_FSAV_attnV1ms
 rc = behavConstsAV;
 exptSummaryDir = fullfile(rc.ashley,...
-    'Manuscripts','Attention V1','Mouse Info.xlsx');
-exptSummaryInfo = readtable(exptSummaryDir);
+    'Analysis','FSAV Summaries','Mouse Info.xlsx');
+exptSummaryInfo = readtable(exptSummaryDir,'Sheet',mouseType);
 ms2analyze = exptSummaryInfo.SubjectNumber';
 
 
@@ -32,7 +34,7 @@ for im = 1:nmice
             'experimentIndexes','FSAV_noCatchRewEaMouseData.xls');
         disp(savedDataName)
     end
-    if doLoadPreviousDataset
+    if doLoadPreviousDataset & exist(fullfile(fnout,savedDataName),'file')
         load(fullfile(fnout,savedDataName))
         if doCheck4NewDates
             bxDataInfo = table2struct(readtable(xlsFileDir,'Sheet',mouseName));
@@ -329,8 +331,6 @@ for im = 1:nmice
          
             msCmlvData.valTargetTimeMs = cat(2,msCmlvData.valTargetTimeMs,targetTimeMs);
             msCmlvData.invTargetTimeMs = cat(2,msCmlvData.invTargetTimeMs,invTargetTimeMs);
-            msCmlvData.valTargetCycle = cat(2,msCmlvData.valTargetCycle,nCycles);
-            msCmlvData.invTargetCycle = cat(2,msCmlvData.invTargetCycle,invCycles);
             msCmlvData.visMatchedHighThreshID = cat(2,msCmlvData.visMatchedHighThreshID,visMatchedHighThreshID);
             msCmlvData.visMatchedHighThreshOutcome = cat(2,msCmlvData.visMatchedHighThreshOutcome,visMatchedHighThreshOutcome);
             msCmlvData.invVisHighThreshID = cat(2,msCmlvData.invVisHighThreshID,invVisHighThreshID);
@@ -354,8 +354,6 @@ for im = 1:nmice
             msCmlvData.twoStimBackRT = twoStimBackRT;
             msCmlvData.valTargetTimeMs = targetTimeMs;
             msCmlvData.invTargetTimeMs = invTargetTimeMs;
-            msCmlvData.valTargetCycle = nCycles;
-            msCmlvData.invTargetCycle = invCycles;
             msCmlvData.visMatchedHighThreshID = visMatchedHighThreshID;
             msCmlvData.visMatchedHighThreshOutcome = visMatchedHighThreshOutcome;
             msCmlvData.invVisHighThreshID = invVisHighThreshID;
@@ -374,6 +372,6 @@ for im = 1:nmice
     end
     msCmlvData.visNFAandDistractors = nFA_vis;
     msCmlvData.audNFAandDistractors = nFA_aud;
-    save(fullfile(fnout,[savedDataName 'Analyzed_attnV1ms']),...
+    save(fullfile(fnout,[savedDataName 'Analyzed']),...
         'exptInd', 'msExptAnalyzed', 'msCmlvData')
 end

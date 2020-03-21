@@ -2,24 +2,22 @@
 %% load data
 clear all
 close all
+mouseType = 'PV-Cre';
 % useRandSeed = true;
 rc = behavConstsAV;
 exptSummaryDir = fullfile(rc.ashley,...
-    'Manuscripts','Attention V1','Mouse Info.xlsx');
-exptSummaryInfo = readtable(exptSummaryDir);
-fnout = fullfile(rc.ashley,'Manuscripts','Attention V1','Matlab Figs');
-% 
-% ms2analyze = cellfun(@num2str,num2cell(exptSummaryInfo.SubjectNumber),...
-%     'unif',0);
+    'Analysis','FSAV Summaries','Mouse Info.xlsx');
+exptSummaryInfo = readtable(exptSummaryDir,'Sheet',mouseType);
+
 ms2analyze = exptSummaryInfo.SubjectNumber';
 nMice = length(ms2analyze);
 
-exampleMouse = '668';
+exampleMouse = '764';
 exMsInd = find(strcmp(ms2analyze,exampleMouse));
 
 bxParams_FSAV_attnV1ms
 
-doPlot = true;
+fnout = fullfile(rc.ashleyAnalysis,'FSAV Summaries','Behavior',[mouseType '_']);
 
 % if useRandSeed
 %     load(fullfile(fnout,'bxStats'))
@@ -28,7 +26,7 @@ doPlot = true;
 
 %% compile data
 
-trainRew = strcmp(exptSummaryInfo.TrainingType,'Reward');
+% trainRew = strcmp(exptSummaryInfo.TrainingType,'Reward');
 
 msSumStruct = [];
 msExptStruct = cell(1,nMice);
@@ -39,13 +37,12 @@ matchedHR = cell(2,nMice);
 for im = 1:nMice
     mouseName = ms2analyze{im};
     fn = fullfile(rc.ashleyAnalysis,mouseName,'behavior');
-    load(fullfile(fn,[mouseName,'bxSummary_dataAnalyzed_attnV1ms']))
+    load(fullfile(fn,[mouseName,'bxSummary_noRew_dataAnalyzed']))
     msSumStruct = cat(1,msSumStruct,msCmlvData);
-    msExptStruct(im) = {msExptAnalyzed};
-    if im == exMsInd
-        exMsExptInfo = msExptAnalyzed;
-    end
-    load(fullfile(fn,[mouseName,'bxSummary_data.mat']))
+%     if im == exMsInd
+%         exMsExptInfo = msExptAnalyzed;
+%     end
+    load(fullfile(fn,[mouseName,'bxSummary_noRew_data.mat']))
     msExpt = msExptInfo(exptInd);
     nTrialsPerExpt{im} = cellfun(@length,{msExpt.hit});
     nInvPerExpt{im} = cellfun(@(x,y,z,a)...
@@ -282,51 +279,52 @@ for im = 1:nMice
         nAudHits(audInd)+nAudMisses(audInd));
     msAudFitWithFA = weibullFitLG(audTargetsWithFA, audHRWithFA, ...
         0,0, {'nTrials',nAudTrialsWithFA});
-    if allAttnTest < attnTestAlpha
-        if trainRew(im)
-            rewSortInd = 1;
-        else
-            rewSortInd = 2;     
-        end
-        if rewSortStart(rewSortInd) == 1
-            rewSortMsData(rewSortInd).av(visualTrials).cue(valid).targets = cat(2,msCmlvData.tVisTargets,...
-                rewSortMsData(rewSortInd).av(visualTrials).cue(valid).targets);
-            rewSortMsData(rewSortInd).hit = cat(2,msCmlvData.hit,...
-                rewSortMsData(rewSortInd).hit);
-            rewSortMsData(rewSortInd).miss = cat(2,msCmlvData.miss,...
-                rewSortMsData(rewSortInd).miss);
-
-            rewSortMsData(rewSortInd).av(visualTrials).cue(invalid).targets = cat(2,msCmlvData.tInvVisTargets,...
-                rewSortMsData(rewSortInd).av(visualTrials).cue(invalid).targets);
-            rewSortMsData(rewSortInd).invHit = cat(2,msCmlvData.invHit,...
-                rewSortMsData(rewSortInd).invHit);
-            rewSortMsData(rewSortInd).invMiss = cat(2,msCmlvData.invMiss,...
-                rewSortMsData(rewSortInd).invMiss);
-
-            rewSortMsData(rewSortInd).av(auditoryTrials).cue(valid).targets = cat(2,msCmlvData.tAudTargets,...
-                rewSortMsData(rewSortInd).av(auditoryTrials).cue(valid).targets);
-
-            rewSortMsData(rewSortInd).av(auditoryTrials).cue(invalid).targets = cat(2,msCmlvData.tInvAudTargets,...
-                rewSortMsData(rewSortInd).av(auditoryTrials).cue(invalid).targets);
-        else
-            rewSortMsData(rewSortInd).av(visualTrials).cue(valid).targets = msCmlvData.tVisTargets;
-            rewSortMsData(rewSortInd).hit = msCmlvData.hit;
-            rewSortMsData(rewSortInd).miss = msCmlvData.miss;
-
-            rewSortMsData(rewSortInd).av(visualTrials).cue(invalid).targets = msCmlvData.tInvVisTargets;
-            rewSortMsData(rewSortInd).invHit = msCmlvData.invHit;
-            rewSortMsData(rewSortInd).invMiss = msCmlvData.invMiss;
-
-            rewSortMsData(rewSortInd).av(auditoryTrials).cue(valid).targets = msCmlvData.tAudTargets;
-
-            rewSortMsData(rewSortInd).av(auditoryTrials).cue(invalid).targets = msCmlvData.tInvAudTargets;
-        end
-        if trainRew(im)
-            rewSortStart(1) = 1;
-        else   
-            rewSortStart(2) = 1;
-        end
-    end
+    
+%     if allAttnTest < attnTestAlpha
+%         if trainRew(im)
+%             rewSortInd = 1;
+%         else
+%             rewSortInd = 2;     
+%         end
+%         if rewSortStart(rewSortInd) == 1
+%             rewSortMsData(rewSortInd).av(visualTrials).cue(valid).targets = cat(2,msCmlvData.tVisTargets,...
+%                 rewSortMsData(rewSortInd).av(visualTrials).cue(valid).targets);
+%             rewSortMsData(rewSortInd).hit = cat(2,msCmlvData.hit,...
+%                 rewSortMsData(rewSortInd).hit);
+%             rewSortMsData(rewSortInd).miss = cat(2,msCmlvData.miss,...
+%                 rewSortMsData(rewSortInd).miss);
+% 
+%             rewSortMsData(rewSortInd).av(visualTrials).cue(invalid).targets = cat(2,msCmlvData.tInvVisTargets,...
+%                 rewSortMsData(rewSortInd).av(visualTrials).cue(invalid).targets);
+%             rewSortMsData(rewSortInd).invHit = cat(2,msCmlvData.invHit,...
+%                 rewSortMsData(rewSortInd).invHit);
+%             rewSortMsData(rewSortInd).invMiss = cat(2,msCmlvData.invMiss,...
+%                 rewSortMsData(rewSortInd).invMiss);
+% 
+%             rewSortMsData(rewSortInd).av(auditoryTrials).cue(valid).targets = cat(2,msCmlvData.tAudTargets,...
+%                 rewSortMsData(rewSortInd).av(auditoryTrials).cue(valid).targets);
+% 
+%             rewSortMsData(rewSortInd).av(auditoryTrials).cue(invalid).targets = cat(2,msCmlvData.tInvAudTargets,...
+%                 rewSortMsData(rewSortInd).av(auditoryTrials).cue(invalid).targets);
+%         else
+%             rewSortMsData(rewSortInd).av(visualTrials).cue(valid).targets = msCmlvData.tVisTargets;
+%             rewSortMsData(rewSortInd).hit = msCmlvData.hit;
+%             rewSortMsData(rewSortInd).miss = msCmlvData.miss;
+% 
+%             rewSortMsData(rewSortInd).av(visualTrials).cue(invalid).targets = msCmlvData.tInvVisTargets;
+%             rewSortMsData(rewSortInd).invHit = msCmlvData.invHit;
+%             rewSortMsData(rewSortInd).invMiss = msCmlvData.invMiss;
+% 
+%             rewSortMsData(rewSortInd).av(auditoryTrials).cue(valid).targets = msCmlvData.tAudTargets;
+% 
+%             rewSortMsData(rewSortInd).av(auditoryTrials).cue(invalid).targets = msCmlvData.tInvAudTargets;
+%         end
+%         if trainRew(im)
+%             rewSortStart(1) = 1;
+%         else   
+%             rewSortStart(2) = 1;
+%         end
+%     end
     
     f = msVisFitWithFA.modelFun(msVisFitWithFA.coefEsts, msVisXGrid);
     oriAtHighThresh = msVisXGrid(find(f > highThreshold,1));
@@ -416,19 +414,6 @@ for im = 1:nMice
         msCmlvData.tAudTargets,msCmlvData.tInvAudTargets,...
         msCmlvData.hit,msCmlvData.miss,msCmlvData.invHit,msCmlvData.invMiss);
     
-    [valHR_vis_timBins,invHR_vis_timBins] = getTimeBinHR(...
-        msCmlvData,msCmlvData.tVisTargets,msCmlvData.tInvVisTargets,targetTimeBins);
-    [valHR_aud_timBins,invHR_aud_timBins] = getTimeBinHR(...
-        msCmlvData,msCmlvData.tAudTargets,msCmlvData.tInvAudTargets,targetTimeBins);
-    
-    [valHR_vis_cyc,invHR_vis_cyc] = getHREaCyc(msCmlvData,...
-        msCmlvData.tVisTargets,msCmlvData.tInvVisTargets,maxCycles,minTrN_timebin);
-    [valHR_aud_cyc,invHR_aud_cyc] = getHREaCyc(msCmlvData,...
-        msCmlvData.tAudTargets,msCmlvData.tInvAudTargets,maxCycles,minTrN_timebin);
-    [valHR_all_cyc,invHR_all_cyc] = getHREaCyc_av(msCmlvData,...
-        maxCycles,minTrN_timebin,visBinEdges,audBinEdges);
-    
-    
     msHR(im).matchedHRall = [allHRall,allInvHRall];
     msHR(im).attnTestAll = allAttnTest;
     msHR(im).attnTestPowerTest = allAttnN >= allAttnPower;
@@ -505,18 +490,6 @@ for im = 1:nMice
     msHR(im).av(auditoryTrials).cue(invalid).hiLoHR = invHR_highThreshold_aud;
     msHR(im).av(auditoryTrials).cue(invalid).RT = invRT_aud;
     
-    msHR(im).av(visualTrials).cue(valid).HR_timebinned = valHR_vis_timBins;
-    msHR(im).av(visualTrials).cue(invalid).HR_timebinned = invHR_vis_timBins;
-    msHR(im).av(auditoryTrials).cue(valid).HR_timebinned = valHR_aud_timBins;
-    msHR(im).av(auditoryTrials).cue(invalid).HR_timebinned = invHR_aud_timBins;
-    msHR(im).av(visualTrials).cue(valid).HR_cycbinned = valHR_vis_cyc;
-    msHR(im).av(visualTrials).cue(invalid).HR_cycbinned = invHR_vis_cyc;
-    msHR(im).av(auditoryTrials).cue(valid).HR_cycbinned = valHR_aud_cyc;
-    msHR(im).av(auditoryTrials).cue(invalid).HR_cycbinned = invHR_aud_cyc;
-    msHR(im).av(auditoryTrials).cue(valid).HR_cycbinned = valHR_aud_cyc;
-    msHR(im).av(auditoryTrials).cue(invalid).HR_cycbinned = invHR_aud_cyc;
-    msHR(im).HR_cycbinned = [valHR_all_cyc;invHR_all_cyc];
-    
     HR{auditoryTrials,invalid}(im,invAudInd) = ...
         msHR(im).av(auditoryTrials).cue(invalid).HR;
     targets{auditoryTrials,invalid}(im,invAudInd) = ...
@@ -562,212 +535,212 @@ for icue = 1:2
         end
     end
 end
-
-rewSortMsHR = struct;
-rewSortMsHR(1).name = 'Training Rewarded';
-rewSortMsHR(2).name = 'Training Not Rewarded';
-for im = 1:2
-    hit = rewSortMsData(im).hit;
-    miss = rewSortMsData(im).miss;
-    invHit = rewSortMsData(im).invHit;
-    invMiss = rewSortMsData(im).invMiss;
-    
-    tVisTargets = rewSortMsData(im).av(visualTrials).cue(valid).targets;
-    tAudTargets = rewSortMsData(im).av(auditoryTrials).cue(valid).targets;
-    visTargets = unique(tVisTargets);
-    visTargets = visTargets(2:end);
-    audTargets = unique(tAudTargets);
-    audTargets = audTargets(2:end);
-    
-    tInvVisTargets = rewSortMsData(im).av(visualTrials).cue(invalid).targets;
-    tInvAudTargets = rewSortMsData(im).av(auditoryTrials).cue(invalid).targets;
-    
-%     visBinEdges = exp(linspace(log(min(visTargets)-1),log(max(visTargets)),nBins+1));
-%     audBinEdges = exp(linspace(...
-%         log(min(audTargets(audTargets > 0.00001))-...
-%         (0.5*min(audTargets(audTargets > 0.00001)))),...
-%         log(max(audTargets)),nBins+1));
-    [~,~,visBinInd] = histcounts(tVisTargets,visBinEdges);
-    [~,~,audBinInd] = histcounts(tAudTargets,audBinEdges);
-    [~,~,invVisBinInd] = histcounts(tInvVisTargets,visBinEdges);
-    [~,~,invAudBinInd] = histcounts(tInvAudTargets,audBinEdges);
-        
-    nVisHits = nan(1,nBins);
-    nVisMisses = nan(1,nBins);
-    nAudHits = nan(1,nBins);
-    nAudMisses = nan(1,nBins);
-    visTargetsBinned = nan(1,nBins);
-    audTargetsBinned = nan(1,nBins);
-    visTargetsSte = nan(1,nBins);
-    audTargetsSte = nan(1,nBins);
-    nInvVisHits = nan(1,nBins);
-    nInvVisMisses = nan(1,nBins);
-    nInvAudHits = nan(1,nBins);
-    nInvAudMisses = nan(1,nBins);
-    invVisTargetsBinned = nan(1,nBins);
-    invAudTargetsBinned = nan(1,nBins);
-    invVisTargetsSte = nan(1,nBins);
-    invAudTargetsSte = nan(1,nBins); 
-%     visRTBinned = nan(1,nBins);
-%     audRTBinned = nan(1,nBins);
-%     visRTBinnedSte = nan(1,nBins);
-%     audRTBinnedSte = nan(1,nBins);
-    for ibin = 1:nBins
-        ind = (hit | miss) & visBinInd == ibin;
-        if sum(ind) > minTrN_ms
-            nVisHits(ibin) = sum(hit & visBinInd == ibin);
-            nVisMisses(ibin) = sum(miss & visBinInd == ibin);
-            visTargetsBinned(ibin) = mean(tVisTargets(ind));
-            visTargetsSte(ibin) = ste(tVisTargets(ind),2);
-%             visRTBinned(ibin) = mean(msCmlvData.valRT(ind & hit));
-%             visRTBinnedSte(ibin) = ste(msCmlvData.valRT(ind & hit),2);
-        end
-
-        ind = (hit | miss) & audBinInd == ibin;
-        if sum(ind) > minTrN_ms
-            nAudHits(ibin) = sum(hit & audBinInd == ibin);
-            nAudMisses(ibin) = sum(miss & audBinInd == ibin);
-            audTargetsBinned(ibin) = mean(tAudTargets(ind));
-            audTargetsSte(ibin) = ste(tAudTargets(ind),2);
-%             audRTBinned(ibin) = mean(msCmlvData.valRT(ind & hit));
-%             audRTBinned(ibin) = ste(msCmlvData.valRT(ind & hit),2);
-        end
-
-        ind = (invHit | invMiss) & invVisBinInd == ibin;
-        if sum(ind) > minTrN_ms
-            nInvVisHits(ibin) = sum(invVisBinInd == ibin & invHit);
-            nInvVisMisses(ibin) = sum(invVisBinInd == ibin & invMiss);
-            invVisTargetsBinned(ibin) = mean(tInvVisTargets(ind));
-            invVisTargetsSte(ibin) = ste(tInvVisTargets(ind),2);
-        end
-
-        ind = (invHit | invMiss) & invAudBinInd == ibin;
-        if sum(ind) > minTrN_ms  
-            nInvAudHits(ibin) = sum(invAudBinInd == ibin & invHit);
-            nInvAudMisses(ibin) = sum(invAudBinInd == ibin & invMiss);
-            invAudTargetsBinned(ibin) = mean(tInvAudTargets(ind));
-            invAudTargetsSte(ibin) = ste(tInvAudTargets(ind),2);
-        end
-    end
-    visInd = ~isnan(nVisHits);
-    invVisInd = ~isnan(nInvVisHits); 
-    audInd = ~isnan(nAudHits);
-    invAudInd = ~isnan(nInvAudHits); 
-    
-    [visHR,visHR95ci] = binofit(nVisHits(visInd),nVisHits(visInd)+nVisMisses(visInd));
-    [audHR,audHR95ci] = binofit(nAudHits(audInd),nAudHits(audInd)+nAudMisses(audInd));
-    if sum(nInvVisHits(invVisInd)+nInvVisMisses(invVisInd)) > 0
-        [invVisHR,invVisHR95ci] = binofit(nInvVisHits(invVisInd),...
-            nInvVisHits(invVisInd)+nInvVisMisses(invVisInd));
-    else
-        invVisHR = nan;
-        invVisHR95ci = nan(1,2);
-    end
-    if sum(nInvAudHits(invAudInd)+nInvAudMisses(invAudInd)) > 0
-        [invAudHR,invAudHR95ci] = binofit(nInvAudHits(invAudInd),...
-            nInvAudHits(invAudInd)+nInvAudMisses(invAudInd));
-    else
-        invAudHR = nan;
-        invAudHR95ci = nan(1,2);
-    end
-    FAR_vis = msCmlvData.visNFAandDistractors(1)./msCmlvData.visNFAandDistractors(2);
-    FAR_aud = msCmlvData.audNFAandDistractors(1)./msCmlvData.audNFAandDistractors(2);
-    
-    visHRWithFA = cat(2,FAR_vis,visHR);
-    visTargetsWithFA = cat(2,0,visTargetsBinned(visInd));
-    nVisTrialsWithFA = cat(2,msCmlvData.visNFAandDistractors(2),...
-        nVisHits(visInd)+nVisMisses(visInd));
-    msVisFitWithFA = weibullFitLG(visTargetsWithFA, visHRWithFA, ...
-        0,0, {'nTrials',nVisTrialsWithFA});
-    
-    audHRWithFA = cat(2,FAR_aud,audHR);
-    audTargetsWithFA = cat(2,0,audTargetsBinned(audInd));
-    nAudTrialsWithFA = cat(2,msCmlvData.audNFAandDistractors(2),...
-        nAudHits(audInd)+nAudMisses(audInd));
-    msAudFitWithFA = weibullFitLG(audTargetsWithFA, audHRWithFA, ...
-        0,0, {'nTrials',nAudTrialsWithFA});
-    
-    [valHR_highThreshold_vis, invHR_highThreshold_vis,...
-        valCI_highThreshold_vis, invCI_highThreshold_vis,...
-        nVal_highThreshold_vis, nInv_highThreshold_vis] = ...
-        getMatchedHighThresholdHR(visTargetsBinned,msVisFitWithFA,highThreshold,...
-        tVisTargets,tInvVisTargets,...
-        hit,miss,invHit,invMiss);
-    
-    [valHR_highThreshold_aud, invHR_highThreshold_aud,...
-        valCI_highThreshold_aud, invCI_highThreshold_aud,...
-        nVal_highThreshold_aud, nInv_highThreshold_aud] = ...
-        getMatchedHighThresholdHR(audTargetsBinned,msAudFitWithFA,highThreshold,...
-        tAudTargets,tInvAudTargets,...
-        hit,miss,invHit,invMiss);
-    
-    invAllHR_vis = sum(tInvVisTargets > 0 & invHit)./...
-        sum(tInvVisTargets > 0 &(invHit | invMiss));
-    valMatchInd = ismember(tVisTargets,unique(tInvVisTargets(tInvVisTargets > 0)));
-    valAllHR_vis = sum(valMatchInd & hit)./...
-        sum(valMatchInd &(hit | miss));
-    nMatchedVis = [sum(valMatchInd &(hit | miss)),...
-        sum(tInvVisTargets > 0 &(invHit | invMiss))];
-    
-    invAllHR_aud = sum(tInvAudTargets > 0 & invHit)./...
-        sum(tInvAudTargets > 0 &(invHit | invMiss));
-    valMatchInd = ismember(tAudTargets,unique(tInvAudTargets(tInvAudTargets > 0)));
-    valAllHR_aud = sum(valMatchInd & hit)./...
-        sum(valMatchInd &(hit | miss));
-    nMatchedAud = [sum(valMatchInd &(hit | miss)),...
-        sum(tInvAudTargets > 0 &(invHit | invMiss))];
-    
-    invAllHR_all = sum((tInvVisTargets > 0|tInvAudTargets > 0) & invHit)./...
-        sum((tInvVisTargets > 0|tInvAudTargets > 0) &(invHit | invMiss));
+% 
+% rewSortMsHR = struct;
+% rewSortMsHR(1).name = 'Training Rewarded';
+% rewSortMsHR(2).name = 'Training Not Rewarded';
+% for im = 1:2
+%     hit = rewSortMsData(im).hit;
+%     miss = rewSortMsData(im).miss;
+%     invHit = rewSortMsData(im).invHit;
+%     invMiss = rewSortMsData(im).invMiss;
+%     
+%     tVisTargets = rewSortMsData(im).av(visualTrials).cue(valid).targets;
+%     tAudTargets = rewSortMsData(im).av(auditoryTrials).cue(valid).targets;
+%     visTargets = unique(tVisTargets);
+%     visTargets = visTargets(2:end);
+%     audTargets = unique(tAudTargets);
+%     audTargets = audTargets(2:end);
+%     
+%     tInvVisTargets = rewSortMsData(im).av(visualTrials).cue(invalid).targets;
+%     tInvAudTargets = rewSortMsData(im).av(auditoryTrials).cue(invalid).targets;
+%     
+% %     visBinEdges = exp(linspace(log(min(visTargets)-1),log(max(visTargets)),nBins+1));
+% %     audBinEdges = exp(linspace(...
+% %         log(min(audTargets(audTargets > 0.00001))-...
+% %         (0.5*min(audTargets(audTargets > 0.00001)))),...
+% %         log(max(audTargets)),nBins+1));
+%     [~,~,visBinInd] = histcounts(tVisTargets,visBinEdges);
+%     [~,~,audBinInd] = histcounts(tAudTargets,audBinEdges);
+%     [~,~,invVisBinInd] = histcounts(tInvVisTargets,visBinEdges);
+%     [~,~,invAudBinInd] = histcounts(tInvAudTargets,audBinEdges);
+%         
+%     nVisHits = nan(1,nBins);
+%     nVisMisses = nan(1,nBins);
+%     nAudHits = nan(1,nBins);
+%     nAudMisses = nan(1,nBins);
+%     visTargetsBinned = nan(1,nBins);
+%     audTargetsBinned = nan(1,nBins);
+%     visTargetsSte = nan(1,nBins);
+%     audTargetsSte = nan(1,nBins);
+%     nInvVisHits = nan(1,nBins);
+%     nInvVisMisses = nan(1,nBins);
+%     nInvAudHits = nan(1,nBins);
+%     nInvAudMisses = nan(1,nBins);
+%     invVisTargetsBinned = nan(1,nBins);
+%     invAudTargetsBinned = nan(1,nBins);
+%     invVisTargetsSte = nan(1,nBins);
+%     invAudTargetsSte = nan(1,nBins); 
+% %     visRTBinned = nan(1,nBins);
+% %     audRTBinned = nan(1,nBins);
+% %     visRTBinnedSte = nan(1,nBins);
+% %     audRTBinnedSte = nan(1,nBins);
+%     for ibin = 1:nBins
+%         ind = (hit | miss) & visBinInd == ibin;
+%         if sum(ind) > minTrN_ms
+%             nVisHits(ibin) = sum(hit & visBinInd == ibin);
+%             nVisMisses(ibin) = sum(miss & visBinInd == ibin);
+%             visTargetsBinned(ibin) = mean(tVisTargets(ind));
+%             visTargetsSte(ibin) = ste(tVisTargets(ind),2);
+% %             visRTBinned(ibin) = mean(msCmlvData.valRT(ind & hit));
+% %             visRTBinnedSte(ibin) = ste(msCmlvData.valRT(ind & hit),2);
+%         end
+% 
+%         ind = (hit | miss) & audBinInd == ibin;
+%         if sum(ind) > minTrN_ms
+%             nAudHits(ibin) = sum(hit & audBinInd == ibin);
+%             nAudMisses(ibin) = sum(miss & audBinInd == ibin);
+%             audTargetsBinned(ibin) = mean(tAudTargets(ind));
+%             audTargetsSte(ibin) = ste(tAudTargets(ind),2);
+% %             audRTBinned(ibin) = mean(msCmlvData.valRT(ind & hit));
+% %             audRTBinned(ibin) = ste(msCmlvData.valRT(ind & hit),2);
+%         end
+% 
+%         ind = (invHit | invMiss) & invVisBinInd == ibin;
+%         if sum(ind) > minTrN_ms
+%             nInvVisHits(ibin) = sum(invVisBinInd == ibin & invHit);
+%             nInvVisMisses(ibin) = sum(invVisBinInd == ibin & invMiss);
+%             invVisTargetsBinned(ibin) = mean(tInvVisTargets(ind));
+%             invVisTargetsSte(ibin) = ste(tInvVisTargets(ind),2);
+%         end
+% 
+%         ind = (invHit | invMiss) & invAudBinInd == ibin;
+%         if sum(ind) > minTrN_ms  
+%             nInvAudHits(ibin) = sum(invAudBinInd == ibin & invHit);
+%             nInvAudMisses(ibin) = sum(invAudBinInd == ibin & invMiss);
+%             invAudTargetsBinned(ibin) = mean(tInvAudTargets(ind));
+%             invAudTargetsSte(ibin) = ste(tInvAudTargets(ind),2);
+%         end
+%     end
+%     visInd = ~isnan(nVisHits);
+%     invVisInd = ~isnan(nInvVisHits); 
+%     audInd = ~isnan(nAudHits);
+%     invAudInd = ~isnan(nInvAudHits); 
+%     
+%     [visHR,visHR95ci] = binofit(nVisHits(visInd),nVisHits(visInd)+nVisMisses(visInd));
+%     [audHR,audHR95ci] = binofit(nAudHits(audInd),nAudHits(audInd)+nAudMisses(audInd));
+%     if sum(nInvVisHits(invVisInd)+nInvVisMisses(invVisInd)) > 0
+%         [invVisHR,invVisHR95ci] = binofit(nInvVisHits(invVisInd),...
+%             nInvVisHits(invVisInd)+nInvVisMisses(invVisInd));
+%     else
+%         invVisHR = nan;
+%         invVisHR95ci = nan(1,2);
+%     end
+%     if sum(nInvAudHits(invAudInd)+nInvAudMisses(invAudInd)) > 0
+%         [invAudHR,invAudHR95ci] = binofit(nInvAudHits(invAudInd),...
+%             nInvAudHits(invAudInd)+nInvAudMisses(invAudInd));
+%     else
+%         invAudHR = nan;
+%         invAudHR95ci = nan(1,2);
+%     end
+%     FAR_vis = msCmlvData.visNFAandDistractors(1)./msCmlvData.visNFAandDistractors(2);
+%     FAR_aud = msCmlvData.audNFAandDistractors(1)./msCmlvData.audNFAandDistractors(2);
+%     
+%     visHRWithFA = cat(2,FAR_vis,visHR);
+%     visTargetsWithFA = cat(2,0,visTargetsBinned(visInd));
+%     nVisTrialsWithFA = cat(2,msCmlvData.visNFAandDistractors(2),...
+%         nVisHits(visInd)+nVisMisses(visInd));
+%     msVisFitWithFA = weibullFitLG(visTargetsWithFA, visHRWithFA, ...
+%         0,0, {'nTrials',nVisTrialsWithFA});
+%     
+%     audHRWithFA = cat(2,FAR_aud,audHR);
+%     audTargetsWithFA = cat(2,0,audTargetsBinned(audInd));
+%     nAudTrialsWithFA = cat(2,msCmlvData.audNFAandDistractors(2),...
+%         nAudHits(audInd)+nAudMisses(audInd));
+%     msAudFitWithFA = weibullFitLG(audTargetsWithFA, audHRWithFA, ...
+%         0,0, {'nTrials',nAudTrialsWithFA});
+%     
+%     [valHR_highThreshold_vis, invHR_highThreshold_vis,...
+%         valCI_highThreshold_vis, invCI_highThreshold_vis,...
+%         nVal_highThreshold_vis, nInv_highThreshold_vis] = ...
+%         getMatchedHighThresholdHR(visTargetsBinned,msVisFitWithFA,highThreshold,...
+%         tVisTargets,tInvVisTargets,...
+%         hit,miss,invHit,invMiss);
+%     
+%     [valHR_highThreshold_aud, invHR_highThreshold_aud,...
+%         valCI_highThreshold_aud, invCI_highThreshold_aud,...
+%         nVal_highThreshold_aud, nInv_highThreshold_aud] = ...
+%         getMatchedHighThresholdHR(audTargetsBinned,msAudFitWithFA,highThreshold,...
+%         tAudTargets,tInvAudTargets,...
+%         hit,miss,invHit,invMiss);
+%     
+%     invAllHR_vis = sum(tInvVisTargets > 0 & invHit)./...
+%         sum(tInvVisTargets > 0 &(invHit | invMiss));
 %     valMatchInd = ismember(tVisTargets,unique(tInvVisTargets(tInvVisTargets > 0)));
-    invInd = (tInvVisTargets+tInvAudTargets)>0;
-    valMatchInd = cell2mat(getMatchedValidTrialIndex(tVisTargets+tAudTargets,...
-        tInvVisTargets(invInd)+tInvAudTargets(invInd)));
-    valAllHR_all = sum(hit(valMatchInd))./...
-        sum(hit(valMatchInd) | miss(valMatchInd));
-    nMatchedAll = [sum(hit(valMatchInd) | miss(valMatchInd)),...
-        sum((tInvVisTargets+tInvAudTargets) > 0 &(invHit | invMiss))];
-    
-    
-    rewSortMsHR(im).valInvAllTrialsHR = [valAllHR_all invAllHR_all];
-    rewSortMsHR(im).matchedTrialN = nMatchedAll;
-    rewSortMsHR(im).av(visualTrials).cue(valid).HR = visHR.*100;
-    rewSortMsHR(im).av(visualTrials).cue(valid).HR95ci = visHR95ci.*100;
-    rewSortMsHR(im).av(visualTrials).cue(valid).hiLoHR = valHR_highThreshold_vis.*100;
-    rewSortMsHR(im).av(visualTrials).cue(valid).hiLoHR95ci = valCI_highThreshold_vis.*100;
-    rewSortMsHR(im).av(visualTrials).cue(valid).nHiLo = nVal_highThreshold_vis;
-    rewSortMsHR(im).av(visualTrials).cue(valid).targets = visTargetsBinned(visInd);
-    rewSortMsHR(im).av(visualTrials).cue(valid).targetsErr = visTargetsSte(visInd);
-    rewSortMsHR(im).av(visualTrials).fit = msVisFitWithFA;    
-    rewSortMsHR(im).av(visualTrials).cue(invalid).HR = invVisHR.*100;
-    rewSortMsHR(im).av(visualTrials).cue(invalid).HR95ci = invVisHR95ci.*100;
-    rewSortMsHR(im).av(visualTrials).cue(invalid).hiLoHR = invHR_highThreshold_vis.*100;
-    rewSortMsHR(im).av(visualTrials).cue(invalid).hiLoHR95ci = invCI_highThreshold_vis.*100;
-    rewSortMsHR(im).av(visualTrials).cue(invalid).nHiLo = nInv_highThreshold_vis;
-    rewSortMsHR(im).av(visualTrials).cue(invalid).targets = invVisTargetsBinned(~isnan(invVisTargetsBinned));
-    rewSortMsHR(im).av(visualTrials).cue(invalid).targetsErr = invVisTargetsSte(~isnan(invVisTargetsBinned));
-    rewSortMsHR(im).av(visualTrials).valInvAllTrialsHR = [valAllHR_vis, invAllHR_vis];
-    rewSortMsHR(im).av(visualTrials).matchedTrialN = nMatchedVis;
-    
-    rewSortMsHR(im).av(auditoryTrials).cue(valid).HR = audHR.*100;
-    rewSortMsHR(im).av(auditoryTrials).cue(valid).HR95ci = audHR95ci.*100;
-    rewSortMsHR(im).av(auditoryTrials).cue(valid).hiLoHR = valHR_highThreshold_aud.*100;
-    rewSortMsHR(im).av(auditoryTrials).cue(valid).hiLoHR95ci = valCI_highThreshold_aud.*100;
-    rewSortMsHR(im).av(auditoryTrials).cue(valid).nHiLo = nVal_highThreshold_aud;
-    rewSortMsHR(im).av(auditoryTrials).cue(valid).targets = audTargetsBinned(audInd);
-    rewSortMsHR(im).av(auditoryTrials).cue(valid).targetsErr = audTargetsSte(audInd);
-    rewSortMsHR(im).av(auditoryTrials).fit = msAudFitWithFA;    
-    rewSortMsHR(im).av(auditoryTrials).cue(invalid).HR = invAudHR.*100;
-    rewSortMsHR(im).av(auditoryTrials).cue(invalid).HR95ci = invAudHR95ci.*100;
-    rewSortMsHR(im).av(auditoryTrials).cue(invalid).hiLoHR = invHR_highThreshold_aud.*100;
-    rewSortMsHR(im).av(auditoryTrials).cue(invalid).hiLoHR95ci = invCI_highThreshold_aud.*100;
-    rewSortMsHR(im).av(auditoryTrials).cue(invalid).nHiLo = nInv_highThreshold_aud;
-    rewSortMsHR(im).av(auditoryTrials).cue(invalid).targets = invAudTargetsBinned(~isnan(invAudTargetsBinned));
-    rewSortMsHR(im).av(auditoryTrials).cue(invalid).targetsErr = invAudTargetsSte(~isnan(invAudTargetsSte));
-    rewSortMsHR(im).av(auditoryTrials).valInvAllTrialsHR = [valAllHR_aud, invAllHR_aud];
-    rewSortMsHR(im).av(auditoryTrials).matchedTrialN = nMatchedAud;
-end
-
+%     valAllHR_vis = sum(valMatchInd & hit)./...
+%         sum(valMatchInd &(hit | miss));
+%     nMatchedVis = [sum(valMatchInd &(hit | miss)),...
+%         sum(tInvVisTargets > 0 &(invHit | invMiss))];
+%     
+%     invAllHR_aud = sum(tInvAudTargets > 0 & invHit)./...
+%         sum(tInvAudTargets > 0 &(invHit | invMiss));
+%     valMatchInd = ismember(tAudTargets,unique(tInvAudTargets(tInvAudTargets > 0)));
+%     valAllHR_aud = sum(valMatchInd & hit)./...
+%         sum(valMatchInd &(hit | miss));
+%     nMatchedAud = [sum(valMatchInd &(hit | miss)),...
+%         sum(tInvAudTargets > 0 &(invHit | invMiss))];
+%     
+%     invAllHR_all = sum((tInvVisTargets > 0|tInvAudTargets > 0) & invHit)./...
+%         sum((tInvVisTargets > 0|tInvAudTargets > 0) &(invHit | invMiss));
+% %     valMatchInd = ismember(tVisTargets,unique(tInvVisTargets(tInvVisTargets > 0)));
+%     invInd = (tInvVisTargets+tInvAudTargets)>0;
+%     valMatchInd = cell2mat(getMatchedValidTrialIndex(tVisTargets+tAudTargets,...
+%         tInvVisTargets(invInd)+tInvAudTargets(invInd)));
+%     valAllHR_all = sum(hit(valMatchInd))./...
+%         sum(hit(valMatchInd) | miss(valMatchInd));
+%     nMatchedAll = [sum(hit(valMatchInd) | miss(valMatchInd)),...
+%         sum((tInvVisTargets+tInvAudTargets) > 0 &(invHit | invMiss))];
+%     
+%     
+%     rewSortMsHR(im).valInvAllTrialsHR = [valAllHR_all invAllHR_all];
+%     rewSortMsHR(im).matchedTrialN = nMatchedAll;
+%     rewSortMsHR(im).av(visualTrials).cue(valid).HR = visHR.*100;
+%     rewSortMsHR(im).av(visualTrials).cue(valid).HR95ci = visHR95ci.*100;
+%     rewSortMsHR(im).av(visualTrials).cue(valid).hiLoHR = valHR_highThreshold_vis.*100;
+%     rewSortMsHR(im).av(visualTrials).cue(valid).hiLoHR95ci = valCI_highThreshold_vis.*100;
+%     rewSortMsHR(im).av(visualTrials).cue(valid).nHiLo = nVal_highThreshold_vis;
+%     rewSortMsHR(im).av(visualTrials).cue(valid).targets = visTargetsBinned(visInd);
+%     rewSortMsHR(im).av(visualTrials).cue(valid).targetsErr = visTargetsSte(visInd);
+%     rewSortMsHR(im).av(visualTrials).fit = msVisFitWithFA;    
+%     rewSortMsHR(im).av(visualTrials).cue(invalid).HR = invVisHR.*100;
+%     rewSortMsHR(im).av(visualTrials).cue(invalid).HR95ci = invVisHR95ci.*100;
+%     rewSortMsHR(im).av(visualTrials).cue(invalid).hiLoHR = invHR_highThreshold_vis.*100;
+%     rewSortMsHR(im).av(visualTrials).cue(invalid).hiLoHR95ci = invCI_highThreshold_vis.*100;
+%     rewSortMsHR(im).av(visualTrials).cue(invalid).nHiLo = nInv_highThreshold_vis;
+%     rewSortMsHR(im).av(visualTrials).cue(invalid).targets = invVisTargetsBinned(~isnan(invVisTargetsBinned));
+%     rewSortMsHR(im).av(visualTrials).cue(invalid).targetsErr = invVisTargetsSte(~isnan(invVisTargetsBinned));
+%     rewSortMsHR(im).av(visualTrials).valInvAllTrialsHR = [valAllHR_vis, invAllHR_vis];
+%     rewSortMsHR(im).av(visualTrials).matchedTrialN = nMatchedVis;
+%     
+%     rewSortMsHR(im).av(auditoryTrials).cue(valid).HR = audHR.*100;
+%     rewSortMsHR(im).av(auditoryTrials).cue(valid).HR95ci = audHR95ci.*100;
+%     rewSortMsHR(im).av(auditoryTrials).cue(valid).hiLoHR = valHR_highThreshold_aud.*100;
+%     rewSortMsHR(im).av(auditoryTrials).cue(valid).hiLoHR95ci = valCI_highThreshold_aud.*100;
+%     rewSortMsHR(im).av(auditoryTrials).cue(valid).nHiLo = nVal_highThreshold_aud;
+%     rewSortMsHR(im).av(auditoryTrials).cue(valid).targets = audTargetsBinned(audInd);
+%     rewSortMsHR(im).av(auditoryTrials).cue(valid).targetsErr = audTargetsSte(audInd);
+%     rewSortMsHR(im).av(auditoryTrials).fit = msAudFitWithFA;    
+%     rewSortMsHR(im).av(auditoryTrials).cue(invalid).HR = invAudHR.*100;
+%     rewSortMsHR(im).av(auditoryTrials).cue(invalid).HR95ci = invAudHR95ci.*100;
+%     rewSortMsHR(im).av(auditoryTrials).cue(invalid).hiLoHR = invHR_highThreshold_aud.*100;
+%     rewSortMsHR(im).av(auditoryTrials).cue(invalid).hiLoHR95ci = invCI_highThreshold_aud.*100;
+%     rewSortMsHR(im).av(auditoryTrials).cue(invalid).nHiLo = nInv_highThreshold_aud;
+%     rewSortMsHR(im).av(auditoryTrials).cue(invalid).targets = invAudTargetsBinned(~isnan(invAudTargetsBinned));
+%     rewSortMsHR(im).av(auditoryTrials).cue(invalid).targetsErr = invAudTargetsSte(~isnan(invAudTargetsSte));
+%     rewSortMsHR(im).av(auditoryTrials).valInvAllTrialsHR = [valAllHR_aud, invAllHR_aud];
+%     rewSortMsHR(im).av(auditoryTrials).matchedTrialN = nMatchedAud;
+% end
+% 
 
 %% Summary Data Structure
 visTargets = unique(allData.cue(valid).av(visualTrials).targets);
@@ -837,7 +810,6 @@ for im = 1:nMice
 end
 
 bxStats = struct;
-bxStats.mouseNames = ms2analyze;
 % bxStats.randGeneratorSeed = rng;
 bxStats.nTrialsPerSessionRange = [min(cell2mat(nTrialsPerExpt)),...
     max(cell2mat(nTrialsPerExpt))];
@@ -852,8 +824,19 @@ bxStats.allAttnBinomialTest = allAttnP;
 bxStats.allAttnPowerTest = allAttnPower;
 bxStats.sessionAttnTTest = cell2mat(sessionAttnTest);
 bxStats.sessionPowerTest = sessionAttnPowerTest;
-% bxStats.attnMiceInd = bxStats.allAttnBinomialTest < attnTestAlpha & bxStats.allAttnPowerTest;
+bxStats.attnMiceInd = bxStats.allAttnBinomialTest < attnTestAlpha & bxStats.allAttnPowerTest;
 
+fprintf('%s +/- %s (%s-%s) sessions per mouse\n', num2str(mean(bxStats.nSessionsPerMouse)),...
+    num2str(ste(bxStats.nSessionsPerMouse,2)),num2str(min(bxStats.nSessionsPerMouse)),...
+    num2str(max(bxStats.nSessionsPerMouse)))
+fprintf('%s +/- %s (%s-%s) sessions per attn mouse\n', ...
+    num2str(mean(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))),...
+    num2str(ste(bxStats.nSessionsPerMouse(bxStats.attnMiceInd),2)),...
+    num2str(min(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))),...
+    num2str(max(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))))
+fprintf('%s +/- %s (%s-%s) sessions per mouse\n', num2str(mean(bxStats.nTrialsPerMouse)),...
+    num2str(ste(bxStats.nTrialsPerMouse,2)),num2str(min(bxStats.nTrialsPerMouse)),...
+    num2str(max(bxStats.nTrialsPerMouse)))
 
 bxStats.av(visualTrials).targets = visTargets;
 bxStats.av(auditoryTrials).targets = audTargets;
@@ -868,28 +851,11 @@ bxStats.av(auditoryTrials).falseAlarmRate = mean(audFAR);
 bxStats.av(visualTrials).falseAlarmRateErr = ste(visFAR,2);
 bxStats.av(auditoryTrials).falseAlarmRateErr = ste(audFAR,2);
 
-bxStats.av(visualTrials).attnTest = visAttnP;
-bxStats.av(auditoryTrials).attnTest = audAttnP;
-bxStats.attnMiceInd = bxStats.av(visualTrials).attnTest < attnTestAlpha & bxStats.av(auditoryTrials).attnTest;
-
 [~,hiLoAttnTest] = ttest(allLoHiHRDiff(1,bxStats.attnMiceInd),...
     allLoHiHRDiff(2,bxStats.attnMiceInd));
 bxStats.allMatchedHRDiff = allVisAudHR(:,valid) - allVisAudHR(:,invalid);
 bxStats.allMatchedLoHiHRDiff = allLoHiHRDiff;
 bxStats.loHiAttnTest = hiLoAttnTest;
-
-
-fprintf('%s +/- %s (%s-%s) sessions per mouse\n', num2str(mean(bxStats.nSessionsPerMouse)),...
-    num2str(ste(bxStats.nSessionsPerMouse,2)),num2str(min(bxStats.nSessionsPerMouse)),...
-    num2str(max(bxStats.nSessionsPerMouse)))
-fprintf('%s +/- %s (%s-%s) sessions per attn mouse\n', ...
-    num2str(mean(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))),...
-    num2str(ste(bxStats.nSessionsPerMouse(bxStats.attnMiceInd),2)),...
-    num2str(min(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))),...
-    num2str(max(bxStats.nSessionsPerMouse(bxStats.attnMiceInd))))
-fprintf('%s +/- %s (%s-%s) sessions per mouse\n', num2str(mean(bxStats.nTrialsPerMouse)),...
-    num2str(ste(bxStats.nTrialsPerMouse,2)),num2str(min(bxStats.nTrialsPerMouse)),...
-    num2str(max(bxStats.nTrialsPerMouse)))
 
 fprintf('Mean HR Diff/Err: %s/%s\n',...
     num2str(mean(bxStats.allMatchedHRDiff(bxStats.attnMiceInd),1)),...
@@ -954,6 +920,8 @@ fprintf('Mean Vis-Aud RT Diff Mean/Err: %s/%s; p=%s\n',...
 [~,bxStats.RTAVTest_loHi(2)] = ttest(visRT_loHi(bxStats.attnMiceInd,2),...
     audRT_loHi(bxStats.attnMiceInd,2));
 
+bxStats.av(visualTrials).attnTest = visAttnP;
+bxStats.av(auditoryTrials).attnTest = audAttnP;
 
 normHR_rew = nan(1,sum(bxStats.attnMiceInd));
 normHR_norew = nan(1,sum(bxStats.attnMiceInd));
@@ -965,11 +933,11 @@ for im = 1:nMice
     end
     if bxStats.attnMiceInd(im)
         valInvHRAll = msHR(im).matchedHRall./msHR(im).matchedHRall(1);
-        if trainRew(im)
-            normHR_rew(attnMiceID) = valInvHRAll(2);
-        else
-            normHR_norew(attnMiceID) = valInvHRAll(2);
-        end
+%         if trainRew(im)
+%             normHR_rew(attnMiceID) = valInvHRAll(2);
+%         else
+%             normHR_norew(attnMiceID) = valInvHRAll(2);
+%         end
     end
 end
 
@@ -989,7 +957,7 @@ fprintf('Norm Inv. HR, training no rew: %s+/-%s\n', num2str(nanmean(normHR_norew
 bxStats.sessionAttnTest = sessionAttnTest;
 disp(sessionAttnTest)
 
-save(fullfile(fnout,'bxStats'),'bxStats')
+save([fnout,'bxStats'],'bxStats')
 
 %%
 
@@ -1050,7 +1018,6 @@ hiLoHR = cell(2,2);
 hiLoHR(:) = {nan(nMice,2)};
 allHR = cell(1,2);
 allHR(:) = {nan(nMice,2)};
-L = [];
 for im = 1:nMice
     for iav = 1:2
         for ithresh = 1:2
@@ -1103,16 +1070,11 @@ for im = 1:nMice
             y = mean(allHR{iav}(attnMiceInd,:),1);
             yerr = ste(allHR{iav}(attnMiceInd,:),1);
             h = errorbar(x,y,yerr,'.');
-            L(1) = h;
-            y = mean(allHR{iav}(~attnMiceInd,:),1);
-            yerr = ste(allHR{iav}(~attnMiceInd,:),1);
-            h = errorbar(x,y,yerr,'.');
-            L(2) = h;
+            h.Color = 'k';
             figXAxis([],'',[0 3],x,{'Vaild';'Invalid'})
             figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
             figAxForm
             title(sprintf('All Trials, alpha = %s',num2str(round(attnTestAlpha,2,'significant'))))
-            legend(L,{'Attn','No Attn'},'location','southwest')
         end
     end
 end
@@ -1135,7 +1097,7 @@ figAxForm
 title('Auditory Trials')
 hold on
 hline(highThreshold,'k:')
-print(fullfile(fnout,'bxSummary_allMice'),'-dpdf','-fillpage')
+print([fnout,'bxSummary_allMice'],'-dpdf','-fillpage')
 
 %matched hit rate across all visual and auditory trials
 HRallTrials = [];
@@ -1195,7 +1157,7 @@ for im = 1:nMice
         end
     end
 end
-print(fullfile(fnout,'matchedHR_allTrials_allMice'),'-dpdf','-fillpage')
+print([fnout,'matchedHR_allTrials_allMice'],'-dpdf','-fillpage')
 
 
 %false alarm and lapse rate
@@ -1214,15 +1176,13 @@ for im = 1:nMice
     end
     FAR(im,:) = y;
 end
-% y = mean(FAR(attnMiceInd,:),1);
-% yerr = ste(FAR(attnMiceInd,:),1);
-y = mean(FAR,1);
-yerr = ste(FAR,1);
+y = mean(FAR(attnMiceInd,:),1);
+yerr = ste(FAR(attnMiceInd,:),1);
 errorbar(x,y,yerr,'k.')
 figXAxis([],'',[0 3],x,{'Vis';'Aud'})
 figYAxis([],'FA Rate',FAR_lim,FAR_label,FAR_label)
 figAxForm
-[~,p] = ttest(FAR(:,1),FAR(:,2));
+[~,p] = ttest(FAR(attnMiceInd,1),FAR(attnMiceInd,2));
 title(sprintf('p = %s',num2str(round(p,2,'significant'))))
 subplot 522
 LR = nan(nMice,2);
@@ -1239,24 +1199,24 @@ for im = 1:nMice
         h.LineStyle = ':';
     end
 end
-y = mean(LR,1);
-yerr = ste(LR,1);
+y = mean(LR(attnMiceInd,:),1);
+yerr = ste(LR(attnMiceInd,:),1);
 errorbar(x,y,yerr,'k.')
 figXAxis([],'',[0 3],x,{'Vis';'Aud'})
 figYAxis([],'Lapse Rate',FAR_lim,FAR_label,FAR_label)
 figAxForm
-[~,p] = ttest(LR(:,1),LR(:,2));
+[~,p] = ttest(LR(attnMiceInd,1),LR(attnMiceInd,2));
 title(sprintf('p = %s',num2str(round(p,2,'significant'))))
 
 %reaction time
 RTanovaTestAV = nan(1,2);
 for iav = 1:2
     subplot(5,2,iav+2)
-    RT = nan(length(attnMiceInd),2);
+    RT = nan(sum(attnMiceInd),2);
     for im = 1:nMice
-%         if ~attnMiceInd(im)
-%             continue
-%         end
+        if ~attnMiceInd(im)
+            continue
+        end
         x = 1:2;
         y = cat(2,msHR(im).av(iav).cue(valid).RT, ...
             msHR(im).av(iav).cue(invalid).RT);
@@ -1270,24 +1230,21 @@ for iav = 1:2
         end
         RT(im,:) = y;
     end
-    y = mean(squeeze(RT(attnMiceInd,:)),1);
-    yerr = ste(squeeze(RT(attnMiceInd,:)),1);
-    h = errorbar(x,y,yerr,'.');
-    y = mean(squeeze(RT(~attnMiceInd,:)),1);
-    yerr = ste(squeeze(RT(~attnMiceInd,:)),1);
-    h = errorbar(x,y,yerr,'.');
+    y = mean(squeeze(RT(:,:)),1);
+    yerr = ste(squeeze(RT(:,:)),1);
+    h = errorbar(x,y,yerr,'k.');
     figXAxis([],'',[0 3],x,{'Val';'Inv'})
     figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
     figAxForm
     [~,p] = ttest(RT(:,1),RT(:,2),'tail','right');
     title(sprintf('%s, p=%s',avLabel{iav},num2str(p)))
     subplot(5,2,iav+4)
-    RT = nan(length(attnMiceInd),nBins);
+    RT = nan(sum(attnMiceInd),nBins);
     RTtargets = nan(nMice,nBins);
     for im = 1:nMice
-%         if ~attnMiceInd(im)
-%             continue
-%         end
+        if ~attnMiceInd(im)
+            continue
+        end
         x = msHR(im).av(iav).cue(valid).RTtargets;
         y = msHR(im).av(iav).cue(valid).RTbinned;
         hold on
@@ -1325,11 +1282,10 @@ for iav = 1:2
     figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
     figAxForm
     subplot(5,2,iav+6)
-    ind = sum(~isnan(RT),1) > 3;
-    y = nanmean(RT(:,ind),1);
-    yerr = ste(RT(:,ind),1);
-    x = nanmean(RTtargets(:,ind),1);
-    xerr = ste(RTtargets(:,ind),1);
+    y = nanmean(RT,1);
+    yerr = ste(RT,1);
+    x = nanmean(RTtargets,1);
+    xerr = ste(RTtargets,1);
     errorbar(x,y,yerr,yerr,xerr,xerr,'k.')
     if iav == 1
         title('Visual Trials')
@@ -1349,14 +1305,30 @@ for iav = 1:2
     figAxForm
     
 end
-
+% subplot 529
+% RT = nan(sum(attnMiceInd),2);
+% for im = 1:nMice
+%     if ~attnMiceInd(im)
+%         continue
+%     end
+%     for iav = 1:2
+%         RT(im,iav) = msHR(im).av(iav).cue(valid).RT;
+%     end
+%     hold on
+%     plot(1:2,RT(im,:),'k-');
+% end
+% y = mean(RT,1);
+% yerr = ste(RT,1);
+% errorbar(1:2,y,yerr,'k')
+% figXAxis([],'',[0 3],1:2,{'Vis';'Aud'})
+% figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
+% figAxForm
 for irt = 1:2
     subplot(5,2,8+irt)
-    y = cat(2,visRT_loHi(:,irt),audRT_loHi(:,irt));
+    y = cat(2,visRT_loHi(bxStats.attnMiceInd,irt),audRT_loHi(bxStats.attnMiceInd,irt));
     yerr = ste(y,1);
-    plot(1:2,y(attnMiceInd,:),'k-')
+    plot(1:2,y,'k-')
     hold on
-    plot(1:2,y(~attnMiceInd,:),'k:')
     errorbar(1:2,mean(y,1),yerr,'.')
     figXAxis([],'',[0 3],1:2,{'Vis';'Aud'})
     figYAxis([],'Reaction Time (ms)',RT_lim,RT_label,RT_label)
@@ -1370,457 +1342,161 @@ for irt = 1:2
     end
 end
 
-print(fullfile(fnout,'FAR_LR_RT_allMice'),'-dpdf','-fillpage')
-
-% reward vs. no reward
-avName = {'Visual';'Auditory'};
-if doPlot
-    setFigParams4Print('portrait')
-    set(0,'defaultAxesFontSize',10)
-    figure
-    suptitle('Compare Training Types')
-    for im = 1:2
-        for iav = 1:2
-            iplot = iav + ((im-1)*2);
-    %         iplot2 = iplot + 2;
-            subplot(5,2,iplot)
-            for icue = 1:2
-                x = rewSortMsHR(im).av(iav).cue(icue).targets;
-                xerr = rewSortMsHR(im).av(iav).cue(icue).targetsErr;
-                y = rewSortMsHR(im).av(iav).cue(icue).HR;
-                yerrl = y' - rewSortMsHR(im).av(iav).cue(icue).HR95ci(:,1);
-                yerru = rewSortMsHR(im).av(iav).cue(icue).HR95ci(:,2) - y';
-
-                hold on
-                h = errorbar(x,y,yerrl,yerru,xerr,xerr,'o-');
-                h.Color = cueColor{icue};
-                h.LineStyle = rewardedLine{im};
-
-                if icue == 1
-                    f = rewSortMsHR(im).av(iav).fit;
-                    minI = min(x);
-                    maxI = max(x);
-                    fitX = logspace(log10(minI*0.1),log10(maxI*1.5),100);
-                    fitY = f.modelFun(f.coefEsts, fitX).*100;
-                    h = plot(fitX,fitY,'-');
-                    h.Color = cueColor{valid};
-                    plot([f.thresh f.thresh],[0 f.threshY.*100],'r-')
-                    text(f.thresh.*1.1,f.threshY.*100.*0.5,...
-                        num2str(round(f.thresh,2,'significant')))
-                    highThreshX = fitX(find(fitY >= highThreshold.*100,1));
-                    plot([highThreshX highThreshX],[0 highThreshold.*100],'b-')
-                    text(highThreshX.*1.1,highThreshold.*100.*0.5,...
-                        num2str(round(highThreshX,2,'significant')))
-                end
-            end
-            if iav == 1
-                ax = gca;
-                ax.XScale = 'log';
-                figXAxis([],'Orientation Change (deg)',visLevels_lim,visLevels_label,visLevels_label)
-                figYAxis([],'Hit Rate (%)',HR_pct_lim,HR_pct_label,HR_pct_label)
-                figAxForm
-            else
-                ax = gca;
-                ax.XScale = 'log';
-                figXAxis([],'Tone Volume (?)',audLevels_lim,audLevels_label,audLevels_label)
-                figYAxis([],'Hit Rate (%)',HR_pct_lim,HR_pct_label,HR_pct_label)
-                figAxForm
-            end
-            hline(highThreshold.*100,'k--')
-            title(sprintf('%s Trials,%s',avName{iav},rewSortMsHR(im).name))
-        end
-    end
-
-    for im = 1:2
-        for iav = 1:2
-            iplot = iav+4;
-            iplot2 = iplot + 2;
-            iplot3 = iplot + 4;
-
-            subplot(5,2,iplot)
-            normHR = cat(2,rewSortMsHR(im).av(iav).cue(1).hiLoHR(1)./rewSortMsHR(im).av(iav).cue(1).hiLoHR(1),...
-                rewSortMsHR(im).av(iav).cue(2).hiLoHR(1)./rewSortMsHR(im).av(iav).cue(1).hiLoHR(1));
-            hold on
-            h = plot(1:2,normHR,'o-');
-            h.Color = cueColor{1};
-            h.LineStyle = rewardedLine{im};
-            text(3,normHR(2),num2str(round(normHR(2),2,'significant')))
-            figXAxis([],'',[0 4],1:3,{'Vaild';'Invalid';'norm HR'})
-            figYAxis([],'Norm. Hit Rate',[0 1],HR_pct_label./100,HR_pct_label./100)
-            figAxForm
-            if im == 2
-                normHR_ms1 = cat(2,rewSortMsHR(1).av(iav).cue(1).hiLoHR(1)./rewSortMsHR(1).av(iav).cue(1).hiLoHR(1),...
-                    rewSortMsHR(1).av(iav).cue(2).hiLoHR(1)./rewSortMsHR(1).av(iav).cue(1).hiLoHR(1));
-                n1 = rewSortMsHR(1).av(iav).cue(2).nHiLo(1);
-                n2 = rewSortMsHR(2).av(iav).cue(2).nHiLo(1);
-                nHit1 = round(n1.*normHR_ms1(2),2,'significant');
-                nHit2 = round(n2.*normHR(2),2,'significant');
-                [~,p] = prop_test([nHit1 nHit2],[n1 n2],0);
-                 title({sprintf('%s, Below %s% Threshold',avName{iav},...
-                    num2str(highThreshold.*100));...
-                    sprintf('Inv HR p = %s (chi-square test)',num2str(round(p,2,'significant')))})   
-            end
-
-            subplot(5,2,iplot2)
-            normHR = cat(2,rewSortMsHR(im).av(iav).cue(1).hiLoHR(2)./rewSortMsHR(im).av(iav).cue(1).hiLoHR(2),...
-                rewSortMsHR(im).av(iav).cue(2).hiLoHR(2)./rewSortMsHR(im).av(iav).cue(1).hiLoHR(2));
-            hold on
-            h = plot(1:2,normHR,'o-');
-            h.Color = cueColor{1};
-            h.LineStyle = rewardedLine{im};
-            text(3,normHR(2),num2str(round(normHR(2),2,'significant')))
-            figXAxis([],'',[0 4],1:3,{'Vaild';'Invalid';'norm HR'})
-            figYAxis([],'Norm. Hit Rate',[0 1],HR_pct_label./100,HR_pct_label./100)
-            figAxForm
-            if im == 2
-                normHR_ms1 = cat(2,rewSortMsHR(1).av(iav).cue(1).hiLoHR(2)./rewSortMsHR(1).av(iav).cue(1).hiLoHR(2),...
-                    rewSortMsHR(1).av(iav).cue(2).hiLoHR(2)./rewSortMsHR(1).av(iav).cue(1).hiLoHR(2));
-                n1 = rewSortMsHR(1).av(iav).cue(2).nHiLo(2);
-                n2 = rewSortMsHR(2).av(iav).cue(2).nHiLo(2);
-                nHit1 = round(n1.*normHR_ms1(2),2,'significant');
-                nHit2 = round(n2.*normHR(2),2,'significant');
-                [~,p] = prop_test([nHit1 nHit2],[n1 n2],0);
-                 title({sprintf('%s, Above %s% Threshold',avName{iav},...
-                    num2str(highThreshold.*100));...
-                    sprintf('Inv HR p = %s (chi-square test)',num2str(round(p,2,'significant')))})   
-            end
-
-            subplot(5,2,iplot3)
-            normHR = rewSortMsHR(im).av(iav).valInvAllTrialsHR./...
-                rewSortMsHR(im).av(iav).valInvAllTrialsHR(1);
-            hold on
-            h = plot(1:2,normHR,'o-');
-            h.Color = cueColor{1};
-            h.LineStyle = rewardedLine{im};
-            text(3,normHR(2),num2str(round(normHR(2),2,'significant')))
-            figXAxis([],'',[0 4],1:3,{'Vaild';'Invalid';'norm HR'})
-            figYAxis([],'Norm. Hit Rate',[0 1],HR_pct_label./100,HR_pct_label./100)
-            figAxForm
-            if im == 2
-                normHR_ms1 = rewSortMsHR(1).av(iav).valInvAllTrialsHR./...
-                    rewSortMsHR(1).av(iav).valInvAllTrialsHR(1);
-                n1 = rewSortMsHR(1).av(iav).matchedTrialN(2);
-                n2 = rewSortMsHR(2).av(iav).matchedTrialN(2);
-                nHit1 = round(n1.*normHR_ms1(2),2,'significant');
-                nHit2 = round(n2.*normHR(2),2,'significant');
-                [~,p] = prop_test([nHit1 nHit2],[n1 n2],0);
-                 title({sprintf('%s, All Trials',avName{iav},...
-                    num2str(highThreshold.*100));...
-                    sprintf('Inv HR p = %s (chi-square test)',num2str(round(p,2,'significant')))})   
-            end
-        end
-    end
-    print(fullfile(fnout,'compareTrainingTypes'),'-dpdf','-fillpage')
-end
-
-%% plot HR x time in trial
-minCycles = 4;
-figure
-suptitle('Valid and Invalid HR matched for difficulty within modality')
-for iav = 1:2
-    timeBinHR_val = nan(nMice,length(targetTimeBins)-1);
-    timeBinHR_inv = nan(nMice,length(targetTimeBins)-1);
-    for im = 1:nMice
-        y = msHR(im).av(iav).cue(valid).HR_timebinned;
-        timeBinHR_val(im,:) = y;
-        subplot(3,2,iav)
-        hold on
-        h = plot(1:(length(targetTimeBins)-1),y,'-');
-        h.Color = 'k';
-        if attnMiceInd(im)
-            h.LineStyle = '-';
-        else
-            h.LineStyle = ':';
-        end
-        
-        y = msHR(im).av(iav).cue(invalid).HR_timebinned;
-        timeBinHR_inv(im,:) = y;
-        subplot(3,2,iav+2)
-        hold on
-        h = plot(1:(length(targetTimeBins)-1),y,'-');
-        h.Color = 'k';
-        if attnMiceInd(im)
-            h.LineStyle = '-';
-        else
-            h.LineStyle = ':';
-        end
-    end
-    subplot(3,2,iav)
-    figXAxis([],'Time Bin',[0 3],1:2,targetTimeBins(2:end))
-    figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-    figAxForm
-    title([avLabel{iav} '-Valid'])
-    subplot(3,2,iav+2)
-    figXAxis([],'Time Bin',[0 3],1:2,targetTimeBins(2:end))
-    figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-    figAxForm
-    title([avLabel{iav} '-Invalid'])
-    
-    subplot(3,2,iav+4)
-    hold on
-    y = mean(timeBinHR_val(attnMiceInd,:),1);
-    yerr = ste(timeBinHR_val(attnMiceInd,:),1);
-    errorbar(1:2,y,yerr,'.-')
-    y = mean(timeBinHR_inv(attnMiceInd,:),1);
-    yerr = ste(timeBinHR_inv(attnMiceInd,:),1);
-    errorbar(1:2,y,yerr,'.-')
-    figXAxis([],'Time Bin',[0 3],1:2,targetTimeBins(2:end))
-    figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-    figAxForm
-    legend({'Val','Inv'})
-end
-print(fullfile(fnout,'HR_timeBinned'),'-dpdf','-fillpage')
-
-figure
-suptitle('Valid and Invalid HR matched for difficulty within modality')
-x = minCycles:maxCycles;
-for iav = 1:2
-    timeBinHR_val = nan(nMice,length(x));
-    timeBinHR_inv = nan(nMice,length(x));
-    for im = 1:nMice
-        y = msHR(im).av(iav).cue(valid).HR_cycbinned(x);
-        timeBinHR_val(im,:) = y;
-        subplot(4,2,iav)
-        hold on
-        ind = ~isnan(y);
-        h = plot(x(ind),y(ind),'-');
-        if attnMiceInd(im)
-        h.Color = 'k';
-            h.LineStyle = '-';
-        elseif ~isempty(h)
-        h.Color = 'k';
-            h.LineStyle = ':';
-        end
-        
-        y = msHR(im).av(iav).cue(invalid).HR_cycbinned(x);
-        timeBinHR_inv(im,:) = y;
-        subplot(4,2,iav+2)
-        hold on
-        ind = ~isnan(y);
-        h = plot(x(ind),y(ind),'-');
-        if attnMiceInd(im)
-        h.Color = 'k';
-            h.LineStyle = '-';
-        elseif ~isempty(h)
-        h.Color = 'k';
-            h.LineStyle = ':';
-        end
-    end
-    subplot(4,2,iav)
-    figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
-    figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-    figAxForm
-    title([avLabel{iav} '-Valid'])
-    subplot(4,2,iav+2)
-    figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
-    figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-    figAxForm
-    title([avLabel{iav} '-Invalid'])
-    
-    subplot(4,2,iav+4)
-    hold on
-    y = nanmean(timeBinHR_val(attnMiceInd,:),1);
-    yerr = ste(timeBinHR_val(attnMiceInd,:),1);
-    errorbar(x,y,yerr,'.-')
-    y = nanmean(timeBinHR_inv(attnMiceInd,:),1);
-    yerr = ste(timeBinHR_inv(attnMiceInd,:),1);
-    errorbar(x,y,yerr,'.-')
-    figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
-    figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-    figAxForm
-    legend({'Val','Inv'},'location','northeastoutside')
-    
-    subplot(4,2,iav+6)
-    hold on
-    y = nanmean(timeBinHR_val(attnMiceInd,:)-timeBinHR_inv(attnMiceInd,:),1);
-    yerr = ste(timeBinHR_val(attnMiceInd,:)-timeBinHR_inv(attnMiceInd,:),1);
-    errorbar(x,y,yerr,'.-')
-    figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
-    figYAxis([],'Valid-Invalid Hit Rate (%)',[0-.1 1],0:.2:1)
-    figAxForm
-    hline(0,'k:')
-
-end
-print(fullfile(fnout,'HR_av_cycBinned'),'-dpdf','-fillpage')
-
-figure
-colors = brewermap(nMice,'Set2');
-suptitle('Visual Only')
-x = minCycles:maxCycles;
-timeBinHR_sub = nan(nMice,length(x));
-for im = 1:nMice
-    if attnMiceInd(im)
-        subplot 221
-    else
-        subplot 222
-    end
-    y = msHR(im).av(visualTrials).cue(valid).HR_cycbinned(x)-...
-        msHR(im).av(visualTrials).cue(invalid).HR_cycbinned(x);
-    timeBinHR_sub(im,:) = y;
-    hold on
-    ind = ~isnan(y);
-    h = plot(x(ind),y(ind),'-');
-    h.Color = 'k';
-    if attnMiceInd(im)
-        h.LineStyle = '-';
-    else
-        h.LineStyle = ':';
-    end
-end
-subplot 221
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
-figYAxis([],'Hit Rate (%)',[-0.7 0.7])
-figAxForm
-hline(0,'k:')
-title('Attention')
-subplot 222
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
-figYAxis([],'Hit Rate (%)',[-0.7 0.7])
-figAxForm
-hline(0,'k:')
-title('No Attention')    
-subplot 223
-hold on
-y = nanmean(timeBinHR_sub(attnMiceInd,:),1);
-yerr = ste(timeBinHR_sub(attnMiceInd,:),1);
-errorbar(x,y,yerr,'.-')
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
-figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.7 0.7])
-figAxForm
-hline(0,'k:')
-subplot 224
-hold on
-y = nanmean(timeBinHR_sub(~attnMiceInd,:),1);
-yerr = ste(timeBinHR_sub(~attnMiceInd,:),1);
-errorbar(x,y,yerr,'.-')
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],minCycles:maxCycles,minCycles:maxCycles)
-figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.7 0.7])
-figAxForm
-hline(0,'k:')
-print(fullfile(fnout,'HR_visonly_cycBinned'),'-dpdf','-fillpage')
-
-figure
-x = minCycles:maxCycles;
-timeBinHR_val = nan(nMice,length(x));
-timeBinHR_inv = nan(nMice,length(x));
-for im = 1:nMice
-    y = msHR(im).HR_cycbinned(valid,x);
-    timeBinHR_val(im,:) = y;
-    subplot(3,2,1)
-    hold on
-    ind = ~isnan(y);
-    h = plot(x(ind),y(ind),'-');
-    h.Color = colors(im,:);
-    if attnMiceInd(im)
-        h.LineStyle = '-';
-    else
-        h.LineStyle = ':';
-    end
-
-    y = msHR(im).HR_cycbinned(invalid,x);
-    timeBinHR_inv(im,:) = y;
-    subplot(3,2,2)
-    hold on
-    ind = ~isnan(y);
-    h = plot(x(ind),y(ind),'-');
-    h.Color = colors(im,:);
-    if attnMiceInd(im)
-        h.LineStyle = '-';
-    else
-        h.LineStyle = ':';
-    end
-end
-subplot(3,2,1)
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
-figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-figAxForm
-title('All-Valid')
-subplot(3,2,2)
-figXAxis([],'Stim Number',[0 maxCycles+1],x,x)
-figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-figAxForm
-title('All-Invalid')
-subplot(3,2,3)
-hold on
-y = nanmean(timeBinHR_val(attnMiceInd,:),1);
-yerr = ste(timeBinHR_val(attnMiceInd,:),1);
-errorbar(x,y,yerr,'.-')
-y = nanmean(timeBinHR_inv(attnMiceInd,:),1);
-yerr = ste(timeBinHR_inv(attnMiceInd,:),1);
-errorbar(x,y,yerr,'.-')
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
-figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-figAxForm
-legend({'Val','Inv'},'location','northeastoutside')
-subplot(3,2,4)
-hold on
-y = nanmean(timeBinHR_val(attnMiceInd,:)-timeBinHR_inv(attnMiceInd,:),1);
-yerr = ste(timeBinHR_val(attnMiceInd,:)-timeBinHR_inv(attnMiceInd,:),1);
-errorbar(x,y,yerr,'.-')
-ind=0;
-h =[];
-for im = find(attnMiceInd)
-    ind = ind+1;
-    y = timeBinHR_val(im,:)-timeBinHR_inv(im,:);
-    h=plot(x(~isnan(y)),y(~isnan(y)),'-');
-    h.Color = colors(im,:);
-    L(ind) = h;
-    h.LineWidth = 2;
-end
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
-figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.5 0.5])
-figAxForm
-hline(0,'k:')
-legend(L,bxStats.mouseNames(attnMiceInd),'location','northeastoutside')
-
-subplot(3,2,5)
-hold on
-y = nanmean(timeBinHR_val(~attnMiceInd,:),1);
-yerr = ste(timeBinHR_val(~attnMiceInd,:),1);
-errorbar(x,y,yerr,'.-')
-y = nanmean(timeBinHR_inv(~attnMiceInd,:),1);
-yerr = ste(timeBinHR_inv(~attnMiceInd,:),1);
-errorbar(x,y,yerr,'.-')
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
-figYAxis([],'Hit Rate (%)',HR_lim,HR_label,HR_label)
-figAxForm
-legend({'Val','Inv'},'location','northeastoutside')
-subplot(3,2,6)
-hold on
-y = nanmean(timeBinHR_val(~attnMiceInd,:)-timeBinHR_inv(~attnMiceInd,:),1);
-yerr = ste(timeBinHR_val(~attnMiceInd,:)-timeBinHR_inv(~attnMiceInd,:),1);
-errorbar(x,y,yerr,'.-')
-ind=0;
-h =[];
-for im = find(~attnMiceInd)
-    ind = ind+1;
-    y = timeBinHR_val(im,:)-timeBinHR_inv(im,:);
-    h=plot(x(~isnan(y)),y(~isnan(y)),'-');
-    h.Color = colors(im,:);
-    h.LineWidth = 2;
-    L(ind) = h;
-end
-figXAxis([],'Stim Number',[minCycles-1 maxCycles+1],x,x)
-figYAxis([],'Valid-Invalid Hit Rate (%)',[-0.5 0.5])
-figAxForm
-hline(0,'k:')
-legend(L,bxStats.mouseNames(~attnMiceInd),'location','northeastoutside')
-
-print(fullfile(fnout,'HR_cycBinned'),'-dpdf','-fillpage')
+print([fnout,'FAR_LR_RT_allMice'],'-dpdf','-fillpage')
+% 
+% % reward vs. no reward
+% avName = {'Visual';'Auditory'};
+% if doPlot
+%     setFigParams4Print('portrait')
+%     set(0,'defaultAxesFontSize',10)
+%     figure
+%     suptitle('Compare Training Types')
+%     for im = 1:2
+%         for iav = 1:2
+%             iplot = iav + ((im-1)*2);
+%     %         iplot2 = iplot + 2;
+%             subplot(5,2,iplot)
+%             for icue = 1:2
+%                 x = rewSortMsHR(im).av(iav).cue(icue).targets;
+%                 xerr = rewSortMsHR(im).av(iav).cue(icue).targetsErr;
+%                 y = rewSortMsHR(im).av(iav).cue(icue).HR;
+%                 yerrl = y' - rewSortMsHR(im).av(iav).cue(icue).HR95ci(:,1);
+%                 yerru = rewSortMsHR(im).av(iav).cue(icue).HR95ci(:,2) - y';
+% 
+%                 hold on
+%                 h = errorbar(x,y,yerrl,yerru,xerr,xerr,'o-');
+%                 h.Color = cueColor{icue};
+%                 h.LineStyle = rewardedLine{im};
+% 
+%                 if icue == 1
+%                     f = rewSortMsHR(im).av(iav).fit;
+%                     minI = min(x);
+%                     maxI = max(x);
+%                     fitX = logspace(log10(minI*0.1),log10(maxI*1.5),100);
+%                     fitY = f.modelFun(f.coefEsts, fitX).*100;
+%                     h = plot(fitX,fitY,'-');
+%                     h.Color = cueColor{valid};
+%                     plot([f.thresh f.thresh],[0 f.threshY.*100],'r-')
+%                     text(f.thresh.*1.1,f.threshY.*100.*0.5,...
+%                         num2str(round(f.thresh,2,'significant')))
+%                     highThreshX = fitX(find(fitY >= highThreshold.*100,1));
+%                     plot([highThreshX highThreshX],[0 highThreshold.*100],'b-')
+%                     text(highThreshX.*1.1,highThreshold.*100.*0.5,...
+%                         num2str(round(highThreshX,2,'significant')))
+%                 end
+%             end
+%             if iav == 1
+%                 ax = gca;
+%                 ax.XScale = 'log';
+%                 figXAxis([],'Orientation Change (deg)',visLevels_lim,visLevels_label,visLevels_label)
+%                 figYAxis([],'Hit Rate (%)',HR_pct_lim,HR_pct_label,HR_pct_label)
+%                 figAxForm
+%             else
+%                 ax = gca;
+%                 ax.XScale = 'log';
+%                 figXAxis([],'Tone Volume (?)',audLevels_lim,audLevels_label,audLevels_label)
+%                 figYAxis([],'Hit Rate (%)',HR_pct_lim,HR_pct_label,HR_pct_label)
+%                 figAxForm
+%             end
+%             hline(highThreshold.*100,'k--')
+%             title(sprintf('%s Trials,%s',avName{iav},rewSortMsHR(im).name))
+%         end
+%     end
+% 
+%     for im = 1:2
+%         for iav = 1:2
+%             iplot = iav+4;
+%             iplot2 = iplot + 2;
+%             iplot3 = iplot + 4;
+% 
+%             subplot(5,2,iplot)
+%             normHR = cat(2,rewSortMsHR(im).av(iav).cue(1).hiLoHR(1)./rewSortMsHR(im).av(iav).cue(1).hiLoHR(1),...
+%                 rewSortMsHR(im).av(iav).cue(2).hiLoHR(1)./rewSortMsHR(im).av(iav).cue(1).hiLoHR(1));
+%             hold on
+%             h = plot(1:2,normHR,'o-');
+%             h.Color = cueColor{1};
+%             h.LineStyle = rewardedLine{im};
+%             text(3,normHR(2),num2str(round(normHR(2),2,'significant')))
+%             figXAxis([],'',[0 4],1:3,{'Vaild';'Invalid';'norm HR'})
+%             figYAxis([],'Norm. Hit Rate',[0 1],HR_pct_label./100,HR_pct_label./100)
+%             figAxForm
+%             if im == 2
+%                 normHR_ms1 = cat(2,rewSortMsHR(1).av(iav).cue(1).hiLoHR(1)./rewSortMsHR(1).av(iav).cue(1).hiLoHR(1),...
+%                     rewSortMsHR(1).av(iav).cue(2).hiLoHR(1)./rewSortMsHR(1).av(iav).cue(1).hiLoHR(1));
+%                 n1 = rewSortMsHR(1).av(iav).cue(2).nHiLo(1);
+%                 n2 = rewSortMsHR(2).av(iav).cue(2).nHiLo(1);
+%                 nHit1 = round(n1.*normHR_ms1(2),2,'significant');
+%                 nHit2 = round(n2.*normHR(2),2,'significant');
+%                 [~,p] = prop_test([nHit1 nHit2],[n1 n2],0);
+%                  title({sprintf('%s, Below %s% Threshold',avName{iav},...
+%                     num2str(highThreshold.*100));...
+%                     sprintf('Inv HR p = %s (chi-square test)',num2str(round(p,2,'significant')))})   
+%             end
+% 
+%             subplot(5,2,iplot2)
+%             normHR = cat(2,rewSortMsHR(im).av(iav).cue(1).hiLoHR(2)./rewSortMsHR(im).av(iav).cue(1).hiLoHR(2),...
+%                 rewSortMsHR(im).av(iav).cue(2).hiLoHR(2)./rewSortMsHR(im).av(iav).cue(1).hiLoHR(2));
+%             hold on
+%             h = plot(1:2,normHR,'o-');
+%             h.Color = cueColor{1};
+%             h.LineStyle = rewardedLine{im};
+%             text(3,normHR(2),num2str(round(normHR(2),2,'significant')))
+%             figXAxis([],'',[0 4],1:3,{'Vaild';'Invalid';'norm HR'})
+%             figYAxis([],'Norm. Hit Rate',[0 1],HR_pct_label./100,HR_pct_label./100)
+%             figAxForm
+%             if im == 2
+%                 normHR_ms1 = cat(2,rewSortMsHR(1).av(iav).cue(1).hiLoHR(2)./rewSortMsHR(1).av(iav).cue(1).hiLoHR(2),...
+%                     rewSortMsHR(1).av(iav).cue(2).hiLoHR(2)./rewSortMsHR(1).av(iav).cue(1).hiLoHR(2));
+%                 n1 = rewSortMsHR(1).av(iav).cue(2).nHiLo(2);
+%                 n2 = rewSortMsHR(2).av(iav).cue(2).nHiLo(2);
+%                 nHit1 = round(n1.*normHR_ms1(2),2,'significant');
+%                 nHit2 = round(n2.*normHR(2),2,'significant');
+%                 [~,p] = prop_test([nHit1 nHit2],[n1 n2],0);
+%                  title({sprintf('%s, Above %s% Threshold',avName{iav},...
+%                     num2str(highThreshold.*100));...
+%                     sprintf('Inv HR p = %s (chi-square test)',num2str(round(p,2,'significant')))})   
+%             end
+% 
+%             subplot(5,2,iplot3)
+%             normHR = rewSortMsHR(im).av(iav).valInvAllTrialsHR./...
+%                 rewSortMsHR(im).av(iav).valInvAllTrialsHR(1);
+%             hold on
+%             h = plot(1:2,normHR,'o-');
+%             h.Color = cueColor{1};
+%             h.LineStyle = rewardedLine{im};
+%             text(3,normHR(2),num2str(round(normHR(2),2,'significant')))
+%             figXAxis([],'',[0 4],1:3,{'Vaild';'Invalid';'norm HR'})
+%             figYAxis([],'Norm. Hit Rate',[0 1],HR_pct_label./100,HR_pct_label./100)
+%             figAxForm
+%             if im == 2
+%                 normHR_ms1 = rewSortMsHR(1).av(iav).valInvAllTrialsHR./...
+%                     rewSortMsHR(1).av(iav).valInvAllTrialsHR(1);
+%                 n1 = rewSortMsHR(1).av(iav).matchedTrialN(2);
+%                 n2 = rewSortMsHR(2).av(iav).matchedTrialN(2);
+%                 nHit1 = round(n1.*normHR_ms1(2),2,'significant');
+%                 nHit2 = round(n2.*normHR(2),2,'significant');
+%                 [~,p] = prop_test([nHit1 nHit2],[n1 n2],0);
+%                  title({sprintf('%s, All Trials',avName{iav},...
+%                     num2str(highThreshold.*100));...
+%                     sprintf('Inv HR p = %s (chi-square test)',num2str(round(p,2,'significant')))})   
+%             end
+%         end
+%     end
+%     print([fnout,'compareTrainingTypes'],'-dpdf','-fillpage')
+% end
 
 %% add some stats to structure
 bxStats.av(visualTrials).RTanova = RTanovaTestAV(visualTrials);
 bxStats.av(auditoryTrials).RTanova = RTanovaTestAV(auditoryTrials);
 
-save(fullfile(fnout,'bxStats'),'bxStats')
+save([fnout 'bxStats'],'bxStats')
 %% example mouse
 sessionAttnFig = figure;
-sessionVisAttnFig = figure;
 [nSessRows,nSessCols] = optimizeSubplotDim(nMice);
 for im = 1:nMice
     mouseName = ms2analyze{im};
     fn = fullfile(rc.ashleyAnalysis,mouseName,'behavior');
-    load(fullfile(fn,[mouseName,'bxSummary_dataAnalyzed_attnV1ms']))
+    load(fullfile(fn,[mouseName,'bxSummary_noRew_dataAnalyzed']))
     msExptInfo = msExptAnalyzed;
 
     nexp = size(msExptInfo,2);
@@ -1949,7 +1625,7 @@ for im = 1:nMice
         figYAxis([],'Invalid Hit Rate (%)',HR_lim,HR_label,HR_label)
         figAxForm
         title('All Matched Trials')
-        print(fullfile(fnout,['bxSummary_exampleMouse_' ms2analyze{im}]),'-dpdf','-fillpage')
+        print([fnout 'bxSummary_exampleMouse_' ms2analyze{im}],'-dpdf','-fillpage')
         
         figure(sessionAttnFig)
         subplot(nSessRows,nSessCols,im)
@@ -1964,173 +1640,7 @@ for im = 1:nMice
         figYAxis([],'Invalid Hit Rate (%)',HR_lim,HR_label,HR_label)
         figAxForm
         title(sprintf('%s, p=%s',ms2analyze{im},num2str(round(p,2,'significant'))))
-        
-        figure(sessionVisAttnFig)
-        subplot(nSessRows,nSessCols,im)
-        x = matchedHR{visualTrials,im}(valid,:);
-        y = matchedHR{visualTrials,im}(invalid,:);
-        h = plot(x,y,'k.');
-        [~,p] = ttest(x,y,'tail','right');
-        hold on
-        h = errorbar(nanmean(x(ind)),nanmean(y(ind)),...
-            ste(y(ind),2),ste(y(ind),2),ste(x(ind),2),ste(x(ind),2),'k.');
-        h.LineWidth = 1;
-        plot(HR_lim,HR_lim,'k--')
-        figXAxis([],'Valid Hit Rate (%)',HR_lim,HR_label,HR_label)
-        figYAxis([],'Invalid Hit Rate (%)',HR_lim,HR_label,HR_label)
-        figAxForm
-        title(sprintf('%s, p=%s',ms2analyze{im},num2str(round(p,2,'significant'))))
     end
 end
 figure(sessionAttnFig)
-print(fullfile(fnout,'bxSummary_sessionAttn_allMice'),'-dpdf','-fillpage')
-figure(sessionVisAttnFig)
-print(fullfile(fnout,'bxSummary_sessionAttn_vis_allMice'),'-dpdf','-fillpage')
-
-%% training history
-daysBins = [0:20:140 300];
-nBins = length(daysBins)-1;
-daysBins_label = cat(2,cellfun(@num2str,num2cell(10:20:140),'unif',0),{'>150'});
-date_firstDay = getDateFromNumberForm(...
-    cellfun(@str2num,exptSummaryInfo.FirstDay)');
-date_firstAV= getDateFromNumberForm(...
-    cellfun(@str2num,exptSummaryInfo.FirstAV)');
-date_firstInv = getDateFromNumberForm(...
-    cellfun(@str2num,exptSummaryInfo.FirstInvalid)');
-
-msTrainHistory = struct;
-msTrainHistory.attn(1).name = 'Attn';
-msTrainHistory.attn(2).name = 'No Attn';
-
-msTrainHistory.mouseName = ms2analyze;
-msTrainHistory.matchHRDiff_vis = bxStats.av(visualTrials).matchedHRDiff;
-msTrainHistory.days2AV = days(date_firstAV-date_firstDay);
-msTrainHistory.days2Inv = days(date_firstInv-date_firstDay);
-msTrainHistory.daysAV2Inv = days(date_firstInv-date_firstAV);
-for im = 1:nMice
-    d = msExptStruct{im};
-    exptDates = getDateFromNumberForm(cell2mat({d.date}));
-    msTrainHistory.inv_daysSinceFirst{im} = days(exptDates-date_firstInv(im));
-    thresh = nan(1,length(exptDates));
-    for iexp = 1:size(d,2)
-        thresh(iexp) = d(iexp).av(visualTrials).threshold;
-    end
-    msTrainHistory.threshold_vis{im} = thresh;
-    msTrainHistory.matchHRDiff_vis_expt{im} = ...
-        matchedHR{visualTrials,im}(valid,:)-matchedHR{visualTrials,im}(invalid,:);
-    
-end
-
-msTrainHistory.attn(1).matchHRDiff_vis_binned = nan(1,nBins);
-msTrainHistory.attn(1).matchHRDiff_vis_binned_err = nan(1,nBins);
-daysSinceFirstID = discretize(...
-    cell2mat(msTrainHistory.inv_daysSinceFirst(attnMiceInd)),daysBins);
-matchHRDiff = cell2mat(msTrainHistory.matchHRDiff_vis_expt(attnMiceInd));
-for ibin = 1:nBins
-    ind = daysSinceFirstID == ibin;
-    msTrainHistory.attn(1).matchHRDiff_vis_binned(ibin) = nanmean(matchHRDiff(ind));
-    msTrainHistory.attn(1).matchHRDiff_vis_binned_err(ibin) = ste(matchHRDiff(ind),2);
-end
-
-msTrainHistory.attn(2).matchHRDiff_vis_binned = nan(1,nBins);
-msTrainHistory.attn(2).matchHRDiff_vis_binned_err = nan(1,nBins);
-daysSinceFirstID = discretize(...
-    cell2mat(msTrainHistory.inv_daysSinceFirst(~attnMiceInd)),daysBins);
-matchHRDiff = cell2mat(msTrainHistory.matchHRDiff_vis_expt(~attnMiceInd));
-for ibin = 1:nBins
-    ind = daysSinceFirstID == ibin;
-    msTrainHistory.attn(2).matchHRDiff_vis_binned(ibin) = nanmean(matchHRDiff(ind));
-    msTrainHistory.attn(2).matchHRDiff_vis_binned_err(ibin) = ste(matchHRDiff(ind),2);
-end
-
-figure
-subplot 411
-for im = 1:nMice
-    subplot 411
-    hold on
-    x = msTrainHistory.inv_daysSinceFirst{im};
-    [sortX,sortInd] = sort(x);
-    y = msTrainHistory.matchHRDiff_vis_expt{im}(sortInd);
-    ind = ~isnan(y);
-    h=plot(sortX(ind),y(ind),'k-','MarkerSize',20);
-    if attnMiceInd(im)
-        h.LineStyle = '-';
-    else
-        h.LineStyle = ':';
-    end
-    subplot 412
-    hold on
-    y = msTrainHistory.threshold_vis{im}(sortInd);
-    h=plot(sortX(ind),y(ind),'k-','MarkerSize',20);
-    if attnMiceInd(im)
-        h.LineStyle = '-';
-    else
-        h.LineStyle = ':';
-    end
-end
-subplot 411
-x = 10:20:160;
-for i = 1:2
-    y = msTrainHistory.attn(i).matchHRDiff_vis_binned;
-    ind = ~isnan(y);
-    h = plot(x(ind),y(ind),'-','LineWidth',3);
-    if i==1
-        h.LineStyle = '-';
-    else
-        h.LineStyle = ':';
-    end
-end
-figXAxis([],'Days Since First Invalid',[0 290],x,daysBins_label)
-figYAxis([],'Val-Inv HR (Visual Only)',[-0.5 1])
-figAxForm([],0)
-subplot 412
-figXAxis([],'Days Since First Invalid',[0 290])
-figYAxis([],'Threshold (Visual)',[0 50])
-figAxForm([],0)
-
-subplot 425
-x = msTrainHistory.days2AV(attnMiceInd);
-y = msTrainHistory.matchHRDiff_vis(attnMiceInd);
-plot(x,y,'.','MarkerSize',20)
-hold on
-x = msTrainHistory.days2AV(~attnMiceInd);
-y = msTrainHistory.matchHRDiff_vis(~attnMiceInd);
-plot(x,y,'.','MarkerSize',20)
-figXAxis([],'Days to first AV Day',[0 200])
-figYAxis([],'Val-Inv HR (Visual Only)',[-0.2 0.5])
-figAxForm
-hold on
-hline(0,'k:')
-legend({'Attn','No Attn'},'location','northeastoutside')
-
-subplot 426
-x = msTrainHistory.days2Inv(attnMiceInd);
-y = msTrainHistory.matchHRDiff_vis(attnMiceInd);
-plot(x,y,'.','MarkerSize',20)
-hold on
-x = msTrainHistory.days2Inv(~attnMiceInd);
-y = msTrainHistory.matchHRDiff_vis(~attnMiceInd);
-plot(x,y,'.','MarkerSize',20)
-figXAxis([],'Days to first Invalid Day',[0 200])
-figYAxis([],'Val-Inv HR (Visual Only)',[-0.2 0.5])
-figAxForm
-hold on
-hline(0,'k:')
-legend({'Attn','No Attn'},'location','northeastoutside')
-
-subplot 427
-x = msTrainHistory.daysAV2Inv(attnMiceInd);
-y = msTrainHistory.matchHRDiff_vis(attnMiceInd);
-plot(x,y,'.','MarkerSize',20)
-hold on
-x = msTrainHistory.daysAV2Inv(~attnMiceInd);
-y = msTrainHistory.matchHRDiff_vis(~attnMiceInd);
-plot(x,y,'.','MarkerSize',20)
-figXAxis([],'First AV to first Invalid Day',[0 200])
-figYAxis([],'Val-Inv HR (Visual Only)',[-0.2 0.5])
-figAxForm
-hold on
-hline(0,'k:')
-legend({'Attn','No Attn'},'location','northeastoutside')
-
-print(fullfile(fnout,'bxSummary_trainingHistory'),'-dpdf','-fillpage')
+print([fnout 'bxSummarysessionAttn_allMice'],'-dpdf','-fillpage')

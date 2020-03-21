@@ -160,8 +160,9 @@ end
 
 if input.doBlock2==1,
   block2Str = 'Block2: on \n';
+  b2TrPer80Str = ['[' num2str([input.block2TrPer80Level1 input.block2TrPer80Level2 input.block2TrPer80Level3 input.block2TrPer80Level4 input.block2TrPer80Level5 input.block2TrPer80Level6 input.block2TrPer80Level7 input.block2TrPer80Level8]) ']' ];
   if input.block2DoTrialLaser==1,
-    block2Str = sprintf('Block2: on, Trial Laser Power:%5.2fmW \n', double(input.block2TrialLaserPowerMw));
+    block2Str = sprintf('Block2: on, Trial Laser Power:%5.2fmW \n b2TrPer80: %s \n', double(input.block2TrialLaserPowerMw), b2TrPer80Str);
   end
 elseif input.doBlock2==0,
   block2Str = 'Block2: off \n';
@@ -541,9 +542,8 @@ if length(ind)>0
 end
 
 if nCorr>0  %&& input.doTestRobot==0,
-  if isfield(input,'doContrastDiscrim')
     if input.doContrastDiscrim
-      if input.gratingContrastDiffSPO<10
+      if input.doContrastDetect == 0
         contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ dGratingContrast,2);
       else
         contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - dGratingContrast,2);
@@ -557,13 +557,6 @@ if nCorr>0  %&& input.doTestRobot==0,
     elseif input.doOriDiscrim
       contDiffV = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
     end
-  else
-    if input.gratingContrastDiffSPO<10
-      contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ dGratingContrast,2);
-    else
-      contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - dGratingContrast,2);
-    end
-  end
 
 
     corrDiffV = contDiffV(correctIx);
@@ -648,15 +641,7 @@ if nCorr>0  %&& input.doTestRobot==0,
     xLimm = [minX maxX];
     uqDiff = uqDiff;
     
-    if input.doContrastDiscrim
-    if input.gratingContrastDiffSPO<10
-      sc_num = 1;
-    else
-      sc_num = 100;
-    end
-    else
     sc_num = 1; 
-    end
     
     pH = plot((sc_num * uqDiff), cell2mat(corrDiffCell));
     if nLeft>0,
@@ -709,14 +694,14 @@ if nCorr>0  %&& input.doTestRobot==0,
 
      axis tight  
        ylabel('Decision Time (ms)')
-       if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
-           if input.gratingContrastDiffSPO<10
+           if input.doContrastDetect == 0
              xlabel('Contrast Ratio (T/D)')
+             title('Decision Time by Contrast Ratio')
            else
-             xlabel('Contrast Difference (T-D)')
+             xlabel('Target Contrast')
+             title('Decision Time by Target Contrast')
             end
-           title('Decision Time by Contrast Ratio')
         elseif input.doSizeDiscrim
           if input.gratingDiameterDiffSPO<10
              xlabel('Size Difference (T/D)')
@@ -728,14 +713,6 @@ if nCorr>0  %&& input.doTestRobot==0,
            xlabel('Ori Difference')
            title('Decision Time by Ori Difference')
         end
-      else
-        if input.gratingContrastDiffSPO<10
-         xlabel('Contrast Ratio (T/D)')
-        else
-         xlabel('Contrast Difference (T-D)')
-        end
-      title('Decision Time by Contrast Ratio')
-      end     
 end
 %%%%%%%%%%%%%%%%%
 
@@ -759,7 +736,7 @@ if nCorr>0 && input.doTestRobot==0,
     didNoGoIx = celleqel2mat_padded(input.didNoGo);
     plotTrsNoGo = contDiffV(~noGoIx&didNoGoIx);
     if find(didNoGoIx)
-      nLevelsNoGo = unique(plotTrsNoGo);
+      nLevelsNoGo = plotTrsNoGo;
       for kk=1:length(nLevelsNoGo)
         valNoGo = nLevelsNoGo(kk);
         valIx = contDiffV==valNoGo;
@@ -768,7 +745,7 @@ if nCorr>0 && input.doTestRobot==0,
         percentContCellNoGoByDiff{kk} = totalNTrialsValNoGo/totalNTrialsVal;
       end
     end
-
+    if input.doOriDiscrim == 0 
     if ~find(uqDiff <=0)
       pH = plot(uqDiff, cell2mat(percentCell));
     else
@@ -778,13 +755,13 @@ if nCorr>0 && input.doTestRobot==0,
       pH = plot(uqDiff, percentCell);
     end
     if length(plotTrsNoGo)>0
-      pH1 = plot(sc_num * nLevelsNoGo, cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
-      set(pH1, ...
+       pH1 = plot(sc_num * nLevelsNoGo, cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
+       set(pH1, ...
         'LineWidth', 1.5, ...
         'Marker', '.', ...
         'MarkerSize', 9);
     end
-    
+
     set(pH, ...
         'LineWidth', 1.5, ...
         'Marker', '.', ...
@@ -794,36 +771,35 @@ if nCorr>0 && input.doTestRobot==0,
            'XGrid', 'on',...
            'Xscale', 'log');
        
-        xlim([1 100])
 
        if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
-           if input.gratingContrastDiffSPO<10
+           if input.doContrastDetect == 0
              xlabel('Contrast Ratio (T/D)')
+             title('Percent Correct by Contrast Ratio')
            else
-             xlabel('Contrast Difference (T-D)')
-            end
-           title('Percent Correct by Contrast Ratio')
+             xlabel('Target Contrast')
+             title('Percent Correct by Target Contrast')
+           end
         elseif input.doSizeDiscrim
           if input.gratingDiameterDiffSPO<10
-             xlabel('Size Ratio (T/D)')
+            xlabel('Size Ratio (T/D)')
            else
              xlabel('Size Difference (T-D)')
             end
            title('Percent Correct by Size Ratio')
         elseif input.doOriDiscrim
-          if input.gratingDiameterDiffSPO<10
            xlabel('Ori Difference')
            title('Percent Correct by Ori Difference')
-        end
       else
-        if input.gratingContrastDiffSPO<10
+        if input.doContrastDetect == 0
          xlabel('Contrast Ratio (T/D)')
         else
          xlabel('Contrast Difference (T-D)')
         end
       title('Percent Correct by Contrast RAtio')
       end
+end
 end
 
 %%%%%%%%%%%%%%%%

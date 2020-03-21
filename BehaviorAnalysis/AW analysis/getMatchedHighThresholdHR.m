@@ -9,6 +9,10 @@ function [valHR_highThreshold, invHR_highThreshold,...
     fitGrid = logspace(log10(minI*0.1),log10(maxI*1.5),100);
     highThreshInd = find(HRFit.modelFun(HRFit.coefEsts,fitGrid) ...
         > highThreshold,1);
+    if isempty(highThreshInd)
+        highThreshInd = find(HRFit.modelFun(HRFit.coefEsts,fitGrid) ...
+            > 0.85,1);
+    end
     msHighThresh = fitGrid(highThreshInd);
 
     invHR_highThreshold= nan(1,2);

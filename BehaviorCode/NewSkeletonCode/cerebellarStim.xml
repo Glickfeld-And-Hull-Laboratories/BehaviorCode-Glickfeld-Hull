@@ -113,6 +113,9 @@
       <variable tag="wheelSpeed" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="stationaryDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="runningDuration" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+      
+
     </folder>
     <folder tag="Internal Variables">
       <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -208,6 +211,7 @@
           <action type="assignment" variable="tDotDirectionDeg" value="DotDirectionDeg"/>
           <action type="assignment" variable="Imaging" value="1"/>
           <action type="assignment" variable="didSendStim" value="0"/>
+
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
               <action type="report" message="** Stopping after completing $stopAfterNTrials trials"></action>
@@ -359,6 +363,7 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="tCounter" value="counter"></action>
             <action type="assignment" variable="didSendStim" value="1"/>
+            
               <action type="if" condition="DoTactileStim == 1">
                 <action type="assignment" variable="lastTrialStimOn" value="1"/>
                 <action type="report" message="*** Sending Tactile Stimulus -- Staying in Post-Stim State for $TStimNFrames scans."></action>

@@ -687,7 +687,7 @@
                        <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+tLeftTrPer80Level1))">
                         <action type="assignment" variable="tStimulusNumber" value="0"/>
                         <action type="assignment" variable="tLeftTrial" value="1"/>
-                        <action type="report" message="tLeftrial should be $tLeftrial"/>
+                        <action type="report" message="tLeftTrial should be $tLeftTrial"/>
                       </action>
                       <action type="if" condition="tSvStimNumber2 >= tTempStimOdds &amp;&amp; (tSvStimNumber2 &lt; (tTempStimOdds+tLeftTrPer80Level1))"> 
                         <action type="assignment" variable="tStimulusNumber2" value="0"/>
@@ -1711,6 +1711,8 @@
                           </action>
                         </action>  
 
+                        <action type="start_timer" timer="idleTimer" timebase="" duration="500" duration_units="us"/>
+
                         <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                         <transition type="conditional" condition="timerExpired(stimOnTimerMs) &amp;&amp; !stimIsOff" target="StimOff"></transition>
                         <transition type="conditional" condition="timerExpired(reactionTimerMs) &amp;&amp; !isNoGo" target="Ignore"></transition>
@@ -1739,8 +1741,7 @@
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; !isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Reward"></transition>
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 1 &amp;&amp; tLeftTrial==1" target="Incorrect"></transition>
                         <transition type="conditional" condition="timerExpired(robotTimerMs) &amp;&amp; doTestRobot==1 &amp;&amp; isNoGo &amp;&amp; doAllCorrects==0 &amp;&amp; robotGoLeft == 0 &amp;&amp; tLeftTrial==0" target="Incorrect"></transition>
-                    -->
-                        <transition type="direct" target="Reaction"></transition>
+                        <transition type="conditional" condition="timerExpired(idleTimer)" target="Reaction"></transition>
                       </task_system_state>
 
                       <task_system_state tag="Reward" interruptible="YES">

@@ -1,16 +1,16 @@
 clear all
 close all
 
-ms2analyze = {'672';'682'};
+ms2analyze = {'764'};
 exampleDay = 10;
 doExampleDay = false;
-doLoadPreviousDataset = false;
-doCheck4NewDates = false;
-doRewarded = true;
+doLoadPreviousDataset = true;
+doCheck4NewDates = true;
+doRewarded = false;
 doPlot = true;
 %%
 nmice = length(ms2analyze);
-bxParams_FSAV
+bxParams_FSAV_attnV1ms
 
 rc = behavConstsAV;
 
@@ -282,7 +282,6 @@ for im = 1:nmice
         invVisHighThreshID(tInvVisTargets < highThreshExpt & tInvVisTargets > 0) = 1;
         visMatchedHighThreshID = visMatchHighThreshTrialInd(visMatchHighThreshTrialInd > 0 & (hit | miss));
         visMatchedHighThreshOutcome = hit(visMatchHighThreshTrialInd > 0 & (hit | miss));
-        
         
         audHR = msExptInfo(iexp).audHR;
         ind = nAud > minTrN_expt;
