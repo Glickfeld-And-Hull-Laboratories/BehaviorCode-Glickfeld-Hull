@@ -321,6 +321,8 @@ catch
 end
 
 %% disp status
+
+trStr = ['Trial ' num2str(trN) '- '];
 if input.tStimOneGratingContrast{trN} > 0
     stim1Str = sprintf('Stim1: con %g%%, dir %g%, %g% ms', input.tStimOneGratingContrast{trN}.*100, input.tStimOneGratingDirectionDeg{trN}, input.tStimTwoGratingOnTimeMs{trN});
 else
@@ -349,8 +351,8 @@ else
   block2Str = sprintf(' b2tr %d ', input.tBlock2TrialNumber{trN});
 end
 itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));
-fprintf(1,'%s; %s; %s; %s\n', ...
-    stim1Str, stim2Str, mask1Str, mask2Str, isiStr, block2Str);
+fprintf(1,'%s %s; %s; %s; %s %s\n', ...
+    trStr, stim1Str, stim2Str, mask1Str, mask2Str, isiStr, block2Str);
 
 %% run subfunctions
 input = exptRunSubfunctions(ds, input, { @plotTwoStim_2P_Frames });
