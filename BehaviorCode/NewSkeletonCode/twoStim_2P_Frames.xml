@@ -902,24 +902,30 @@
               <action type="if" condition="tDoRandDiameter">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingDiameterStepN"/>
                 <action type="assignment" variable="tStimOneGratingDiameterDeg" value= "stimOneGratingDiameterDeg * pow(stimOneGratingDiameterStepLog,tTempStim1)"/>
+                <action type="assignment" variable="tMaskOneGratingDiameterDeg" value= "tStimOneGratingDiameterDeg"/>
                 <action type="if" condition="matchStimOneParameters">
                   <action type="assignment" variable="tStimTwoGratingDiameterDeg" value= "tStimOneGratingDiameterDeg"/>
+                  <action type="assignment" variable="tMaskTwoGratingDiameterDeg" value= "tStimTwoGratingDiameterDeg"/>
                 </action>
                 <action type="if" condition="!matchStimOneParameters">
                   <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % stimTwoGratingDiameterStepN"/>
                   <action type="assignment" variable="tStimTwoGratingDiameterDeg" value= "stimTwoGratingDiameterDeg * pow(stimTwoGratingDiameterStepLog,tTempStim2)"/>
+                  <action type="assignment" variable="tMaskTwoGratingDiameterDeg" value= "tStimTwoGratingDiameterDeg"/>
                 </action>
                 <action type="if" condition="doBlock2">
                   <action type="if" condition="tBlock2TrialNumber">
                     <action type="if" condition="!block2MatchB1VisStim">
                       <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % block2StimOneGratingDiameterStepN"/>
                       <action type="assignment" variable="tStimOneGratingDiameterDeg" value= "block2StimOneGratingDiameterDeg * pow(block2StimOneGratingDiameterStepLog,tTempStim1)"/>
+                      <action type="assignment" variable="tMaskOneGratingDiameterDeg" value= "tStimOneGratingDiameterDeg"/>
                       <action type="if" condition="block2MatchStimOneParameters">
                         <action type="assignment" variable="tStimTwoGratingDiameterDeg" value= "tStimOneGratingDiameterDeg"/>
+                        <action type="assignment" variable="tMaskTwoGratingDiameterDeg" value= "tStimTwoGratingDiameterDeg"/>
                       </action>
                       <action type="if" condition="!block2MatchStimOneParameters">
                         <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % block2StimTwoGratingDiameterStepN"/>
                         <action type="assignment" variable="tStimTwoGratingDiameterDeg" value= "block2StimTwoGratingDiameterDeg * pow(block2StimTwoGratingDiameterStepLog,tTempStim2)"/>
+                        <action type="assignment" variable="tMaskTwoGratingDiameterDeg" value= "tStimTwoGratingDiameterDeg"/>
                       </action> 
                     </action>
                   </action>
@@ -929,24 +935,30 @@
               <action type="if" condition="tDoRandTF">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingTemporalFreqStepN"/>
                 <action type="assignment" variable="tStimOneGratingTemporalFreqCPS" value= "stimOneGratingTemporalFreqCPS * pow(stimOneGratingTemporalFreqStepLog,tTempStim1)"/>
+                <action type="assignment" variable="tMaskOneGratingTemporalFreqCPS" value= "tStimOneGratingTemporalFreqCPS"/>
                 <action type="if" condition="matchStimOneParameters">
                   <action type="assignment" variable="tStimTwoGratingTemporalFreqCPS" value= "tStimOneGratingTemporalFreqCPS"/>
+                  <action type="assignment" variable="tMaskTwoGratingTemporalFreqCPS" value= "tStimTwoGratingTemporalFreqCPS"/>
                 </action>
                 <action type="if" condition="!matchStimOneParameters">
                   <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % stimTwoGratingTemporalFreqStepN"/>
                   <action type="assignment" variable="tStimTwoGratingTemporalFreqCPS" value= "stimTwoGratingTemporalFreqCPS * pow(stimTwoGratingTemporalFreqStepLog,tTempStim2)"/>
+                  <action type="assignment" variable="tMaskTwoGratingTemporalFreqCPS" value= "tStimTwoGratingTemporalFreqCPS"/>
                 </action>
                 <action type="if" condition="doBlock2">
                   <action type="if" condition="tBlock2TrialNumber">
                     <action type="if" condition="!block2MatchB1VisStim">
                       <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % block2StimOneGratingTemporalFreqStepN"/>
                       <action type="assignment" variable="tStimOneGratingTemporalFreqCPS" value= "block2StimOneGratingTemporalFreqCPS * pow(block2StimOneGratingTemporalFreqStepLog,tTempStim1)"/>
+                      <action type="assignment" variable="tMaskOneGratingTemporalFreqCPS" value= "tStimOneGratingTemporalFreqCPS"/>
                       <action type="if" condition="block2MatchStimOneParameters">
                         <action type="assignment" variable="tStimTwoGratingTemporalFreqCPS" value= "tStimOneGratingTemporalFreqCPS"/>
+                        <action type="assignment" variable="tMaskTwoGratingTemporalFreqCPS" value= "tStimTwoGratingTemporalFreqCPS"/>
                       </action>
                       <action type="if" condition="!block2MatchStimOneParameters">
                         <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % block2StimTwoGratingTemporalFreqStepN"/>
                         <action type="assignment" variable="tStimTwoGratingTemporalFreqCPS" value= "block2StimTwoGratingTemporalFreqCPS * pow(block2StimTwoGratingTemporalFreqStepLog,tTempStim2)"/>
+                        <action type="assignment" variable="tMaskTwoGratingTemporalFreqCPS" value= "tStimTwoGratingTemporalFreqCPS"/>
                       </action> 
                     </action>
                   </action>
@@ -956,24 +968,30 @@
               <action type="if" condition="tDoRandSF">
                 <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % stimOneGratingSpatialFreqStepN"/>
                 <action type="assignment" variable="tStimOneGratingSpatialFreqCPD" value= "stimOneGratingSpatialFreqCPD * pow(stimOneGratingSpatialFreqStepLog,tTempStim1)"/>
+                <action type="assignment" variable="tMaskOneGratingSpatialFreqCPD" value= "tStimOneGratingSpatialFreqCPD"/>
                 <action type="if" condition="matchStimOneParameters">
                   <action type="assignment" variable="tStimTwoGratingSpatialFreqCPD" value= "tStimOneGratingSpatialFreqCPD"/>
+                  <action type="assignment" variable="tMaskTwoGratingSpatialFreqCPD" value= "tStimTwoGratingSpatialFreqCPD"/>
                 </action>
                 <action type="if" condition="!matchStimOneParameters">
                   <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % stimTwoGratingSpatialFreqStepN"/>
                   <action type="assignment" variable="tStimTwoGratingSpatialFreqCPD" value= "stimTwoGratingSpatialFreqCPD * pow(stimTwoGratingSpatialFreqStepLog,tTempStim2)"/>
+                  <action type="assignment" variable="tMaskTwoGratingSpatialFreqCPD" value= "tStimTwoGratingSpatialFreqCPD"/>
                 </action>
                 <action type="if" condition="doBlock2">
                   <action type="if" condition="tBlock2TrialNumber">
                     <action type="if" condition="!block2MatchB1VisStim">
                       <action type="assignment" variable="tTempStim1" value= "tStimulusNumber % block2StimOneGratingSpatialFreqStepN"/>
                       <action type="assignment" variable="tStimOneGratingSpatialFreqCPD" value= "block2StimOneGratingSpatialFreqCPD * pow(block2StimOneGratingSpatialFreqStepLog,tTempStim1)"/>
+                      <action type="assignment" variable="tMaskOneGratingSpatialFreqCPD" value= "tStimOneGratingSpatialFreqCPD"/>
                       <action type="if" condition="block2MatchStimOneParameters">
                         <action type="assignment" variable="tStimTwoGratingSpatialFreqCPD" value= "tStimOneGratingSpatialFreqCPD"/>
+                        <action type="assignment" variable="tMaskTwoGratingSpatialFreqCPD" value= "tStimTwoGratingSpatialFreqCPD"/>
                       </action>
                       <action type="if" condition="!block2MatchStimOneParameters">
                         <action type="assignment" variable="tTempStim2" value= "tStimulusNumber2 % block2StimTwoGratingSpatialFreqStepN"/>
                         <action type="assignment" variable="tStimTwoGratingSpatialFreqCPD" value= "block2StimTwoGratingSpatialFreqCPD * pow(block2StimTwoGratingSpatialFreqStepLog,tTempStim2)"/>
+                        <action type="assignment" variable="tMaskTwoGratingSpatialFreqCPD" value= "tStimTwoGratingSpatialFreqCPD"/>
                       </action> 
                     </action>
                   </action>
