@@ -86,6 +86,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Task Type'
         )
+    var doRotate = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )    
     var doRandSoundAmp = (bool)(0) (
         persistant = 1
         groups = 'Task Type'
@@ -146,6 +150,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Block2
         )
+    var block2DoMask = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )    
     var block2DoRandISITime = (bool)(0) (
         persistant = 1
         groups = Block2
@@ -192,8 +200,12 @@ group 'Behavioral Control' {
         )
     var block2DoRandMaskPhase = (bool)(0) (
         persistant = 1
-        groups = Block2
+        groups = Mask
         )
+    var block2DoRotate = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )    
     var block2DoRandSoundAmp = (bool)(0) (
         persistant = 1
         groups = Block2
@@ -246,6 +258,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Trial Structure'
         )
+    var gratingRotateSpeedDPS = (float)(20) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )    
     var speedIntervalMS = (float)(0) (
         persistant = 1
         groups = 'Wheel Speed'
@@ -1124,6 +1140,7 @@ group 'Internal Variables' {
     var tDoRandSF = (bool)(0)
     var tDoRandTF = (bool)(0)
     var tDoRandPhase = (bool)(0)
+    var tDoRotate = (bool)(0)
     var tDoRandMaskPhase = (bool)(0)
     var tDoRandSoundAmp = (bool)(0)
     var tDoRandSoundFreq = (bool)(0)
@@ -1133,6 +1150,7 @@ group 'Internal Variables' {
     var maxStimOnTime = 0
     var maxISITime = 0
     var tStimOneGratingDirectionDeg = (float)(0)
+    var setStimOneGratingDirectionDeg = (float)(0)
     var tStimOneGratingContrast = (float)(0)
     var tStimOneGratingElevationDeg = (float)(0)
     var tStimOneGratingAzimuthDeg = (float)(0)
@@ -1185,12 +1203,14 @@ group 'Internal Variables' {
     var nStimOneFramesOn = 0
     var nStimTwoFramesOn = 0
     var nFramesISI = 0
+    var nDegRotationPerFrame = 1
     // counter variables 
     var cItiStart = 0
     var cStimOneOn = 0
     var cStimOneOff = 0
     var cStimTwoOn = 0
     var cStimTwoOff = 0
+    var cNow = 0
     var mwStimOneOnMs = 0
     var mwStimOneOffMs = 0
     var mwStimTwoOnMs = 0
@@ -1286,7 +1306,7 @@ blank_screen background ()
 
 layer stimOne {
     drifting_grating stimOne_grating (
-        direction = tStimOneGratingDirectionDeg
+        direction = setStimOneGratingDirectionDeg
         starting_phase = tStimOneGratingPhaseDeg
         spatial_frequency = tStimOneGratingSpatialFreqCPD
         speed = tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD
@@ -1553,6 +1573,7 @@ protocol JuiceOnHoldProtocol {
                 tStimOneSound5Amplitude = stimOneSound5Amplitude
                 tStimTwoDoVisualStim = stimTwoDoVisualStim
                 tStimTwoDoAuditoryStim = stimTwoDoAuditoryStim
+                tDoMask = doMask
                 tDoMatrix = doMatrix
                 tDoRandISITime = doRandISITime
                 tDoRandStimOnTime = doRandStimOnTime
@@ -1566,6 +1587,7 @@ protocol JuiceOnHoldProtocol {
                 tDoRandSF = doRandSF
                 tDoRandTF = doRandTF
                 tDoRandPhase = doRandPhase
+                tDoRotate = doRotate
                 tDoRandSoundAmp = doRandSoundAmp
                 tDoRandSoundFreq = doRandSoundFreq
                 if (matchStimOneParameters) {
@@ -1611,6 +1633,7 @@ protocol JuiceOnHoldProtocol {
                 if (doBlock2) {
                     if (tBlock2TrialNumber) {
                         if (!block2MatchB1VisStim) {
+                            tDoMask = block2DoMask
                             tDoMatrix = block2DoMatrix
                             tDoRandISITime = block2DoRandISITime
                             tDoRandStimOnTime = block2DoRandStimOnTime
@@ -1621,6 +1644,7 @@ protocol JuiceOnHoldProtocol {
                             tDoRandSF = block2DoRandSF
                             tDoRandTF = block2DoRandTF
                             tDoRandPhase = block2DoRandPhase
+                            tDoRotate = block2DoRotate
                             tDoRandMaskCon = block2DoRandMaskCon
                             tDoRandMaskDir = block2DoRandMaskDir
                             tDoRandMaskPhase = block2DoRandMaskPhase
@@ -2085,7 +2109,7 @@ protocol JuiceOnHoldProtocol {
                             }
                         }
                     }
-                    if (doMask) {
+                    if (tDoMask) {
                         multVal = rand(0,1)
                         if (multVal >= fractMaskTrials) {
                             tDoMask = 0
@@ -2156,6 +2180,32 @@ protocol JuiceOnHoldProtocol {
                                             if (!block2MatchStimOneParameters) {
                                                 tTempMask2 = tStimulusNumber2 % block2MaskTwoGratingDirectionStepN
                                                 tMaskTwoGratingDirectionDeg = block2MaskTwoGratingDirectionDeg + (block2MaskTwoGratingDirectionStepDeg * (tTempMask2))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (tDoRandMaskPhase && !tDoRandMaskCon) {
+                                tTempMask1 = tMaskNumber % maskOneGratingPhaseStepN
+                                tMaskOneGratingPhaseDeg = maskOneGratingPhaseDeg + (maskOneGratingPhaseStepDeg * tTempMask1)
+                                if (matchStimOneParameters) {
+                                    tMaskTwoGratingPhaseDeg = tMaskOneGratingPhaseDeg
+                                }
+                                if (!matchStimOneParameters) {
+                                    tTempMask2 = tMaskNumber % maskTwoGratingPhaseStepN
+                                    tMaskTwoGratingPhaseDeg = maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * tTempMask2)
+                                }
+                                if (doBlock2) {
+                                    if (tBlock2TrialNumber) {
+                                        if (!block2MatchB1VisStim) {
+                                            tTempMask1 = tMaskNumber % block2MaskOneGratingPhaseStepN
+                                            tMaskOneGratingPhaseDeg = block2MaskOneGratingPhaseDeg + (block2MaskOneGratingPhaseStepDeg * (tTempMask1))
+                                            if (block2MatchStimOneParameters) {
+                                                tMaskTwoGratingPhaseDeg = tMaskOneGratingPhaseDeg
+                                            }
+                                            if (!block2MatchStimOneParameters) {
+                                                tTempMask2 = tStimulusNumber2 % block2MaskTwoGratingPhaseStepN
+                                                tMaskTwoGratingPhaseDeg = block2MaskTwoGratingPhaseDeg + (block2MaskTwoGratingPhaseStepDeg * (tTempMask2))
                                             }
                                         }
                                     }
@@ -2388,6 +2438,7 @@ protocol JuiceOnHoldProtocol {
                 }
                 report ('tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast')
                 report ('tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg')
+                setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg
                 if (tDoMask) {
                     if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
                         tMaskOneGratingContrast = 0
@@ -2404,6 +2455,10 @@ protocol JuiceOnHoldProtocol {
                 nStimOneFramesOn = ceil((tStimOneGratingOnTimeMs/1000)*frameRateHz)
                 nStimTwoFramesOn = ceil((tStimTwoGratingOnTimeMs/1000)*frameRateHz)
                 nFramesISI = ceil((tISITimeMs/1000)*frameRateHz)
+                nDegRotationPerFrame = gratingRotateSpeedDPS/frameRateHz
+                if (doRotate) {
+                    nStimOneFramesOn = ceil(360/nDegRotationPerFrame)
+                }
                 // initialize trial start/end times 
                 if (tThisTrialStartTimeMs == -1) {
                     //first trial, leave lasttime as -1 
@@ -2453,6 +2508,7 @@ protocol JuiceOnHoldProtocol {
                     speedIntervalUS = speedIntervalMS*1000
                 }
                 report ('In ITI, waiting $tItiWaitFrames')
+                report ('doRotate is $tDoRotate')
                 goto (
                     target = StimOneOn
                     when = counter >= (cItiStart + tItiWaitFrames) && isFirstTrial && counter > 19
@@ -2485,6 +2541,23 @@ protocol JuiceOnHoldProtocol {
                     target = StimOneOff
                     when = counter >= (cStimOneOn + nStimOneFramesOn)
                     )
+                goto (
+                    target = Rotate
+                    when = counter >= (cStimOneOn + 1) && tDoRotate
+                    )    
+            }
+            state Rotate {
+                cNow = counter
+                setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg + ((cNow-cStimOneOn)*nDegRotationPerFrame)
+                update_stimulus_display ()
+                goto (
+                    target = StimOneOff
+                    when = counter >= (cStimOneOn + nStimOneFramesOn) 
+                    )
+                goto (
+                    target = Rotate
+                    when = counter >= (cNow + 1) && tDoRotate
+                    )    
             }
             state StimOneOff {
                 dequeue_stimulus (stimOne)
