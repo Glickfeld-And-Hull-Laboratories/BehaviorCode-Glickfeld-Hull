@@ -126,6 +126,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Mask
         )
+    var doMaskRotate = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )    
     var doBlock2 = (bool)(0) (
         persistant = 1
         groups = Block2
@@ -222,6 +226,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Mask
         )
+    var block2DoMaskRotate = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )    
     var block2ISITimeMs = (float)(250) (
         persistant = 1
         groups = 'Block2 Trial Structure'
@@ -1141,6 +1149,7 @@ group 'Internal Variables' {
     var tDoRandTF = (bool)(0)
     var tDoRandPhase = (bool)(0)
     var tDoRotate = (bool)(0)
+    var tDoMaskRotate = (bool)(0)
     var tDoRandMaskPhase = (bool)(0)
     var tDoRandSoundAmp = (bool)(0)
     var tDoRandSoundFreq = (bool)(0)
@@ -1151,6 +1160,7 @@ group 'Internal Variables' {
     var maxISITime = 0
     var tStimOneGratingDirectionDeg = (float)(0)
     var setStimOneGratingDirectionDeg = (float)(0)
+    var setMaskOneGratingDirectionDeg = (float)(0)
     var tStimOneGratingContrast = (float)(0)
     var tStimOneGratingElevationDeg = (float)(0)
     var tStimOneGratingAzimuthDeg = (float)(0)
@@ -1320,7 +1330,7 @@ layer stimOne {
         )
 
     drifting_grating stimOne_mask (
-        direction = tMaskOneGratingDirectionDeg
+        direction = setMaskOneGratingDirectionDeg
         starting_phase = tMaskOneGratingPhaseDeg
         spatial_frequency = tStimOneGratingSpatialFreqCPD
         speed = tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD
@@ -1588,6 +1598,7 @@ protocol JuiceOnHoldProtocol {
                 tDoRandTF = doRandTF
                 tDoRandPhase = doRandPhase
                 tDoRotate = doRotate
+                tDoMaskRotate = doMaskRotate
                 tDoRandSoundAmp = doRandSoundAmp
                 tDoRandSoundFreq = doRandSoundFreq
                 if (matchStimOneParameters) {
@@ -1645,6 +1656,7 @@ protocol JuiceOnHoldProtocol {
                             tDoRandTF = block2DoRandTF
                             tDoRandPhase = block2DoRandPhase
                             tDoRotate = block2DoRotate
+                            tDoMaskRotate = block2DoMaskRotate
                             tDoRandMaskCon = block2DoRandMaskCon
                             tDoRandMaskDir = block2DoRandMaskDir
                             tDoRandMaskPhase = block2DoRandMaskPhase
@@ -2439,6 +2451,7 @@ protocol JuiceOnHoldProtocol {
                 report ('tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast')
                 report ('tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg')
                 setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg
+                setMaskOneGratingDirectionDeg = tMaskOneGratingDirectionDeg
                 if (tDoMask) {
                     if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
                         tMaskOneGratingContrast = 0
@@ -2549,6 +2562,10 @@ protocol JuiceOnHoldProtocol {
             state Rotate {
                 cNow = counter
                 setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg + ((cNow-cStimOneOn)*nDegRotationPerFrame)
+                if (tDoMaskRotate) {
+                setMaskOneGratingDirectionDeg = setStimOneGratingDirectionDeg + maskOneGratingDirectionDeg - stimOneGratingDirectionDeg
+                }
+
                 update_stimulus_display ()
                 goto (
                     target = StimOneOff
