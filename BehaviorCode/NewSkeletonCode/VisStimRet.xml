@@ -474,22 +474,7 @@
                               <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ;  $tGratingDirectionDeg"/>
                             </action>
                           </action> 
-                          <action type="if" condition="doPhaseStim">
-                            <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingStartingPhaseStepN)"/>
-                            <action type="if" condition="tTempStim &lt; (gratingAzimuthStepN * gratingStartingPhaseStepN)">
-                              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
-                              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(tTempStim/gratingStartingPhaseStepN))"/>
-                              <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim % gratingStartingPhaseStepN))"/>
-                              <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Phase is $tGratingStartingPhaseDeg"/>
-                            </action>
-                            <action type="if" condition="tTempStim &gt;= (gratingAzimuthStepN * gratingStartingPhaseStepN)">
-                              <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg + (gratingElevationStepDeg * (floor((tTempStim % (gratingAzimuthStepN * gratingStartingPhaseStepN *gratingElevationStepN)) / (gratingAzimuthStepN * gratingStartingPhaseStepN))))"/>
-                              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(((tTempStim) % (gratingAzimuthStepN * gratingStartingPhaseStepN))/gratingStartingPhaseStepN))"/>
-                              <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim % gratingStartingPhaseStepN))"/>
-                              <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ;  $tGratingStartingPhaseDeg"/>
-                            </action>
-                          </action> 
-                          <action type="if" condition="!doDirStim &amp;&amp; !doPhaseStim">
+                          <action type="if" condition="!doDirStim">
                             <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>    
                             <action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
                              <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim))"/>
@@ -502,6 +487,13 @@
                              <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
                            </action>
                          </action>
+                         <!--set to only have two possible phases- otherwise not enough stimulus conditions for ret -->
+                         <action type="if" condition="doPhaseStim">
+                            <action type="assignment" variable="tTempStim" value= "rand(0,1) &gt; 0.5"/>
+                            <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim % gratingStartingPhaseStepN))"/>
+                            <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ;  $tGratingStartingPhaseDeg"/>
+                         </action>
+                          </action> 
                            <action type="if" condition="doSFStim &amp;&amp; doConStim">
                             <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN)"/>
                             <action type="if" condition="tTempStim &lt; (gratingAzimuthStepN * gratingContrastStepN)">
@@ -620,7 +612,7 @@
                  </action>
 
                  <!-- do Phase -->
-                 <action type="if" condition="!doMatrix &amp;&amp; doPhaseStim = 1">  
+                 <action type="if" condition="!doMatrix &amp;&amp; doPhaseStim = 1 &amp;&amp; !doRetStim ">  
                   <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingStartingPhaseStepN"/>
                   <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))"/>
                   <action type="report" message="Starting phase is $tGratingStartingPhaseDeg"/>
