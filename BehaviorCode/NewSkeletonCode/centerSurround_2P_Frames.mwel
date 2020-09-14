@@ -126,10 +126,6 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Mask
         )
-    var doMaskRotate = (bool)(0) (
-        persistant = 1
-        groups = Mask
-        )    
     var doBlock2 = (bool)(0) (
         persistant = 1
         groups = Block2
@@ -226,10 +222,6 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Mask
         )
-    var block2DoMaskRotate = (bool)(0) (
-        persistant = 1
-        groups = Mask
-        )    
     var block2ISITimeMs = (float)(250) (
         persistant = 1
         groups = 'Block2 Trial Structure'
@@ -461,6 +453,18 @@ group Stimuli {
         persistant = 1
         groups = 'Mask One Parameters'
         )
+    var maskOneGratingDiameterDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingDiameterStepN = (float)(12) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingDiameterStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )    
     var matchStimOneParameters = (bool)(0) (
         persistant = 1
         groups = 'Stimulus Two Parameters'
@@ -649,6 +653,18 @@ group Stimuli {
         persistant = 1
         groups = 'Mask Two Parameters'
         )
+    var maskTwoGratingDiameterDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingDiameterStepN = (float)(12) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingDiameterStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )   
     // stimulus control parameters 
     // block 2 control 
     var block2DoTrialLaser = (bool)(0) (
@@ -851,6 +867,18 @@ group Stimuli {
         persistant = 1
         groups = 'Block 2 Mask Parameters'
         )
+    var block2MaskOneGratingDiameterDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingDiameterStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingDiameterStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )    
     var block2MatchStimOneParameters = (bool)(0) (
         persistant = 1
         groups = 'Block 2 Stimulus Two Parameters'
@@ -1039,6 +1067,18 @@ group Stimuli {
         persistant = 1
         groups = 'Block 2 Mask Parameters'
         )
+    var block2MaskTwoGratingDiameterDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingDiameterStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingDiameterStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )    
     var Do2LED = (bool)(0) (
         persistant = 1
         groups = 'Alternating LED'
@@ -1149,7 +1189,6 @@ group 'Internal Variables' {
     var tDoRandTF = (bool)(0)
     var tDoRandPhase = (bool)(0)
     var tDoRotate = (bool)(0)
-    var tDoMaskRotate = (bool)(0)
     var tDoRandMaskPhase = (bool)(0)
     var tDoRandSoundAmp = (bool)(0)
     var tDoRandSoundFreq = (bool)(0)
@@ -1160,7 +1199,6 @@ group 'Internal Variables' {
     var maxISITime = 0
     var tStimOneGratingDirectionDeg = (float)(0)
     var setStimOneGratingDirectionDeg = (float)(0)
-    var setMaskOneGratingDirectionDeg = (float)(0)
     var tStimOneGratingContrast = (float)(0)
     var tStimOneGratingElevationDeg = (float)(0)
     var tStimOneGratingAzimuthDeg = (float)(0)
@@ -1177,6 +1215,7 @@ group 'Internal Variables' {
     var tMaskOneGratingDirectionDeg = (float)(0)
     var tMaskOneGratingContrast = (float)(0)
     var tMaskOneGratingPhaseDeg = (float)(0)
+    var tMaskOneGratingDiameterDeg = (float)(0)
     var tStimTwoGratingDirectionDeg = (float)(0)
     var tStimTwoGratingContrast = (float)(0)
     var tStimTwoGratingElevationDeg = (float)(0)
@@ -1194,6 +1233,7 @@ group 'Internal Variables' {
     var tMaskTwoGratingDirectionDeg = (float)(0)
     var tMaskTwoGratingContrast = (float)(0)
     var tMaskTwoGratingPhaseDeg = (float)(0)
+    var tMaskTwoGratingDiameterDeg = (float)(0)
     var tStimOneDoVisualStim = (bool)(0)
     var tStimOneDoAuditoryStim = (bool)(0)
     var tStimTwoDoVisualStim = (bool)(0)
@@ -1314,131 +1354,102 @@ wav_file stimTwoSound5 (
 
 blank_screen background ()
 
-layer stimOne {
-    drifting_grating stimOne_grating (
-        direction = setStimOneGratingDirectionDeg
-        starting_phase = tStimOneGratingPhaseDeg
-        spatial_frequency = tStimOneGratingSpatialFreqCPD
-        speed = tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD
-        grating_type = gratingType
-        x_size = tStimOneGratingDiameterDeg
-        x_position = tStimOneGratingAzimuthDeg
-        y_position = tStimOneGratingElevationDeg
-        alpha_multiplier = tStimOneGratingContrast
-        dest_blend_factor = zero
-        autoplay = true
-        )
+%define opaque_grating (direction_deg, phase_deg, diameter_deg, contrast, spatial_freq_cpd, temporal_freq_cps, azimuth_deg, elevation_deg)
+    layer {
+        // Grating
+        drifting_grating (
+            direction = direction_deg
+            starting_phase = phase_deg
+            spatial_frequency = spatial_freq_cpd
+            speed = temporal_freq_cps/spatial_freq_cpd
+            grating_type = grating_type
+            x_size = diameter_deg
+            x_position = azimuth_deg
+            y_position = elevation_deg
+            alpha_multiplier = contrast
+            dest_blend_factor = zero
+            autoplay = true
+            )
+    
+        // Contrast rectangle
+        rectangle (
+            color = 0.5, 0.5, 0.5
+            x_size = diameter_deg
+            x_position = azimuth_deg
+            y_position = elevation_deg
+            alpha_multiplier = contrast
+            source_blend_factor = one_minus_source_alpha
+            dest_blend_factor = one
+            )
+    
+        // Opacity rectangle
+        rectangle (
+            x_size = diameter_deg
+            x_position = azimuth_deg
+            y_position = elevation_deg
+            source_blend_factor = zero
+            dest_blend_factor = one
+            source_alpha_blend_factor = one
+            dest_alpha_blend_factor = zero
+            )
+    
+        // Mask
+        mask (
+            mask = maskType
+            std_dev = gratingStd
+            mean = gratingMean
+            edge_width = gratingEdge
+            x_size = diameter_deg
+            x_position = azimuth_deg
+            y_position = elevation_deg
+            )
+    }
+%end
 
-    drifting_grating stimOne_mask (
-        direction = setMaskOneGratingDirectionDeg
-        starting_phase = tMaskOneGratingPhaseDeg
-        spatial_frequency = tStimOneGratingSpatialFreqCPD
-        speed = tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD
-        grating_type = gratingType
-        x_size = tStimOneGratingDiameterDeg
-        x_position = tStimOneGratingAzimuthDeg
-        y_position = tStimOneGratingElevationDeg
-        alpha_multiplier = tMaskOneGratingContrast
-        dest_blend_factor = one
-        autoplay = true
-        )
 
-    rectangle stimOne_contrast_rectangle (
-        color = 0.5, 0.5, 0.5
-        x_size = tStimOneGratingDiameterDeg
-        x_position = tStimOneGratingAzimuthDeg
-        y_position = tStimOneGratingElevationDeg
-        alpha_multiplier = tStimOneGratingContrast + tMaskOneGratingContrast
-        source_blend_factor = one_minus_source_alpha
-        dest_blend_factor = one
-        )
+opaque_grating stimOne (
+    direction_deg = tStimOneGratingDirectionDeg
+    phase_deg = tStimOneGratingPhaseDeg
+    diameter_deg = tStimOneGratingDiameterDeg
+    contrast = tStimOneGratingContrast
+    spatial_freq_cpd = tStimOneGratingSpatialFreqCPD
+    temporal_freq_cps = tStimOneGratingTemporalFreqCPS
+    azimuth_deg = tStimOneGratingAzimuthDeg
+    elevation_deg = tStimOneGratingElevationDeg
+    )
 
-    // Make the plaid 100% opaque.  Without this, the plaid's net alpha would
-    // be less than zero, and its color would be blended with the stimulus
-    // display background when the layer is drawn.
-    rectangle stimOne_opacity_rectangle (
-        x_size = tStimOneGratingDiameterDeg
-        x_position = tStimOneGratingAzimuthDeg
-        y_position = tStimOneGratingElevationDeg
-        source_blend_factor = zero
-        dest_blend_factor = one
-        source_alpha_blend_factor = one
-        dest_alpha_blend_factor = zero
-        )
+opaque_grating maskOne (
+    direction_deg = tMaskOneGratingDirectionDeg
+    phase_deg = tMaskOneGratingPhaseDeg
+    diameter_deg = tMaskOneGratingDiameterDeg
+    contrast = tMaskOneGratingContrast
+    spatial_freq_cpd = tStimOneGratingSpatialFreqCPD
+    temporal_freq_cps = tStimOneGratingTemporalFreqCPS
+    azimuth_deg = tStimOneGratingAzimuthDeg
+    elevation_deg = tStimOneGratingElevationDeg
+    )
 
-    mask stimOne_plaid_mask (
-        mask = maskType
-        std_dev = gratingStd
-        mean = gratingMean
-        edge_width = gratingEdge
-        x_size = tStimOneGratingDiameterDeg
-        x_position = tStimOneGratingAzimuthDeg
-        y_position = tStimOneGratingElevationDeg
-        )
-}
+opaque_grating stimTwo (
+    direction_deg = tStimTwoGratingDirectionDeg
+    phase_deg = tStimTwoGratingPhaseDeg
+    diameter_deg = tStimTwoGratingDiameterDeg
+    contrast = tStimTwoGratingContrast
+    spatial_freq_cpd = tStimTwoGratingSpatialFreqCPD
+    temporal_freq_cps = tStimTwoGratingTemporalFreqCPS
+    azimuth_deg = tStimTwoGratingAzimuthDeg
+    elevation_deg = tStimTwoGratingElevationDeg
+    )
 
-layer stimTwo {
-    drifting_grating stimTwo_grating (
-        direction = tStimTwoGratingDirectionDeg
-        starting_phase = tStimTwoGratingPhaseDeg
-        spatial_frequency = tStimTwoGratingSpatialFreqCPD
-        speed = tStimTwoGratingTemporalFreqCPS/tStimTwoGratingSpatialFreqCPD
-        grating_type = gratingType
-        x_size = tStimTwoGratingDiameterDeg
-        x_position = tStimTwoGratingAzimuthDeg
-        y_position = tStimTwoGratingElevationDeg
-        alpha_multiplier = tStimTwoGratingContrast
-        dest_blend_factor = zero
-        autoplay = true
-        )
-
-    drifting_grating stimTwo_mask (
-        direction = tMaskTwoGratingDirectionDeg
-        starting_phase = tMaskTwoGratingPhaseDeg
-        spatial_frequency = tStimTwoGratingSpatialFreqCPD
-        speed = tStimTwoGratingTemporalFreqCPS/tStimTwoGratingSpatialFreqCPD
-        grating_type = gratingType
-        x_size = tStimTwoGratingDiameterDeg
-        x_position = tStimTwoGratingAzimuthDeg
-        y_position = tStimTwoGratingElevationDeg
-        alpha_multiplier = tMaskTwoGratingContrast
-        dest_blend_factor = one
-        autoplay = true
-        )
-
-    rectangle stimTwo_contrast_rectangle (
-        color = 0.5, 0.5, 0.5
-        x_size = tStimTwoGratingDiameterDeg
-        x_position = tStimTwoGratingAzimuthDeg
-        y_position = tStimTwoGratingElevationDeg
-        alpha_multiplier = tStimTwoGratingContrast + tMaskTwoGratingContrast
-        source_blend_factor = one_minus_source_alpha
-        dest_blend_factor = one
-        )
-
-    // Make the plaid 100% opaque.  Without this, the plaid's net alpha would
-    // be less than zero, and its color would be blended with the stimulus
-    // display background when the layer is drawn.
-    rectangle stimTwo_opacity_rectangle (
-        x_size = tStimTwoGratingDiameterDeg
-        x_position = tStimTwoGratingAzimuthDeg
-        y_position = tStimTwoGratingElevationDeg
-        source_blend_factor = zero
-        dest_blend_factor = one
-        source_alpha_blend_factor = one
-        dest_alpha_blend_factor = zero
-        )
-
-    mask stimTwo_plaid_mask (
-        mask = maskType
-        std_dev = gratingStd
-        mean = gratingMean
-        edge_width = gratingEdge
-        x_size = tStimTwoGratingDiameterDeg
-        x_position = tStimTwoGratingAzimuthDeg
-        y_position = tStimTwoGratingElevationDeg
-        )
-}
+opaque_grating maskTwo (
+    direction_deg = tMaskTwoGratingDirectionDeg
+    phase_deg = tMaskTwoGratingPhaseDeg
+    diameter_deg = tMaskTwoGratingDiameterDeg
+    contrast = tMaskTwoGratingContrast
+    spatial_freq_cpd = tStimTwoGratingSpatialFreqCPD
+    temporal_freq_cps = tStimTwoGratingTemporalFreqCPS
+    azimuth_deg = tStimTwoGratingAzimuthDeg
+    elevation_deg = tStimTwoGratingElevationDeg
+    )    
 
 drifting_grating photoDiodeGrating (
     direction = 0
@@ -1574,6 +1585,7 @@ protocol JuiceOnHoldProtocol {
                 tStimOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
                 tStimOneGratingPhaseDeg = stimOneGratingPhaseDeg
                 tMaskOneGratingDirectionDeg = maskOneGratingDirectionDeg
+                tMaskOneGratingDiameterDeg = maskOneGratingDiameterDeg
                 tMaskOneGratingContrast = maskOneGratingContrast
                 tMaskOneGratingPhaseDeg = maskOneGratingPhaseDeg
                 tStimOneSound1Amplitude = stimOneSound1Amplitude
@@ -1598,7 +1610,6 @@ protocol JuiceOnHoldProtocol {
                 tDoRandTF = doRandTF
                 tDoRandPhase = doRandPhase
                 tDoRotate = doRotate
-                tDoMaskRotate = doMaskRotate
                 tDoRandSoundAmp = doRandSoundAmp
                 tDoRandSoundFreq = doRandSoundFreq
                 if (matchStimOneParameters) {
@@ -1613,6 +1624,7 @@ protocol JuiceOnHoldProtocol {
                     tStimTwoGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
                     tStimTwoGratingPhaseDeg = stimOneGratingPhaseDeg
                     tMaskTwoGratingDirectionDeg = maskOneGratingDirectionDeg
+                    tMaskTwoGratingDiameterDeg = maskOneGratingDiameterDeg
                     tMaskTwoGratingContrast = maskOneGratingContrast
                     tMaskTwoGratingPhaseDeg = maskOneGratingPhaseDeg
                     tStimTwoSound1Amplitude = stimOneSound1Amplitude
@@ -1633,6 +1645,7 @@ protocol JuiceOnHoldProtocol {
                     tStimTwoGratingTemporalFreqCPS = stimTwoGratingTemporalFreqCPS
                     tStimTwoGratingPhaseDeg = stimTwoGratingPhaseDeg
                     tMaskTwoGratingDirectionDeg = maskTwoGratingDirectionDeg
+                    tMaskTwoGratingDiameterDeg = maskTwoGratingDiameterDeg
                     tMaskTwoGratingPhaseDeg = maskTwoGratingPhaseDeg
                     tMaskTwoGratingContrast = maskTwoGratingContrast
                     tStimTwoSound1Amplitude = stimTwoSound1Amplitude
@@ -1656,7 +1669,6 @@ protocol JuiceOnHoldProtocol {
                             tDoRandTF = block2DoRandTF
                             tDoRandPhase = block2DoRandPhase
                             tDoRotate = block2DoRotate
-                            tDoMaskRotate = block2DoMaskRotate
                             tDoRandMaskCon = block2DoRandMaskCon
                             tDoRandMaskDir = block2DoRandMaskDir
                             tDoRandMaskPhase = block2DoRandMaskPhase
@@ -1677,6 +1689,7 @@ protocol JuiceOnHoldProtocol {
                             tMaskOneGratingDirectionDeg = block2MaskOneGratingDirectionDeg
                             tMaskOneGratingContrast = block2MaskOneGratingContrast
                             tMaskOneGratingPhaseDeg = block2MaskOneGratingPhaseDeg
+                            tMaskOneGratingDiameterDeg = block2MaskOneGratingDiameterDeg
                             if (block2MatchStimOneParameters) {
                                 tStimTwoGratingDirectionDeg = block2StimOneGratingDirectionDeg
                                 tStimTwoGratingContrast = block2StimOneGratingContrast
@@ -1689,6 +1702,7 @@ protocol JuiceOnHoldProtocol {
                                 tMaskTwoGratingDirectionDeg = block2MaskOneGratingDirectionDeg
                                 tMaskTwoGratingContrast = block2MaskOneGratingContrast
                                 tMaskTwoGratingPhaseDeg = block2MaskOneGratingPhaseDeg
+                                tMaskTwoGratingDiameterDeg = block2MaskOneGratingDiameterDeg
                             }
                             if (!block2MatchStimOneParameters) {
                                 tStimTwoGratingOnTimeMs = block2StimTwoGratingOnTimeMs
@@ -1703,6 +1717,7 @@ protocol JuiceOnHoldProtocol {
                                 tMaskTwoGratingDirectionDeg = block2MaskTwoGratingDirectionDeg
                                 tMaskTwoGratingContrast = block2MaskTwoGratingContrast
                                 tMaskTwoGratingPhaseDeg = block2MaskTwoGratingPhaseDeg
+                                tMaskTwoGratingDiameterDeg = block2MaskTwoGratingDiameterDeg
                             }
                         }
                         if (!block2MatchB1AudStim) {
@@ -2451,7 +2466,6 @@ protocol JuiceOnHoldProtocol {
                 report ('tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast')
                 report ('tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg')
                 setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg
-                setMaskOneGratingDirectionDeg = tMaskOneGratingDirectionDeg
                 if (tDoMask) {
                     if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
                         tMaskOneGratingContrast = 0
@@ -2522,7 +2536,6 @@ protocol JuiceOnHoldProtocol {
                 }
                 report ('In ITI, waiting $tItiWaitFrames')
                 report ('doRotate is $tDoRotate')
-                report ('doMaskRotate is $tDoMaskRotate')
                 goto (
                     target = StimOneOn
                     when = counter >= (cItiStart + tItiWaitFrames) && isFirstTrial && counter > 19
@@ -2563,10 +2576,6 @@ protocol JuiceOnHoldProtocol {
             state Rotate {
                 cNow = counter
                 setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg + ((cNow-cStimOneOn)*nDegRotationPerFrame)
-                if (tDoMaskRotate) {
-                setMaskOneGratingDirectionDeg = setStimOneGratingDirectionDeg + maskOneGratingDirectionDeg - stimOneGratingDirectionDeg
-                }
-
                 update_stimulus_display ()
                 goto (
                     target = StimOneOff

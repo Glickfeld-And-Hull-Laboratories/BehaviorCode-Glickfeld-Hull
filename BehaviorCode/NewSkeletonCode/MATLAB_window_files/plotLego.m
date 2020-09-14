@@ -110,6 +110,13 @@ noGoCorrIx(noGoInd(noGoInc)) = 0;
 %Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
 tLeftResponse = celleqel2mat_padded(input.tLeftResponse);
+if input.doOriDiscrim
+  tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)),find(strcmp(input.trialOutcomeCell, 'success')))) = 1;
+  tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 0;
+  tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'success')))) = 0;
+  tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 1;
+end
+
 tRightResponse = celleqel2mat_padded(input.tRightResponse);
 tLeftNoGo = nan(size(tLeftResponse));
 leftNoGo = intersect(find(noGoIx),find(tLeftResponse));

@@ -62,7 +62,7 @@ end
 
 %% process #announceStimulus events
 
-asCodeN = codec_tag2code(input.eventCodecs{1}, '#announceStimulus');
+asCodeN = codec_tag2code(input.eventCodecs{1}, '#stimDisplayUpdate');
 codeV = cat(2, ds.events.event_code);
 timeV = cat(2, ds.events.time_us);
 asIx = codeV == asCodeN;

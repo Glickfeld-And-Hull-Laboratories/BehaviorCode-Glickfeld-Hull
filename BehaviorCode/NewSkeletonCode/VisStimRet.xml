@@ -55,6 +55,7 @@
         <variable tag="doLoomStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
         <variable tag="doGaussianMask" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="GratingExptStruct"/>
         <variable tag="doEllipseMask" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
+        <variable tag="doPhaseRev" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="GratingExptStruct"/>
 
         <variable tag="doMovingDots" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="DotsExptStruct"/> 
         <variable tag="doDotsSpeedStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="DotsExptStruct"/> 
@@ -110,6 +111,8 @@
         <variable tag="gratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingStartingPhaseStepDeg" scope="global" logging="when_changed" default_value="45" type="float" persistant="1" groups="GratingSpecs"/>
         <variable tag="gratingStartingPhaseStepN" scope="global" logging="when_changed" default_value="8" type="float" persistant="1" groups="GratingSpecs"/>
+
+        <variable tag="nScansPhaseCyc" scope="global" logging="when_changed" default_value="60" type="float" persistant="1" groups="GratingSpecs"/>
 
         <variable tag="greymaskDiameterDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="GratingSpecs"/>
 
@@ -236,9 +239,11 @@
         <variable tag="tGratingTemporalFreqCPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="setGratingStartingPhaseDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tGratingLoomSpeedDPS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="phaseCount" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
         <variable tag="tDotDirectionDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
         <variable tag="tDotContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
@@ -296,7 +301,7 @@
             alpha_multiplier="tGratingContrast"></stimulus>
         <list_replicator tag="List of Masks" values="gaussian, ellipse" variable="target_mask">
             <stimulus type="drifting_grating" tag="target_grating_$target_mask"  direction="0" autoplay="YES"
-                starting_phase="tGratingStartingPhaseDeg"
+                starting_phase="setGratingStartingPhaseDeg"
             spatial_frequency="tGratingSpatialFreqCPD" 
             speed="tGratingSpeedDPS" 
             grating_type="sinusoid" mask="$target_mask" std_dev="0.3" mean="0.1" 
@@ -482,6 +487,12 @@
                              <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
                            </action>
                          </action>
+                         <!--set to only have two possible phases- otherwise not enough stimulus conditions for ret -->
+                         <action type="if" condition="doPhaseStim">
+                            <action type="assignment" variable="tTempStim" value= "rand(0,1) &gt; 0.5"/>
+                            <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim % gratingStartingPhaseStepN))"/>
+                            <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ;  $tGratingStartingPhaseDeg"/>
+                         </action>
                            <action type="if" condition="doSFStim &amp;&amp; doConStim">
                             <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN)"/>
                             <action type="if" condition="tTempStim &lt; (gratingAzimuthStepN * gratingContrastStepN)">
@@ -600,7 +611,7 @@
                  </action>
 
                  <!-- do Phase -->
-                 <action type="if" condition="!doMatrix &amp;&amp; doPhaseStim = 1">  
+                 <action type="if" condition="!doMatrix &amp;&amp; doPhaseStim = 1 &amp;&amp; !doRetStim ">  
                   <action type="assignment" variable="tTempStim" value= "tStimulusNumber % gratingStartingPhaseStepN"/>
                   <action type="assignment" variable="tGratingStartingPhaseDeg" value= "gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))"/>
                   <action type="report" message="Starting phase is $tGratingStartingPhaseDeg"/>
@@ -944,6 +955,7 @@
             <task_system_state tag="StimOn" interruptible="YES">
               <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
+              <action type="assignment" variable="setGratingStartingPhaseDeg" value= "tGratingStartingPhaseDeg"/>
               <action type="assignment" variable="tempBackgroundLuminance" value= "tBackgroundLuminance"/>
 
               <action type="if" condition="doPhotodiode">
@@ -1015,6 +1027,7 @@
               <action type="assignment" tag="reset tQuadrature to quadrature" variable="tQuadrature" value="quadrature"></action>
             </action>
 
+            <action type="assignment" tag="reset phaseCount" variable="phaseCount" value="counter"></action>
             <action type="start_timer" tag="Start refresh timer" timer="refreshTimer" timebase="" duration="300" duration_units="ms"></action>
 
             <!-- Can't actually jave a system state for timer 1, but it would be here-->
@@ -1022,6 +1035,20 @@
             <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition>
             <transition type="conditional" tag="If doLooming go to loom state" condition="timerExpired(refreshTimer) &amp;&amp; doLoomStim" target="LoomState" ></transition>
             <transition type="conditional" tag="If doRunFeedback go to run feedback state" condition="timerExpired(refreshTimer) &amp;&amp; doRunFeedback" target="RunFeedback" ></transition>
+            <transition type="conditional" tag="If doPhaseRev go to Phase rev" condition="counter-phaseCount &gt;= nScansPhaseCyc &amp;&amp; doPhaseRev" target="PhaseRev" ></transition>
+          </task_system_state>
+
+          <task_system_state tag="PhaseRev" interruptible="YES">
+            <action type="assignment" tag="reset phaseCount" variable="phaseCount" value="counter"></action>
+            <action type="assignment" tag="reverse Phase" variable="tGratingStartingPhaseDeg" value="tGratingStartingPhaseDeg+180"></action>
+            <action type="assignment" tag="reverse Phase" variable="setGratingStartingPhaseDeg" value="tGratingStartingPhaseDeg"></action>
+            <action tag="Queue Stimulus" type="queue_stimulus" stimulus="target_grating_gaussian"></action>
+            <action tag="Update Display" type="update_stimulus_display"></action>
+            <action type="report" message="Phase reverse- phase is $setGratingStartingPhaseDeg"></action>
+            <!-- <action type="report" message="Diameter is $tGratingDiameterDeg"/> -->
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="If nScansON, move to EndTrial" condition="counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)" target="EndTrial" ></transition> 
+            <transition type="conditional" tag="time to reverse phase" condition="counter-phaseCount &gt;= nScansPhaseCyc" target="PhaseRev" ></transition>
           </task_system_state>
 
           <task_system_state tag="LoomState" interruptible="YES">

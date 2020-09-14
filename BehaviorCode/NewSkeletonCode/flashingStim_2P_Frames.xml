@@ -40,6 +40,7 @@
       <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doLinearTargetSpacing" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doDeviantDetect" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="block2MatchB1VisStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2DoVisualStim" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Block2"/>
@@ -374,6 +375,7 @@
       <variable tag="tShortCatchTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="catchCyclesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tFalseAlarm" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tempRand" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       
       <!-- frame conversion -->
       <variable tag="tItiWaitFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -1106,6 +1108,19 @@
              <action type="assignment" variable="isCatchTrial" value="1"/> 
             </action>
 
+            <action type="if" condition="doDeviantDetect">
+              <action type="assignment" variable="tempRand" value="rand()"/>
+              <action type="if" condition="tempRand &lt;= 0.1">
+                <action type="assignment" variable="nCyclesOn" value="3"/>
+              </action>
+              <action type="if" condition="tempRand &gt; 0.1 &amp;&amp; tempRand &lt; 0.9">
+                <action type="assignment" variable="nCyclesOn" value="4"/>
+              </action>  
+              <action type="if" condition="tempRand &gt;= 0.9">
+                <action type="assignment" variable="nCyclesOn" value="5"/>
+              </action>  
+            </action>
+
             <!-- for paired pulse experiments -->
             <action type="if" condition="doPairedPulse">
               <action type="assignment" tag="Set nCyclesOn to 1" variable="nCyclesOn" value="1"/>
@@ -1127,6 +1142,9 @@
             <action type="assignment" tag="Calculate nFramesEarlyTimeout" variable="nFramesEarlyTimeout" value="ceil((earlyTimeoutMs/1000)*frameRateHz)"/>
             <action type="assignment" tag="Calculate nFramesMissedTimeout" variable="nFramesMissedTimeout" value="ceil((missedTimeoutMs/1000)*frameRateHz)"/>
             <action type="assignment" tag="Set total required hold frames" variable="tTotalReqHoldFrames" value="((nFramesOn+nFramesOff)*(1+nCyclesOn))-nFramesOff"/>
+            <action type="if" condition="doDeviantDetect">
+              <action type="assignment" tag="Set total required hold frames" variable="tTotalReqHoldFrames" value="((nFramesOn+nFramesOff)*(1+5))-nFramesOff"/>
+            </action>  
             <action type="assignment" tag="Set total required hold time" variable="tTotalReqHoldTimeMs" value="(tTotalReqHoldFrames/frameRateHz)*1000"/>
 
             <!-- choose vis stim ori/dir -->
@@ -1512,6 +1530,9 @@
 
             <action type="if" tag="if doFakeMouseSuccess" condition="doFakeMouseSuccessOnly">
                 <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactFrames" value="tTotalStimFrames + nFramesTooFast + ceil(0.1*frameRateHz)"></action>
+                <action type="if" condition="doDeviantDetect">
+                  <action type="assignment" tag="Assign tFakeMouseReactMs" variable="tFakeMouseReactFrames" value="tTotalReqHoldFrames + nFramesTooFast + ceil(0.1*frameRateHz)"></action>
+                </action>  
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
