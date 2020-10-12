@@ -19,7 +19,6 @@
     </folder>
       
     <folder tag="trialStructure">
-      <variable tag="tITIus" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
       <variable tag="tstayTrialTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="0"/>
       <variable tag="trunTrialTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="0"/>
     </folder>
@@ -53,8 +52,8 @@
     </folder>
 
     <folder tag="Internal Variables">
-      <variable tag="cTactileStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/> 
-      <variable tag="cAuditoryStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/> 
+      <!-- <variable tag="cTactileStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/> 
+      <variable tag="cAuditoryStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/> -->
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -172,8 +171,8 @@
             </action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <!-- if not doing naything else and trial is long enough, end trial -->
-            <transition type="timer_expired" tag="If expried stay trial length, move to end of trial" target="EndTrial" timer= "stayTrialTimer"></transition>
-            <transition type="timer_expired" tag="If expried run trial length, move to end of trial" target="EndTrial" timer= "runTrialTimer"></transition>
+            <transition type="conditional" tag="If expried stay trial length, move to end of trial" condition= "timer_expired(stayTrialTimer) &amp;&amp; speed_mode == 1" target="EndTrial" ></transition>
+            <transition type="conditional" tag="If expried run trial length, move to end of trial" condition= "timer_expired(runTrialTimer) &amp;&amp; speed_mode == 2" target="EndTrial" ></transition>
           </task_system_state> 
 
       <!-- if doing sensory stimulus -->
@@ -283,8 +282,6 @@
         <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            <action type="report" message="Trial Ended, laser set to 0"></action>
-
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>

@@ -19,10 +19,7 @@ oneValEachTrialNames = { ...
     'tLastTrialStartTimeMs', ...
     'commandVoltage', ...
     'speed_mode', ...
-    'voltage', ...
-    'cTactileStimTurnedOn',...
-    'cAuditoryStimTurnedOn',...
-    };
+    'voltage'};
 
 exptSetupBridge;
 
@@ -31,25 +28,6 @@ exptSetupBridge;
 
 trN = input.trialSinceReset;
 
-try
-    input.counterTimesUs{trN} = mwGetEventTime(ds.events, ds.event_codec, 'counter', 'all', [], 1);
-    input.counterValues{trN} = mwGetEventValue(ds.events, ds.event_codec, 'counter', 'all', 1) ;
-catch
-    input.counterTimesUs{trN} = NaN;
-    input.counterValues{trN} = NaN;
-end
-
-try
-    input.cAirpuffsOn{trN} = mwGetEventValue(ds.events, ds.event_codec, 'cTactileStimTurnedOn', 'all', 1) ;
-catch
-    input.cAirpuffsOn{trN} = NaN;
-end
-
-try
-    input.cTonesOn{trN} = mwGetEventValue(ds.events, ds.event_codec, 'cAuditoryStimTurnedOn', 'all', 1) ;
-catch
-    input.cTonesOn{trN} = NaN;
-end
 
 %
 
