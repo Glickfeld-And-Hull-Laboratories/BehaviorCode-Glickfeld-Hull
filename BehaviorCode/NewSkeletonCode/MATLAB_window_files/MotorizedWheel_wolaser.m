@@ -24,7 +24,7 @@ oneValEachTrialNames = { ...
 exptSetupBridge;
 
  [input, eventsConsts, eventsTrial] ...
-     = exptProcessBridgeInput_SJ(data_struct, input, oneValEachTrialNames);
+     = exptProcessBridgeInput(data_struct, input, oneValEachTrialNames);
 
 trN = input.trialSinceReset;
 

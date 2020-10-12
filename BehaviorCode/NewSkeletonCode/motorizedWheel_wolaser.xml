@@ -33,6 +33,7 @@
 
     <folder tag="Task Status">
       <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="Imaging" scope="global" logging="when_changed" default_value="0" type="boolean"/>
     </folder>
 
     <folder tag="Command Volt for speed">
@@ -66,7 +67,7 @@
 
   </variables>
 
-  <sounds tag="Sounds">
+  <!-- <sounds tag="Sounds">
       <sound tag="Sound1" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
       <sound tag="Sound2" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
       <sound tag="Sound3" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
@@ -84,16 +85,15 @@
       <sound tag="Sound15" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
       <sound tag="Sound16" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
       <sound tag="Sound17" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
-      <sound tag="Sound18" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
+      <sound tag="Sound18" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound> -->
       <!--<sound tag="Sound2" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/sound-1k-200ms.wav" amplitude="SoundAmplitude"></sound> -->
-  </sounds> 
+  <!-- </sounds> -->
   
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+      
       <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
-      <!-- init actions run only on first trial after loading experiment -->
-          <action type="assignment" variable="tLastTrialStartTimeMs" value="-1"></action>
-          <action type="assignment" variable="tThisTrialStartTimeMs" value="-1"></action>
+      
       <!-- init actions before running trials after any press of start-->
       <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
@@ -104,8 +104,9 @@
         <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+          <!-- init actions run only on first trial after loading experiment -->
           <action type= "assignment" variable="solenoidStimulusDurationUs" value= "solenoidStimulusDurationMs * 1000" ></action>
-          
+          <action type="assignment" variable="Imaging" value="1"></action>
 
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
           <action type="if" condition="stopAfterNTrials > 0 &amp;&amp; tTrialsDoneSinceStart > stopAfterNTrials">
