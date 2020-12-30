@@ -2,8 +2,8 @@
 <monkeyml version="1.0">
   <io_devices tag="IO Devices">
     <iodevice tag="LabJackU6" priority="" type="LabJackU6"   
-              pulse_duration="juice" pulse_on="juice"           
-              laser_trigger="laserTrigger"
+              pulse_duration="juice" pulse_on="juice"  
+              laser_trigger="laserTrigger"         
               trial_laser_powerMw="commandVoltage" 
               optic_device="optic_device"
               strobed_digital_word="strobedDigitalWord"
@@ -17,24 +17,18 @@
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="512" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="optic_device" scope="global" logging="when_changed" default_value="lasergreen" type="string" persistant="0"/>
     </folder>
+      
+    <folder tag="trialStructure">
+      <variable tag="tstayTrialTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="0"/>
+      <variable tag="trunTrialTimeMs" scope="global" logging="when_changed" default_value="10000" type="integer" persistant="0"/>
+    </folder>
+
     <folder tag="StimulusSpecs">
       <variable tag="stopAfterNTrials" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
       <variable tag="DoSolenoid" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="solenoidStimulusDurationMs" scope="global" logging="when_changed" default_value="66.666" type="float" persistant="1"/>
       <variable tag="DoSound" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="SoundAmplitude" scope="global" logging="when_changed" default_value="1.0" type="float" persistant="1"/>
-
-    </folder>
-
-    <folder tag="ImagingVars">
-      <variable tag="frameImagingDurationMs" scope="global" logging="when_changed" default_value="33.333333" type="float" persistant="1"/>
-    </folder>
-
-    <folder tag="NFrames">
-      <variable tag="itiNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="run_trialDurationUs" scope="global" logging="when_changed" default_value="15000000" type="float" persistant="1"/>
-      <variable tag="stay_trialDurationUs" scope="global" logging="when_changed" default_value="10000000" type="float" persistant="1"/>
-      <variable tag="waitNFrames" scope="global" logging="when_changed" default_value="90" type="integer" persistant="1"/>
     </folder>
 
     <folder tag="Task Status">
@@ -44,8 +38,7 @@
 
     <folder tag="Command Volt for speed">
       <variable tag="stationary_speed" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="low_speed" scope="global" logging="when_changed" default_value="2" type="float" persistant="0"/>
-      <variable tag="high_speed" scope="global" logging="when_changed" default_value="3" type="float" persistant="0"/>
+      <variable tag="run_speed" scope="global" logging="when_changed" default_value="2.5" type="float" persistant="0"/> 
     </folder>
 
     <folder tag="Online Display">
@@ -60,27 +53,21 @@
     </folder>
 
     <folder tag="Internal Variables">
-      <variable tag="tCounter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="cTactileStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/> 
-      <variable tag="cAuditoryStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/> 
+      <!-- <variable tag="cTactileStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/> 
+      <variable tag="cAuditoryStimTurnedOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/> -->
       <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tThisTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tLastTrialStartTimeMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="commandVoltage" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="TRunNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="TStayNFrames" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="speed_mode" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="voltage" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="solenoidStimulusDurationUs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      <variable tag="firstStimDelayNFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="secondStimDelayNFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="endDelayFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
     </folder> 
 
   </variables>
 
-  <sounds tag="Sounds">
+  <!-- <sounds tag="Sounds">
       <sound tag="Sound1" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
       <sound tag="Sound2" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
       <sound tag="Sound3" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
@@ -98,29 +85,27 @@
       <sound tag="Sound15" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
       <sound tag="Sound16" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
       <sound tag="Sound17" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
-      <sound tag="Sound18" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound>
+      <sound tag="Sound18" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/incorrectMouse.wav" amplitude="SoundAmplitude"></sound> -->
       <!--<sound tag="Sound2" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/sound-1k-200ms.wav" amplitude="SoundAmplitude"></sound> -->
-  </sounds> 
+  <!-- </sounds> -->
   
   <experiment tag="Experiment" full_name="">
     <protocol tag="JuiceOnHoldProtocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
-      <action type="assignment" tag="set counter to 0" variable="counter" value="0"></action>
       
       <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
-
+      
       <!-- init actions before running trials after any press of start-->
       <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
+          
 
-      <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
       <task_system tag="TS" full_name="TS" description="" interruptible="YES">
+      <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
         <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
           <action_marker _unmoveable="1" tag="Actions"></action_marker>
           <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
-          <action type="assignment" tag="Calculate nFrames running Trial" variable="TRunNFrames" value="ceil(run_trialDurationUs/1000/frameImagingDurationMs)"></action>
-          <action type="assignment" tag="Calculate nFrames stationary Trial" variable="TStayNFrames" value="ceil(stay_trialDurationUs/1000/frameImagingDurationMs)"></action>
+          <!-- init actions run only on first trial after loading experiment -->
           <action type= "assignment" variable="solenoidStimulusDurationUs" value= "solenoidStimulusDurationMs * 1000" ></action>
-          
           <action type="assignment" variable="Imaging" value="1"></action>
 
           <!-- if we have done enough trials, abort this trial - before any encodes/sync are done -->
@@ -130,13 +115,6 @@
           </action>
 
           <action type="assignment" variable="tTrialStartMWTimestampMs" value="now()/1000"></action>  <!-- integer valued ms timestamp -->
-          <action type="if" condition="tTrialsDoneSinceStart == 0">
-            <action type="assignment" variable="tCounter" value="0"></action>
-            <action type="assignment" variable="counter" value="0"></action>
-          </action>
-          <action type="if" condition="tTrialsDoneSinceStart != 0">
-            <action type="assignment" variable="tCounter" value="counter"></action>
-          </action>
 
           <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
           <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
@@ -163,25 +141,29 @@
             </action>
             <action type="assignment" variable="tThisTrialStartTimeMs" value="now()/1000"></action>
             <action type="assignment" tag="Encode InterStimIntervalStart" variable="strobedDigitalWord" value="6"></action>
-            <action type="report" message="In ITI..."></action>
+            <!--<action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer" 
+                timebase="" duration="tITIus" duration_units="us"></action> -->
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-
-            <transition type="conditional" tag="camera starts" condition="counter - tCounter > 0 " target="controlSpeed"></transition>
+            <!-- <transition type="goto" tag="noITI, go to control speed (trial starts)" target="controlSpeed"></transition> -->
+            <!-- <transition type="timer_expired" tag="If Expried, go to control speed (trial starts)" target="controlSpeed" timer= "interTrialTimer"></transition> -->
+            <transition type="conditional" tag="not doing sensory stimulus" condition="DoSolenoid==0 &amp;&amp; DoSound ==0" target="controlSpeed"></transition>
           </task_system_state>
 
           <task_system_state tag="controlSpeed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="report" message="controlling speed"></action>
-            <action type="assignment" variable="tCounter" value="counter"></action>
-            <action type="assignment" tag="Chooses speed states (high,low,stationary)" variable="speed_mode" value= "disc_rand(1,3)"></action>
+            <action type="assignment" tag="Chooses speed states (run,stationary)" variable="speed_mode" value= "disc_rand(1,2)"></action>
             <action type="if" condition= "speed_mode == 1">
               <action type="assignment" tag="Stationary" variable="voltage" value= "stationary_speed"></action>
+              <action type="start_timer" tag="Start stayTrialTimer" timer="stayTrialTimer" 
+                timebase="" duration="tstayTrialTimeMs" duration_units="ms"></action>
+              <action type="report" message="stationary timer started"></action>
             </action>
             <action type="if" condition= "speed_mode == 2">
-              <action type="assignment" tag="Low Speed" variable="voltage" value= "low_speed"></action>
-            </action>
-            <action type="if" condition= "speed_mode == 3">
-              <action type="assignment" tag="High Speed" variable="voltage" value= "high_speed"></action>
+              <action type="assignment" tag="runSpeed" variable="voltage" value= "run_speed"></action>
+              <action type="start_timer" tag="Start runTrialTimer" timer="runTrialTimer" 
+                timebase="" duration="trunTrialTimeMs" duration_units="ms"></action>
+              <action type="report" message="running timer started"></action>
             </action>
             <action type="if" condition="optic_device == 'lasergreen' ">
               <action type="assignment" variable="laserTrigger" value="1"></action>
@@ -190,17 +172,22 @@
             </action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <!-- if not doing naything else and trial is long enough, end trial -->
-            <transition type="conditional" tag="If exceeding TRunNFrames during low speed or high speed mode, move to end of trial" condition="DoSolenoid == 0 &amp;&amp; DoSound ==0 &amp;&amp; (counter - tCounter) >= TRunNFrames &amp;&amp; speed_mode != 1" target="EndTrial" ></transition>
-            <transition type="conditional" tag="If exceeding TStayNFrames for stationary, move to end of trial" condition="DoSolenoid == 0 &amp;&amp; DoSound ==0 &amp;&amp; (counter - tCounter) >= TStayNFrames &amp;&amp; speed_mode == 1" target="EndTrial" ></transition>
+            <transition type="conditional" tag="If expried stay trial length, move to end of trial" condition= "timer_expired(stayTrialTimer) &amp;&amp; speed_mode == 1" target="EndTrial" ></transition>
+            <transition type="conditional" tag="If expried run trial length, move to end of trial" condition= "timer_expired(runTrialTimer) &amp;&amp; speed_mode == 2" target="EndTrial" ></transition>
+          </task_system_state> 
 
       <!-- if doing sensory stimulus -->
       <!-- do airpuff/tone, each trial has 2 airpuffs/tones, with at least 3 seconds in between-->
-            <transition type="conditional" tag="if do sensory stimulus and trial past first 3 seconds" condition="(DoSolenoid == 1 || DoSound ==1) &amp;&amp; (counter - tCounter) >= waitNFrames" target="FirstStimDelay"></transition> 
+            
+
+
+<!--
+            <transition type="conditional" tag="if do sensory stimulus " condition="(DoSolenoid == 1 || DoSound ==1)" target="FirstStimDelay"></transition> 
           </task_system_state> 
 
             <task_system_state tag="FirstStimDelay" interruptible="YES">
               <action_marker _unmoveable="1" tag="Actions"></action_marker>
-              <action type="assignment" variable="tCounter" value="counter"></action>
+  
               <action type="assignment" tag="Calculate nFrames 1st Stim Delay" variable="firstStimDelayNFrames" value="disc_rand(0,90)"/>
               <action type="report" message="Delay stim of $firstStimDelayNFrames frames"/>
               <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -219,7 +206,7 @@
 
             <task_system_state tag="SendFirstSound" interruptible="YES">
               <action type="play_sound" sound="Sound1" />
-              <action type="play_sound" sound="Sound2" /> <!-- if only play one sound, not loud enough -->
+              <action type="play_sound" sound="Sound2" /> 
               <action type="play_sound" sound="Sound3" />
               <action type="play_sound" sound="Sound4" />
               <action type="play_sound" sound="Sound5" />
@@ -288,14 +275,14 @@
               <action type="assignment" variable="endDelayFrames" value="disc_rand(60,120)"></action>
               <action type="report" message="Trial end delay will be $endDelayFrames frames "></action>
               <transition type="conditional" tag="if it has past 2 seconds plus a random time after the second tone" condition="(counter - tCounter) >= endDelayFrames" target="EndTrial"></transition>
-            </task_system_state> 
+
+              -->
+          
 
 
         <task_system_state tag="EndTrial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
-            <action type="report" message="Trial Ended, laser set to 0"></action>
-
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
             <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
