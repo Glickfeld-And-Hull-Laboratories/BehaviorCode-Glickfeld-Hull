@@ -2185,7 +2185,7 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                 }
-                tGratingEccentricityStart = tGratingEccentricityDeg
+                
                 tGratingDirectionStart = tGratingDirectionDeg
                 tMaskDirectionStart = tMaskDirectionDeg
                 tPlaidDirectionDeg = (tMaskDirectionDeg + tGratingDirectionDeg)/2
@@ -2218,6 +2218,9 @@ protocol JuiceOnHoldProtocol {
                     }
                     
                 }
+                
+                tGratingEccentricityStart = tGratingEccentricityDeg
+                
                 if (tLeftTrial == 1 && doOriDiscrim) {
                     tGratingEccentricityDeg = gratingEccentricityDeg
                     leftDecisionThreshold = gratingTargetDirection
@@ -2228,10 +2231,9 @@ protocol JuiceOnHoldProtocol {
                         rightDecisionThreshold = tGratingDirectionDeg+(tPlaidDirectionDeg-gratingTargetDirection)
                         tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
                     }
-                    
+                    report('plaid direction is $tPlaidDirectionDeg')
                 }
-                report('plaid direction is $tPlaidDirectionDeg')
-                report('rightDecisionThreshold is $rightDecisionThreshold')
+                
                 
                 if (doLaserStim) {
                     sendLaserParams = 1
@@ -2461,6 +2463,12 @@ protocol JuiceOnHoldProtocol {
                 }
                 report ('*****-=STIMULI ON=-*****')
                 play_sound (targetSound)
+                if (doContrastDiscrim || doContrastDetect || doSizeDiscrim) {
+                    trackMotion = tGratingEccentricityStart
+                    }
+                if (doOriDiscrim) {
+                    trackMotion = tGratingDirectionStart
+                    }
                 stimulusOn = 1
                 stimIsOff = 0
                 report ('In Reaction Time for $reactionTimeMs ms ')
