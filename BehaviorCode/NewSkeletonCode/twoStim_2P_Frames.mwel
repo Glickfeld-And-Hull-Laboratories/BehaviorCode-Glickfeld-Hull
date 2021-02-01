@@ -42,6 +42,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Task Type'
         )
+    var doTwoStimTogether = (bool)(0) (
+        persistant = 0
+        groups = 'Task Type'
+        )
     var doRandISITime = (bool)(0) (
         persistant = 1
         groups = 'Task Type'
@@ -2404,7 +2408,7 @@ protocol JuiceOnHoldProtocol {
                     tStimOneGratingContrast = 0
                     tMaskOneGratingContrast = 0
                 }
-                if (!tStimTwoDoVisualStim) {
+                if (!tStimTwoDoVisualStim && !doTwoStimTogether) {
                     tStimTwoGratingContrast = 0
                     tMaskTwoGratingContrast = 0
                 }
@@ -2535,6 +2539,9 @@ protocol JuiceOnHoldProtocol {
             state StimOneOn {
                 ntrials = ntrials + 1
                 live_queue_stimulus (stimOne)
+                if (doTwoStimTogether) {
+                live_queue_stimulus (stimTwo)
+                }
 
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
@@ -2579,6 +2586,7 @@ protocol JuiceOnHoldProtocol {
             }
             state StimOneOff {
                 dequeue_stimulus (stimOne)
+                dequeue_stimulus (stimTwo)
 
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
@@ -2594,7 +2602,9 @@ protocol JuiceOnHoldProtocol {
                     )
             }
             state StimTwoOn {
+            if (!doTwoStimTogether) {
                 live_queue_stimulus (stimTwo)
+
 
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
@@ -2611,12 +2621,15 @@ protocol JuiceOnHoldProtocol {
                 cStimTwoOn = counter
                 mwStimTwoOnMs = now()/1000
                 report ('StimTwo on')
+                }
+
                 goto (
                     target = StimTwoOff
                     when = counter >= (cStimTwoOn + nStimTwoFramesOn)
                     )
             }
             state StimTwoOff {
+            if (!doTwoStimTogether) {
                 dequeue_stimulus (stimTwo)
 
                 if (doPhotodiode) {
@@ -2627,6 +2640,7 @@ protocol JuiceOnHoldProtocol {
                 update_stimulus_display ()
                 cStimTwoOff = counter
                 mwStimTwoOffMs = (now()/1000)
+                }
                 goto (
                     target = EndTrial
                     when = counter  >= (cStimTwoOff + 3)
