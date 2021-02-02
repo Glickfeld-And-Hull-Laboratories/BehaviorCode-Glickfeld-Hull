@@ -2745,7 +2745,8 @@ protocol JuiceOnHoldProtocol {
                     target = Incorrect
                     when = timerExpired(robotTimerMs) && doTestRobot==1 && isNoGo && doAllCorrects==0 && robotGoLeft == 0 && tLeftTrial==0
                     )
-                goto (Reaction
+                goto (
+                target = Reaction
                     when = timerExpired(reactionLoopTimer)
                     )
             }
