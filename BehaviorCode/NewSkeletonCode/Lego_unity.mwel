@@ -2571,6 +2571,11 @@ protocol JuiceOnHoldProtocol {
                 goto (Reaction)
             }
             state Reaction {
+                start_timer (
+                    timer = reactionLoopTimer
+                    duration = 5
+                    duration_units = ms
+                    )
                 if (doTestRobot==0 && doContrastDiscrim || doContrastDetect || doSizeDiscrim) {
                     trackMotion = (feedbackMotionSensitivity*(quadrature-tQuadrature))+tGratingEccentricityStart
                     dTrackMotion = (feedbackMotionSensitivity*(quadrature-tQuadrature))-tGratingEccentricityStart
@@ -2748,7 +2753,10 @@ protocol JuiceOnHoldProtocol {
                     target = Incorrect
                     when = timerExpired(robotTimerMs) && doTestRobot==1 && isNoGo && doAllCorrects==0 && robotGoLeft == 0 && tLeftTrial==0
                     )
-                goto (Reaction)
+                goto (
+                target = Reaction
+                    when = timerExpired(reactionLoopTimer)
+                    )
             }
             state Reward {
                 tTrialLaserPowerMw = 0
