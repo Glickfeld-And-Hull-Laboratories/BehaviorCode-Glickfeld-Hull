@@ -124,6 +124,12 @@ catch
     input.quadratureValues{trN} = NaN;
 end
 
+try
+    input.tGratingDirectionDeg{trN} = mwGetEventValue(eventsTrial, ds.event_codec, 'tGratingDirectionDeg', 'all', 1) ;
+catch
+    input.tGratingDirectionDeg{trN} = NaN;
+end
+
 %% disp status
 if input.tLeftTrial{trN}==1,
     tLeftStr = 'Left Trial';
