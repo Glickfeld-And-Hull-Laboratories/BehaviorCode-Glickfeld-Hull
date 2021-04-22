@@ -121,6 +121,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Adapt Control'
         )
+    var fractionMaskTrials = (float)(0.1) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
     var maskDirectionDeg = (float)(90) (
         persistant = 1
         groups = 'Mask Control'
@@ -830,6 +834,7 @@ group 'Temporary Trial Variables' {
     var dMaskStartingPhaseDeg = (float)(0)
     var tMaskContrast = (float)(0)
     var dMaskContrast = (float)(0)
+    var tDoMask = bool(0)
     var tempRand = (float)(0)
     var flashOn = (bool)(0)
     var tDoFeedbackMotion = (bool)(0)
@@ -1435,6 +1440,12 @@ protocol JuiceOnHoldProtocol {
                         tLeftTrial = 1
                     }
                 }
+                
+                tDoMask = 0
+                if (doMask)
+                    tDoMask = rand(0,1)<fractionMaskTrials
+                 }
+                    
                 if (doBlocks==1 && doCorrectiveTrials == 0) {
                     if ((tNBlockLeftTrsCompleted < blockLeftTrs) && tLastTrialWasLeft==1) {
                         tLeftTrial = 1
@@ -1995,14 +2006,14 @@ protocol JuiceOnHoldProtocol {
                 if (doOriDiscrim) {
                     if (tLeftTrial) {
                         tGratingDirectionDeg = gratingTargetDirection + gratingMaxDirectionDiff / (pow(2, 1.0*tStimulusNumber/gratingDirectionDiffSPO))
-                        if (doMask) {
+                        if (tDoMask) {
                             tGratingDirectionDeg = tGratingDirectionDeg - maskDirectionDeg/2
                             tMaskDirectionDeg = tGratingDirectionDeg + maskDirectionDeg
                         }
                     }
                     if (!tLeftTrial) {
                         tGratingDirectionDeg = gratingTargetDirection - gratingMaxDirectionDiff / (pow(2, 1.0*tStimulusNumber/gratingDirectionDiffSPO))
-                        if (doMask) {
+                        if (tDoMask) {
                             tGratingDirectionDeg = tGratingDirectionDeg + maskDirectionDeg/2
                             tMaskDirectionDeg = tGratingDirectionDeg - maskDirectionDeg
                         }
@@ -2025,14 +2036,14 @@ protocol JuiceOnHoldProtocol {
                     if (doRandSize) {
                         tGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
                     }
-                    if (doMask) {
+                    if (tDoMask) {
                         tMaskContrast = gratingMaxContrast
                         if (doRandMaskPhase) {
                             tMaskStartingPhaseDeg = disc_rand(0,1)*180
                         }
                         report('grating direction is $tGratingDirectionDeg; mask direction is $tMaskDirectionDeg')
                     }
-                    if (!doMask) {
+                    if (!tDoMask) {
                         tMaskContrast = 0
                     }
                 }
@@ -2211,7 +2222,7 @@ protocol JuiceOnHoldProtocol {
                     rightDecisionThreshold = gratingTargetDirection
                     leftDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-gratingTargetDirection)
                     tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tGratingDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
-                    if (doMask) {
+                    if (tDoMask) {
                         rightDecisionThreshold = gratingTargetDirection + maskDirectionDeg/2
                         leftDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-(gratingTargetDirection+maskDirectionDeg/2))
                         tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
@@ -2226,7 +2237,7 @@ protocol JuiceOnHoldProtocol {
                     leftDecisionThreshold = gratingTargetDirection
                     rightDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-gratingTargetDirection)
                     tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tGratingDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
-                    if (doMask) {
+                    if (tDoMask) {
                         leftDecisionThreshold = gratingTargetDirection - maskDirectionDeg/2
                         rightDecisionThreshold = tGratingDirectionDeg+(tPlaidDirectionDeg-gratingTargetDirection)
                         tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
@@ -2607,7 +2618,7 @@ protocol JuiceOnHoldProtocol {
                         update_stimulus_display ()
                     }
                     if (doOriDiscrim) {
-                        if (!doMask) {
+                        if (!tDoMask) {
                             if ((tLeftTrial && trackMotion >= gratingTargetDirection) || (tLeftTrial == 0 && trackMotion <= gratingTargetDirection)) {
                                 tGratingDirectionDeg = trackMotion
                             }
@@ -2615,7 +2626,7 @@ protocol JuiceOnHoldProtocol {
                                 tGratingDirectionDeg = gratingTargetDirection
                             }
                         }
-                        if (doMask) {
+                        if (tDoMask) {
                             if ((tLeftTrial && trackPlaidMotion >= gratingTargetDirection) || (tLeftTrial == 0 && trackPlaidMotion <= gratingTargetDirection)) {
                                 tGratingDirectionDeg = trackMotion
                                 tMaskDirectionDeg = trackMaskMotion
