@@ -121,6 +121,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Adapt Control'
         )
+    var fractionMaskTrials = (float)(0.1) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
     var maskDirectionDeg = (float)(90) (
         persistant = 1
         groups = 'Mask Control'
@@ -350,6 +354,14 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Block2
         )
+    var block2GratingSpatialFreqCPD = (float)(0.1) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2MaskStartingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = Block2
+        )        
     var tBlock2TrialNumber = 0
     var doPuffIncorrect = (bool)(0) (
         persistant = 1
@@ -819,6 +831,7 @@ group 'Temporary Trial Variables' {
     var tGratingDirectionDeg = (float)(0)
     var tGratingDirectionStart = (float)0
     var tGratingStartingPhaseDeg = (float)(0)
+    var tGratingSpatialFreqCPD = (float)(0)
     var aGratingDirectionDeg = (float)(0)
     var tAGratingDirectionDeg = (float)(0)
     var aGratingPhaseDeg = (float)(0)
@@ -830,6 +843,7 @@ group 'Temporary Trial Variables' {
     var dMaskStartingPhaseDeg = (float)(0)
     var tMaskContrast = (float)(0)
     var dMaskContrast = (float)(0)
+    var tDoMask = (bool)(0)
     var tempRand = (float)(0)
     var flashOn = (bool)(0)
     var tDoFeedbackMotion = (bool)(0)
@@ -945,8 +959,8 @@ blank_screen background ()
 layer targetGrating_gaussian {
     drifting_grating target_grating_gaussian (
         direction = tGratingDirectionDeg
-        starting_phase = tGratingStartingPhaseDeg + 360 *  gratingSpatialFreqCPD * (tGratingDiameterDeg/2)
-        spatial_frequency = gratingSpatialFreqCPD
+        starting_phase = tGratingStartingPhaseDeg + 360 *  tGratingSpatialFreqCPD * (tGratingDiameterDeg/2)
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = gratingType
         x_size = tGratingDiameterDeg
@@ -959,8 +973,8 @@ layer targetGrating_gaussian {
 
     drifting_grating target_grating_mask_gaussian (
         direction = tMaskDirectionDeg 
-        starting_phase = tMaskStartingPhaseDeg + 360 *  gratingSpatialFreqCPD * (tGratingDiameterDeg/2)
-        spatial_frequency = gratingSpatialFreqCPD
+        starting_phase = tMaskStartingPhaseDeg + 360 *  tGratingSpatialFreqCPD * (tGratingDiameterDeg/2)
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = gratingType
         x_size = tGratingDiameterDeg
@@ -1008,8 +1022,8 @@ layer targetGrating_gaussian {
 layer targetGrating_ellipse {
     drifting_grating target_grating_ellipse (
         direction = tGratingDirectionDeg
-        starting_phase = tGratingStartingPhaseDeg + 360 *  gratingSpatialFreqCPD * (tGratingDiameterDeg/2)
-        spatial_frequency = gratingSpatialFreqCPD
+        starting_phase = tGratingStartingPhaseDeg + 360 *  tGratingSpatialFreqCPD * (tGratingDiameterDeg/2)
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = gratingType
         x_size = tGratingDiameterDeg
@@ -1022,8 +1036,8 @@ layer targetGrating_ellipse {
 
     drifting_grating target_grating_mask_ellipse (
         direction = tMaskDirectionDeg 
-        starting_phase = tMaskStartingPhaseDeg + 360 *  gratingSpatialFreqCPD * (tGratingDiameterDeg/2)
-        spatial_frequency = gratingSpatialFreqCPD
+        starting_phase = tMaskStartingPhaseDeg + 360 *  tGratingSpatialFreqCPD * (tGratingDiameterDeg/2)
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = gratingType
         x_size = tGratingDiameterDeg
@@ -1073,7 +1087,7 @@ layer distractorGrating_gaussian {
     drifting_grating distractor_grating_gaussian (
         direction = gratingDirectionDeg
         starting_phase = tGratingStartingPhaseDeg
-        spatial_frequency = gratingSpatialFreqCPD
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = gratingType
         x_size = dGratingDiameterDeg
@@ -1087,14 +1101,14 @@ layer distractorGrating_gaussian {
     drifting_grating distractor_grating_mask_gaussian (
         direction = maskDirectionDeg
         starting_phase = dMaskStartingPhaseDeg
-        spatial_frequency = gratingSpatialFreqCPD
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = gratingType
         x_size = dGratingDiameterDeg
         x_position = dGratingEccentricityDeg
         y_position = gratingElevationDeg
         alpha_multiplier = dMaskContrast
-        dest_blend_factor = zero
+        dest_blend_factor = one
         autoplay = true
         )
 
@@ -1136,7 +1150,7 @@ layer distractorGrating_ellipse {
     drifting_grating distractor_grating_ellipse (
         direction = gratingDirectionDeg
         starting_phase = tGratingStartingPhaseDeg
-        spatial_frequency = gratingSpatialFreqCPD
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = gratingType
         x_size = dGratingDiameterDeg
@@ -1150,14 +1164,14 @@ layer distractorGrating_ellipse {
     drifting_grating distractor_grating_mask_ellipse (
         direction = maskDirectionDeg
         starting_phase = dMaskStartingPhaseDeg
-        spatial_frequency = gratingSpatialFreqCPD
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = gratingType
         x_size = dGratingDiameterDeg
         x_position = dGratingEccentricityDeg
         y_position = gratingElevationDeg
         alpha_multiplier = dMaskContrast
-        dest_blend_factor = zero
+        dest_blend_factor = one
         autoplay = true
         )
 
@@ -1198,7 +1212,7 @@ layer distractorGrating_ellipse {
     drifting_grating adapterGrating_gaussian (
         direction = 0
         starting_phase = aGratingPhaseDeg
-        spatial_frequency = gratingSpatialFreqCPD
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = sinusoid
         mask = gaussian
@@ -1214,7 +1228,7 @@ layer distractorGrating_ellipse {
     drifting_grating adapterGrating_ellipse (
         direction = 0
         starting_phase = aGratingPhaseDeg
-        spatial_frequency = gratingSpatialFreqCPD
+        spatial_frequency = tGratingSpatialFreqCPD
         speed = gratingSpeedDPS
         grating_type = sinusoid
         mask = ellipse
@@ -1435,6 +1449,12 @@ protocol JuiceOnHoldProtocol {
                         tLeftTrial = 1
                     }
                 }
+                
+                tDoMask = 0
+                if (doMask) {
+                    tDoMask = rand(0,1)<fractionMaskTrials
+                 }
+                    
                 if (doBlocks==1 && doCorrectiveTrials == 0) {
                     if ((tNBlockLeftTrsCompleted < blockLeftTrs) && tLastTrialWasLeft==1) {
                         tLeftTrial = 1
@@ -1880,11 +1900,22 @@ protocol JuiceOnHoldProtocol {
                         tTempStimOdds = tTempStimOdds + zeroConTrPer80
                     }
                 }
+
+                if (tBlock2TrialNumber) {
+                    tGratingSpatialFreqCPD = block2GratingSpatialFreqCPD
+                    tMaskStartingPhaseDeg = block2MaskStartingPhaseDeg
+                    }
+                if (!tBlock2TrialNumber) {
+                    tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                    tMaskStartingPhaseDeg = gratingStartingPhaseDeg
+                    }    
                 // added preblock where all early trials are easy 
                 tDoFeedbackMotion = doFeedbackMotion
                 if (tNTrialsCompleted < easyStartTrialNumber && doEasyStart) {
                     tStimulusNumber = 0
                     tStimulusNumber2 = 0
+                    tDoMask = 0
+                    tBlock2TrialNumber = 0
                     if (doEasyStartWithFeedback) {
                         tDoFeedbackMotion = 1
                     }
@@ -1995,14 +2026,14 @@ protocol JuiceOnHoldProtocol {
                 if (doOriDiscrim) {
                     if (tLeftTrial) {
                         tGratingDirectionDeg = gratingTargetDirection + gratingMaxDirectionDiff / (pow(2, 1.0*tStimulusNumber/gratingDirectionDiffSPO))
-                        if (doMask) {
+                        if (tDoMask) {
                             tGratingDirectionDeg = tGratingDirectionDeg - maskDirectionDeg/2
                             tMaskDirectionDeg = tGratingDirectionDeg + maskDirectionDeg
                         }
                     }
                     if (!tLeftTrial) {
                         tGratingDirectionDeg = gratingTargetDirection - gratingMaxDirectionDiff / (pow(2, 1.0*tStimulusNumber/gratingDirectionDiffSPO))
-                        if (doMask) {
+                        if (tDoMask) {
                             tGratingDirectionDeg = tGratingDirectionDeg + maskDirectionDeg/2
                             tMaskDirectionDeg = tGratingDirectionDeg - maskDirectionDeg
                         }
@@ -2025,14 +2056,14 @@ protocol JuiceOnHoldProtocol {
                     if (doRandSize) {
                         tGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
                     }
-                    if (doMask) {
+                    if (tDoMask) {
                         tMaskContrast = gratingMaxContrast
                         if (doRandMaskPhase) {
                             tMaskStartingPhaseDeg = disc_rand(0,1)*180
                         }
                         report('grating direction is $tGratingDirectionDeg; mask direction is $tMaskDirectionDeg')
                     }
-                    if (!doMask) {
+                    if (!tDoMask) {
                         tMaskContrast = 0
                     }
                 }
@@ -2109,11 +2140,11 @@ protocol JuiceOnHoldProtocol {
                     }
                 }
                 if (doBlock2) {
-                    assert (
+                    /* assert (
                         stop_on_failure = 1
-                        condition = (block2DoRampLength+block2DoRampVTrain+block2DoTrialLaser) == 1
+                        condition = (block2DoRampLength+block2DoRampVTrain+block2DoTrialLaser) > 1
                         message = 'must select exactly one of block2Do variables!'
-                        )
+                        ) */
                     tTrialLaserPowerMw_trigger = trialLaserPowerMw
                     /* trial numbers assigned above in switch statement.  Note equal probability 
               - if more complicated odds wanted; add a set of block2 level odds */
@@ -2185,7 +2216,7 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                 }
-                tGratingEccentricityStart = tGratingEccentricityDeg
+                
                 tGratingDirectionStart = tGratingDirectionDeg
                 tMaskDirectionStart = tMaskDirectionDeg
                 tPlaidDirectionDeg = (tMaskDirectionDeg + tGratingDirectionDeg)/2
@@ -2211,27 +2242,29 @@ protocol JuiceOnHoldProtocol {
                     rightDecisionThreshold = gratingTargetDirection
                     leftDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-gratingTargetDirection)
                     tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tGratingDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
-                    if (doMask) {
+                    if (tDoMask) {
                         rightDecisionThreshold = gratingTargetDirection + maskDirectionDeg/2
                         leftDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-(gratingTargetDirection+maskDirectionDeg/2))
                         tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
                     }
                     
                 }
+                
+                tGratingEccentricityStart = tGratingEccentricityDeg
+                
                 if (tLeftTrial == 1 && doOriDiscrim) {
                     tGratingEccentricityDeg = gratingEccentricityDeg
                     leftDecisionThreshold = gratingTargetDirection
                     rightDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-gratingTargetDirection)
                     tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tGratingDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
-                    if (doMask) {
+                    if (tDoMask) {
                         leftDecisionThreshold = gratingTargetDirection - maskDirectionDeg/2
                         rightDecisionThreshold = tGratingDirectionDeg+(tPlaidDirectionDeg-gratingTargetDirection)
                         tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
                     }
-                    
+                    report('plaid direction is $tPlaidDirectionDeg')
                 }
-                report('plaid direction is $tPlaidDirectionDeg')
-                report('rightDecisionThreshold is $rightDecisionThreshold')
+                
                 
                 if (doLaserStim) {
                     sendLaserParams = 1
@@ -2461,6 +2494,12 @@ protocol JuiceOnHoldProtocol {
                 }
                 report ('*****-=STIMULI ON=-*****')
                 play_sound (targetSound)
+                if (doContrastDiscrim || doContrastDetect || doSizeDiscrim) {
+                    trackMotion = tGratingEccentricityStart
+                    }
+                if (doOriDiscrim) {
+                    trackMotion = tGratingDirectionStart
+                    }
                 stimulusOn = 1
                 stimIsOff = 0
                 report ('In Reaction Time for $reactionTimeMs ms ')
@@ -2595,21 +2634,11 @@ protocol JuiceOnHoldProtocol {
                                 live_queue_stimulus (distractorGrating_ellipse)
                             }
                         }
-                        if ((tLeftTrial && trackMotion >= gratingTargetEccentricity) || (tLeftTrial == 0 && trackMotion <= gratingTargetEccentricity)) {
-                            tGratingEccentricityDeg = gratingTargetEccentricity
-                            if (doGaussianMask) {
-                                live_queue_stimulus (targetGrating_gaussian)
-                                live_queue_stimulus (distractorGrating_gaussian)
-                            }
-                            if (doEllipseMask) {
-                                live_queue_stimulus (targetGrating_ellipse)
-                                live_queue_stimulus (distractorGrating_ellipse)
-                            }
-                        }
+                        
                         update_stimulus_display ()
                     }
                     if (doOriDiscrim) {
-                        if (!doMask) {
+                        if (!tDoMask) {
                             if ((tLeftTrial && trackMotion >= gratingTargetDirection) || (tLeftTrial == 0 && trackMotion <= gratingTargetDirection)) {
                                 tGratingDirectionDeg = trackMotion
                             }
@@ -2617,7 +2646,7 @@ protocol JuiceOnHoldProtocol {
                                 tGratingDirectionDeg = gratingTargetDirection
                             }
                         }
-                        if (doMask) {
+                        if (tDoMask) {
                             if ((tLeftTrial && trackPlaidMotion >= gratingTargetDirection) || (tLeftTrial == 0 && trackPlaidMotion <= gratingTargetDirection)) {
                                 tGratingDirectionDeg = trackMotion
                                 tMaskDirectionDeg = trackMaskMotion
