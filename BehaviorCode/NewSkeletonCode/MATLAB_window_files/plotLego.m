@@ -262,7 +262,7 @@ end
 if input.doContrastDiscrim || input.doContrastDetect || input.doSizeDiscrim
   decisionThreshold = (input.gratingEccentricityDeg-input.gratingTargetEccentricity)./ input.feedbackMotionSensitivity;
 elseif input.doOriDiscrim
-  decisionThreshold = gratingMaxDirectionDiff./ input.feedbackMotionSensitivity;
+  decisionThreshold = input.gratingMaxDirectionDiff./ input.feedbackMotionSensitivity;
 end
 
 if ~isfield(input, 'stimOnTimeMs')
