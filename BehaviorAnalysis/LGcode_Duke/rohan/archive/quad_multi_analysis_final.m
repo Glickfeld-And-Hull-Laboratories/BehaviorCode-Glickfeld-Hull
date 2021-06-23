@@ -1,19 +1,19 @@
 %% data concatenation
-input = concatenateDataBlocks(temp);
+% input = concatenateDataBlocks(temp); % Using input from "mouse"goodData.mat - CLM
 %%  
-cd('C:\Users\rohan\Documents\MATLAB\Repositories\BehaviorCode-Glickfeld-Hull-Master\BehaviorAnalysis')
+% cd('C:\Users\rohan\Documents\MATLAB\Repositories\BehaviorCode-Glickfeld-Hull-Master\BehaviorAnalysis')
 Iix = find(strcmp(input.trialOutcomeCell, 'ignore'));
 Tix = setdiff(1:length(input.trialOutcomeCell), Iix);
 maxD = max(cell2mat(input.tDecisionTimeMs(Tix)),[],2);
-savedate=input.saveTime;
-qVals_final = nan(18001, uint16(length(input.trialOutcomeCell)));
+% savedate=input.saveTime; 
+qVals_final = nan(18001, uint16(length(input.trialOutcomeCell))); %%? Why 18001 (total time window? 8000 + 10000)? Why use uint16 (changes class to unit16 - 16-bit intergers)? - CLM
 qTimes_act = nan(18001, uint16(length(input.trialOutcomeCell)));
 qTimes_thresh = nan(1, uint16(length(input.trialOutcomeCell)));
 SIx = double(strcmp(input.trialOutcomeCell,'success'));
 FIx = double(strcmp(input.trialOutcomeCell,'incorrect'));
 block2=celleqel2mat_padded(input.tBlock2TrialNumber);
-eccentricity=celleqel2mat_padded(input.tGratingEccentricityDeg);
-ldt=abs(eccentricity(2))/input.feedbackMotionSensitivity; rdt=-1*ldt;
+eccentricity=celleqel2mat_padded(input.tGratingEccentricityDeg); % 
+ldt=abs(eccentricity(2))/input.feedbackMotionSensitivity; rdt=-1*ldt; % ldt/rdt = left/right decision threshold - CLM 
 tContrast=celleqel2mat_padded(input.tGratingContrast); % comment out for size discrim
 unqtargets=unique(tContrast);
 dContrast=celleqel2mat_padded(input.dGratingContrast); % comment out for size discrim
@@ -29,25 +29,25 @@ thistrialtime=celleqel2mat_padded(input.tThisTrialStartTimeMs);
 stimtime=celleqel2mat_padded(input.stimTimestampMs);
 dectime=celleqel2mat_padded(input.tDecisionTimeMs);
 ledpwr=input.block2TrialLaserPowerMw;
-for trN = 1:length(input.trialOutcomeCell)-1
+for trN = 1:length(input.trialOutcomeCell)-1 %not clear on why -1 - CLM
     if find(Tix == trN)
-        qTimes = double([input.quadratureTimesUs{trN} input.quadratureTimesUs{trN+1}]./1000);
-        qVals = double([input.quadratureValues{trN} (input.quadratureValues{trN}(end)+input.quadratureValues{trN+1})]);
+        qTimes = double([input.quadratureTimesUs{trN} input.quadratureTimesUs{trN+1}]./1000); %  Times of each registered wheel movement on each trial?
+        qVals = double([input.quadratureValues{trN} (input.quadratureValues{trN}(end)+input.quadratureValues{trN+1})]); % Wheel positions from current trial to end of next
         stimTime = double(input.stimTimestampMs{trN});
-        qTimes_zero = qTimes-stimTime;
-        qVals = qVals-qVals(1);
-        time_ind = find(qTimes_zero>= -8000 & qTimes_zero<=10000);
+        qTimes_zero = qTimes-stimTime; % Wheel movement before (-) and after (+) stim appears
+        qVals = qVals-qVals(1); % ???
+        time_ind = find(qTimes_zero>= -8000 & qTimes_zero<=10000); % Index where wheel movement falls in time window?
         if length(time_ind)>2
-            qTimes_sub = qTimes_zero(time_ind);
-            qVals_sub = qVals(time_ind);
-            qTimes_temp = qTimes(time_ind);
-            rep_ind = find(diff(qTimes_sub)==0);
-            qTimes_sub(rep_ind) = [];
+            qTimes_sub = qTimes_zero(time_ind); % Time of wheel movement relative, to stimulus appearance, within time window
+            qVals_sub = qVals(time_ind); % Wheel position in time window
+            qTimes_temp = qTimes(time_ind); % Time of wheel movement in time window
+            rep_ind = find(diff(qTimes_sub)==0); % ? Returns index where the difference between adjacent elements of q_times_sub is 0...why? Repeated times?
+            qTimes_sub(rep_ind) = []; % removes rep_ind
             qVals_sub(rep_ind) = [];
             qTimes_temp(rep_ind) = [];
-            qTimes_final = -8000:10000;
-            qTimes_act(:,trN) = interp1(qTimes_temp, qTimes_temp, qTimes_final+stimTime)';
-            qVals_final(:,trN) = interp1(qTimes_sub, qVals_sub, qTimes_final)';
+            qTimes_final = -8000:10000; % Time window
+            qTimes_act(:,trN) = interp1(qTimes_temp, qTimes_temp, qTimes_final+stimTime)'; % ?? 1-D data interpolation?? (Value approximation/ curve fitting)
+            qVals_final(:,trN) = interp1(qTimes_sub, qVals_sub, qTimes_final)'; % ??
             if input.tDecisionTimeMs{trN} < 10000
                 if isnan(qVals_final(8000,trN))
                     qVals_final(8000,trN) = qVals_final(find(~isnan(qVals_final(:,trN)),1,'first'),trN);
@@ -113,29 +113,29 @@ for icontrol=1:nledcond
                qvals_temp_mean=nanmean(qvals_adj,2);
                    for itrial=1:length(temp)
                       if iloc==1 && ibehavior==2 %right correct
-                          temptime1(itrial)=min(find(qvals_adj(8000:18000,itrial)<=rdt));
+                          temptime1(itrial) =min(find(qvals_adj(8000:18000,itrial)<=rdt)); 
                           if isempty(temptime1)
                               temptime(itrial)=min(find(qvals_adj(8000:18000)>=ldt));
                           else
-                              temptime(itrial)=temptime1; end
+                              temptime(itrial)=temptime1; end      
                       elseif iloc==1 && ibehavior==1 %right incorrect
-                          temptime1(itrial)=min(find(qvals_adj(8000:18000,itrial)>=ldt));
+                          temptime1(itrial) =min(find(qvals_adj(8000:18000,itrial)>=ldt)); 
                           if isempty(temptime1)
                               temptime(itrial)=min(find(qvals_adj(8000:18000)<=rdt));
                           else
-                              temptime(itrial)=temptime1; end                             
+                              temptime(itrial)=temptime1; end                            
                       elseif iloc==2 && ibehavior==2 %left correct
-                          temptime1(itrial)=min(find(qvals_adj(8000:18000,itrial)>=ldt));
+                          temptime1(itrial) =min(find(qvals_adj(8000:18000,itrial)>=ldt)); 
                           if isempty(temptime1)
                               temptime(itrial)=min(find(qvals_adj(8000:18000)<=rdt));
                           else 
-                              temptime(itrial)=temptime1; end
+                              temptime(itrial)=temptime1; end       
                       elseif iloc==2 && ibehavior==1 %left incorrect
-                          temptime1(itrial)=min(find(qvals_adj(8000:18000,itrial)<=rdt));
+                          temptime1(itrial) =min(find(qvals_adj(8000:18000,itrial)<=rdt));
                           if isempty(temptime1)
                               temptime(itrial)=min(find(qvals_adj(8000:18000)>=ldt));
                           else
-                              temptime(itrial)=temptime1; end
+                              temptime(itrial)=temptime1; end      
                       end                      
                    rxntime(icontrol,ibehavior,iloc,irat,1:length(temptime))=temptime;
                    rxntime_avg(icontrol,ibehavior,iloc,irat,1)=nanmean(temptime);
@@ -210,9 +210,9 @@ for icontrol=1:nledcond
                hold on
            end; end; end; end               
 %%
-if input.doSizeDiscrim==1
-    taskstr='size';
-elseif input.doContrastDiscrim==1
+% if input.doSizeDiscrim==1
+%     taskstr='size';
+if input.doContrastDiscrim==1
     taskstr='contrast';
 end
 numignores=length(Iix);

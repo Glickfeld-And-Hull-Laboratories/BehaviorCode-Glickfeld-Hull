@@ -3,7 +3,7 @@
 t_spo = 2;
 t_max = 1;
 d_max = 100;
-d_spo = 0.34;
+d_spo = 0.37; %i459's SPO
 n = 1:4;
 
 %calculate all targets and differences
@@ -11,7 +11,9 @@ t =  fliplr(t_max./(2.^((n-1)./(t_spo))));
 d =  fliplr(d_max./(2.^((n-1)./(d_spo)))+1);
 
 %random trial generator
-ntrials = 2000;
+s = rng('default');
+
+ntrials = 2516;
 x_t = randi(n(end),[1 ntrials]); %which target [1:4]
 x_d = randi(n(end),[1 ntrials]); %which diff [1:4]
 x_s = randi([0 1],[1 ntrials]); %target location: 0-left 1-right
@@ -25,7 +27,8 @@ l_con(find(x_s==1)) = x_dcon(find(x_s==1)); %actual left con
 
 %% contrast discrim
 %probability of correct choice by contrast diff
-d_p = [0.6 0.8 1 1];
+% d_p = [0.6 0.7 0.85 1]; % based on arbitrary input
+d_p = [0.4777 0.8024 0.9733 0.9711]; % based on i459's actual prob right
 y_s = zeros(1,ntrials);
 for i = 1:ntrials
     if rand(1)<=d_p(x_d(i))
@@ -46,7 +49,7 @@ for i = 1:ntrials
     end
 end
 
-%proportional to right side contrast based on fract targets
+%% proportional to right side contrast based on fract targets
 y_fit = fit(r_con',x_s','poly2');
 x = 0:0.001:1;
 p = y_fit.p1.*(x.^2)+ y_fit.p2.*x+y_fit.p3;
