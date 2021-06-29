@@ -265,6 +265,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Reward
         )
+    var doRandReward = (bool)(0) (
+        persistant = 1
+        groups = Reward
+        )
     var doRewardBias = (bool)(0) (
         persistant = 1
         groups = Reward
@@ -2828,6 +2832,10 @@ protocol JuiceOnHoldProtocol {
                         tRewardTimeUs = rewardTimeUs*highProbRewardScale
                     }
                 }
+                if (doRandReward) {
+                    tRewardTimeUs = rewardTimeUs*rand(0.5,1.5)
+                }
+
                 if (isNoGo) {
                     didNoGo = 1
                 }
