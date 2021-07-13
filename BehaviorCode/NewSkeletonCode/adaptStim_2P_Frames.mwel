@@ -128,6 +128,14 @@ group Stimuli {
         persistant = 1
         groups = 'Test Parameters'
         )
+    var doZeroCon = (bool)(0) (
+        persistant = 1
+        groups = 'Test Parameters'
+        )  
+    var fractZeroCon = (float)(0) (
+        persistant = 1
+        groups = 'Test Parameters'
+        )        
     var testGratingDirectionDeg = (float)(0) (
         persistant = 1
         groups = 'Test Parameters'
@@ -162,15 +170,15 @@ group Stimuli {
         )
     var maskGratingPhaseDeg = (float)(0) (
         persistant = 1
-        groups = 'Mask One Parameters'
+        groups = 'Mask Parameters'
         )
     var maskGratingPhaseStepN = (float)(8) (
         persistant = 1
-        groups = 'Mask One Parameters'
+        groups = 'Mask Parameters'
         )
     var maskGratingPhaseStepDeg = (float)(45) (
         persistant = 1
-        groups = 'Mask One Parameters'
+        groups = 'Mask Parameters'
         )    
     var gratingElevationDeg = (float)(0) (
         persistant = 1
@@ -622,7 +630,7 @@ protocol JuiceOnHoldProtocol {
                 tDoRandCon = doRandCon
                 tDoRandDir = doRandDir
                 // single condition calculations 
-                if (tDoRandCon) {
+                if ((tDoRandCon) && (!doZeroCon)) {
                     tTempStim = tStimulusNumber % testGratingContrastStepN
                     tTestStimGratingContrast = testGratingContrast / pow(testGratingContrastStepLog,tTempStim)
                     if (tTempStim == testGratingContrastStepN-1) {
@@ -631,6 +639,18 @@ protocol JuiceOnHoldProtocol {
                     tTempMask = tMaskNumber % maskGratingContrastStepN
                     tTestMaskGratingContrast = maskGratingContrast / pow(maskGratingContrastStepLog,tTempMask)
                     if (tTempMask == maskGratingContrastStepN-1) {
+                        tTestMaskGratingContrast = 0
+                    }
+                }
+                if ((tDoRandCon) && (doZeroCon)) {
+                    tTempStim = tStimulusNumber % testGratingContrastStepN
+                    tTestStimGratingContrast = testGratingContrast / pow(testGratingContrastStepLog,tTempStim)
+                    if (fractZeroCon > rand(0,1)) {
+                        tTestStimGratingContrast = 0
+                    }
+                    tTempMask = tMaskNumber % maskGratingContrastStepN
+                    tTestMaskGratingContrast = maskGratingContrast / pow(maskGratingContrastStepLog,tTempMask)
+                    if (fractZeroCon > rand(0,1)) {
                         tTestMaskGratingContrast = 0
                     }
                 }
@@ -647,7 +667,7 @@ protocol JuiceOnHoldProtocol {
                     tTestStimGratingDirectionDeg = testGratingDirectionDeg
                     tTestMaskGratingDirectionDeg = tTestStimGratingDirectionDeg + maskGratingDirectionDegDiff
                 }
-                if !doRandMaskPhase || !tTestGratingContrast { 
+                if ((!doRandMaskPhase) || (!tTestStimGratingContrast)) { 
                     tTestMaskGratingPhaseDeg = gratingPhaseDeg
                 }
                 if (doRandMaskPhase) {
