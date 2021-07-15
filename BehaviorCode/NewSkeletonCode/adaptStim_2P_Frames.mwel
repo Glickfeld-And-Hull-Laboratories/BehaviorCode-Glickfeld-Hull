@@ -128,6 +128,14 @@ group Stimuli {
         persistant = 1
         groups = 'Test Parameters'
         )
+    var doZeroCon = (bool)(0) (
+        persistant = 1
+        groups = 'Test Parameters'
+        )  
+    var fractZeroCon = (float)(0) (
+        persistant = 1
+        groups = 'Test Parameters'
+        )        
     var testGratingDirectionDeg = (float)(0) (
         persistant = 1
         groups = 'Test Parameters'
@@ -139,6 +147,10 @@ group Stimuli {
     var testGratingDirectionStepDeg = (float)(30) (
         persistant = 1
         groups = 'Test Parameters'
+        )
+    var doRandMaskPhase = (bool)(0) (
+        persistant = 1
+        groups = 'Mask Parameters'
         )
     var maskGratingContrast = 0.5 (
         persistant = 1
@@ -156,6 +168,18 @@ group Stimuli {
         persistant = 1
         groups = 'Mask Parameters'
         )
+    var maskGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask Parameters'
+        )
+    var maskGratingPhaseStepN = (float)(8) (
+        persistant = 1
+        groups = 'Mask Parameters'
+        )
+    var maskGratingPhaseStepDeg = (float)(45) (
+        persistant = 1
+        groups = 'Mask Parameters'
+        )    
     var gratingElevationDeg = (float)(0) (
         persistant = 1
         groups = 'Grating Parameters'
@@ -276,6 +300,7 @@ group 'Internal Variables' {
     var tempAdaptMaskGratingContrast = (float)(0)
     var tTestStimGratingContrast = (float)(0)
     var tTestMaskGratingContrast = (float)(0)
+    var tTestMaskGratingPhaseDeg = (float)(0)
     var isFirstTrial = (bool)(0)
     var doCerebellarStim = (bool)(0)
     var DoWheelSpeed = (bool)(0)
@@ -394,7 +419,7 @@ layer test_plaid {
 
     drifting_grating test_mask (
         direction = tTestMaskGratingDirectionDeg
-        starting_phase = gratingPhaseDeg
+        starting_phase = tTestMaskGratingPhaseDeg
         spatial_frequency = gratingSpatialFreqCPD
         speed = gratingTemporalFreqCPS/gratingSpatialFreqCPD
         grating_type = gratingType
@@ -605,7 +630,7 @@ protocol JuiceOnHoldProtocol {
                 tDoRandCon = doRandCon
                 tDoRandDir = doRandDir
                 // single condition calculations 
-                if (tDoRandCon) {
+                if ((tDoRandCon) && (!doZeroCon)) {
                     tTempStim = tStimulusNumber % testGratingContrastStepN
                     tTestStimGratingContrast = testGratingContrast / pow(testGratingContrastStepLog,tTempStim)
                     if (tTempStim == testGratingContrastStepN-1) {
@@ -614,6 +639,18 @@ protocol JuiceOnHoldProtocol {
                     tTempMask = tMaskNumber % maskGratingContrastStepN
                     tTestMaskGratingContrast = maskGratingContrast / pow(maskGratingContrastStepLog,tTempMask)
                     if (tTempMask == maskGratingContrastStepN-1) {
+                        tTestMaskGratingContrast = 0
+                    }
+                }
+                if ((tDoRandCon) && (doZeroCon)) {
+                    tTempStim = tStimulusNumber % testGratingContrastStepN
+                    tTestStimGratingContrast = testGratingContrast / pow(testGratingContrastStepLog,tTempStim)
+                    if (fractZeroCon > rand(0,1)) {
+                        tTestStimGratingContrast = 0
+                    }
+                    tTempMask = tMaskNumber % maskGratingContrastStepN
+                    tTestMaskGratingContrast = maskGratingContrast / pow(maskGratingContrastStepLog,tTempMask)
+                    if (fractZeroCon > rand(0,1)) {
                         tTestMaskGratingContrast = 0
                     }
                 }
@@ -629,6 +666,13 @@ protocol JuiceOnHoldProtocol {
                 if (!tDoRandDir) {
                     tTestStimGratingDirectionDeg = testGratingDirectionDeg
                     tTestMaskGratingDirectionDeg = tTestStimGratingDirectionDeg + maskGratingDirectionDegDiff
+                }
+                if ((!doRandMaskPhase) || (!tTestStimGratingContrast)) { 
+                    tTestMaskGratingPhaseDeg = gratingPhaseDeg
+                }
+                if (doRandMaskPhase) {
+                    tTempStim = tStimulusNumber % maskGratingPhaseStepN
+                    tTestMaskGratingPhaseDeg = maskGratingPhaseDeg + (maskGratingPhaseStepDeg * (tTempStim))
                 }
                 // initialize trial start/end times 
                 if (tThisTrialStartTimeMs == -1) {

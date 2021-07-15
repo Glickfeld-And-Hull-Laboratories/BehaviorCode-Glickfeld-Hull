@@ -259,6 +259,10 @@ end
 %              'VerticalAlignment', 'top', ...
 %              'HorizontalAlignment', 'left');
          
+if ~isfield(input,'doSizeDiscrim')
+  input.doSizeDiscrim = 0;
+end
+        
 if input.doContrastDiscrim || input.doContrastDetect || input.doSizeDiscrim
   decisionThreshold = (input.gratingEccentricityDeg-input.gratingTargetEccentricity)./ input.feedbackMotionSensitivity;
 elseif input.doOriDiscrim
@@ -273,9 +277,7 @@ if isfield(input,'gratingMaxDiff')
   input.gratingMaxContrastDiff = input.gratingMaxDiff;
 end
 
-if ~isfield(input,'doSizeDiscrim')
-  input.doSizeDiscrim = 0;
-end
+
 if isfield(input,'doContrastDiscrim')
   if input.doContrastDiscrim
     taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
