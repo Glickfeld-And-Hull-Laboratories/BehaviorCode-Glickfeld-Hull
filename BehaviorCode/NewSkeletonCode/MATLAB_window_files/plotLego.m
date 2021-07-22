@@ -813,8 +813,9 @@ if nCorr>0 && input.doTestRobot==0,
          xlabel('Contrast Difference (T-D)')
         end
       title('Percent Correct by Contrast RAtio')
-      end
-end
+         end
+    end
+    end
 end
 
 %%%%%%%%%%%%%%%%
@@ -882,7 +883,7 @@ xlabel('Time');
 
 axH  = subplot(spSz{:},10);
 hold on
-if isfield(input,'doContrastDiscrim')
+
   if input.doContrastDiscrim
     if input.doContrastDetect
       differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
@@ -908,9 +909,7 @@ if isfield(input,'doContrastDiscrim')
       else
           differenceRight_mask = nan(size(differenceRight));
       end
-    end
-  end
-else
+  else
   if input.gratingContrastDiffSPO > 10
     differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
   elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
