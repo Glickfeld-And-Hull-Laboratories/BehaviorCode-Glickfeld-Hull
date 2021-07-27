@@ -97,7 +97,8 @@
 
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
       <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
-      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="0" groups="Sounds"/>
+      <variable tag="block1ToneAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sound"/>
+      <variable tag="block2ToneAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
 
       <!-- block 2 control -->
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
@@ -208,6 +209,7 @@
       <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
     </folder>
     <folder tag="Internal Variables">
+      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDoAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -803,7 +805,9 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>
                   <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>
-                  <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
+                  <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>
+
+                  <action type="assignment" variable="soundTargetAmplitude" value="block1ToneAmplitude"></action>  <!-- allow different tone amplitude in block 1 and 2-->
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
@@ -819,7 +823,9 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="block2GratingWidthDeg"></action>
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="block2GratingSpatialFreqCPD"></action>
                   <action type="assignment" variable="tGratingSpeedDPS" value="block2GratingSpeedDPS"></action>
-                  <action type="assignment" variable="tGratingDurationMs" value="block2GratingDurationMs"/>
+                  <action type="assignment" variable="tGratingDurationMs" value="block2GratingDurationMs"></action>
+
+                  <action type="assignment" variable="soundTargetAmplitude" value="block2ToneAmplitude"></action>
                 </action>
 
 
@@ -1084,7 +1090,7 @@
             <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer"
                     timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
             <action type="assignment" tag="Log counter" variable="cItiStart" value="counter"></action>
-            <action type="run_python_file" tag="Load script" path="L0.py"></action>
+            <action type="run_python_file" tag="Load script" path="L0.py"></action> <!--  run python code to turn laser off -->
             <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
             <action type="if" condition="doLeverSolenoidAllTrials">
@@ -1194,7 +1200,7 @@
 
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
               <action type="assignment" variable="cLeverDown" value="counter"></action>
-              <action type="run_python_file" tag="Load script" path="L1.py"></action>
+              <action type="run_python_file" tag="Load script" path="L1.py"></action>  <!--  run python code to turn laser on -->
 
             <action type="if" condition="doVisualStim">
               <action type="if" condition="!doITIStim">
