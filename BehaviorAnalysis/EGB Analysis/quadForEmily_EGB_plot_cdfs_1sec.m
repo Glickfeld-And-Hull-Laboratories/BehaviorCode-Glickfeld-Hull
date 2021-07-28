@@ -1,4 +1,4 @@
-%Drag single day data file over
+%Drag single day data file over (or collapsed across days)
 
 Iix = find(strcmp(input.trialOutcomeCell, 'ignore')); %command strcmp says match "trialOutcomeCell" when it says "ignore"
 %Find all ignore trials
@@ -182,7 +182,7 @@ qVals_interest = qVals_final(:,find(qTimes_final==-4000):find(qTimes_final==4000
 figure
 plot(qTimes_interesting,qVals_interest)
 hold on
-title({'i1402 Quadrature Traces','7187 trials'})
+title({'i1402 Quadrature Traces','4893 trials'})
 xlabel('Time (ms)')
 ylabel('Quadrature Position (ticks)')
 v = vline_EGB(0,'-k','Target Stim On')
@@ -202,7 +202,7 @@ hold on
 title({'CDF of Sum of Abs Diff in Quad Position per Trial'; 'Flashing Adapt'; 'Subject: i1401'; '05/22/19'})
 xlabel('Sum of Abs Diff of Quad Position')
 ylabel('F(x)')
-legend('No adapter, n=124','90 deg adapter, n=124','0 deg adapter, n=133')
+legend('No adapter, n=1581','90 deg adapter, n=1653','0 deg adapter, n=1659')
 hold off
 
 %% Choose only trials with minimal movement during adapt period. Try threshold of 100 ticks sum abs diff? 
@@ -211,7 +211,7 @@ qVals_pre = qVals_final(:,find(qTimes_final==-4000):find(qTimes_final==0));
 qVals_pre_sum = nansum(abs(diff(qVals_pre,1,2)),2);
 
 qVals_sum = nansum(abs(diff(qVals_final,1,2)),2);
-qVals_idx = find(qVals_pre_sum<100);
+qVals_idx = find(qVals_pre_sum<25);
 qVals_final_idx = qVals_final(qVals_idx,:);
 
 % qTimes_interest = find(qTimes_final==-1400):find(qTimes_final==0);
@@ -226,7 +226,7 @@ figure
 plot(qTimes_interesting,qVals_interest)
 hold on
 ylim([-400,300]);
-title({'i1402 Quadrature Traces', 'Only Trials with <100 ticks movement in 4s before Target Stim On', 'n=6875 trials'})
+title({'i1402 Quadrature Traces', 'Only Trials with <25 ticks movement in 4s before Target Stim On', 'n=4581 trials'})
 xlabel('Time (ms)')
 ylabel('Quadrature Position (ticks)')
 v = vline_EGB(0,'-k','Target Stim On')
@@ -235,16 +235,16 @@ hold off
 figure
 plot(qTimes_interesting,qVals_interesting)
 hold on
-title({'i1402 Quadrature Traces', 'n=7187 trials'})
+title({'i1402 Quadrature Traces', 'n=4581 trials'})
 xlabel('Time (ms)')
 ylabel('Quadrature Position (ticks)')
 v = vline_EGB(0,'-k','Target Stim On')
 hold off
 
 %% Plot CDF for indexed qVals - movement QC
-Ana_qVals_idx = find(qVals_Ana_sum<50);
-A90_qVals_idx = find(qVals_A90_sum<50);
-A0_qVals_idx = find(qVals_A0_sum<50);
+Ana_qVals_idx = find(qVals_Ana_sum<25);
+A90_qVals_idx = find(qVals_A90_sum<25);
+A0_qVals_idx = find(qVals_A0_sum<25);
 
 qVals_Ana_pre_idx = qVals_Ana_pre(Ana_qVals_idx,:);
 qVals_Ana_sum = sum(abs(diff(qVals_Ana_pre_idx,1,2)),2);
@@ -264,7 +264,7 @@ hold on
 title({'CDF of Sum of Abs Diff in Quad Position per Trial'; 'Flashing Adapt'; 'Subject: i1401'; '06/14/19'})
 xlabel('Sum of Abs Diff of Quad Position')
 ylabel('F(x)')
-legend('No adapter, n=126','90 deg adapter, n=116','0 deg adapter, n=122')
+legend('No adapter, n=88','90 deg adapter, n=70','0 deg adapter, n=44')
 hold off
 
 % clearvars -except Ana_qVals_idx A90_qVals_idx A0_qVals_idx input

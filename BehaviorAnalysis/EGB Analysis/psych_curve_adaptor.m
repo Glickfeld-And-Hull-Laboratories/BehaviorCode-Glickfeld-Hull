@@ -304,22 +304,21 @@ for Anori=1:length(Auniqueori)
 end
 AnaCI = AnaCI';
 AnaCI = abs(AnapctCorrect-AnaCI); 
-
+% 
 % idx = logical([1 1 1 1 0 0 1 1 1 1]); 
-% figure; errorbar(Auniqueori(idx),A90pctL(idx),A90CI(1,idx),A90CI(2,idx),'r','LineWidth',1.5)
-% hold on
-% ylim([0,1])
-% errorbar(Auniqueori(idx),A0pctL(idx),A0CI(1,idx),A0CI(2,idx),'g','LineWidth',1.5)
-% errorbar(Auniqueori(idx),AnapctL(idx),AnaCI(1,idx),AnaCI(2,idx),'b','LineWidth',1.5)
+
 figure; errorbar(Auniqueori,A90pctL,A90CI(1,:),A90CI(2,:),'r','LineWidth',1.5)
+% figure; errorbar(Auniqueori(idx),A90pctL(idx),A90CI(1,idx),A90CI(2,idx),'r','LineWidth',1.5)
 hold on
 ylim([0,1])
+% errorbar(Auniqueori(idx),A0pctL(idx),A0CI(1,idx),A0CI(2,idx),'g','LineWidth',1.5)
+% errorbar(Auniqueori(idx),AnapctL(idx),AnaCI(1,idx),AnaCI(2,idx),'b','LineWidth',1.5)
 errorbar(Auniqueori,A0pctL,A0CI(1,:),A0CI(2,:),'g','LineWidth',1.5)
 errorbar(Auniqueori,AnapctL,AnaCI(1,:),AnaCI(2,:),'b','LineWidth',1.5)
-title({'Psychometric Function per Adaptation Condition'; 'Paradigm: Flashing Adapt'; 'Subject: i1402'; 'n=3856 trials'})
+title({'Psychometric Function per Adaptation Condition'; 'Paradigm: Flashing Adapt'; 'Subject: i1402'; 'n=5036 trials'})
 xlabel('Target Orientation (degrees)')
 ylabel('% Left Response')
-legend('90 deg adapter, n=1305','0 deg adapter, n=1301','no adapter, n=1250')
+legend('90 deg adapter, n=1764','0 deg adapter, n=1663','no adapter, n=1609')
 hold off
 
 %%

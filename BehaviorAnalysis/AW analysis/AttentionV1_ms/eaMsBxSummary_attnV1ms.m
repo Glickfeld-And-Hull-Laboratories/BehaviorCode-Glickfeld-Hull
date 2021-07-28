@@ -1,8 +1,8 @@
 clear all
 close all
 
-doLoadPreviousDataset = false;
-doCheck4NewDates = true;
+doLoadPreviousDataset = true;
+doCheck4NewDates = false;
 doRewarded = true;
 
 
@@ -329,6 +329,8 @@ for im = 1:nmice
          
             msCmlvData.valTargetTimeMs = cat(2,msCmlvData.valTargetTimeMs,targetTimeMs);
             msCmlvData.invTargetTimeMs = cat(2,msCmlvData.invTargetTimeMs,invTargetTimeMs);
+            msCmlvData.valTargetCycle = cat(2,msCmlvData.valTargetCycle,nCycles);
+            msCmlvData.invTargetCycle = cat(2,msCmlvData.invTargetCycle,invCycles);
             msCmlvData.visMatchedHighThreshID = cat(2,msCmlvData.visMatchedHighThreshID,visMatchedHighThreshID);
             msCmlvData.visMatchedHighThreshOutcome = cat(2,msCmlvData.visMatchedHighThreshOutcome,visMatchedHighThreshOutcome);
             msCmlvData.invVisHighThreshID = cat(2,msCmlvData.invVisHighThreshID,invVisHighThreshID);
@@ -352,6 +354,8 @@ for im = 1:nmice
             msCmlvData.twoStimBackRT = twoStimBackRT;
             msCmlvData.valTargetTimeMs = targetTimeMs;
             msCmlvData.invTargetTimeMs = invTargetTimeMs;
+            msCmlvData.valTargetCycle = nCycles;
+            msCmlvData.invTargetCycle = invCycles;
             msCmlvData.visMatchedHighThreshID = visMatchedHighThreshID;
             msCmlvData.visMatchedHighThreshOutcome = visMatchedHighThreshOutcome;
             msCmlvData.invVisHighThreshID = invVisHighThreshID;

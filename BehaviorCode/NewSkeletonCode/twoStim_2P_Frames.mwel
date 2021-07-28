@@ -1,0 +1,2754 @@
+
+//
+// I/O Devices
+//
+
+iodevice/labjacku6 LabJackU6 (
+    pulse_duration = juice
+    pulse_on = juice
+    lever1 = FIO1
+    lever1_solenoid = MIO0
+    laser_trigger = laserTrigger
+    optic_device = optic_device
+    strobed_digital_word = strobedDigitalWord
+    counter = counter
+    do2led = do2led
+    led_seq = led_seq
+    LED_duration = LED_durationMS
+    led1_status = led1_status
+    led2_status = led2_status
+    do_wheelspeed = DoWheelSpeed
+    ws_durationUS = speedIntervalUS
+    wheel_speed = wheelSpeed
+    doCB = doCerebellarStim
+    quadrature = quadrature
+    )
+fake_monkey FakeMonkey (spike_rate = 10)
+serverside_conduit 'Server-side Event Conduit' ()
+
+//
+// Variables
+//
+
+group 'Behavioral Control' {
+    var experimentXmlTrialId = 8 (persistant = 1)
+    // n.b. it is forcibly set each trial below 
+    var optic_device = 'led'
+    var subjectNum = 0 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doMatrix = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doTwoStimTogether = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandISITime = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandStimOnTime = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandCon = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doZeroCon = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var zeroConPer80 = 0 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandDir = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandPos = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandDiameter = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandSF = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandTF = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandPhase = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRotate = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )    
+    var doRandSoundAmp = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRandSoundFreq = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doWheelSpeed = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doCerebellarStim = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doMask = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var fractMaskTrials = (float)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var doRandMaskCon = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var doRandMaskDir = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var doRandMaskPhase = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var doMaskRotate = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )    
+    var doBlock2 = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var doBlock2SeparateOdds = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2TrPer80 = (float)(40) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2MatchB1VisStim = (bool)(1) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2MatchB1AudStim = (bool)(1) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoMatrix = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoMask = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )    
+    var block2DoRandISITime = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandStimOnTime = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandCon = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoZeroCon = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2ZeroConPer80 = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandDir = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandPos = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandDiameter = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandSF = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandTF = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandPhase = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandMaskPhase = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var block2DoRotate = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )    
+    var block2DoRandSoundAmp = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandSoundFreq = (bool)(0) (
+        persistant = 1
+        groups = Block2
+        )
+    var block2DoRandMaskDir = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var block2DoRandMaskCon = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var block2DoMaskRotate = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )    
+    var block2ISITimeMs = (float)(250) (
+        persistant = 1
+        groups = 'Block2 Trial Structure'
+        )
+    var block2ISITimeN = (float)(5) (
+        persistant = 1
+        groups = 'Block2 Trial Structure'
+        )
+    var block2ISITimeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block2 Trial Structure'
+        )
+    var frameRateHz = (float)(30) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var itiTimeMs = (float)(5000) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var doExtendItiOnShortPrevTrial = 0 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var isiTimeMs = (float)(250) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var isiTimeN = (float)(5) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var isiTimeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var gratingRotateSpeedDPS = (float)(20) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )    
+    var speedIntervalMS = (float)(0) (
+        persistant = 1
+        groups = 'Wheel Speed'
+        )
+    var wheelSpeed = (float)(0) (groups = 'Wheel Speed')
+}
+group Stimuli {
+    var stimOneDoVisualStim = (float)(1) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneDoAuditoryStim = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingOnTimeMs = (float)(500) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingOnTimeStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingOnTimeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingContrast = (float)(1) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingContrastStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingElevationDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingElevationStepN = (float)(12) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingElevationStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingAzimuthDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingAzimuthStepN = (float)(12) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingAzimuthStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingDiameterDeg = 200 (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingDiameterStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingDiameterStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingSpatialFreqCPD = 0.05 (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingSpatialFreqStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingSpatialFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingTemporalFreqCPS = 0 (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingTemporalFreqStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingTemporalFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingPhaseStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneGratingPhaseStepDeg = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneSoundAmplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneSoundAmplitudeStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneSoundAmplitudeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneSound1Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneSound2Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneSound3Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneSound4Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var stimOneSound5Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus One Parameters'
+        )
+    var maskOneGratingContrast = (float)(0) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingContrastStepN = (float)(5) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingPhaseStepN = (float)(12) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskOneGratingPhaseStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var matchStimOneParameters = (bool)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoDoVisualStim = (float)(1) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoDoAuditoryStim = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingOnTimeMs = (float)(500) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingOnTimeStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingOnTimeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingContrast = (float)(1) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingContrastStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingElevationDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingElevationStepN = (float)(12) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingElevationStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingAzimuthDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingAzimuthStepN = (float)(12) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingAzimuthStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingDiameterDeg = 200 (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingDiameterStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingDiameterStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingSpatialFreqCPD = 0.05 (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingSpatialFreqStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingSpatialFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingTemporalFreqCPS = 0 (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingTemporalFreqStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingTemporalFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingPhaseStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoGratingPhaseStepDeg = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoSoundAmplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoSoundAmplitudeStepN = (float)(5) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoSoundAmplitudeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoSound1Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoSound2Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoSound3Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoSound4Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var stimTwoSound5Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Two Parameters'
+        )
+    var maskTwoGratingContrast = (float)(0) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingContrastStepN = (float)(5) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingPhaseStepN = (float)(12) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    var maskTwoGratingPhaseStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Mask Two Parameters'
+        )
+    // stimulus control parameters 
+    // block 2 control 
+    var block2DoTrialLaser = (bool)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2TrialLaserPowerMw = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2TrialLaserOnTimeMs = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2TrialLaserOffTimeMs = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2StimOneDoVisualStim = (float)(500) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneDoAuditoryStim = (float)(500) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingOnTimeMs = (float)(500) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingOnTimeStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingOnTimeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingContrast = (float)(1) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingContrastStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingElevationDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingElevationStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingElevationStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingAzimuthDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingAzimuthStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingAzimuthStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingDiameterDeg = 200 (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingDiameterStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingDiameterStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingSpatialFreqCPD = 0.05 (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingSpatialFreqStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingSpatialFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingTemporalFreqCPS = 0 (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingTemporalFreqStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingTemporalFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingPhaseStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneGratingPhaseStepDeg = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneSoundAmplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneSoundAmplitudeStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneSoundAmplitudeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneSound1Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneSound2Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneSound3Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneSound4Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2StimOneSound5Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus One Parameters'
+        )
+    var block2MaskOneGratingContrast = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingContrastStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingPhaseStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskOneGratingPhaseStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MatchStimOneParameters = (bool)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoDoVisualStim = (float)(500) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoDoAuditoryStim = (float)(500) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingOnTimeMs = (float)(500) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingOnTimeStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingOnTimeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingContrast = (float)(1) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingContrastStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingElevationDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingElevationStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingElevationStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingAzimuthDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingAzimuthStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingAzimuthStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingDiameterDeg = 200 (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingDiameterStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingDiameterStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingSpatialFreqCPD = 0.05 (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingSpatialFreqStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingSpatialFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingTemporalFreqCPS = 0 (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingTemporalFreqStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingTemporalFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingPhaseStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoGratingPhaseStepDeg = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoSoundAmplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoSoundAmplitudeStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoSoundAmplitudeStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoSound1Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoSound2Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoSound3Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoSound4Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2StimTwoSound5Amplitude = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Stimulus Two Parameters'
+        )
+    var block2MaskTwoGratingContrast = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingContrastStepN = (float)(5) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingPhaseStepN = (float)(12) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var block2MaskTwoGratingPhaseStepDeg = (float)(30) (
+        persistant = 1
+        groups = 'Block 2 Mask Parameters'
+        )
+    var Do2LED = (bool)(0) (
+        persistant = 1
+        groups = 'Alternating LED'
+        )
+    var LED_sequence = [1,1,1,2] (
+        persistant = 1
+        groups = 'Alternating LED'
+        )
+    var gratingType = 'sinusoid' (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var maskType = 'gaussian' (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var gratingMean = 0.1 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var gratingStd = 0.3 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        ) 
+    var gratingEdge = 0.125 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )                
+    var doPhotodiode = (bool)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusContrast = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusAzimuth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusElevation = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusWidth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusHeight = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoMaskSpatialFreq = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+}
+group 'Task Status' {
+    var trialStart = (bool)(0)
+}
+group 'Online Display' {
+    var sync = 0
+}
+group 'Hardware variables' {
+    var FIO1 = 0
+    var MIO0 = (bool)(0)
+    var laserTrigger = (bool)(0)
+    var strobedDigitalWord = 0
+    var juice = 0
+    var sendLaserParams = 0
+    var sendSerialParams = 0
+    var counter = 0
+    var do2led = (bool)(0)
+    var LED_durationMS = (float)(0)
+    var led1_status = (bool)(0)
+    var led2_status = (bool)(0)
+    var led_seq = [1,1,1,2]
+    var quadrature = 0 (groups = Hardware)
+}
+group 'Internal Variables' {
+    var ntrials = 0
+    var tTrialStartMWTimestampMs = 0
+    var tItiWaitTimeMs = 0
+    var tThisTrialStartTimeMs = 0
+    var tLastTrialStartTimeMs = 0
+    var lastTrialTimeMs = 0
+    var tempMs = 0
+    var tTempStim1 = 0
+    var tTempStim2 = 0
+    var tTempMask1 = 0
+    var tTempMask2 = 0
+    var multVal = 4
+    var tStimulusNumber = 0
+    var tStimulusNumber2 = 0
+    var tMaskNumber = 0
+    var tMaskNumber2 = 0
+    var tDoMatrix = (bool)(0)
+    var tDoRandISITime = (bool)(0)
+    var tDoRandStimOnTime = (bool)(0)
+    var tDoRandCon = (bool)(0)
+    var tDoMask = 0
+    var tDoRandMaskCon = (bool)(0)
+    var tDoRandDir = (bool)(0)
+    var tDoRandMaskDir = (bool)(0)
+    var tDoRandPos = (bool)(0)
+    var tDoRandDiameter = (bool)(0)
+    var tDoRandSF = (bool)(0)
+    var tDoRandTF = (bool)(0)
+    var tDoRandPhase = (bool)(0)
+    var tDoRotate = (bool)(0)
+    var tDoMaskRotate = (bool)(0)
+    var tDoRandMaskPhase = (bool)(0)
+    var tDoRandSoundAmp = (bool)(0)
+    var tDoRandSoundFreq = (bool)(0)
+    var tStimOneGratingOnTimeMs = 0
+    var tStimTwoGratingOnTimeMs = 0
+    var tISITimeMs = 0
+    var maxStimOnTime = 0
+    var maxISITime = 0
+    var tStimOneGratingDirectionDeg = (float)(0)
+    var setStimOneGratingDirectionDeg = (float)(0)
+    var setMaskOneGratingDirectionDeg = (float)(0)
+    var tStimOneGratingContrast = (float)(0)
+    var tStimOneGratingElevationDeg = (float)(0)
+    var tStimOneGratingAzimuthDeg = (float)(0)
+    var tStimOneGratingDiameterDeg = (float)(0)
+    var tStimOneGratingSpatialFreqCPD = (float)(1)
+    var tStimOneGratingTemporalFreqCPS = (float)(0)
+    var tStimOneGratingPhaseDeg = (float)(0)
+    var tStimOneSoundAmplitude = (float)(0)
+    var tStimOneSound1Amplitude = (float)(0)
+    var tStimOneSound2Amplitude = (float)(0)
+    var tStimOneSound3Amplitude = (float)(0)
+    var tStimOneSound4Amplitude = (float)(0)
+    var tStimOneSound5Amplitude = (float)(0)
+    var tMaskOneGratingDirectionDeg = (float)(0)
+    var tMaskOneGratingContrast = (float)(0)
+    var tMaskOneGratingPhaseDeg = (float)(0)
+    var tStimTwoGratingDirectionDeg = (float)(0)
+    var tStimTwoGratingContrast = (float)(0)
+    var tStimTwoGratingElevationDeg = (float)(0)
+    var tStimTwoGratingAzimuthDeg = (float)(0)
+    var tStimTwoGratingDiameterDeg = (float)(0)
+    var tStimTwoGratingSpatialFreqCPD = (float)(1)
+    var tStimTwoGratingTemporalFreqCPS = (float)(0)
+    var tStimTwoGratingPhaseDeg = (float)(0)
+    var tStimTwoSoundAmplitude = (float)(0)
+    var tStimTwoSound1Amplitude = (float)(0)
+    var tStimTwoSound2Amplitude = (float)(0)
+    var tStimTwoSound3Amplitude = (float)(0)
+    var tStimTwoSound4Amplitude = (float)(0)
+    var tStimTwoSound5Amplitude = (float)(0)
+    var tMaskTwoGratingDirectionDeg = (float)(0)
+    var tMaskTwoGratingContrast = (float)(0)
+    var tMaskTwoGratingPhaseDeg = (float)(0)
+    var tStimOneDoVisualStim = (bool)(0)
+    var tStimOneDoAuditoryStim = (bool)(0)
+    var tStimTwoDoVisualStim = (bool)(0)
+    var tStimTwoDoAuditoryStim = (bool)(0)
+    var tTrialLaserPowerMw = (float)(0)
+    var tTrialLaserOnTimeMs = (float)(0)
+    var tTrialLaserOffTimeMs = (float)(0)
+    var tBlock2TrialNumber = 0
+    var tBlock2TrialLaserPowerMw = 0
+    var tBlock2TrialLaserOnTimeMs = 0
+    var tBlock2TrialLaserOffTimeMs = 0
+    var isFirstTrial = (bool)(0)
+    var DoWheelSpeed = (bool)(0)
+    var speedIntervalUS = (bool)(0)
+    // frame conversion 
+    var tItiWaitFrames = 0
+    var nStimOneFramesOn = 0
+    var nStimTwoFramesOn = 0
+    var nFramesISI = 0
+    var nDegRotationPerFrame = 1
+    // counter variables 
+    var cItiStart = 0
+    var cStimOneOn = 0
+    var cStimOneOff = 0
+    var cStimTwoOn = 0
+    var cStimTwoOff = 0
+    var cNow = 0
+    var mwStimOneOnMs = 0
+    var mwStimOneOffMs = 0
+    var mwStimTwoOnMs = 0
+    var mwStimTwoOffMs = 0
+    var tNStimAccepted = 0
+    var tNStimAccepted2 = 0
+    var tNMaskAccepted = 0
+    var tNMaskAccepted2 = 0
+    selection svStimNumber (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79
+        selection = random_without_replacement
+        nsamples = 80
+        sampling_method = samples
+        )
+    selection svStimNumber2 (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79
+        selection = random_without_replacement
+        nsamples = 80
+        sampling_method = samples
+        )
+    selection svMaskNumber (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79
+        selection = random_without_replacement
+        nsamples = 80
+        sampling_method = samples
+        )
+    selection svMaskNumber2 (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79
+        selection = random_without_replacement
+        nsamples = 80
+        sampling_method = samples
+        )
+}
+
+//
+// Sounds
+//
+
+wav_file stimOneSound (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav'
+    amplitude = tStimOneSoundAmplitude
+    )
+wav_file stimTwoSound (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav'
+    amplitude = tStimTwoSoundAmplitude
+    )
+wav_file stimOneSound1 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/1khz_1sec.wav'
+    amplitude = tStimOneSound1Amplitude
+    )
+wav_file stimTwoSound1 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/1khz_1sec.wav'
+    amplitude = tStimTwoSound1Amplitude
+    )
+wav_file stimOneSound2 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5khz_1sec.wav'
+    amplitude = tStimOneSound2Amplitude
+    )
+wav_file stimTwoSound2 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5khz_1sec.wav'
+    amplitude = tStimTwoSound2Amplitude
+    )
+wav_file stimOneSound3 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10khz_1sec.wav'
+    amplitude = tStimOneSound3Amplitude
+    )
+wav_file stimTwoSound3 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10khz_1sec.wav'
+    amplitude = tStimTwoSound3Amplitude
+    )
+wav_file stimOneSound4 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/15khz_1sec.wav'
+    amplitude = tStimOneSound4Amplitude
+    )
+wav_file stimTwoSound4 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/15khz_1sec.wav'
+    amplitude = tStimTwoSound4Amplitude
+    )
+wav_file stimOneSound5 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/20khz_1sec.wav'
+    amplitude = tStimOneSound5Amplitude
+    )
+wav_file stimTwoSound5 (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/20khz_1sec.wav'
+    amplitude = tStimTwoSound5Amplitude
+    )
+
+//
+// Stimuli
+//
+
+blank_screen background ()
+
+layer stimOne {
+    drifting_grating stimOne_grating (
+        direction = setStimOneGratingDirectionDeg
+        starting_phase = tStimOneGratingPhaseDeg + 360 *  tStimOneGratingSpatialFreqCPD * (tStimOneGratingDiameterDeg/2)
+        spatial_frequency = tStimOneGratingSpatialFreqCPD
+        speed = tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD
+        grating_type = gratingType
+        x_size = tStimOneGratingDiameterDeg
+        x_position = tStimOneGratingAzimuthDeg
+        y_position = tStimOneGratingElevationDeg
+        alpha_multiplier = tStimOneGratingContrast
+        dest_blend_factor = zero
+        autoplay = true
+        )
+
+    drifting_grating stimOne_mask (
+        direction = setMaskOneGratingDirectionDeg
+        starting_phase = tMaskOneGratingPhaseDeg + 360 *  tStimOneGratingSpatialFreqCPD * (tStimOneGratingDiameterDeg/2)
+        spatial_frequency = tStimOneGratingSpatialFreqCPD
+        speed = tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD
+        grating_type = gratingType
+        x_size = tStimOneGratingDiameterDeg
+        x_position = tStimOneGratingAzimuthDeg
+        y_position = tStimOneGratingElevationDeg
+        alpha_multiplier = tMaskOneGratingContrast
+        dest_blend_factor = one
+        autoplay = true
+        )
+
+    rectangle stimOne_contrast_rectangle (
+        color = 0.5, 0.5, 0.5
+        x_size = tStimOneGratingDiameterDeg
+        x_position = tStimOneGratingAzimuthDeg
+        y_position = tStimOneGratingElevationDeg
+        alpha_multiplier = tStimOneGratingContrast + tMaskOneGratingContrast
+        source_blend_factor = one_minus_source_alpha
+        dest_blend_factor = one
+        )
+
+    // Make the plaid 100% opaque.  Without this, the plaid's net alpha would
+    // be less than zero, and its color would be blended with the stimulus
+    // display background when the layer is drawn.
+    rectangle stimOne_opacity_rectangle (
+        x_size = tStimOneGratingDiameterDeg
+        x_position = tStimOneGratingAzimuthDeg
+        y_position = tStimOneGratingElevationDeg
+        source_blend_factor = zero
+        dest_blend_factor = one
+        source_alpha_blend_factor = one
+        dest_alpha_blend_factor = zero
+        )
+
+    mask stimOne_plaid_mask (
+        mask = maskType
+        std_dev = gratingStd
+        mean = gratingMean
+        edge_width = gratingEdge
+        x_size = tStimOneGratingDiameterDeg
+        x_position = tStimOneGratingAzimuthDeg
+        y_position = tStimOneGratingElevationDeg
+        )
+}
+
+layer stimTwo {
+    drifting_grating stimTwo_grating (
+        direction = tStimTwoGratingDirectionDeg
+        starting_phase = tStimTwoGratingPhaseDeg + 360 *  tStimTwoGratingSpatialFreqCPD * (tStimTwoGratingDiameterDeg/2)
+        spatial_frequency = tStimTwoGratingSpatialFreqCPD
+        speed = tStimTwoGratingTemporalFreqCPS/tStimTwoGratingSpatialFreqCPD
+        grating_type = gratingType
+        x_size = tStimTwoGratingDiameterDeg
+        x_position = tStimTwoGratingAzimuthDeg
+        y_position = tStimTwoGratingElevationDeg
+        alpha_multiplier = tStimTwoGratingContrast
+        dest_blend_factor = zero
+        autoplay = true
+        )
+
+    drifting_grating stimTwo_mask (
+        direction = tMaskTwoGratingDirectionDeg
+        starting_phase = tMaskTwoGratingPhaseDeg + 360 *  tStimTwoGratingSpatialFreqCPD * (tStimTwoGratingDiameterDeg/2)
+        spatial_frequency = tStimTwoGratingSpatialFreqCPD
+        speed = tStimTwoGratingTemporalFreqCPS/tStimTwoGratingSpatialFreqCPD
+        grating_type = gratingType
+        x_size = tStimTwoGratingDiameterDeg
+        x_position = tStimTwoGratingAzimuthDeg
+        y_position = tStimTwoGratingElevationDeg
+        alpha_multiplier = tMaskTwoGratingContrast
+        dest_blend_factor = one
+        autoplay = true
+        )
+
+    rectangle stimTwo_contrast_rectangle (
+        color = 0.5, 0.5, 0.5
+        x_size = tStimTwoGratingDiameterDeg
+        x_position = tStimTwoGratingAzimuthDeg
+        y_position = tStimTwoGratingElevationDeg
+        alpha_multiplier = tStimTwoGratingContrast + tMaskTwoGratingContrast
+        source_blend_factor = one_minus_source_alpha
+        dest_blend_factor = one
+        )
+
+    // Make the plaid 100% opaque.  Without this, the plaid's net alpha would
+    // be less than zero, and its color would be blended with the stimulus
+    // display background when the layer is drawn.
+    rectangle stimTwo_opacity_rectangle (
+        x_size = tStimTwoGratingDiameterDeg
+        x_position = tStimTwoGratingAzimuthDeg
+        y_position = tStimTwoGratingElevationDeg
+        source_blend_factor = zero
+        dest_blend_factor = one
+        source_alpha_blend_factor = one
+        dest_alpha_blend_factor = zero
+        )
+
+    mask stimTwo_plaid_mask (
+        mask = maskType
+        std_dev = gratingStd
+        mean = gratingMean
+        edge_width = gratingEdge
+        x_size = tStimTwoGratingDiameterDeg
+        x_position = tStimTwoGratingAzimuthDeg
+        y_position = tStimTwoGratingElevationDeg
+        )
+}
+
+drifting_grating photoDiodeGrating (
+    direction = 0
+    autoplay = YES
+    starting_phase = 0
+    spatial_frequency = .000000000001
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = photoStimulusContrast
+    )
+drifting_grating photoDiodeMask (
+    direction = 0
+    autoplay = YES
+    starting_phase = 1
+    spatial_frequency = photoMaskSpatialFreq
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = 1
+    )
+
+
+//
+// Protocols
+//
+
+protocol JuiceOnHoldProtocol {
+    // init actions run only on first trial after loading experiment 
+    queue_stimulus (background)
+    update_stimulus_display ()
+    start_device_io (LabJackU6)
+    counter = 0
+    if (ntrials == 0) {
+        report ('**** First trial since experiment load - initializing')
+        tLastTrialStartTimeMs = -1
+        tThisTrialStartTimeMs = -1
+        lastTrialTimeMs = 0
+        isFirstTrial = 1
+        // reset selection var 
+        reset_selection (svStimNumber)
+        reset_selection (svStimNumber2)
+        tNStimAccepted = 0
+        tNStimAccepted2 = 0
+        reset_selection (svMaskNumber)
+        reset_selection (svMaskNumber2)
+        tNMaskAccepted = 0
+        tNMaskAccepted2 = 0
+    }
+    trial 'Trial 01' (nsamples = 2500) {
+        task TS {
+            state Initialization {
+                if (ntrials > 0) {
+                    isFirstTrial = 0
+                }
+                sync = 1
+
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    update_stimulus_display ()
+                }
+
+                // In this state, do all stimulus selection/tValue setting 
+                report ('Initializing Trial')
+                led_seq = LED_sequence
+                do2led = Do2LED
+                LED_durationMS = round(1/frameRateHz*1000)
+                // Reset t_____RemainingOn/Off to 0ms 
+                tempMs = 0
+                tTrialStartMWTimestampMs = now()/1000
+                // integer valued ms timestamp 
+                strobedDigitalWord = 170
+                strobedDigitalWord = 170
+                strobedDigitalWord = 170
+                //Transmit the trial timestamp so strobed code sequences are unique 
+                assert (
+                    condition = tTrialStartMWTimestampMs <= 2147483648
+                    message = 'tTrialStartMWTimestampMs is too large - should happen only after several days of running!?'
+                    stop_on_failure = 1
+                    )
+                // prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML 
+                // encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms 
+                strobedDigitalWord = 200
+                strobedDigitalWord = 201
+                trialStart = 1
+                experimentXmlTrialId = 8
+                // choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 
+                tStimulusNumber = svStimNumber
+                // choose a value from selection var, 0-origin 
+                tStimulusNumber2 = svStimNumber2
+                // choose a value from selection var, 0-origin 
+                tMaskNumber = svMaskNumber
+                // choose a value from selection var, 0-origin 
+                tMaskNumber2 = svMaskNumber2
+                // choose a value from selection var, 0-origin 
+                if (doBlock2) {
+                    if (!doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = tStimulusNumber <= 40
+                    }
+                    if (doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = tStimulusNumber <= block2TrPer80
+                    }
+                }
+                if (!doBlock2) {
+                    tBlock2TrialNumber = 0
+                }
+                // set default variables 
+                tISITimeMs = isiTimeMs
+                tStimOneDoVisualStim = stimOneDoVisualStim
+                tStimOneDoAuditoryStim = stimOneDoAuditoryStim
+                tStimOneGratingOnTimeMs = stimOneGratingOnTimeMs
+                tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg
+                tStimOneGratingContrast = stimOneGratingContrast
+                tStimOneSoundAmplitude = stimOneSoundAmplitude
+                tStimOneGratingElevationDeg = stimOneGratingElevationDeg
+                tStimOneGratingAzimuthDeg = stimOneGratingAzimuthDeg
+                tStimOneGratingDiameterDeg = stimOneGratingDiameterDeg
+                tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD
+                tStimOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
+                tStimOneGratingPhaseDeg = stimOneGratingPhaseDeg
+                tMaskOneGratingDirectionDeg = maskOneGratingDirectionDeg
+                tMaskOneGratingContrast = maskOneGratingContrast
+                tMaskOneGratingPhaseDeg = maskOneGratingPhaseDeg
+                tStimOneSound1Amplitude = stimOneSound1Amplitude
+                tStimOneSound2Amplitude = stimOneSound2Amplitude
+                tStimOneSound3Amplitude = stimOneSound3Amplitude
+                tStimOneSound4Amplitude = stimOneSound4Amplitude
+                tStimOneSound5Amplitude = stimOneSound5Amplitude
+                tStimTwoDoVisualStim = stimTwoDoVisualStim
+                tStimTwoDoAuditoryStim = stimTwoDoAuditoryStim
+                tDoMask = doMask
+                tDoMatrix = doMatrix
+                tDoRandISITime = doRandISITime
+                tDoRandStimOnTime = doRandStimOnTime
+                tDoRandCon = doRandCon
+                tDoRandDir = doRandDir
+                tDoRandMaskCon = doRandMaskCon
+                tDoRandMaskDir = doRandMaskDir
+                tDoRandMaskPhase = doRandMaskPhase
+                tDoRandPos = doRandPos
+                tDoRandDiameter = doRandDiameter
+                tDoRandSF = doRandSF
+                tDoRandTF = doRandTF
+                tDoRandPhase = doRandPhase
+                tDoRotate = doRotate
+                tDoMaskRotate = doMaskRotate
+                tDoRandSoundAmp = doRandSoundAmp
+                tDoRandSoundFreq = doRandSoundFreq
+                if (matchStimOneParameters) {
+                    tStimTwoGratingOnTimeMs = stimOneGratingOnTimeMs
+                    tStimTwoGratingDirectionDeg = stimOneGratingDirectionDeg
+                    tStimTwoGratingContrast = stimOneGratingContrast
+                    tStimTwoSoundAmplitude = stimOneSoundAmplitude
+                    tStimTwoGratingElevationDeg = stimOneGratingElevationDeg
+                    tStimTwoGratingAzimuthDeg = stimOneGratingAzimuthDeg
+                    tStimTwoGratingDiameterDeg = stimOneGratingDiameterDeg
+                    tStimTwoGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD
+                    tStimTwoGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
+                    tStimTwoGratingPhaseDeg = stimOneGratingPhaseDeg
+                    tMaskTwoGratingDirectionDeg = maskOneGratingDirectionDeg
+                    tMaskTwoGratingContrast = maskOneGratingContrast
+                    tMaskTwoGratingPhaseDeg = maskOneGratingPhaseDeg
+                    tStimTwoSound1Amplitude = stimOneSound1Amplitude
+                    tStimTwoSound2Amplitude = stimOneSound2Amplitude
+                    tStimTwoSound3Amplitude = stimOneSound3Amplitude
+                    tStimTwoSound4Amplitude = stimOneSound4Amplitude
+                    tStimTwoSound5Amplitude = stimOneSound5Amplitude
+                }
+                if (!matchStimOneParameters) {
+                    tStimTwoGratingOnTimeMs = stimTwoGratingOnTimeMs
+                    tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg
+                    tStimTwoGratingContrast = stimTwoGratingContrast
+                    tStimTwoSoundAmplitude = stimTwoSoundAmplitude
+                    tStimTwoGratingElevationDeg = stimTwoGratingElevationDeg
+                    tStimTwoGratingAzimuthDeg = stimTwoGratingAzimuthDeg
+                    tStimTwoGratingDiameterDeg = stimTwoGratingDiameterDeg
+                    tStimTwoGratingSpatialFreqCPD = stimTwoGratingSpatialFreqCPD
+                    tStimTwoGratingTemporalFreqCPS = stimTwoGratingTemporalFreqCPS
+                    tStimTwoGratingPhaseDeg = stimTwoGratingPhaseDeg
+                    tMaskTwoGratingDirectionDeg = maskTwoGratingDirectionDeg
+                    tMaskTwoGratingPhaseDeg = maskTwoGratingPhaseDeg
+                    tMaskTwoGratingContrast = maskTwoGratingContrast
+                    tStimTwoSound1Amplitude = stimTwoSound1Amplitude
+                    tStimTwoSound2Amplitude = stimTwoSound2Amplitude
+                    tStimTwoSound3Amplitude = stimTwoSound3Amplitude
+                    tStimTwoSound4Amplitude = stimTwoSound4Amplitude
+                    tStimTwoSound5Amplitude = stimTwoSound5Amplitude
+                }
+                if (doBlock2) {
+                    if (tBlock2TrialNumber) {
+                        if (!block2MatchB1VisStim) {
+                            tDoMask = block2DoMask
+                            tDoMatrix = block2DoMatrix
+                            tDoRandISITime = block2DoRandISITime
+                            tDoRandStimOnTime = block2DoRandStimOnTime
+                            tDoRandCon = block2DoRandCon
+                            tDoRandDir = block2DoRandDir
+                            tDoRandPos = block2DoRandPos
+                            tDoRandDiameter = block2DoRandDiameter
+                            tDoRandSF = block2DoRandSF
+                            tDoRandTF = block2DoRandTF
+                            tDoRandPhase = block2DoRandPhase
+                            tDoRotate = block2DoRotate
+                            tDoMaskRotate = block2DoMaskRotate
+                            tDoRandMaskCon = block2DoRandMaskCon
+                            tDoRandMaskDir = block2DoRandMaskDir
+                            tDoRandMaskPhase = block2DoRandMaskPhase
+                            tDoRandSoundAmp = block2DoRandSoundAmp
+                            tDoRandSoundFreq = block2DoRandSoundFreq
+                            tISITimeMs = block2ISITimeMs
+                            tStimOneDoVisualStim = block2StimOneDoVisualStim
+                            tStimTwoDoVisualStim = block2StimTwoDoVisualStim
+                            tStimOneGratingOnTimeMs = block2StimOneGratingOnTimeMs
+                            tStimOneGratingDirectionDeg = block2StimOneGratingDirectionDeg
+                            tStimOneGratingContrast = block2StimOneGratingContrast
+                            tStimOneGratingElevationDeg = block2StimOneGratingElevationDeg
+                            tStimOneGratingAzimuthDeg = block2StimOneGratingAzimuthDeg
+                            tStimOneGratingDiameterDeg = block2StimOneGratingDiameterDeg
+                            tStimOneGratingSpatialFreqCPD = block2StimOneGratingSpatialFreqCPD
+                            tStimOneGratingTemporalFreqCPS = block2StimOneGratingTemporalFreqCPS
+                            tStimOneGratingPhaseDeg = block2StimOneGratingPhaseDeg
+                            tMaskOneGratingDirectionDeg = block2MaskOneGratingDirectionDeg
+                            tMaskOneGratingContrast = block2MaskOneGratingContrast
+                            tMaskOneGratingPhaseDeg = block2MaskOneGratingPhaseDeg
+                            if (block2MatchStimOneParameters) {
+                                tStimTwoGratingDirectionDeg = block2StimOneGratingDirectionDeg
+                                tStimTwoGratingContrast = block2StimOneGratingContrast
+                                tStimTwoGratingElevationDeg = block2StimOneGratingElevationDeg
+                                tStimTwoGratingAzimuthDeg = block2StimOneGratingAzimuthDeg
+                                tStimTwoGratingDiameterDeg = block2StimOneGratingDiameterDeg
+                                tStimTwoGratingSpatialFreqCPD = block2StimOneGratingSpatialFreqCPD
+                                tStimTwoGratingTemporalFreqCPS = block2StimOneGratingTemporalFreqCPS
+                                tStimTwoGratingPhaseDeg = block2StimOneGratingPhaseDeg
+                                tMaskTwoGratingDirectionDeg = block2MaskOneGratingDirectionDeg
+                                tMaskTwoGratingContrast = block2MaskOneGratingContrast
+                                tMaskTwoGratingPhaseDeg = block2MaskOneGratingPhaseDeg
+                            }
+                            if (!block2MatchStimOneParameters) {
+                                tStimTwoGratingOnTimeMs = block2StimTwoGratingOnTimeMs
+                                tStimTwoGratingDirectionDeg = block2StimTwoGratingDirectionDeg
+                                tStimTwoGratingContrast = block2StimTwoGratingContrast
+                                tStimTwoGratingElevationDeg = block2StimTwoGratingElevationDeg
+                                tStimTwoGratingAzimuthDeg = block2StimTwoGratingAzimuthDeg
+                                tStimTwoGratingDiameterDeg = block2StimTwoGratingDiameterDeg
+                                tStimTwoGratingSpatialFreqCPD = block2StimTwoGratingSpatialFreqCPD
+                                tStimTwoGratingTemporalFreqCPS = block2StimTwoGratingTemporalFreqCPS
+                                tStimTwoGratingPhaseDeg = block2StimTwoGratingPhaseDeg
+                                tMaskTwoGratingDirectionDeg = block2MaskTwoGratingDirectionDeg
+                                tMaskTwoGratingContrast = block2MaskTwoGratingContrast
+                                tMaskTwoGratingPhaseDeg = block2MaskTwoGratingPhaseDeg
+                            }
+                        }
+                        if (!block2MatchB1AudStim) {
+                            tDoMatrix = block2DoMatrix
+                            tDoRandSoundAmp = block2DoRandSoundAmp
+                            tStimOneDoAuditoryStim = block2StimOneDoAuditoryStim
+                            tStimOneSoundAmplitude = block2StimOneSoundAmplitude
+                            tStimTwoDoAuditoryStim = block2StimTwoDoAuditoryStim
+                            if (block2MatchStimOneParameters) {
+                                tStimTwoSoundAmplitude = block2StimTwoSoundAmplitude
+                            }
+                            if (!block2MatchStimOneParameters) {
+                                tStimTwoSoundAmplitude = block2StimOneSoundAmplitude
+                            }
+                        }
+                        if (block2DoTrialLaser) {
+                            tBlock2TrialLaserPowerMw = block2TrialLaserPowerMw
+                            tBlock2TrialLaserOnTimeMs = block2TrialLaserOnTimeMs
+                            tBlock2TrialLaserOffTimeMs = block2TrialLaserOffTimeMs
+                        }
+                        if (!block2DoTrialLaser) {
+                            tBlock2TrialLaserPowerMw = 0
+                            tBlock2TrialLaserOnTimeMs = 0
+                            tBlock2TrialLaserOffTimeMs = 0
+                        }
+                    }
+                }
+                if (!doBlock2) {
+                    tBlock2TrialLaserPowerMw = 0
+                    tBlock2TrialLaserOnTimeMs = 0
+                    tBlock2TrialLaserOffTimeMs = 0
+                }
+                // single condition calculations 
+                if (!tDoMatrix) {
+                    if (tDoRandISITime) {
+                        tTempStim1 = tStimulusNumber % isiTimeN
+                        tISITimeMs = isiTimeMs * pow(isiTimeStepLog,tTempStim1)
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % block2ISITimeN 
+                                    tISITimeMs = block2ISITimeMs + pow(block2ISITimeStepLog,tTempStim1)
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandStimOnTime && !tBlock2TrialNumber) {
+                        tTempStim1 = tStimulusNumber % stimOneGratingOnTimeStepN
+                        tStimOneGratingOnTimeMs = stimOneGratingOnTimeMs * pow(stimOneGratingOnTimeStepLog,tTempStim1)
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingOnTimeMs = tStimOneGratingOnTimeMs
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % stimTwoGratingOnTimeStepN
+                            tStimTwoGratingOnTimeMs = stimTwoGratingOnTimeMs * pow(stimTwoGratingOnTimeStepLog,tTempStim2)
+                        }
+                    }
+                    if (doBlock2 && block2DoRandStimOnTime) {
+                        if (tBlock2TrialNumber) {
+                            if (!block2MatchB1VisStim) {
+                                tTempStim1 = tStimulusNumber % block2StimOneGratingOnTimeStepN
+                                tStimOneGratingOnTimeMs = block2StimOneGratingOnTimeMs * pow(block2StimOneGratingOnTimeStepLog,tTempStim1)
+                                if (block2MatchStimOneParameters) {
+                                    tStimTwoGratingOnTimeMs = tStimOneGratingOnTimeMs
+                                }
+                                if (!block2MatchStimOneParameters) {
+                                    tTempStim2 = tStimulusNumber2 % block2StimTwoGratingOnTimeStepN
+                                    tStimTwoGratingOnTimeMs = block2StimTwoGratingOnTimeMs * pow(block2StimTwoGratingOnTimeStepLog,tTempStim2)
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandCon) {
+                        tTempStim1 = tStimulusNumber % stimOneGratingContrastStepN
+                        tStimOneGratingContrast = stimOneGratingContrast * pow(stimOneGratingContrastStepLog,tTempStim1)
+                        if (doZeroCon && tStimulusNumber < zeroConPer80) {
+                            tStimOneGratingContrast = 0
+                        }
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingContrast = tStimOneGratingContrast
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % stimTwoGratingContrastStepN
+                            tStimTwoGratingContrast = stimTwoGratingContrast * pow(stimTwoGratingContrastStepLog,tTempStim2)
+                            if (doZeroCon && tStimulusNumber2 < zeroConPer80) {
+                                tStimTwoGratingContrast = 0
+                            }
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % block2StimOneGratingContrastStepN
+                                    tStimOneGratingContrast = block2StimOneGratingContrast * pow(block2StimOneGratingContrastStepLog,tTempStim1)
+                                    if (block2DoZeroCon && tStimulusNumber < block2ZeroConPer80) {
+                                        tStimOneGratingContrast = 0
+                                    }
+                                    if (block2MatchStimOneParameters) {
+                                        tStimTwoGratingContrast = tStimOneGratingContrast
+                                    }
+                                    if (!block2MatchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber2 % block2StimTwoGratingContrastStepN
+                                        tStimTwoGratingContrast = block2StimTwoGratingContrast * pow(block2StimTwoGratingContrastStepLog,tTempStim2)
+                                        if (block2DoZeroCon && tStimulusNumber2 < block2ZeroConPer80) {
+                                            tStimTwoGratingContrast = 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandDir) {
+                        tTempStim1 = tStimulusNumber % stimOneGratingDirectionStepN
+                        tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
+                        tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % stimTwoGratingDirectionStepN
+                            tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % block2StimOneGratingDirectionStepN
+                                    tStimOneGratingDirectionDeg = block2StimOneGratingDirectionDeg + (block2StimOneGratingDirectionStepDeg * (tTempStim1))
+                                    if (block2MatchStimOneParameters) {
+                                        tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                                    }
+                                    if (!block2MatchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber2 % block2StimTwoGratingDirectionStepN
+                                        tStimTwoGratingDirectionDeg = block2StimTwoGratingDirectionDeg + (block2StimTwoGratingDirectionStepDeg * (tTempStim2))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandPhase) {
+                        tTempStim1 = tStimulusNumber % stimOneGratingPhaseStepN
+                        tStimOneGratingPhaseDeg = stimOneGratingPhaseDeg + (stimOneGratingPhaseStepDeg * (tTempStim1))
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingPhaseDeg = tStimOneGratingPhaseDeg
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % stimTwoGratingPhaseStepN
+                            tStimTwoGratingPhaseDeg = stimTwoGratingPhaseDeg + (stimTwoGratingPhaseStepDeg * (tTempStim2))
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % block2StimOneGratingPhaseStepN
+                                    tStimOneGratingPhaseDeg = block2StimOneGratingPhaseDeg + (block2StimOneGratingPhaseStepDeg * (tTempStim1))
+                                    if (block2MatchStimOneParameters) {
+                                        tStimTwoGratingPhaseDeg = tStimOneGratingPhaseDeg
+                                    }
+                                    if (!block2MatchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber2 % block2StimTwoGratingPhaseStepN
+                                        tStimTwoGratingPhaseDeg = block2StimTwoGratingPhaseDeg + (block2StimTwoGratingPhaseStepDeg * (tTempStim2))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandDiameter) {
+                        tTempStim1 = tStimulusNumber % stimOneGratingDiameterStepN
+                        tStimOneGratingDiameterDeg = stimOneGratingDiameterDeg * pow(stimOneGratingDiameterStepLog,tTempStim1)
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingDiameterDeg = tStimOneGratingDiameterDeg
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % stimTwoGratingDiameterStepN
+                            tStimTwoGratingDiameterDeg = stimTwoGratingDiameterDeg * pow(stimTwoGratingDiameterStepLog,tTempStim2)
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % block2StimOneGratingDiameterStepN
+                                    tStimOneGratingDiameterDeg = block2StimOneGratingDiameterDeg * pow(block2StimOneGratingDiameterStepLog,tTempStim1)
+                                    if (block2MatchStimOneParameters) {
+                                        tStimTwoGratingDiameterDeg = tStimOneGratingDiameterDeg
+                                    }
+                                    if (!block2MatchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber2 % block2StimTwoGratingDiameterStepN
+                                        tStimTwoGratingDiameterDeg = block2StimTwoGratingDiameterDeg * pow(block2StimTwoGratingDiameterStepLog,tTempStim2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandTF) {
+                        tTempStim1 = tStimulusNumber % stimOneGratingTemporalFreqStepN
+                        tStimOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS * pow(stimOneGratingTemporalFreqStepLog,tTempStim1)
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingTemporalFreqCPS = tStimOneGratingTemporalFreqCPS
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % stimTwoGratingTemporalFreqStepN
+                            tStimTwoGratingTemporalFreqCPS = stimTwoGratingTemporalFreqCPS * pow(stimTwoGratingTemporalFreqStepLog,tTempStim2)
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % block2StimOneGratingTemporalFreqStepN
+                                    tStimOneGratingTemporalFreqCPS = block2StimOneGratingTemporalFreqCPS * pow(block2StimOneGratingTemporalFreqStepLog,tTempStim1)
+                                    if (block2MatchStimOneParameters) {
+                                        tStimTwoGratingTemporalFreqCPS = tStimOneGratingTemporalFreqCPS
+                                    }
+                                    if (!block2MatchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber2 % block2StimTwoGratingTemporalFreqStepN
+                                        tStimTwoGratingTemporalFreqCPS = block2StimTwoGratingTemporalFreqCPS * pow(block2StimTwoGratingTemporalFreqStepLog,tTempStim2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandSF) {
+                        tTempStim1 = tStimulusNumber % stimOneGratingSpatialFreqStepN
+                        tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD * pow(stimOneGratingSpatialFreqStepLog,tTempStim1)
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingSpatialFreqCPD = tStimOneGratingSpatialFreqCPD
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % stimTwoGratingSpatialFreqStepN
+                            tStimTwoGratingSpatialFreqCPD = stimTwoGratingSpatialFreqCPD * pow(stimTwoGratingSpatialFreqStepLog,tTempStim2)
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % block2StimOneGratingSpatialFreqStepN
+                                    tStimOneGratingSpatialFreqCPD = block2StimOneGratingSpatialFreqCPD * pow(block2StimOneGratingSpatialFreqStepLog,tTempStim1)
+                                    if (block2MatchStimOneParameters) {
+                                        tStimTwoGratingSpatialFreqCPD = tStimOneGratingSpatialFreqCPD
+                                    }
+                                    if (!block2MatchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber2 % block2StimTwoGratingSpatialFreqStepN
+                                        tStimTwoGratingSpatialFreqCPD = block2StimTwoGratingSpatialFreqCPD * pow(block2StimTwoGratingSpatialFreqStepLog,tTempStim2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandSoundAmp) {
+                        tTempStim1 = tStimulusNumber % stimOneSoundAmplitudeStepN
+                        tStimOneSoundAmplitude = stimOneSoundAmplitude * pow(stimOneSoundAmplitudeStepLog,tTempStim1)
+                        if (matchStimOneParameters) {
+                            tStimTwoSoundAmplitude = tStimOneSoundAmplitude
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % stimTwoSoundAmplitudeStepN
+                            tStimTwoSoundAmplitude = stimTwoSoundAmplitude * pow(stimTwoSoundAmplitudeStepLog,tTempStim2)
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1AudStim) {
+                                    tTempStim1 = tStimulusNumber % block2StimOneSoundAmplitudeStepN
+                                    tStimOneSoundAmplitude = block2StimOneSoundAmplitude * pow(block2StimOneSoundAmplitudeStepLog,tTempStim1)
+                                    if (block2MatchStimOneParameters) {
+                                        tStimTwoSoundAmplitude = tStimOneSoundAmplitude
+                                    }
+                                    if (!block2MatchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber2 % block2StimTwoSoundAmplitudeStepN
+                                        tStimTwoSoundAmplitude = block2StimTwoSoundAmplitude * pow(block2StimTwoSoundAmplitudeStepLog,tTempStim2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandSoundFreq) {
+                        report ('tDoRandSoundFreq is $tDoRandSoundFreq')
+                        tTempStim1 = disc_rand(1,5)
+                        // hard coded for 5 sounds 
+                        if (tTempStim1 == 1) {
+                            tStimOneSound1Amplitude = stimOneSound1Amplitude
+                            tStimOneSound2Amplitude = 0
+                            tStimOneSound3Amplitude = 0
+                            tStimOneSound4Amplitude = 0
+                            tStimOneSound5Amplitude = 0
+                            report ('tStimOneSound1Amplitude is $stimOneSound1Amplitude')
+                        }
+                        if (tTempStim1 == 2) {
+                            tStimOneSound1Amplitude = 0
+                            tStimOneSound2Amplitude = stimOneSound2Amplitude
+                            tStimOneSound3Amplitude = 0
+                            tStimOneSound4Amplitude = 0
+                            tStimOneSound5Amplitude = 0
+                            report ('tStimOneSound2Amplitude is $stimOneSound2Amplitude')
+                        }
+                        if (tTempStim1 == 3) {
+                            tStimOneSound1Amplitude = 0
+                            tStimOneSound2Amplitude = 0
+                            tStimOneSound3Amplitude = stimOneSound3Amplitude
+                            tStimOneSound4Amplitude = 0
+                            tStimOneSound5Amplitude = 0
+                            report ('tStimOneSound3Amplitude is $stimOneSound3Amplitude')
+                        }
+                        if (tTempStim1 == 4) {
+                            tStimOneSound1Amplitude = 0
+                            tStimOneSound2Amplitude = 0
+                            tStimOneSound3Amplitude = 0
+                            tStimOneSound4Amplitude = stimOneSound4Amplitude
+                            tStimOneSound5Amplitude = 0
+                            report ('tStimOneSound4Amplitude is $stimOneSound4Amplitude')
+                        }
+                        if (tTempStim1 == 5) {
+                            tStimOneSound1Amplitude = 0
+                            tStimOneSound2Amplitude = 0
+                            tStimOneSound3Amplitude = 0
+                            tStimOneSound4Amplitude = 0
+                            tStimOneSound5Amplitude = stimOneSound5Amplitude
+                            report ('tStimOneSound5Amplitude is $stimOneSound5Amplitude')
+                        }
+                        if (matchStimOneParameters) {
+                            tStimTwoSound1Amplitude = tStimOneSound1Amplitude
+                            tStimTwoSound1Amplitude = tStimOneSound2Amplitude
+                            tStimTwoSound1Amplitude = tStimOneSound3Amplitude
+                            tStimTwoSound1Amplitude = tStimOneSound4Amplitude
+                            tStimTwoSound1Amplitude = tStimOneSound5Amplitude
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = disc_rand(1,5)
+                            if (tTempStim2 == 1) {
+                                tStimTwoSound1Amplitude = stimTwoSound1Amplitude
+                                tStimTwoSound2Amplitude = 0
+                                tStimTwoSound3Amplitude = 0
+                                tStimTwoSound4Amplitude = 0
+                                tStimTwoSound5Amplitude = 0
+                                report ('tStimTwoSound1Amplitude is $stimTwoSound1Amplitude')
+                            }
+                            if (tTempStim2 == 2) {
+                                tStimTwoSound1Amplitude = 0
+                                tStimTwoSound2Amplitude = stimTwoSound2Amplitude
+                                tStimTwoSound3Amplitude = 0
+                                tStimTwoSound4Amplitude = 0
+                                tStimTwoSound5Amplitude = 0
+                                report ('tStimTwoSound2Amplitude is $stimTwoSound2Amplitude')
+                            }
+                            if (tTempStim2 == 3) {
+                                tStimTwoSound1Amplitude = 0
+                                tStimTwoSound2Amplitude = 0
+                                tStimTwoSound3Amplitude = stimTwoSound3Amplitude
+                                tStimTwoSound4Amplitude = 0
+                                tStimTwoSound5Amplitude = 0
+                                report ('tStimTwoSound3Amplitude is $stimTwoSound3Amplitude')
+                            }
+                            if (tTempStim2 == 4) {
+                                tStimTwoSound1Amplitude = 0
+                                tStimTwoSound2Amplitude = 0
+                                tStimTwoSound3Amplitude = 0
+                                tStimTwoSound4Amplitude = stimTwoSound4Amplitude
+                                tStimTwoSound5Amplitude = 0
+                                report ('tStimTwoSound4Amplitude is $stimTwoSound4Amplitude')
+                            }
+                            if (tTempStim2 == 5) {
+                                tStimTwoSound1Amplitude = 0
+                                tStimTwoSound2Amplitude = 0
+                                tStimTwoSound3Amplitude = 0
+                                tStimTwoSound4Amplitude = 0
+                                tStimTwoSound5Amplitude = stimTwoSound5Amplitude
+                                report ('tStimTwoSound5Amplitude is $stimTwoSound5Amplitude')
+                            }
+                        }
+                    }
+                    if (tDoRandPos) {
+                        tTempStim1 = tStimulusNumber % (stimOneGratingElevationStepN * stimOneGratingAzimuthStepN)
+                        if (tTempStim1 < stimOneGratingAzimuthStepN) {
+                            tStimOneGratingAzimuthDeg = stimOneGratingAzimuthDeg + (stimOneGratingAzimuthStepDeg * (tTempStim1))
+                            tStimOneGratingElevationDeg = stimOneGratingElevationDeg
+                        }
+                        if (tTempStim1 >= stimOneGratingAzimuthStepN) {
+                            tStimOneGratingAzimuthDeg = stimOneGratingAzimuthDeg+ (stimOneGratingAzimuthStepDeg * ((tTempStim1) % stimOneGratingAzimuthStepN))
+                            tStimOneGratingElevationDeg = stimOneGratingElevationDeg+ (stimOneGratingElevationStepDeg * (floor(tTempStim1 / stimOneGratingAzimuthStepN)))
+                        }
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingAzimuthDeg = tStimOneGratingAzimuthDeg
+                            tStimTwoGratingElevationDeg = tStimOneGratingElevationDeg
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber % (stimTwoGratingElevationStepN * stimTwoGratingAzimuthStepN)
+                            if (tTempStim1 < stimTwoGratingAzimuthStepN) {
+                                tStimTwoGratingAzimuthDeg = stimTwoGratingAzimuthDeg + (stimTwoGratingAzimuthStepDeg * (tTempStim2))
+                                tStimTwoGratingElevationDeg = stimTwoGratingElevationDeg
+                            }
+                            if (tTempStim1 >= stimTwoGratingAzimuthStepN) {
+                                tStimTwoGratingAzimuthDeg = stimTwoGratingAzimuthDeg+ (stimTwoGratingAzimuthStepDeg * ((tTempStim2) % stimTwoGratingAzimuthStepN))
+                                tStimTwoGratingElevationDeg = stimTwoGratingElevationDeg+ (stimTwoGratingElevationStepDeg * (floor(tTempStim2 / stimTwoGratingAzimuthStepN)))
+                            }
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % (block2StimOneGratingElevationStepN * block2StimOneGratingAzimuthStepN)
+                                    if (tTempStim1 < block2StimOneGratingAzimuthStepN) {
+                                        tStimOneGratingAzimuthDeg = block2StimOneGratingAzimuthDeg + (block2StimOneGratingAzimuthStepDeg * (tTempStim1))
+                                        tStimOneGratingElevationDeg = block2StimOneGratingElevationDeg
+                                    }
+                                    if (tTempStim1 >= block2StimOneGratingAzimuthStepN) {
+                                        tStimOneGratingAzimuthDeg = block2StimOneGratingAzimuthDeg+ (block2StimOneGratingAzimuthStepDeg * ((tTempStim1) % block2StimOneGratingAzimuthStepN))
+                                        tStimOneGratingElevationDeg = block2StimOneGratingElevationDeg+ (block2StimOneGratingElevationStepDeg * (floor(tTempStim1 / block2StimOneGratingAzimuthStepN)))
+                                    }
+                                    if (block2MatchStimOneParameters) {
+                                        tStimTwoGratingAzimuthDeg = tStimOneGratingAzimuthDeg
+                                        tStimTwoGratingElevationDeg = tStimOneGratingElevationDeg
+                                    }
+                                    if (!block2MatchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber % (block2StimTwoGratingElevationStepN * block2StimTwoGratingAzimuthStepN)
+                                        if (tTempStim1 < block2StimTwoGratingAzimuthStepN) {
+                                            tStimTwoGratingAzimuthDeg = block2StimTwoGratingAzimuthDeg + (block2StimTwoGratingAzimuthStepDeg * (tTempStim2))
+                                            tStimTwoGratingElevationDeg = block2StimTwoGratingElevationDeg
+                                        }
+                                        if (tTempStim1 >= block2StimTwoGratingAzimuthStepN) {
+                                            tStimTwoGratingAzimuthDeg = block2StimTwoGratingAzimuthDeg+ (block2StimTwoGratingAzimuthStepDeg * ((tTempStim2) % block2StimTwoGratingAzimuthStepN))
+                                            tStimTwoGratingElevationDeg = block2StimTwoGratingElevationDeg+ (block2StimTwoGratingElevationStepDeg * (floor(tTempStim2 / block2StimTwoGratingAzimuthStepN)))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoMask) {
+                        multVal = rand(0,1)
+                        if (multVal >= fractMaskTrials) {
+                            tDoMask = 0
+                            tMaskOneGratingContrast = 0
+                            tMaskTwoGratingContrast = 0
+                        }
+                        if (multVal < fractMaskTrials) {
+                            tDoMask = 1
+                            if (tDoRandMaskCon && !tDoRandMaskDir) {
+                                tTempMask1 = tMaskNumber % maskOneGratingContrastStepN
+                                tMaskOneGratingContrast = maskOneGratingContrast * pow(maskOneGratingContrastStepLog,tTempMask1)
+                                if (doZeroCon && tMaskNumber < zeroConPer80) {
+                                    tMaskOneGratingContrast = 0
+                                }
+                                if (matchStimOneParameters) {
+                                    tMaskTwoGratingContrast = tMaskOneGratingContrast
+                                }
+                                if (!matchStimOneParameters) {
+                                    tTempMask2 = tMaskNumber2 % maskTwoGratingContrastStepN
+                                    tMaskTwoGratingContrast = maskTwoGratingContrast * pow(maskTwoGratingContrastStepLog,tTempMask2)
+                                    if (doZeroCon && tMaskNumber2 < zeroConPer80) {
+                                        tMaskTwoGratingContrast = 0
+                                    }
+                                }
+                                if (doBlock2) {
+                                    if (tBlock2TrialNumber) {
+                                        if (!block2MatchB1VisStim) {
+                                            tTempMask1 = tMaskNumber % block2MaskOneGratingContrastStepN
+                                            tMaskOneGratingContrast = block2MaskOneGratingContrast * pow(block2MaskOneGratingContrastStepLog,tTempMask1)
+                                            if (block2DoZeroCon && tMaskNumber < block2ZeroConPer80) {
+                                                tMaskOneGratingContrast = 0
+                                            }
+                                            if (matchStimOneParameters) {
+                                                tMaskTwoGratingContrast = tMaskOneGratingContrast
+                                            }
+                                            if (!block2MatchB1VisStim) {
+                                                tTempMask2 = tMaskNumber2 % block2MaskTwoGratingContrastStepN
+                                                tMaskTwoGratingContrast = block2MaskTwoGratingContrast * pow(block2MaskTwoGratingContrastStepLog,tTempMask2)
+                                                if (block2DoZeroCon && tMaskNumber2 < block2ZeroConPer80) {
+                                                    tMaskTwoGratingContrast = 0
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (tMaskOneGratingContrast==0 || tStimOneGratingContrast==0) {
+                                tDoRandMaskPhase = 0
+                            }
+                            if (tDoRandMaskDir && !tDoRandMaskCon) {
+                                tTempMask1 = tMaskNumber % maskOneGratingDirectionStepN
+                                tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg + (maskOneGratingDirectionStepDeg * (tTempMask1))
+                                if (matchStimOneParameters) {
+                                    tMaskTwoGratingDirectionDeg = tMaskOneGratingDirectionDeg
+                                }
+                                if (!matchStimOneParameters) {
+                                    tTempMask2 = tMaskNumber2 % maskTwoGratingDirectionStepN
+                                    tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg + (maskTwoGratingDirectionStepDeg * (tTempMask2))
+                                }
+                                if (doBlock2) {
+                                    if (tBlock2TrialNumber) {
+                                        if (!block2MatchB1VisStim) {
+                                            tTempMask1 = tMaskNumber % block2MaskOneGratingDirectionStepN
+                                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + block2MaskOneGratingDirectionDeg + (block2MaskOneGratingDirectionStepDeg * (tTempMask1))
+                                            if (block2MatchStimOneParameters) {
+                                                tMaskTwoGratingDirectionDeg = tMaskOneGratingDirectionDeg
+                                            }
+                                            if (!block2MatchStimOneParameters) {
+                                                tTempMask2 = tStimulusNumber2 % block2MaskTwoGratingDirectionStepN
+                                                tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + block2MaskTwoGratingDirectionDeg + (block2MaskTwoGratingDirectionStepDeg * (tTempMask2))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (tDoRandMaskPhase && !tDoRandMaskCon) {
+                                tTempMask1 = tMaskNumber % maskOneGratingPhaseStepN
+                                tMaskOneGratingPhaseDeg = maskOneGratingPhaseDeg + (maskOneGratingPhaseStepDeg * tTempMask1)
+                                if (matchStimOneParameters) {
+                                    tMaskTwoGratingPhaseDeg = tMaskOneGratingPhaseDeg
+                                }
+                                if (!matchStimOneParameters) {
+                                    tTempMask2 = tMaskNumber % maskTwoGratingPhaseStepN
+                                    tMaskTwoGratingPhaseDeg = maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * tTempMask2)
+                                }
+                                if (doBlock2) {
+                                    if (tBlock2TrialNumber) {
+                                        if (!block2MatchB1VisStim) {
+                                            tTempMask1 = tMaskNumber % block2MaskOneGratingPhaseStepN
+                                            tMaskOneGratingPhaseDeg = block2MaskOneGratingPhaseDeg + (block2MaskOneGratingPhaseStepDeg * (tTempMask1))
+                                            if (block2MatchStimOneParameters) {
+                                                tMaskTwoGratingPhaseDeg = tMaskOneGratingPhaseDeg
+                                            }
+                                            if (!block2MatchStimOneParameters) {
+                                                tTempMask2 = tStimulusNumber2 % block2MaskTwoGratingPhaseStepN
+                                                tMaskTwoGratingPhaseDeg = block2MaskTwoGratingPhaseDeg + (block2MaskTwoGratingPhaseStepDeg * (tTempMask2))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (tDoRandMaskDir && tDoRandMaskCon) {
+                                tTempMask1 = tMaskNumber % (maskOneGratingDirectionStepN * maskOneGratingContrastStepN)
+                                if (tTempMask1 < maskOneGratingDirectionStepN) {
+                                    tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg + (maskOneGratingDirectionStepDeg * (tTempMask1))
+                                    tMaskOneGratingContrast = maskOneGratingContrast
+                                }
+                                if (tTempMask1 >= maskOneGratingDirectionStepN) {
+                                    tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg+ (maskOneGratingDirectionStepDeg * ((tTempMask1) % maskOneGratingDirectionStepN))
+                                    tMaskOneGratingContrast = maskOneGratingContrast * pow(maskOneGratingContrastStepLog, (floor(tTempMask1 / maskOneGratingDirectionStepN)))
+                                }
+                                if (matchStimOneParameters) {
+                                    tMaskTwoGratingDirectionDeg = tMaskOneGratingDirectionDeg
+                                    tMaskTwoGratingContrast = tMaskOneGratingContrast
+                                }
+                                if (!matchStimOneParameters) {
+                                    tTempMask2 = tMaskNumber % (maskTwoGratingDirectionStepN * maskTwoGratingContrastStepN)
+                                    if (tTempMask2 < maskTwoGratingDirectionStepN) {
+                                        tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg + (maskTwoGratingDirectionStepDeg * (tTempMask2))
+                                        tMaskTwoGratingContrast = maskTwoGratingContrast
+                                    }
+                                    if (tTempMask2 >= maskTwoGratingDirectionStepN) {
+                                        tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg+ (maskTwoGratingDirectionStepDeg * ((tTempMask2) % maskTwoGratingDirectionStepN))
+                                        tMaskTwoGratingContrast = maskTwoGratingContrast * pow(maskTwoGratingContrastStepLog, (floor(tTempMask2 / maskTwoGratingDirectionStepN)))
+                                    }
+                                }
+                                if (doBlock2) {
+                                    if (tBlock2TrialNumber) {
+                                        if (!block2MatchB1VisStim) {
+                                            tTempMask1 = tMaskNumber % (block2MaskOneGratingDirectionStepN * block2MaskOneGratingContrastStepN)
+                                            if (tTempMask1 < block2MaskOneGratingDirectionStepN) {
+                                                tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + block2MaskOneGratingDirectionDeg + (block2MaskOneGratingDirectionStepDeg * (tTempMask1))
+                                                tMaskOneGratingContrast = block2MaskOneGratingContrast
+                                            }
+                                            if (tTempStim1 >= block2MaskOneGratingDirectionStepN) {
+                                                tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + block2MaskOneGratingDirectionDeg+ (block2MaskOneGratingDirectionStepDeg * ((tTempMask1) % block2MaskOneGratingDirectionStepN))
+                                                tMaskOneGratingContrast = block2MaskOneGratingContrast * pow(block2MaskOneGratingContrastStepLog, (floor(tTempMask1 / block2MaskOneGratingDirectionStepN)))
+                                            }
+                                            if (matchStimOneParameters) {
+                                                tMaskTwoGratingDirectionDeg = tMaskOneGratingDirectionDeg
+                                                tMaskTwoGratingContrast = tMaskOneGratingContrast
+                                            }
+                                            if (!matchStimOneParameters) {
+                                                tTempMask2 = tStimulusNumber % (block2MaskTwoGratingDirectionStepN * block2MaskTwoGratingContrastStepN)
+                                                if (tTempMask2 < block2MaskTwoGratingDirectionStepN) {
+                                                    tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + block2MaskTwoGratingDirectionDeg + (block2MaskTwoGratingDirectionStepDeg * (tTempMask2))
+                                                    tMaskTwoGratingContrast = block2MaskTwoGratingContrast * pow(block2MaskTwoGratingContrastStepLog, (floor(tTempMask2 / block2MaskTwoGratingDirectionStepN)))
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (tDoRandMaskPhase && tDoRandMaskCon) {
+                                tTempMask1 = tMaskNumber % (maskOneGratingPhaseStepN * maskOneGratingContrastStepN)
+                                if (tTempMask1 < maskOneGratingContrastStepN) {
+                                    tMaskOneGratingPhaseDeg = maskOneGratingPhaseDeg
+                                }
+                                if (tTempMask1 >= maskOneGratingContrastStepN) {
+                                    tMaskOneGratingPhaseDeg = maskOneGratingPhaseDeg + (maskOneGratingPhaseStepDeg * (floor(tTempMask1 / maskOneGratingContrastStepN)))
+                                }
+                                if (matchStimOneParameters) {
+                                    tMaskTwoGratingPhaseDeg = tMaskOneGratingPhaseDeg
+                                }
+                                if (!matchStimOneParameters) {
+                                    tTempMask2 = tMaskNumber % (maskTwoGratingPhaseStepN * maskTwoGratingContrastStepN)
+                                    if (tTempMask2 < maskTwoGratingContrastStepN) {
+                                        tMaskTwoGratingPhaseDeg = maskTwoGratingPhaseDeg
+                                    }
+                                    if (tTempMask2 >= maskTwoGratingContrastStepN) {
+                                        tMaskTwoGratingPhaseDeg = maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * (floor(tTempMask2 / maskTwoGratingContrastStepN)))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (tDoMatrix) {
+                    if (tDoMask) {
+                        multVal = rand(0,1)
+                        if (multVal >= fractMaskTrials) {
+                            tDoMask = 0
+                            tMaskOneGratingContrast = 0
+                            tMaskTwoGratingContrast = 0
+                        }
+                        if (multVal < fractMaskTrials) {
+                            tDoMask = 1
+                            tMaskOneGratingContrast = maskOneGratingContrast
+                            tMaskTwoGratingContrast = 0
+                            if (tStimTwoDoVisualStim)
+                                tMaskTwoGratingContrast = maskOneGratingContrast
+                                }
+                            }
+
+                    if (tDoRandDir && tDoRandSF) {
+                        tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingSpatialFreqStepN)
+                        if (tTempStim1 < stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
+                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
+                            tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD
+                        }
+                        if (tTempStim1 >= stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg+ (stimOneGratingDirectionStepDeg * ((tTempStim1) % stimOneGratingDirectionStepN))
+                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
+                            tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD * pow(stimOneGratingSpatialFreqStepLog, (floor(tTempStim1 / stimOneGratingDirectionStepN)))
+                        }    
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                            tStimTwoGratingSpatialFreqCPD = tStimOneGratingSpatialFreqCPD
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % (stimTwoGratingDirectionStepN * stimTwoGratingSpatialFreqStepN)
+                            if (tTempStim1 < stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))
+                                tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg
+                                tStimTwoGratingSpatialFreqCPD = stimTwoGratingSpatialFreqCPD
+                            }
+                            if (tTempStim2 >= stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg+ (stimTwoGratingDirectionStepDeg * ((tTempStim2) % stimTwoGratingDirectionStepN))
+                                tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg
+                                tStimTwoGratingSpatialFreqCPD = stimTwoGratingSpatialFreqCPD * pow(stimTwoGratingSpatialFreqStepLog, (floor(tTempStim2 / stimTwoGratingDirectionStepN)))
+                            }    
+                        }
+                    }
+
+                    if (tDoRandISITime && tDoRandDir) {
+                        tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * isiTimeN)
+                        if (tTempStim1 < stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
+                            tISITimeMs = isiTimeMs
+                        }
+                        if (tTempStim1 >= stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg+ (stimOneGratingDirectionStepDeg * ((tTempStim1) % stimOneGratingDirectionStepN))
+                            tISITimeMs = isiTimeMs * pow(isiTimeStepLog, (floor(tTempStim1 / stimOneGratingDirectionStepN)))
+                        }
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % (stimTwoGratingDirectionStepN * isiTimeN)
+                            if (tTempStim2 < stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))
+                            }
+                            if (tTempStim2 >= stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg+ (stimTwoGratingDirectionStepDeg * ((tTempStim2) % stimTwoGratingDirectionStepN))
+                            }
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % (block2StimOneGratingDirectionStepN * block2ISITimeN)
+                                    if (tTempStim1 < block2StimOneGratingDirectionStepN) {
+                                        tStimOneGratingDirectionDeg = block2StimOneGratingDirectionDeg + (block2StimOneGratingDirectionStepDeg * (tTempStim1))
+                                        tISITimeMs = block2ISITimeMs
+                                    }
+                                    if (tTempStim1 >= block2StimOneGratingDirectionStepN) {
+                                        tStimOneGratingDirectionDeg = block2StimOneGratingDirectionDeg+ (block2StimOneGratingDirectionStepDeg * ((tTempStim1) % block2StimOneGratingDirectionStepN))
+                                        tISITimeMs = block2ISITimeMs * pow(block2ISITimeStepLog, (floor(tTempStim1 / block2StimOneGratingDirectionStepN)))
+                                    }
+                                    if (matchStimOneParameters) {
+                                        tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                                    }
+                                    if (!matchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber2 % (block2StimTwoGratingDirectionStepN * block2ISITimeN)
+                                        if (tTempStim2 < block2StimTwoGratingDirectionStepN) {
+                                            tStimTwoGratingDirectionDeg = block2StimTwoGratingDirectionDeg + (block2StimTwoGratingDirectionStepDeg * (tTempStim2))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (tDoRandCon && tDoRandDir) {
+                        tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingContrastStepN)
+                        if (tTempStim1 < stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
+                            tStimOneGratingContrast = stimOneGratingContrast
+                        }
+                        if (tTempStim1 >= stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg+ (stimOneGratingDirectionStepDeg * ((tTempStim1) % stimOneGratingDirectionStepN))
+                            tStimOneGratingContrast = stimOneGratingContrast * pow(stimOneGratingContrastStepLog, (floor(tTempStim1 / stimOneGratingDirectionStepN)))
+                        }
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                            tStimTwoGratingContrast = tStimOneGratingContrast
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber % (stimTwoGratingDirectionStepN * stimTwoGratingContrastStepN)
+                            if (tTempStim2 < stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))
+                                tStimTwoGratingContrast = stimTwoGratingContrast
+                            }
+                            if (tTempStim2 >= stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg+ (stimTwoGratingDirectionStepDeg * ((tTempStim2) % stimTwoGratingDirectionStepN))
+                                tStimTwoGratingContrast = stimTwoGratingContrast * pow(stimTwoGratingContrastStepLog, (floor(tTempStim2 / stimTwoGratingDirectionStepN)))
+                            }
+                        }
+                        if (doBlock2) {
+                            if (tBlock2TrialNumber) {
+                                if (!block2MatchB1VisStim) {
+                                    tTempStim1 = tStimulusNumber % (block2StimOneGratingDirectionStepN * block2StimOneGratingContrastStepN)
+                                    if (tTempStim1 < block2StimOneGratingDirectionStepN) {
+                                        tStimOneGratingDirectionDeg = block2StimOneGratingDirectionDeg + (block2StimOneGratingDirectionStepDeg * (tTempStim1))
+                                        tStimOneGratingContrast = block2StimOneGratingContrast
+                                    }
+                                    if (tTempStim1 >= block2StimOneGratingDirectionStepN) {
+                                        tStimOneGratingDirectionDeg = block2StimOneGratingDirectionDeg+ (block2StimOneGratingDirectionStepDeg * ((tTempStim1) % block2StimOneGratingDirectionStepN))
+                                        tStimOneGratingContrast = block2StimOneGratingContrast * pow(block2StimOneGratingContrastStepLog, (floor(tTempStim1 / block2StimOneGratingDirectionStepN)))
+                                    }
+                                    if (matchStimOneParameters) {
+                                        tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                                        tStimTwoGratingContrast = tStimOneGratingContrast
+                                    }
+                                    if (!matchStimOneParameters) {
+                                        tTempStim2 = tStimulusNumber % (block2StimTwoGratingDirectionStepN * block2StimTwoGratingContrastStepN)
+                                        if (tTempStim2 < block2StimTwoGratingDirectionStepN) {
+                                            tStimTwoGratingDirectionDeg = block2StimTwoGratingDirectionDeg + (block2StimTwoGratingDirectionStepDeg * (tTempStim2))
+                                            tStimTwoGratingContrast = block2StimTwoGratingContrast * pow(block2StimTwoGratingContrastStepLog, (floor(tTempStim2 / block2StimTwoGratingDirectionStepN)))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!tStimOneDoVisualStim) {
+                    tStimOneGratingContrast = 0
+                    tMaskOneGratingContrast = 0
+                }
+                if (!tStimTwoDoVisualStim && !doTwoStimTogether) {
+                    tStimTwoGratingContrast = 0
+                    tMaskTwoGratingContrast = 0
+                }
+                if (!tStimOneDoAuditoryStim) {
+                    tStimOneSoundAmplitude = 0
+                    tStimOneSound1Amplitude = 0
+                    tStimOneSound2Amplitude = 0
+                    tStimOneSound3Amplitude = 0
+                    tStimOneSound4Amplitude = 0
+                    tStimOneSound5Amplitude = 0
+                }
+                if (!tStimTwoDoAuditoryStim) {
+                    tStimTwoSoundAmplitude = 0
+                    tStimTwoSound1Amplitude = 0
+                    tStimTwoSound2Amplitude = 0
+                    tStimTwoSound3Amplitude = 0
+                    tStimTwoSound4Amplitude = 0
+                    tStimTwoSound5Amplitude = 0
+                }
+                if (tStimOneGratingContrast > 1) {
+                    tStimOneGratingContrast = 1
+                }
+                if (tMaskOneGratingContrast > 1) {
+                    tMaskOneGratingContrast = 1
+                }
+                if (tStimTwoGratingContrast > 1) {
+                    tStimTwoGratingContrast = 1
+                }
+                if (tMaskTwoGratingContrast > 1) {
+                    tMaskTwoGratingContrast = 1
+                }
+                if (tStimOneGratingContrast < 0) {
+                    tStimOneGratingContrast = 0
+                }
+                if (tMaskOneGratingContrast < 0) {
+                    tMaskOneGratingContrast = 0
+                }
+                if (tStimTwoGratingContrast < 0) {
+                    tStimTwoGratingContrast = 0
+                }
+                if (tMaskTwoGratingContrast < 0) {
+                    tMaskTwoGratingContrast = 0
+                }
+                if (tDoMask) {
+                    if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
+                        tMaskOneGratingContrast = 0
+                    }
+                    if (tStimTwoGratingContrast + tMaskTwoGratingContrast > 1) {
+                        tMaskTwoGratingContrast = 0
+                    }
+                }
+                if (!tDoMask) {
+                    tMaskOneGratingContrast = 0
+                    tMaskTwoGratingContrast = 0
+                }
+                
+                report ('tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast')
+                report ('tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg')
+                setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg
+                setMaskOneGratingDirectionDeg = tMaskOneGratingDirectionDeg
+                
+                // frame conversion 
+                nStimOneFramesOn = ceil((tStimOneGratingOnTimeMs/1000)*frameRateHz)
+                nStimTwoFramesOn = ceil((tStimTwoGratingOnTimeMs/1000)*frameRateHz)
+                nFramesISI = ceil((tISITimeMs/1000)*frameRateHz)
+                nDegRotationPerFrame = gratingRotateSpeedDPS/frameRateHz
+                if (doRotate) {
+                    nStimOneFramesOn = ceil(360/nDegRotationPerFrame)
+                }
+                // initialize trial start/end times 
+                if (tThisTrialStartTimeMs == -1) {
+                    //first trial, leave lasttime as -1 
+                    tLastTrialStartTimeMs = -1
+                }
+                if (tThisTrialStartTimeMs != -1) {
+                    //else
+                    //later trials, copy this into last before setting this again below 
+                    tLastTrialStartTimeMs = tThisTrialStartTimeMs
+                }
+                tThisTrialStartTimeMs = now()/1000
+                // compute ITI time 
+                // initialize with a const value 
+                tItiWaitTimeMs = itiTimeMs
+                if (tDoRandStimOnTime) {
+                    maxStimOnTime = (stimOneGratingOnTimeMs * pow(stimOneGratingOnTimeStepLog,stimOneGratingOnTimeStepN)) + (stimTwoGratingOnTimeMs * pow(stimTwoGratingOnTimeStepLog,stimTwoGratingOnTimeStepN))
+                }
+                if (!tDoRandStimOnTime) {
+                    maxStimOnTime = stimOneGratingOnTimeMs + stimTwoGratingOnTimeMs
+                }
+                if (tDoRandISITime) {
+                    maxISITime = isiTimeMs * pow(isiTimeStepLog,isiTimeN)
+                }
+                if (!tDoRandISITime) {
+                    maxISITime = isiTimeMs
+                }
+                if (!isFirstTrial) {
+                    if (doExtendItiOnShortPrevTrial == 1) {
+                        tempMs = (maxStimOnTime+maxISITime)-lastTrialTimeMs
+                    }
+                }
+                if (tempMs >= 0) {
+                    //add to ITI
+                    tItiWaitTimeMs = itiTimeMs+tempMs
+                }
+                tItiWaitFrames = ceil((tItiWaitTimeMs/1000)*frameRateHz)
+                // if trialLaser, send params to controller 
+                if (tTrialLaserPowerMw > 0) {
+                    sendLaserParams = 1
+                    sendLaserParams = 0
+                }
+                cItiStart = counter
+                strobedDigitalWord = 6
+                if (doWheelSpeed == 1) {
+                    doCerebellarStim = 0
+                    DoWheelSpeed = doWheelSpeed
+                    speedIntervalUS = speedIntervalMS*1000
+                }
+                report ('In ITI, waiting $tItiWaitFrames')
+                report ('doRotate is $tDoRotate')
+                report ('doMaskRotate is $tDoMaskRotate')
+                goto (
+                    target = StimOneOn
+                    when = counter >= (cItiStart + tItiWaitFrames) && isFirstTrial && counter > 19
+                    )
+                goto (
+                    target = StimOneOn
+                    when = counter >= (cItiStart + tItiWaitFrames) && !isFirstTrial
+                    )
+            }
+            state StimOneOn {
+                ntrials = ntrials + 1
+                live_queue_stimulus (stimOne)
+                if (doTwoStimTogether) {
+                live_queue_stimulus (stimTwo)
+                }
+
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeGrating)
+                    dequeue_stimulus (photoDiodeMask)
+                }
+
+                update_stimulus_display ()
+                play_sound (stimOneSound)
+                play_sound (stimOneSound1)
+                play_sound (stimOneSound2)
+                play_sound (stimOneSound3)
+                play_sound (stimOneSound4)
+                play_sound (stimOneSound5)
+                cStimOneOn = counter
+                mwStimOneOnMs = now()/1000
+                report ('StimOne on')
+                goto (
+                    target = StimOneOff
+                    when = counter >= (cStimOneOn + nStimOneFramesOn)
+                    )
+                goto (
+                    target = Rotate
+                    when = counter >= (cStimOneOn + 1) && tDoRotate
+                    )    
+            }
+            state Rotate {
+                cNow = counter
+                setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg + ((cNow-cStimOneOn)*nDegRotationPerFrame)
+                if (tDoMaskRotate) {
+                setMaskOneGratingDirectionDeg = setStimOneGratingDirectionDeg + maskOneGratingDirectionDeg - stimOneGratingDirectionDeg
+                }
+
+                update_stimulus_display ()
+                goto (
+                    target = StimOneOff
+                    when = counter >= (cStimOneOn + nStimOneFramesOn) 
+                    )
+                goto (
+                    target = Rotate
+                    when = counter >= (cNow + 1) && tDoRotate
+                    )    
+            }
+            state StimOneOff {
+                dequeue_stimulus (stimOne)
+                dequeue_stimulus (stimTwo)
+
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
+
+                update_stimulus_display ()
+                cStimOneOff = counter
+                mwStimOneOffMs = (now()/1000)
+                goto (
+                    target = StimTwoOn
+                    when = counter  >= (cStimOneOff + nFramesISI)
+                    )
+            }
+            state StimTwoOn {
+            if (!doTwoStimTogether) {
+                live_queue_stimulus (stimTwo)
+
+
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeGrating)
+                    dequeue_stimulus (photoDiodeMask)
+                }
+
+                update_stimulus_display ()
+                play_sound (stimTwoSound)
+                play_sound (stimTwoSound1)
+                play_sound (stimTwoSound2)
+                play_sound (stimTwoSound3)
+                play_sound (stimTwoSound4)
+                play_sound (stimTwoSound5)
+                cStimTwoOn = counter
+                mwStimTwoOnMs = now()/1000
+                report ('StimTwo on')
+                }
+
+                goto (
+                    target = StimTwoOff
+                    when = counter >= (cStimTwoOn + nStimTwoFramesOn)
+                    )
+            }
+            state StimTwoOff {
+            if (!doTwoStimTogether) {
+                dequeue_stimulus (stimTwo)
+
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
+                
+                update_stimulus_display ()
+                cStimTwoOff = counter
+                mwStimTwoOffMs = (now()/1000)
+                }
+                goto (
+                    target = EndTrial
+                    when = counter  >= (cStimTwoOff + 3)
+                    )
+            }
+            state EndTrial {
+                report ('Trial Ended')
+                // accept stim selection 
+                accept_selections (svStimNumber)
+                tNStimAccepted = tNStimAccepted + 1
+                // update selection variable 
+                if (tNStimAccepted >= 80) {
+                    reset_selection (svStimNumber)
+                    tNStimAccepted = 0
+                    report ('Should be resetting selections,tNStimAccepted=$tNStimAccepted')
+                }
+                if (tNStimAccepted < 80) {
+                    next_selection (svStimNumber)
+                    report ('Next selection,tNStimAccepted=$tNStimAccepted')
+                }
+                accept_selections (svStimNumber2)
+                tNStimAccepted2 = tNStimAccepted2 + 1
+                // update selection variable 
+                if (tNStimAccepted2 >= 80) {
+                    reset_selection (svStimNumber2)
+                    tNStimAccepted2 = 0
+                }
+                if (tNStimAccepted2 < 80) {
+                    next_selection (svStimNumber2)
+                }
+                accept_selections (svMaskNumber)
+                tNMaskAccepted = tNMaskAccepted + 1
+                // update selection variable 
+                if (tNMaskAccepted >= 80) {
+                    reset_selection (svMaskNumber)
+                    tNMaskAccepted = 0
+                }
+                if (tNMaskAccepted < 80) {
+                    next_selection (svMaskNumber)
+                }
+                accept_selections (svMaskNumber2)
+                tNMaskAccepted2 = tNMaskAccepted2 + 1
+                // update selection variable 
+                if (tNMaskAccepted2 >= 80) {
+                    reset_selection (svMaskNumber2)
+                    tNMaskAccepted2 = 0
+                }
+                if (tNMaskAccepted2 < 80) {
+                    next_selection (svMaskNumber2)
+                }
+                if (doWheelSpeed == 1) {
+                    DoWheelSpeed = 0
+                }
+                sync = 0
+                yield ()
+            }
+        }
+    }
+    stop_device_io (LabJackU6)
+    dequeue_stimulus (stimTwo)
+    update_stimulus_display ()
+}

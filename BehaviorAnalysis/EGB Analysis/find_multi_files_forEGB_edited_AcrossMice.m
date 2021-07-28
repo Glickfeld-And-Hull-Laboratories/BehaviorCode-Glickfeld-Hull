@@ -1,9 +1,9 @@
 % example of indexing name in cell array: mouse_names{1}{1}(1,:)
 cd('Z:\Behavior\Data')
-mouse_number = 2;
-mouse_names{:,:} = {'1401'; '1402'};
-mouse_start_dates{:,:} = {'190509';'190613'};
-mouse_end_dates{:,:} = {'190617';'190628'};
+mouse_number = 3;
+mouse_names{:,:} = {'1401'; '1402'; '446'};
+mouse_start_dates{:,:} = {'190509';'190617';'190902'};
+mouse_end_dates{:,:} = {'190614';'190828';'190911'};
 
 for mouse = 1:mouse_number
 
@@ -38,7 +38,7 @@ end
 %clearvars -except input
 end
 
-input = horzcat(days_to_analyze{1}, days_to_analyze{2})';
+input = horzcat(days_to_analyze{1}, days_to_analyze{2}, days_to_analyze{3})';
 clearvars -except input
     
 

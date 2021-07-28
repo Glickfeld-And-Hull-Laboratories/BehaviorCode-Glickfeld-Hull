@@ -51,6 +51,12 @@ if input.doZeroConTrials
   zeroConIx(find(totCon==0)) = 1;
 end
 
+if isfield(input,'doMask')
+    maskIx = celleqel2mat_padded(input.tDoMask);
+else
+    maskIx = zeros(size(block2Ix));
+end
+
 correctIx = strcmp(input.trialOutcomeCell, 'success');
 incorrectIx = strcmp(input.trialOutcomeCell, 'incorrect');
 ignoreIx = strcmp(input.trialOutcomeCell, 'ignore');
@@ -110,6 +116,13 @@ noGoCorrIx(noGoInd(noGoInc)) = 0;
 %Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
 tLeftResponse = celleqel2mat_padded(input.tLeftResponse);
+if input.doOriDiscrim
+  tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)),find(strcmp(input.trialOutcomeCell, 'success')))) = 1;
+  tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 0;
+  tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'success')))) = 0;
+  tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 1;
+end
+
 tRightResponse = celleqel2mat_padded(input.tRightResponse);
 tLeftNoGo = nan(size(tLeftResponse));
 leftNoGo = intersect(find(noGoIx),find(tLeftResponse));
@@ -160,8 +173,9 @@ end
 
 if input.doBlock2==1,
   block2Str = 'Block2: on \n';
+  b2TrPer80Str = ['[' num2str([input.block2TrPer80Level1 input.block2TrPer80Level2 input.block2TrPer80Level3 input.block2TrPer80Level4 input.block2TrPer80Level5 input.block2TrPer80Level6 input.block2TrPer80Level7 input.block2TrPer80Level8]) ']' ];
   if input.block2DoTrialLaser==1,
-    block2Str = sprintf('Block2: on, Trial Laser Power:%5.2fmW \n', double(input.block2TrialLaserPowerMw));
+    block2Str = sprintf('Block2: on, Trial Laser Power:%5.2fmW \n b2TrPer80: %s \n', double(input.block2TrialLaserPowerMw), b2TrPer80Str);
   end
 elseif input.doBlock2==0,
   block2Str = 'Block2: off \n';
@@ -245,9 +259,14 @@ end
 %              'VerticalAlignment', 'top', ...
 %              'HorizontalAlignment', 'left');
          
-if isfield(input, 'gratingTargetEccentricity')
-  input.leftDecisionThreshold = (input.gratingEccentricityDeg-input.gratingTargetEccentricity)./ input.feedbackMotionSensitivity;
-  input.rightDecisionThreshold = (input.gratingEccentricityDeg-input.gratingTargetEccentricity)./ input.feedbackMotionSensitivity;
+if ~isfield(input,'doSizeDiscrim')
+  input.doSizeDiscrim = 0;
+end
+        
+if input.doContrastDiscrim || input.doContrastDetect || input.doSizeDiscrim
+  decisionThreshold = (input.gratingEccentricityDeg-input.gratingTargetEccentricity)./ input.feedbackMotionSensitivity;
+elseif input.doOriDiscrim
+  decisionThreshold = input.gratingMaxDirectionDiff./ input.feedbackMotionSensitivity;
 end
 
 if ~isfield(input, 'stimOnTimeMs')
@@ -258,9 +277,7 @@ if isfield(input,'gratingMaxDiff')
   input.gratingMaxContrastDiff = input.gratingMaxDiff;
 end
 
-if ~isfield(input,'doSizeDiscrim')
-  input.doSizeDiscrim = 0;
-end
+
 if isfield(input,'doContrastDiscrim')
   if input.doContrastDiscrim
     taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
@@ -283,7 +300,7 @@ end
         end
         tStr = sprintf( ['Decision Time: \t%5.2f s;   ITI %d ms \n', ...
                          'Stim On Time: \t%5d ms \n', ...
-                         'Thresholds (L,R):\t%4.0f, %4.0f pulses\n', ...
+                         'Thresholds (L,R):\t%4.0f pulses\n', ...
                          'Too-Fast Time: %d ms;  Reward: %s ms \n', ...
                          'Timeouts (ign,inc):\t%4.1f, %4.1f s\n', ...
                          'trPer80: %s\n', ...
@@ -296,8 +313,7 @@ end
                         input.reactionTimeMs/1000, ...
                         input.itiTimeMs, ...
                         input.stimOnTimeMs, ...
-                        input.leftDecisionThreshold, ...
-                        input.rightDecisionThreshold, ...
+                        decisionThreshold, ...
                         input.tooFastTimeMs, ...
                         rewStr, ...
                         input.ignoreTimeoutMs/1000, ...
@@ -306,7 +322,7 @@ end
                         stimStr, ...
                         input.feedbackMotionSensitivity);
 
-        text(0.0, 0.3, tStr, ...
+        text(0.0, 0.15, tStr, ...
              'HorizontalAlignment', 'left', ...
              'VerticalAlignment', 'top');
 
@@ -393,7 +409,7 @@ if nTrial > 1
   end
   input.changedStr = changedStrOut;
 
-  text(0,1,input.changedStr, ...
+  text(0,0.5,input.changedStr, ...
        'HorizontalAlignment', 'left', ...
        'VerticalAlignment', 'top');
 
@@ -541,9 +557,8 @@ if length(ind)>0
 end
 
 if nCorr>0  %&& input.doTestRobot==0,
-  if isfield(input,'doContrastDiscrim')
     if input.doContrastDiscrim
-      if input.gratingContrastDiffSPO<10
+      if input.doContrastDetect == 0
         contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ dGratingContrast,2);
       else
         contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - dGratingContrast,2);
@@ -557,13 +572,6 @@ if nCorr>0  %&& input.doTestRobot==0,
     elseif input.doOriDiscrim
       contDiffV = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
     end
-  else
-    if input.gratingContrastDiffSPO<10
-      contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) ./ dGratingContrast,2);
-    else
-      contDiffV = chop(celleqel2mat_padded(input.tGratingContrast) - dGratingContrast,2);
-    end
-  end
 
 
     corrDiffV = contDiffV(correctIx);
@@ -648,15 +656,7 @@ if nCorr>0  %&& input.doTestRobot==0,
     xLimm = [minX maxX];
     uqDiff = uqDiff;
     
-    if input.doContrastDiscrim
-    if input.gratingContrastDiffSPO<10
-      sc_num = 1;
-    else
-      sc_num = 100;
-    end
-    else
     sc_num = 1; 
-    end
     
     pH = plot((sc_num * uqDiff), cell2mat(corrDiffCell));
     if nLeft>0,
@@ -709,14 +709,14 @@ if nCorr>0  %&& input.doTestRobot==0,
 
      axis tight  
        ylabel('Decision Time (ms)')
-       if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
-           if input.gratingContrastDiffSPO<10
+           if input.doContrastDetect == 0
              xlabel('Contrast Ratio (T/D)')
+             title('Decision Time by Contrast Ratio')
            else
-             xlabel('Contrast Difference (T-D)')
+             xlabel('Target Contrast')
+             title('Decision Time by Target Contrast')
             end
-           title('Decision Time by Contrast Ratio')
         elseif input.doSizeDiscrim
           if input.gratingDiameterDiffSPO<10
              xlabel('Size Difference (T/D)')
@@ -728,14 +728,6 @@ if nCorr>0  %&& input.doTestRobot==0,
            xlabel('Ori Difference')
            title('Decision Time by Ori Difference')
         end
-      else
-        if input.gratingContrastDiffSPO<10
-         xlabel('Contrast Ratio (T/D)')
-        else
-         xlabel('Contrast Difference (T-D)')
-        end
-      title('Decision Time by Contrast Ratio')
-      end     
 end
 %%%%%%%%%%%%%%%%%
 
@@ -759,7 +751,7 @@ if nCorr>0 && input.doTestRobot==0,
     didNoGoIx = celleqel2mat_padded(input.didNoGo);
     plotTrsNoGo = contDiffV(~noGoIx&didNoGoIx);
     if find(didNoGoIx)
-      nLevelsNoGo = unique(plotTrsNoGo);
+      nLevelsNoGo = plotTrsNoGo;
       for kk=1:length(nLevelsNoGo)
         valNoGo = nLevelsNoGo(kk);
         valIx = contDiffV==valNoGo;
@@ -768,7 +760,7 @@ if nCorr>0 && input.doTestRobot==0,
         percentContCellNoGoByDiff{kk} = totalNTrialsValNoGo/totalNTrialsVal;
       end
     end
-
+    if input.doOriDiscrim == 0 
     if ~find(uqDiff <=0)
       pH = plot(uqDiff, cell2mat(percentCell));
     else
@@ -778,13 +770,13 @@ if nCorr>0 && input.doTestRobot==0,
       pH = plot(uqDiff, percentCell);
     end
     if length(plotTrsNoGo)>0
-      pH1 = plot(sc_num * nLevelsNoGo, cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
-      set(pH1, ...
+       pH1 = plot(sc_num * nLevelsNoGo, cell2mat(percentContCellNoGoByDiff), 'Color', 'r');
+       set(pH1, ...
         'LineWidth', 1.5, ...
         'Marker', '.', ...
         'MarkerSize', 9);
     end
-    
+
     set(pH, ...
         'LineWidth', 1.5, ...
         'Marker', '.', ...
@@ -794,36 +786,36 @@ if nCorr>0 && input.doTestRobot==0,
            'XGrid', 'on',...
            'Xscale', 'log');
        
-        xlim([1 100])
 
        if isfield(input,'doContrastDiscrim')
          if input.doContrastDiscrim
-           if input.gratingContrastDiffSPO<10
+           if input.doContrastDetect == 0
              xlabel('Contrast Ratio (T/D)')
+             title('Percent Correct by Contrast Ratio')
            else
-             xlabel('Contrast Difference (T-D)')
-            end
-           title('Percent Correct by Contrast Ratio')
+             xlabel('Target Contrast')
+             title('Percent Correct by Target Contrast')
+           end
         elseif input.doSizeDiscrim
           if input.gratingDiameterDiffSPO<10
-             xlabel('Size Ratio (T/D)')
+            xlabel('Size Ratio (T/D)')
            else
              xlabel('Size Difference (T-D)')
             end
            title('Percent Correct by Size Ratio')
         elseif input.doOriDiscrim
-          if input.gratingDiameterDiffSPO<10
            xlabel('Ori Difference')
            title('Percent Correct by Ori Difference')
-        end
       else
-        if input.gratingContrastDiffSPO<10
+        if input.doContrastDetect == 0
          xlabel('Contrast Ratio (T/D)')
         else
          xlabel('Contrast Difference (T-D)')
         end
       title('Percent Correct by Contrast RAtio')
-      end
+         end
+    end
+    end
 end
 
 %%%%%%%%%%%%%%%%
@@ -891,7 +883,7 @@ xlabel('Time');
 
 axH  = subplot(spSz{:},10);
 hold on
-if isfield(input,'doContrastDiscrim')
+
   if input.doContrastDiscrim
     if input.doContrastDetect
       differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
@@ -912,9 +904,12 @@ if isfield(input,'doContrastDiscrim')
     end
   elseif input.doOriDiscrim
       differenceRight = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
-    end
-  end
-else
+      if isfield(input,'doMask')
+          differenceRight_mask = chop(celleqel2mat_padded(input.tPlaidDirectionStart) - double(input.gratingTargetDirection),2);
+      else
+          differenceRight_mask = nan(size(differenceRight));
+      end
+  else
   if input.gratingContrastDiffSPO > 10
     differenceRight = chop(celleqel2mat_padded(input.rightGratingContrast) - celleqel2mat_padded(input.leftGratingContrast),2);
   elseif ~isfield(input, 'dGratingContrastDiff') & input.gratingContrastDiffSPO <= 10
@@ -924,7 +919,7 @@ else
   end
 end
 
-plotTrsB1 = differenceRight((correctIx|incorrectIx)&~block2Ix);
+plotTrsB1 = differenceRight((correctIx|incorrectIx)&~block2Ix&~maskIx);
 nLevelsB1 = unique(plotTrsB1);
 curr100 = zeros(size(block2Ix));
 nT= size(curr100,2);
@@ -936,20 +931,20 @@ percentContCellB1_100 = cell(1,length(nLevelsB1));
 for kk=1:length(nLevelsB1)
     valB1 = nLevelsB1(kk);
     valIxB1 = differenceRight==valB1;
-    totalNTrialsValB1 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix));
-    totalNTrialsValB1_100 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&curr100));
+    totalNTrialsValB1 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&~maskIx));
+    totalNTrialsValB1_100 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&curr100&~maskIx));
     if min(differenceRight) < 0
       if valB1>=0,
-          ind = setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix));  
+          ind = setdiff(intersect(find(valIxB1),find(correctIx)), [find(block2Ix) find(maskIx)]);  
           rightNTrialsValB1 = length(ind);
-          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix)));  
+          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), [find(block2Ix) find(maskIx)]));  
           rightNTrialsValB1_100 = length(ind2);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
           percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
       elseif valB1<0,
-          ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix));
+          ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), [find(block2Ix) find(maskIx)]);
           rightNTrialsValB1 = length(ind);
-          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix)));
+          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(incorrectIx)), [find(block2Ix) find(maskIx)]));
           rightNTrialsValB1_100 = length(ind2);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
           percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
@@ -959,20 +954,51 @@ for kk=1:length(nLevelsB1)
             ind = setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix));
             rightNTrialsValB1 = length(ind);
             percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
-            ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), find(block2Ix)));
+            ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), [find(block2Ix) find(maskIx)]));
             rightNTrialsValB1_100 = length(ind2);
             percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
         elseif valB1<1,
             ind = setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix));
             rightNTrialsValB1 = length(ind);
             percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
-            ind2 = intersect(find(curr100),setdiff(intersect(find(valIxB1),find(incorrectIx)), find(block2Ix)));
+            ind2 = intersect(find(curr100),setdiff(intersect(find(valIxB1),find(incorrectIx)), [find(block2Ix) find(maskIx)]));
             rightNTrialsValB1_100 = length(ind2);
             percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
         end
     end
 end
 
+if sum(maskIx)>0
+    plotTrsM1 = differenceRight_mask((correctIx|incorrectIx)&~block2Ix&maskIx);
+    nLevelsM1 = unique(plotTrsM1);
+    percentContCellM1 = cell(1,length(nLevelsM1));
+    for kk=1:length(nLevelsM1)
+        valM1 = nLevelsM1(kk);
+        valIxM1 = differenceRight_mask==valM1;
+        totalNTrialsValM1 = length(differenceRight_mask(valIxM1&(correctIx|incorrectIx)&~block2Ix&maskIx));
+        if min(differenceRight_mask) < 0
+          if valM1>=0,
+              ind = setdiff(intersect(find(maskIx),intersect(find(valIxM1),find(correctIx))), find(block2Ix));
+              rightNTrialsValM1 = length(ind);
+              percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
+          elseif valM1<0,
+              ind = setdiff(intersect(find(maskIx),intersect(find(valIxM1),find(incorrectIx))), find(block2Ix));
+              rightNTrialsValM1 = length(ind);
+              percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
+          end
+        else
+            if valM1>=1,
+                ind = setdiff(intersect(find(maskIx),intersect(find(valIxM1),find(correctIx))), find(block2Ix));
+                rightNTrialsValM1 = length(ind);
+                percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
+            elseif valM1<1,
+                ind = setdiff(intersect(find(maskIx),intersect(find(valIxM1),find(incorrectIx))), find(block2Ix));
+                rightNTrialsValM1 = length(ind);
+                percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
+            end
+        end
+    end
+end
 
 if sum(block2Ix)>0
   plotTrsB2 = differenceRight((correctIx|incorrectIx)&block2Ix);
@@ -1004,6 +1030,38 @@ if sum(block2Ix)>0
         end
     end
   end
+end
+
+if sum(maskIx&block2Ix)>0
+    plotTrsM2 = differenceRight_mask((correctIx|incorrectIx)&block2Ix&maskIx);
+    nLevelsM2 = unique(plotTrsM2);
+    percentContCellM2 = cell(1,length(nLevelsM2));
+    for kk=1:length(nLevelsM2)
+        valM2 = nLevelsM2(kk);
+        valIxM2 = differenceRight_mask==valM2;
+        totalNTrialsValM2 = length(differenceRight_mask(valIxM2&(correctIx|incorrectIx)&block2Ix&maskIx));
+        if min(differenceRight_mask) < 0
+          if valM2>=0,
+              ind = setdiff(intersect(find(maskIx),intersect(find(valIxM2),find(correctIx))), find(block1Ix));
+              rightNTrialsValM2 = length(ind);
+              percentContCellM2{kk} = rightNTrialsValM2/totalNTrialsValM2;
+          elseif valM2<0,
+              ind = setdiff(intersect(find(maskIx),intersect(find(valIxM2),find(incorrectIx))), find(block1Ix));
+              rightNTrialsValM2 = length(ind);
+              percentContCellM2{kk} = rightNTrialsValM2/totalNTrialsValM2;
+          end
+        else
+            if valM2>=1,
+                ind = setdiff(intersect(find(maskIx),intersect(find(valIxM2),find(correctIx))), find(block1Ix));
+                rightNTrialsValM2 = length(ind);
+                percentContCellM2{kk} = rightNTrialsValM2/totalNTrialsValM2;
+            elseif valM2<1,
+                ind = setdiff(intersect(find(maskIx),intersect(find(valIxM2),find(incorrectIx))), find(block1Ix));
+                rightNTrialsValM2 = length(ind);
+                percentContCellM2{kk} = rightNTrialsValM2/totalNTrialsValM2;
+            end
+        end
+    end
 end
 
 
@@ -1046,6 +1104,14 @@ end
 if sum(didNoGoIx)>0
   pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
+
+if sum(maskIx)>= 1
+  pH4 = plot(nLevelsM1, cell2mat(percentContCellM1), 'Color', 'c', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+end
+if sum(maskIx&block2Ix)>= 1
+  pH5 = plot(nLevelsM2, cell2mat(percentContCellM2), 'Color', 'g', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+end
+
 
 if input.gratingContrastDiffSPO <= 100
   vH = plot([1 1],[0 1]);

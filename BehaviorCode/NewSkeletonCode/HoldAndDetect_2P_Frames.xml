@@ -97,7 +97,8 @@
 
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
       <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
-      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sounds"/>
+      <variable tag="block1ToneAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sound"/>
+      <variable tag="block2ToneAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
 
       <!-- block 2 control -->
       <variable tag="doBlock2" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2"/>
@@ -208,6 +209,7 @@
       <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
     </folder>
     <folder tag="Internal Variables">
+      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDoAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -305,7 +307,7 @@
     <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
     <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
     <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
-    <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/10000Hz_.2s.wav" amplitude="soundTargetAmplitude"></sound>
+    <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.2s.wav" amplitude="soundTargetAmplitude"></sound>
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -464,39 +466,38 @@
               <action type="report" message="the tITIUnexpectRewardNum is $tITIUnexpectRewardNum"/>
             </action>
 
+
             <!-- level 1 -->
-            <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &lt; (tTempStimOdds+trPer80Level1))">
+            <action type="if" condition="(tSvStimNumber &lt; (trPer80Level1))">  <!-- if this is a block1 trial or if doBlock2SeparateOdds==0 -->
               <action type="assignment" variable="tStimulusNumber" value="0"/>
               <action type="if" condition="doBlock2 &amp;&amp; !doBlock2SeparateOdds">
                 <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber-tTempStimOdds) &gt; (((int)trPer80Level1-1)/2))"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
-                <action type="assignment" variable="tBlock2TrialNumber" value="0"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0"> 
-              <!--<action type="if" condition="!doBlock2 || tBlock2TrialNumber == 0"> -->
-                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
-                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+                <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0"> 
+                  <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+                </action>
+                <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber"> <!-- no reward omission trials in block 2 -->
+                  <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+                </action> 
               </action>
             </action>
-            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/>
+            
+            
             <!-- level 1b: b2 sep odds on -->
             <action type="if" condition="doBlock2 &amp;&amp; doBlock2SeparateOdds">
-              <action type="if" condition="tSvStimNumber >= tTempStimOdds &amp;&amp; (tSvStimNumber &gt; (tTempStimOdds+block2TrPer80Level1))">
-                <action type="assignment" variable="tStimulusNumber" value="0"/>
-                <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
-              </action>
+              <action type="assignment" variable="tBlock2TrialNumber" value="(int)((tSvStimNumber) &gt; ((int)trPer80Level1-1))"/>
+              <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              <action type="assignment" variable="tStimulusNumber" value="0"/>
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+                <action type="report" message="the tSvStimNumber is $tSvStimNumber and the tTempStimOdds is $tTempStimOdds"/>
               </action>
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level1"/>
             </action>
-
+            <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + trPer80Level1"/> 
+           
 
 
             <!-- level 2 -->
@@ -522,6 +523,7 @@
                 <action type="assignment" variable="tStimulusNumber" value="1"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
               </action>
+              <!--
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
               </action>
@@ -529,6 +531,7 @@
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level2"/>
+              -->
             </action>
 
 
@@ -555,6 +558,7 @@
                 <action type="assignment" variable="tStimulusNumber" value="2"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
               </action>
+              <!--
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
               </action>
@@ -562,6 +566,7 @@
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level3"/>
+            -->
             </action>
 
 
@@ -588,6 +593,7 @@
                 <action type="assignment" variable="tStimulusNumber" value="3"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
               </action>
+              <!--
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
               </action>
@@ -595,6 +601,7 @@
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level4"/>
+            -->
             </action>
 
 
@@ -621,6 +628,7 @@
                 <action type="assignment" variable="tStimulusNumber" value="4"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
               </action>
+              <!--
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
               </action>
@@ -628,6 +636,7 @@
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level5"/>
+            -->
             </action>
 
 
@@ -654,6 +663,7 @@
                 <action type="assignment" variable="tStimulusNumber" value="5"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
               </action>
+              <!--
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
               </action>
@@ -661,6 +671,7 @@
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level6"/>
+            -->
             </action>
 
 
@@ -687,6 +698,7 @@
                 <action type="assignment" variable="tStimulusNumber" value="6"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
               </action>
+              <!--
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
               </action>
@@ -694,6 +706,7 @@
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level7"/>
+            -->
             </action>
 
 
@@ -720,6 +733,7 @@
                 <action type="assignment" variable="tStimulusNumber" value="7"/>
                 <action type="assignment" variable="tBlock2TrialNumber" value="1"/>
               </action>
+              <!--
               <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
                 <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
               </action>
@@ -727,6 +741,7 @@
                 <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
               </action>
               <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level8"/>
+            -->
             </action>
 
 
@@ -790,7 +805,9 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>
                   <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>
-                  <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
+                  <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>
+
+                  <action type="assignment" variable="soundTargetAmplitude" value="block1ToneAmplitude"></action>  <!-- allow different tone amplitude in block 1 and 2-->
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1">
@@ -806,7 +823,9 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="block2GratingWidthDeg"></action>
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="block2GratingSpatialFreqCPD"></action>
                   <action type="assignment" variable="tGratingSpeedDPS" value="block2GratingSpeedDPS"></action>
-                  <action type="assignment" variable="tGratingDurationMs" value="block2GratingDurationMs"/>
+                  <action type="assignment" variable="tGratingDurationMs" value="block2GratingDurationMs"></action>
+
+                  <action type="assignment" variable="soundTargetAmplitude" value="block2ToneAmplitude"></action>
                 </action>
 
 
@@ -1071,6 +1090,7 @@
             <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer"
                     timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
             <action type="assignment" tag="Log counter" variable="cItiStart" value="counter"></action>
+            <action type="run_python_file" tag="Load script" path="L0.py"></action> <!--  run python code to turn laser off -->
             <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
             <action type="assignment" tag="Encode ItiStart" variable="strobedDigitalWord" value="6"></action>
             <action type="if" condition="doLeverSolenoidAllTrials">
@@ -1180,6 +1200,7 @@
 
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
               <action type="assignment" variable="cLeverDown" value="counter"></action>
+              <action type="run_python_file" tag="Load script" path="L1.py"></action>  <!--  run python code to turn laser on -->
 
             <action type="if" condition="doVisualStim">
               <action type="if" condition="!doITIStim">
@@ -1225,7 +1246,10 @@
 
                 <action type="assignment" tag="Encode VisStimOn" variable="strobedDigitalWord" value="4"></action>
               </action>
+               <action type="assignment" variable="soundTargetAmplitude" value="soundTargetAmplitude"></action> <!-- modify amplitude manually each trial-->
+               <action type="report" tag="Report" message="soundAmplitude = $soundTargetAmplitude"></action>
                <action type="play_sound" sound="targetSound"/>
+
               <!-- laser stim on -->
               <action type="if" condition="doLaserStim">
                 <action type="assignment" variable="laserTrigger" value="1"></action>

@@ -22,6 +22,7 @@ switch tHostname
             rc.lindseyAnalysis = fullfile(rootDir,'Analysis\2P');
             rc.data = fullfile(rootDir,'Data\2P_images');
             rc.ashleyAnalysis = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\ashley\Analysis';
+            rc.ashleyData = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\ashley\data';
         elseif tUsername(1:5) == 'ashle'
             rc.name = 'ashle';
             rootDirCrash = '\\CRASH.dhe.duke.edu\data\home\ashley';

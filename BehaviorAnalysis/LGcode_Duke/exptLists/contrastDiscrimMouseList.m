@@ -1,0 +1,106 @@
+mouse = [];
+%% i410 -good
+mouse(1).name = 'i410';
+mouse(1).genotype = 'SOM';
+mouse(1).opsin = 'ChR2';
+mouse(1).task = 'ContrastDiscrim';
+%% i414 -good
+mouse(2).name = 'i414';
+mouse(2).genotype = 'SOM';
+mouse(2).opsin = 'ChR2';
+mouse(2).task = 'ContrastDiscrim';
+%% i419 -good
+mouse(3).name = 'i419';
+mouse(3).genotype = 'PV';
+mouse(3).opsin = 'ChR2';
+mouse(3).task = 'ContrastDiscrim';
+%% i441 -good
+mouse(4).name = 'i441';
+mouse(4).genotype = 'PV';
+mouse(4).opsin = 'Arch';
+mouse(4).task = 'ContrastDiscrim';
+%% i442 -good
+mouse(5).name = 'i442';
+mouse(5).genotype = 'PV';
+mouse(5).opsin = 'Arch';
+mouse(5).task = 'ContrastDiscrim';
+%% i443 -good
+mouse(6).name = 'i443';
+mouse(6).genotype = 'PV';
+mouse(6).opsin = 'Arch';
+mouse(6).task = 'ContrastDiscrim';
+%% i459 -good
+mouse(7).name = 'i459';
+mouse(7).genotype = 'SOM';
+mouse(7).opsin = 'Arch';
+mouse(7).task = 'ContrastDiscrim';
+%% i460 -good
+mouse(8).name = 'i460';
+mouse(8).genotype = 'SOM';
+mouse(8).opsin = 'Arch';
+mouse(8).task = 'ContrastDiscrim';
+%% i461 -good
+mouse(9).name = 'i461';
+mouse(9).genotype = 'SOM';
+mouse(9).opsin = 'ChR2';
+mouse(9).task = 'ContrastDiscrim';
+%% i462 -good
+mouse(10).name = 'i462';
+mouse(10).genotype = 'SOM';
+mouse(10).opsin = 'Arch';
+mouse(10).task = 'ContrastDiscrim';
+%% i463 -good
+mouse(11).name = 'i463';
+mouse(11).genotype = 'SOM';
+mouse(11).opsin = 'Arch';
+mouse(11).task = 'ContrastDiscrim';
+%% i464 -dud (1 good day; 229 trials) (DROP)
+mouse(12).name = 'i464';
+mouse(12).genotype = 'SOM';
+mouse(12).opsin = 'ChR2';
+mouse(12).task = 'ContrastDiscrim';
+%% i547 - Reference to non-existent field 'doContrastDiscrim' (wrong task? Training sheet says "Contrast Perception" )
+mouse(13).name = 'i547';
+mouse(13).genotype = 'PV';
+mouse(13).opsin = 'ChR2';
+mouse(13).task = 'ContrastDiscrim';
+%% i548 - Index exceeds array bounds (contrast ratios...) (wrong task? Training sheet says "Contrast Perception" )
+mouse(14).name = 'i548';
+mouse(14).genotype = 'PV';
+mouse(14).opsin = 'ChR2';
+mouse(14).task = 'ContrastDiscrim';
+%% i565 - NaN's cannot be converted to logicals (???)
+mouse(15).name = 'i565';
+mouse(15).genotype = 'PV';
+mouse(15).opsin = 'ChR2';
+mouse(15).task = 'ContrastDiscrim';
+%% i578 - good, some days return blank
+mouse(16).name = 'i578';
+mouse(16).genotype = 'PV';
+mouse(16).opsin = 'ChR2';
+mouse(16).task = 'ContrastDiscrim';
+%% i581 - good
+mouse(17).name = 'i581';
+mouse(17).genotype = 'SOM';
+mouse(17).opsin = 'ChR2';
+mouse(17).task = 'ContrastDiscrim';
+%% i582 - good
+mouse(18).name = 'i582';
+mouse(18).genotype = 'SOM';
+mouse(18).opsin = 'ChR2';
+mouse(18).task = 'ContrastDiscrim';
+%% i591 -good ; negative control
+mouse(19).name = 'i591';
+mouse(19).genotype = 'PV';
+mouse(19).opsin = 'Arch-';
+mouse(19).task = 'ContrastDiscrim';
+%% i592 - good; negative control
+mouse(20).name = 'i592';
+mouse(20).genotype = 'PV';
+mouse(20).opsin = 'Arch-';
+mouse(20).task = 'ContrastDiscrim';
+%% i593 -good
+mouse(21).name = 'i593';
+mouse(21).genotype = 'PV';
+mouse(21).opsin = 'ChR2';
+mouse(21).task = 'ContrastDiscrim';
