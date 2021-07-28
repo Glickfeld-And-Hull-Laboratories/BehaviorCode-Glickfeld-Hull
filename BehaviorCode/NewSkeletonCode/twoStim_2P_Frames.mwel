@@ -42,6 +42,10 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Task Type'
         )
+    var doTwoStimTogether = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
     var doRandISITime = (bool)(0) (
         persistant = 1
         groups = 'Task Type'
@@ -1317,7 +1321,7 @@ blank_screen background ()
 layer stimOne {
     drifting_grating stimOne_grating (
         direction = setStimOneGratingDirectionDeg
-        starting_phase = tStimOneGratingPhaseDeg
+        starting_phase = tStimOneGratingPhaseDeg + 360 *  tStimOneGratingSpatialFreqCPD * (tStimOneGratingDiameterDeg/2)
         spatial_frequency = tStimOneGratingSpatialFreqCPD
         speed = tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD
         grating_type = gratingType
@@ -1331,7 +1335,7 @@ layer stimOne {
 
     drifting_grating stimOne_mask (
         direction = setMaskOneGratingDirectionDeg
-        starting_phase = tMaskOneGratingPhaseDeg
+        starting_phase = tMaskOneGratingPhaseDeg + 360 *  tStimOneGratingSpatialFreqCPD * (tStimOneGratingDiameterDeg/2)
         spatial_frequency = tStimOneGratingSpatialFreqCPD
         speed = tStimOneGratingTemporalFreqCPS/tStimOneGratingSpatialFreqCPD
         grating_type = gratingType
@@ -1380,7 +1384,7 @@ layer stimOne {
 layer stimTwo {
     drifting_grating stimTwo_grating (
         direction = tStimTwoGratingDirectionDeg
-        starting_phase = tStimTwoGratingPhaseDeg
+        starting_phase = tStimTwoGratingPhaseDeg + 360 *  tStimTwoGratingSpatialFreqCPD * (tStimTwoGratingDiameterDeg/2)
         spatial_frequency = tStimTwoGratingSpatialFreqCPD
         speed = tStimTwoGratingTemporalFreqCPS/tStimTwoGratingSpatialFreqCPD
         grating_type = gratingType
@@ -1394,7 +1398,7 @@ layer stimTwo {
 
     drifting_grating stimTwo_mask (
         direction = tMaskTwoGratingDirectionDeg
-        starting_phase = tMaskTwoGratingPhaseDeg
+        starting_phase = tMaskTwoGratingPhaseDeg + 360 *  tStimTwoGratingSpatialFreqCPD * (tStimTwoGratingDiameterDeg/2)
         spatial_frequency = tStimTwoGratingSpatialFreqCPD
         speed = tStimTwoGratingTemporalFreqCPS/tStimTwoGratingSpatialFreqCPD
         grating_type = gratingType
@@ -2173,25 +2177,25 @@ protocol JuiceOnHoldProtocol {
                             }
                             if (tDoRandMaskDir && !tDoRandMaskCon) {
                                 tTempMask1 = tMaskNumber % maskOneGratingDirectionStepN
-                                tMaskOneGratingDirectionDeg = maskOneGratingDirectionDeg + (maskOneGratingDirectionStepDeg * (tTempMask1))
+                                tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg + (maskOneGratingDirectionStepDeg * (tTempMask1))
                                 if (matchStimOneParameters) {
                                     tMaskTwoGratingDirectionDeg = tMaskOneGratingDirectionDeg
                                 }
                                 if (!matchStimOneParameters) {
                                     tTempMask2 = tMaskNumber2 % maskTwoGratingDirectionStepN
-                                    tMaskTwoGratingDirectionDeg = maskTwoGratingDirectionDeg + (maskTwoGratingDirectionStepDeg * (tTempMask2))
+                                    tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg + (maskTwoGratingDirectionStepDeg * (tTempMask2))
                                 }
                                 if (doBlock2) {
                                     if (tBlock2TrialNumber) {
                                         if (!block2MatchB1VisStim) {
                                             tTempMask1 = tMaskNumber % block2MaskOneGratingDirectionStepN
-                                            tMaskOneGratingDirectionDeg = block2MaskOneGratingDirectionDeg + (block2MaskOneGratingDirectionStepDeg * (tTempMask1))
+                                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + block2MaskOneGratingDirectionDeg + (block2MaskOneGratingDirectionStepDeg * (tTempMask1))
                                             if (block2MatchStimOneParameters) {
                                                 tMaskTwoGratingDirectionDeg = tMaskOneGratingDirectionDeg
                                             }
                                             if (!block2MatchStimOneParameters) {
                                                 tTempMask2 = tStimulusNumber2 % block2MaskTwoGratingDirectionStepN
-                                                tMaskTwoGratingDirectionDeg = block2MaskTwoGratingDirectionDeg + (block2MaskTwoGratingDirectionStepDeg * (tTempMask2))
+                                                tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + block2MaskTwoGratingDirectionDeg + (block2MaskTwoGratingDirectionStepDeg * (tTempMask2))
                                             }
                                         }
                                     }
@@ -2226,11 +2230,11 @@ protocol JuiceOnHoldProtocol {
                             if (tDoRandMaskDir && tDoRandMaskCon) {
                                 tTempMask1 = tMaskNumber % (maskOneGratingDirectionStepN * maskOneGratingContrastStepN)
                                 if (tTempMask1 < maskOneGratingDirectionStepN) {
-                                    tMaskOneGratingDirectionDeg = maskOneGratingDirectionDeg + (maskOneGratingDirectionStepDeg * (tTempMask1))
+                                    tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg + (maskOneGratingDirectionStepDeg * (tTempMask1))
                                     tMaskOneGratingContrast = maskOneGratingContrast
                                 }
                                 if (tTempMask1 >= maskOneGratingDirectionStepN) {
-                                    tMaskOneGratingDirectionDeg = maskOneGratingDirectionDeg+ (maskOneGratingDirectionStepDeg * ((tTempMask1) % maskOneGratingDirectionStepN))
+                                    tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg+ (maskOneGratingDirectionStepDeg * ((tTempMask1) % maskOneGratingDirectionStepN))
                                     tMaskOneGratingContrast = maskOneGratingContrast * pow(maskOneGratingContrastStepLog, (floor(tTempMask1 / maskOneGratingDirectionStepN)))
                                 }
                                 if (matchStimOneParameters) {
@@ -2240,11 +2244,11 @@ protocol JuiceOnHoldProtocol {
                                 if (!matchStimOneParameters) {
                                     tTempMask2 = tMaskNumber % (maskTwoGratingDirectionStepN * maskTwoGratingContrastStepN)
                                     if (tTempMask2 < maskTwoGratingDirectionStepN) {
-                                        tMaskTwoGratingDirectionDeg = maskTwoGratingDirectionDeg + (maskTwoGratingDirectionStepDeg * (tTempMask2))
+                                        tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg + (maskTwoGratingDirectionStepDeg * (tTempMask2))
                                         tMaskTwoGratingContrast = maskTwoGratingContrast
                                     }
                                     if (tTempMask2 >= maskTwoGratingDirectionStepN) {
-                                        tMaskTwoGratingDirectionDeg = maskTwoGratingDirectionDeg+ (maskTwoGratingDirectionStepDeg * ((tTempMask2) % maskTwoGratingDirectionStepN))
+                                        tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg+ (maskTwoGratingDirectionStepDeg * ((tTempMask2) % maskTwoGratingDirectionStepN))
                                         tMaskTwoGratingContrast = maskTwoGratingContrast * pow(maskTwoGratingContrastStepLog, (floor(tTempMask2 / maskTwoGratingDirectionStepN)))
                                     }
                                 }
@@ -2253,11 +2257,11 @@ protocol JuiceOnHoldProtocol {
                                         if (!block2MatchB1VisStim) {
                                             tTempMask1 = tMaskNumber % (block2MaskOneGratingDirectionStepN * block2MaskOneGratingContrastStepN)
                                             if (tTempMask1 < block2MaskOneGratingDirectionStepN) {
-                                                tMaskOneGratingDirectionDeg = block2MaskOneGratingDirectionDeg + (block2MaskOneGratingDirectionStepDeg * (tTempMask1))
+                                                tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + block2MaskOneGratingDirectionDeg + (block2MaskOneGratingDirectionStepDeg * (tTempMask1))
                                                 tMaskOneGratingContrast = block2MaskOneGratingContrast
                                             }
                                             if (tTempStim1 >= block2MaskOneGratingDirectionStepN) {
-                                                tMaskOneGratingDirectionDeg = block2MaskOneGratingDirectionDeg+ (block2MaskOneGratingDirectionStepDeg * ((tTempMask1) % block2MaskOneGratingDirectionStepN))
+                                                tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + block2MaskOneGratingDirectionDeg+ (block2MaskOneGratingDirectionStepDeg * ((tTempMask1) % block2MaskOneGratingDirectionStepN))
                                                 tMaskOneGratingContrast = block2MaskOneGratingContrast * pow(block2MaskOneGratingContrastStepLog, (floor(tTempMask1 / block2MaskOneGratingDirectionStepN)))
                                             }
                                             if (matchStimOneParameters) {
@@ -2267,7 +2271,7 @@ protocol JuiceOnHoldProtocol {
                                             if (!matchStimOneParameters) {
                                                 tTempMask2 = tStimulusNumber % (block2MaskTwoGratingDirectionStepN * block2MaskTwoGratingContrastStepN)
                                                 if (tTempMask2 < block2MaskTwoGratingDirectionStepN) {
-                                                    tMaskTwoGratingDirectionDeg = block2MaskTwoGratingDirectionDeg + (block2MaskTwoGratingDirectionStepDeg * (tTempMask2))
+                                                    tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + block2MaskTwoGratingDirectionDeg + (block2MaskTwoGratingDirectionStepDeg * (tTempMask2))
                                                     tMaskTwoGratingContrast = block2MaskTwoGratingContrast * pow(block2MaskTwoGratingContrastStepLog, (floor(tTempMask2 / block2MaskTwoGratingDirectionStepN)))
                                                 }
                                             }
@@ -2300,6 +2304,53 @@ protocol JuiceOnHoldProtocol {
                     }
                 }
                 if (tDoMatrix) {
+                    if (tDoMask) {
+                        multVal = rand(0,1)
+                        if (multVal >= fractMaskTrials) {
+                            tDoMask = 0
+                            tMaskOneGratingContrast = 0
+                            tMaskTwoGratingContrast = 0
+                        }
+                        if (multVal < fractMaskTrials) {
+                            tDoMask = 1
+                            tMaskOneGratingContrast = maskOneGratingContrast
+                            tMaskTwoGratingContrast = 0
+                            if (tStimTwoDoVisualStim)
+                                tMaskTwoGratingContrast = maskOneGratingContrast
+                                }
+                            }
+
+                    if (tDoRandDir && tDoRandSF) {
+                        tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingSpatialFreqStepN)
+                        if (tTempStim1 < stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
+                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
+                            tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD
+                        }
+                        if (tTempStim1 >= stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg+ (stimOneGratingDirectionStepDeg * ((tTempStim1) % stimOneGratingDirectionStepN))
+                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
+                            tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD * pow(stimOneGratingSpatialFreqStepLog, (floor(tTempStim1 / stimOneGratingDirectionStepN)))
+                        }    
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                            tStimTwoGratingSpatialFreqCPD = tStimOneGratingSpatialFreqCPD
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % (stimTwoGratingDirectionStepN * stimTwoGratingSpatialFreqStepN)
+                            if (tTempStim1 < stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))
+                                tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg
+                                tStimTwoGratingSpatialFreqCPD = stimTwoGratingSpatialFreqCPD
+                            }
+                            if (tTempStim2 >= stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg+ (stimTwoGratingDirectionStepDeg * ((tTempStim2) % stimTwoGratingDirectionStepN))
+                                tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg
+                                tStimTwoGratingSpatialFreqCPD = stimTwoGratingSpatialFreqCPD * pow(stimTwoGratingSpatialFreqStepLog, (floor(tTempStim2 / stimTwoGratingDirectionStepN)))
+                            }    
+                        }
+                    }
+
                     if (tDoRandISITime && tDoRandDir) {
                         tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * isiTimeN)
                         if (tTempStim1 < stimOneGratingDirectionStepN) {
@@ -2314,7 +2365,7 @@ protocol JuiceOnHoldProtocol {
                             tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
                         }
                         if (!matchStimOneParameters) {
-                            tTempStim2 = tStimulusNumber % (stimTwoGratingDirectionStepN * isiTimeN)
+                            tTempStim2 = tStimulusNumber2 % (stimTwoGratingDirectionStepN * isiTimeN)
                             if (tTempStim2 < stimTwoGratingDirectionStepN) {
                                 tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))
                             }
@@ -2338,7 +2389,7 @@ protocol JuiceOnHoldProtocol {
                                         tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
                                     }
                                     if (!matchStimOneParameters) {
-                                        tTempStim2 = tStimulusNumber % (block2StimTwoGratingDirectionStepN * block2ISITimeN)
+                                        tTempStim2 = tStimulusNumber2 % (block2StimTwoGratingDirectionStepN * block2ISITimeN)
                                         if (tTempStim2 < block2StimTwoGratingDirectionStepN) {
                                             tStimTwoGratingDirectionDeg = block2StimTwoGratingDirectionDeg + (block2StimTwoGratingDirectionStepDeg * (tTempStim2))
                                         }
@@ -2404,7 +2455,7 @@ protocol JuiceOnHoldProtocol {
                     tStimOneGratingContrast = 0
                     tMaskOneGratingContrast = 0
                 }
-                if (!tStimTwoDoVisualStim) {
+                if (!tStimTwoDoVisualStim && !doTwoStimTogether) {
                     tStimTwoGratingContrast = 0
                     tMaskTwoGratingContrast = 0
                 }
@@ -2448,10 +2499,6 @@ protocol JuiceOnHoldProtocol {
                 if (tMaskTwoGratingContrast < 0) {
                     tMaskTwoGratingContrast = 0
                 }
-                report ('tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast')
-                report ('tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg')
-                setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg
-                setMaskOneGratingDirectionDeg = tMaskOneGratingDirectionDeg
                 if (tDoMask) {
                     if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
                         tMaskOneGratingContrast = 0
@@ -2464,6 +2511,12 @@ protocol JuiceOnHoldProtocol {
                     tMaskOneGratingContrast = 0
                     tMaskTwoGratingContrast = 0
                 }
+                
+                report ('tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast')
+                report ('tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg')
+                setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg
+                setMaskOneGratingDirectionDeg = tMaskOneGratingDirectionDeg
+                
                 // frame conversion 
                 nStimOneFramesOn = ceil((tStimOneGratingOnTimeMs/1000)*frameRateHz)
                 nStimTwoFramesOn = ceil((tStimTwoGratingOnTimeMs/1000)*frameRateHz)
@@ -2535,6 +2588,9 @@ protocol JuiceOnHoldProtocol {
             state StimOneOn {
                 ntrials = ntrials + 1
                 live_queue_stimulus (stimOne)
+                if (doTwoStimTogether) {
+                live_queue_stimulus (stimTwo)
+                }
 
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
@@ -2579,6 +2635,7 @@ protocol JuiceOnHoldProtocol {
             }
             state StimOneOff {
                 dequeue_stimulus (stimOne)
+                dequeue_stimulus (stimTwo)
 
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
@@ -2594,7 +2651,9 @@ protocol JuiceOnHoldProtocol {
                     )
             }
             state StimTwoOn {
+            if (!doTwoStimTogether) {
                 live_queue_stimulus (stimTwo)
+
 
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
@@ -2611,12 +2670,15 @@ protocol JuiceOnHoldProtocol {
                 cStimTwoOn = counter
                 mwStimTwoOnMs = now()/1000
                 report ('StimTwo on')
+                }
+
                 goto (
                     target = StimTwoOff
                     when = counter >= (cStimTwoOn + nStimTwoFramesOn)
                     )
             }
             state StimTwoOff {
+            if (!doTwoStimTogether) {
                 dequeue_stimulus (stimTwo)
 
                 if (doPhotodiode) {
@@ -2627,6 +2689,7 @@ protocol JuiceOnHoldProtocol {
                 update_stimulus_display ()
                 cStimTwoOff = counter
                 mwStimTwoOffMs = (now()/1000)
+                }
                 goto (
                     target = EndTrial
                     when = counter  >= (cStimTwoOff + 3)
