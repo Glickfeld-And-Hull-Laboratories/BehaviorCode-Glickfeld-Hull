@@ -74,7 +74,6 @@ varsOneValEachTrial = { ...
     'cTargetOn', ...
     'cLeverUp', ...
     'soundTargetAmplitude',...
-    'LEDintensity',...
 };
 
 exptSetupBridge;
@@ -180,11 +179,11 @@ catch
     input.lickometerValues{trN} = NaN;
 end
 
-if input.doLED==1
-    input.LEDTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'laserTriggerFIO', 'all', [], 1);
-else
-    input.LEDTimesUs{trN} = NaN;
-end
+% if input.doLED==1
+%    input.LEDTimesUs{trN} = mwGetEventTime(eventsTrial, ds.event_codec, 'laserTriggerFIO', 'all', [], 1);
+% else
+% input.LEDTimesUs{trN} = NaN;
+% end
 
 
 
