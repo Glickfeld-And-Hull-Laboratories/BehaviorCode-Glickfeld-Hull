@@ -132,8 +132,24 @@ group 'Behavioral Control' {
     var maskStartingPhaseDeg = (float)(0) (
         persistant = 1
         groups = 'Mask Control'
-        )
+        )    
     var doRandMaskPhase = (bool)(0) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
+    var doType2Mask = (float)(0) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
+    var fractType2MaskTrials = (float)(0.2) (
+        persistant = 1
+        groups = 'Mask Control'
+        )      
+    var maskSpeedDPS = (float)(15) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
+    var type2MaskDirectionDeg = (float)(150) (
         persistant = 1
         groups = 'Mask Control'
         )
@@ -842,12 +858,14 @@ group 'Temporary Trial Variables' {
     var tPlaidDirectionDeg = (float)(0)
     var tPlaidDirectionStart = (float)(0)
     var tMaskDirectionDeg = (float)(0)
+    var tMaskSpeedDPS = (float)(0)
     var tMaskDirectionStart = (float)(0)
     var tMaskStartingPhaseDeg = (float)(0)
     var dMaskStartingPhaseDeg = (float)(0)
     var tMaskContrast = (float)(0)
     var dMaskContrast = (float)(0)
     var tDoMask = (bool)(0)
+    var tDoType2Mask = (bool)(0)
     var tempRand = (float)(0)
     var flashOn = (bool)(0)
     var tDoFeedbackMotion = (bool)(0)
@@ -979,7 +997,7 @@ layer targetGrating_gaussian {
         direction = tMaskDirectionDeg 
         starting_phase = tMaskStartingPhaseDeg + 360 *  tGratingSpatialFreqCPD * (tGratingDiameterDeg/2)
         spatial_frequency = tGratingSpatialFreqCPD
-        speed = gratingSpeedDPS
+        speed = tMaskSpeedDPS
         grating_type = gratingType
         x_size = tGratingDiameterDeg
         x_position = tGratingEccentricityDeg
@@ -1042,7 +1060,7 @@ layer targetGrating_ellipse {
         direction = tMaskDirectionDeg 
         starting_phase = tMaskStartingPhaseDeg + 360 *  tGratingSpatialFreqCPD * (tGratingDiameterDeg/2)
         spatial_frequency = tGratingSpatialFreqCPD
-        speed = gratingSpeedDPS
+        speed = tMaskSpeedDPS
         grating_type = gratingType
         x_size = tGratingDiameterDeg
         x_position = tGratingEccentricityDeg
@@ -1455,8 +1473,15 @@ protocol JuiceOnHoldProtocol {
                 }
                 
                 tDoMask = 0
+                tDoType2Mask = 0
                 if (doMask) {
                     tDoMask = rand(0,1)<fractionMaskTrials
+                    tMaskSpeedDPS = gratingSpeedDPS
+                    if (tDoMask && doType2Mask) {
+                        tDoType2Mask = rand(0,1)<fractionType2MaskTrials
+                        if (tDoType2Mask)
+                            tMaskSpeedDPS = maskSpeedDPS
+                        }
                  }
                     
                 if (doBlocks==1 && doCorrectiveTrials == 0) {
@@ -1919,6 +1944,7 @@ protocol JuiceOnHoldProtocol {
                     tStimulusNumber = 0
                     tStimulusNumber2 = 0
                     tDoMask = 0
+                    tDType2Mask = 0
                     tBlock2TrialNumber = 0
                     if (doEasyStartWithFeedback) {
                         tDoFeedbackMotion = 1
@@ -2033,6 +2059,10 @@ protocol JuiceOnHoldProtocol {
                         if (tDoMask) {
                             tGratingDirectionDeg = tGratingDirectionDeg - maskDirectionDeg/2
                             tMaskDirectionDeg = tGratingDirectionDeg + maskDirectionDeg
+                            if (tDoType2Mask) {
+                                tGratingDirectionDeg = 0
+                                tMaskDirectionDeg = tGratingDirectionDeg+type2MaskDirectionDeg
+                            }
                         }
                     }
                     if (!tLeftTrial) {
@@ -2040,6 +2070,10 @@ protocol JuiceOnHoldProtocol {
                         if (tDoMask) {
                             tGratingDirectionDeg = tGratingDirectionDeg + maskDirectionDeg/2
                             tMaskDirectionDeg = tGratingDirectionDeg - maskDirectionDeg
+                            if (tDoType2Mask) {
+                                tGratingDirectionDeg = 90
+                                tMaskDirectionDeg = tGratingDirectionDeg-type2MaskDirectionDeg
+                            }
                         }
                     }
                     dGratingContrast = 0
@@ -2223,7 +2257,18 @@ protocol JuiceOnHoldProtocol {
                 
                 tGratingDirectionStart = tGratingDirectionDeg
                 tMaskDirectionStart = tMaskDirectionDeg
-                tPlaidDirectionDeg = (tMaskDirectionDeg + tGratingDirectionDeg)/2
+                if (tDoMask) {
+                    tPlaidDirectionDeg = (tMaskDirectionDeg + tGratingDirectionDeg)/2
+                    if (tDoType2Mask) {
+                        if (tLeftTrial) {
+                        tPlaidDirectionDeg = 68.1
+                        }
+                        if (!tLeftTrial) {
+                        tPlaidDirectionDeg = 21.9
+                        }
+                    }
+                }
+
                 tPlaidDirectionStart = tPlaidDirectionDeg
                 // end doBlock2 
                 // calculate target threshold
@@ -2250,6 +2295,11 @@ protocol JuiceOnHoldProtocol {
                         rightDecisionThreshold = gratingTargetDirection + maskDirectionDeg/2
                         leftDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-(gratingTargetDirection+maskDirectionDeg/2))
                         tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
+                        if (tDoType2Mask) {
+                            rightDecisionThreshold = tGratingDirectionDeg+(tPlaidDirectionDeg-gratingTargetDirection)
+                            leftDecisionThreshold = tGratingDirectionDeg-(tPlaidDirectionDeg-gratingTargetDirection)
+                            tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
+                        }
                     }
                     
                 }
@@ -2265,6 +2315,11 @@ protocol JuiceOnHoldProtocol {
                         leftDecisionThreshold = gratingTargetDirection - maskDirectionDeg/2
                         rightDecisionThreshold = tGratingDirectionDeg+(tPlaidDirectionDeg-gratingTargetDirection)
                         tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
+                        if (tDoType2Mask) {
+                            rightDecisionThreshold = tGratingDirectionDeg-(tPlaidDirectionDeg-gratingTargetDirection)
+                            leftDecisionThreshold = tGratingDirectionDeg+(tPlaidDirectionDeg-gratingTargetDirection)
+                            tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
+                        }
                     }
                     report('plaid direction is $tPlaidDirectionDeg')
                 }
@@ -2655,13 +2710,21 @@ protocol JuiceOnHoldProtocol {
                                 tGratingDirectionDeg = trackMotion
                                 tMaskDirectionDeg = trackMaskMotion
                             }
-                            if (tLeftTrial && trackPlaidMotion <= gratingTargetDirection) {
-                                tGratingDirectionDeg = gratingTargetDirection - maskDirectionDeg/2
-                                tMaskDirectionDeg = gratingTargetDirection + maskDirectionDeg/2
+                            if (!tDoType2Mask) {
+                                if (tLeftTrial && trackPlaidMotion <= gratingTargetDirection) {
+                                    tGratingDirectionDeg = gratingTargetDirection - maskDirectionDeg/2
+                                    tMaskDirectionDeg = gratingTargetDirection + maskDirectionDeg/2
+                                }
+                                if (tLeftTrial == 0 && trackPlaidMotion >= gratingTargetDirection) {
+                                    tGratingDirectionDeg = gratingTargetDirection + maskDirectionDeg/2
+                                    tMaskDirectionDeg = gratingTargetDirection - maskDirectionDeg/2
+                                }
                             }
-                            if (tLeftTrial == 0 && trackPlaidMotion >= gratingTargetDirection) {
-                                tGratingDirectionDeg = gratingTargetDirection + maskDirectionDeg/2
-                                tMaskDirectionDeg = gratingTargetDirection - maskDirectionDeg/2
+                            if (tDoType2Mask) {
+                                if (tLeftTrial && trackPlaidMotion <= gratingTargetDirection || tLeftTrial == 0 && trackPlaidMotion >= gratingTargetDirection) {
+                                    tGratingDirectionDeg = tGratingDirectionStart - (tPlaidDirectionStart - gratingTargetDirection)
+                                    tMaskDirectionDeg = tMaskDirectionStart - (tPlaidDirectionStart - gratingTargetDirection)
+                                }
                             }
                         }
 

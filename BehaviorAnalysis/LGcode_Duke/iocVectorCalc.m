@@ -1,4 +1,6 @@
 function [ioc_ang ioc_sp av_ang av_sp] = iocVectorCalc(ang1,sp1,ang2,sp2);
+%all angles in radians
+%speeds in deg/s
 
 x0 = 0;
 y0 = 0;
