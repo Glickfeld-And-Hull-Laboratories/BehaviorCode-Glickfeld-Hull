@@ -53,8 +53,17 @@ end
 
 if isfield(input,'doMask')
     maskIx = celleqel2mat_padded(input.tDoMask);
+    type1MaskIx = maskIx;
+    if isfield(input,'doType2Mask')
+      type2MaskIx = celleqel2mat_padded(input.tDoType2Mask);
+      type1MaskIx(find(type2MaskIx)) = 0;
+    else
+      type2MaskIx = zeros(size(block2Ix));
+    end
 else
     maskIx = zeros(size(block2Ix));
+    type2MaskIx = zeros(size(block2Ix));
+    type1MaskIx = zeros(size(block2Ix));
 end
 
 correctIx = strcmp(input.trialOutcomeCell, 'success');
@@ -969,34 +978,67 @@ for kk=1:length(nLevelsB1)
 end
 
 if sum(maskIx)>0
-    plotTrsM1 = differenceRight_mask((correctIx|incorrectIx)&~block2Ix&maskIx);
-    nLevelsM1 = unique(plotTrsM1);
-    percentContCellM1 = cell(1,length(nLevelsM1));
-    for kk=1:length(nLevelsM1)
-        valM1 = nLevelsM1(kk);
-        valIxM1 = differenceRight_mask==valM1;
-        totalNTrialsValM1 = length(differenceRight_mask(valIxM1&(correctIx|incorrectIx)&~block2Ix&maskIx));
-        if min(differenceRight_mask) < 0
-          if valM1>=0,
-              ind = setdiff(intersect(find(maskIx),intersect(find(valIxM1),find(correctIx))), find(block2Ix));
-              rightNTrialsValM1 = length(ind);
-              percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
-          elseif valM1<0,
-              ind = setdiff(intersect(find(maskIx),intersect(find(valIxM1),find(incorrectIx))), find(block2Ix));
-              rightNTrialsValM1 = length(ind);
-              percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
-          end
-        else
-            if valM1>=1,
-                ind = setdiff(intersect(find(maskIx),intersect(find(valIxM1),find(correctIx))), find(block2Ix));
+    if sum(type1MaskIx)>0
+      plotTrsM1 = differenceRight_mask((correctIx|incorrectIx)&~block2Ix&type1MaskIx);
+      nLevelsM1 = unique(plotTrsM1);
+      percentContCellM1 = cell(1,length(nLevelsM1));
+      for kk=1:length(nLevelsM1)
+          valM1 = nLevelsM1(kk);
+          valIxM1 = differenceRight_mask==valM1;
+          totalNTrialsValM1 = length(differenceRight_mask(valIxM1&(correctIx|incorrectIx)&~block2Ix&type1MaskIx));
+          if min(differenceRight_mask) < 0
+            if valM1>=0,
+                ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(correctIx))), find(block2Ix));
                 rightNTrialsValM1 = length(ind);
                 percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
-            elseif valM1<1,
-                ind = setdiff(intersect(find(maskIx),intersect(find(valIxM1),find(incorrectIx))), find(block2Ix));
+            elseif valM1<0,
+                ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(incorrectIx))), find(block2Ix));
                 rightNTrialsValM1 = length(ind);
                 percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
             end
-        end
+          else
+              if valM1>=1,
+                  ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(correctIx))), find(block2Ix));
+                  rightNTrialsValM1 = length(ind);
+                  percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
+              elseif valM1<1,
+                  ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(incorrectIx))), find(block2Ix));
+                  rightNTrialsValM1 = length(ind);
+                  percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
+              end
+          end
+      end
+    end
+    if sum(type2MaskIx)>0
+      plotTrsT2M1 = differenceRight_mask((correctIx|incorrectIx)&~block2Ix&type2MaskIx);
+      nLevelsT2M1 = unique(plotTrsT2M1);
+      percentContCellT2M1 = cell(1,length(nLevelsT2M1));
+      for kk=1:length(nLevelsT2M1)
+          valT2M1 = nLevelsT2M1(kk);
+          valIxT2M1 = differenceRight_mask==valT2M1;
+          totalNTrialsValT2M1 = length(differenceRight_mask(valIxT2M1&(correctIx|incorrectIx)&~block2Ix&type2MaskIx));
+          if min(differenceRight_mask) < 0
+            if valT2M1>=0,
+                ind = setdiff(intersect(find(type2MaskIx),intersect(find(valIxT2M1),find(correctIx))), find(block2Ix));
+                rightNTrialsValT2M1 = length(ind);
+                percentContCellT2M1{kk} = rightNTrialsValT2M1/totalNTrialsValT2M1;
+            elseif valT2M1<0,
+                ind = setdiff(intersect(find(type2MaskIx),intersect(find(valIxT2M1),find(incorrectIx))), find(block2Ix));
+                rightNTrialsValT2M1 = length(ind);
+                percentContCellT2M1{kk} = rightNTrialsValT2M1/totalNTrialsValT2M1;
+            end
+          else
+              if valT2M1>=1,
+                  ind = setdiff(intersect(find(type2MaskIx),intersect(find(valIxT2M1),find(correctIx))), find(block2Ix));
+                  rightNTrialsValT2M1 = length(ind);
+                  percentContCellT2M1{kk} = rightNTrialsValT2M1/totalNTrialsValT2M1;
+              elseif valT2M1<1,
+                  ind = setdiff(intersect(find(type2MaskIx),intersect(find(valIxT2M1),find(incorrectIx))), find(block2Ix));
+                  rightNTrialsValT2M1 = length(ind);
+                  percentContCellT2M1{kk} = rightNTrialsValT2M1/totalNTrialsValT2M1;
+              end
+          end
+      end
     end
 end
 
@@ -1033,35 +1075,68 @@ if sum(block2Ix)>0
 end
 
 if sum(maskIx&block2Ix)>0
-    plotTrsM2 = differenceRight_mask((correctIx|incorrectIx)&block2Ix&maskIx);
+  if sum(type1MaskIx)>0 type1MaskIx
+    plotTrsM2 = differenceRight_mask((correctIx|incorrectIx)&block2Ix&type1MaskIx);
     nLevelsM2 = unique(plotTrsM2);
     percentContCellM2 = cell(1,length(nLevelsM2));
     for kk=1:length(nLevelsM2)
         valM2 = nLevelsM2(kk);
         valIxM2 = differenceRight_mask==valM2;
-        totalNTrialsValM2 = length(differenceRight_mask(valIxM2&(correctIx|incorrectIx)&block2Ix&maskIx));
+        totalNTrialsValM2 = length(differenceRight_mask(valIxM2&(correctIx|incorrectIx)&block2Ix&type1MaskIx));
         if min(differenceRight_mask) < 0
           if valM2>=0,
-              ind = setdiff(intersect(find(maskIx),intersect(find(valIxM2),find(correctIx))), find(block1Ix));
+              ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM2),find(correctIx))), find(block1Ix));
               rightNTrialsValM2 = length(ind);
               percentContCellM2{kk} = rightNTrialsValM2/totalNTrialsValM2;
           elseif valM2<0,
-              ind = setdiff(intersect(find(maskIx),intersect(find(valIxM2),find(incorrectIx))), find(block1Ix));
+              ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM2),find(incorrectIx))), find(block1Ix));
               rightNTrialsValM2 = length(ind);
               percentContCellM2{kk} = rightNTrialsValM2/totalNTrialsValM2;
           end
         else
             if valM2>=1,
-                ind = setdiff(intersect(find(maskIx),intersect(find(valIxM2),find(correctIx))), find(block1Ix));
+                ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM2),find(correctIx))), find(block1Ix));
                 rightNTrialsValM2 = length(ind);
                 percentContCellM2{kk} = rightNTrialsValM2/totalNTrialsValM2;
             elseif valM2<1,
-                ind = setdiff(intersect(find(maskIx),intersect(find(valIxM2),find(incorrectIx))), find(block1Ix));
+                ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM2),find(incorrectIx))), find(block1Ix));
                 rightNTrialsValM2 = length(ind);
                 percentContCellM2{kk} = rightNTrialsValM2/totalNTrialsValM2;
             end
         end
     end
+  end
+  if sum(type2MaskIx)>0
+    plotTrsT2M2 = differenceRight_mask((correctIx|incorrectIx)&block2Ix&type2MaskIx);
+    nLevelsT2M2 = unique(plotTrsT2M2);
+    percentContCellT2M2 = cell(1,length(nLevelsT2M2));
+    for kk=1:length(nLevelsT2M2)
+        valT2M2 = nLevelsT2M2(kk);
+        valIxT2M2 = differenceRight_mask==valT2M2;
+        totalNTrialsValT2M2 = length(differenceRight_mask(valIxT2M2&(correctIx|incorrectIx)&block2Ix&type2MaskIx));
+        if min(differenceRight_mask) < 0
+          if valT2M2>=0,
+              ind = setdiff(intersect(find(type2MaskIx),intersect(find(valIxT2M2),find(correctIx))), find(block1Ix));
+              rightNTrialsValT2M2 = length(ind);
+              percentContCellT2M2{kk} = rightNTrialsValT2M2/totalNTrialsValT2M2;
+          elseif valT2M2<0,
+              ind = setdiff(intersect(find(type2MaskIx),intersect(find(valIxT2M2),find(incorrectIx))), find(block1Ix));
+              rightNTrialsValT2M2 = length(ind);
+              percentContCellT2M2{kk} = rightNTrialsValT2M2/totalNTrialsValT2M2;
+          end
+        else
+            if valT2M2>=1,
+                ind = setdiff(intersect(find(type2MaskIx),intersect(find(valIxT2M2),find(correctIx))), find(block1Ix));
+                rightNTrialsValT2M2 = length(ind);
+                percentContCellT2M2{kk} = rightNTrialsValT2M2/totalNTrialsValT2M2;
+            elseif valT2M2<1,
+                ind = setdiff(intersect(find(type2MaskIx),intersect(find(valIxT2M2),find(incorrectIx))), find(block1Ix));
+                rightNTrialsValT2M2 = length(ind);
+                percentContCellT2M2{kk} = rightNTrialsValT2M2/totalNTrialsValT2M2;
+            end
+        end
+    end
+  end
 end
 
 
@@ -1105,11 +1180,18 @@ if sum(didNoGoIx)>0
   pH3 = plot(nLevelsNoGo, cell2mat(percentContCellNoGo), 'Color', 'r', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
 
-if sum(maskIx)>= 1
+if sum(type1MaskIx)>= 1
   pH4 = plot(nLevelsM1, cell2mat(percentContCellM1), 'Color', 'c', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
-if sum(maskIx&block2Ix)>= 1
-  pH5 = plot(nLevelsM2, cell2mat(percentContCellM2), 'Color', 'g', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+if sum(type1MaskIx&block2Ix)>= 1
+  pH5 = plot(nLevelsM2, cell2mat(percentContCellM2), 'Color', '--c', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+end
+
+if sum(type2MaskIx)>= 1
+  pH6 = plot(nLevelsT2M1, cell2mat(percentContCellT2M1), 'Color', 'g', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
+end
+if sum(type2MaskIx&block2Ix)>= 1
+  pH7 = plot(nLevelsT2M2, cell2mat(percentContCellT2M2), 'Color', '--g', 'LineWidth', 1.5, 'Marker', '.', 'MarkerSize', 8);
 end
 
 
