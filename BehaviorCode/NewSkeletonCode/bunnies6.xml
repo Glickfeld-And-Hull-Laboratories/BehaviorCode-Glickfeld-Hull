@@ -1,0 +1,250 @@
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
+              pulse_duration="juice" pulse_on="juice" 
+              lever1="FIO1" 
+              lever1_solenoid="MIO0"
+              laser_trigger="laserTrigger"
+              optic_device="optic_device"
+              strobed_digital_word="strobedDigitalWord"
+              counter="counter"
+              do2led="do2led" led_seq="led_seq" LED_duration="LED_durationMS" led1_status="led1_status" led2_status="led2_status"
+              do_wheelspeed="DoWheelSpeed"
+              ws_durationUS="speedIntervalUS"
+              wheel_speed="wheelSpeed"
+              doCB="doCerebellarStim"
+              quadrature='quadrature'/>
+    <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+    <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+  </io_devices>
+  <variables tag="Variables">
+      <!-- creating variables -->
+    <folder tag="Behavioral Control">
+      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
+      <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
+      <variable tag="subjectNum" scope="global" logging="when_changed" default_value="12" type="integer" persistant="0"/>
+    </folder>
+
+    <folder tag="Hardware Variables">
+      <variable tag="FIO1" full_name="FIO1" default_value="0" scope="GLOBAL" type="INTEGER" editable="never" logging="when_changed"/>
+      <variable tag="MIO0" full_name="MIO0" default_value="0" scope="GLOBAL" type="boolean" editable="never" logging="when_changed"/>
+      <variable tag="laserTrigger" full_name="laserTrigger" default_value="0" scope="GLOBAL" type="boolean" logging="when_changed" persistant="0"/>
+      <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="GLOBAL" type="integer" logging="when_changed" persistant="0"/>
+      <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="wheelSpeed" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="LED_durationMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0"/>
+      <variable tag="quadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+      <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+    </folder>
+
+    <folder tag="Stimuli Variables">
+      <variable tag="index" scope="local" logging="when_changed" default_value="DEFAULT" type="string"/>
+      <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="30" type="integer" persistant="1"/>
+      <variable tag="xSize" scope="global" logging="when_changed" default_value="20.0" type="float" persistant="1"/>
+      <variable tag="ySize" scope="global" logging="when_changed" default_value="20.0" type="float" persistant="1"/>
+      <variable tag="xPosition" scope="global" logging="when_changed" default_value="0.0" type="float" persistant="1"/>
+      <variable tag="yPosition" scope="global" logging="when_changed" default_value="0.0" type="float" persistant="1"/>
+      <variable tag="numImages" scope="global" logging="when_changed" default_value="7" type="integer" persistant="0"/>
+
+      <variable tag="Do2LED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Alternating LED"/>
+      <variable tag="LED_sequence" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="1" groups="Alternating LED"/>
+
+      <variable tag="doPhotodiode" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusContrast" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusAzimuth" scope="global" logging="when_changed" default_value="-47" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusElevation" scope="global" logging="when_changed" default_value="25" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusWidth" scope="global" logging="when_changed" default_value="10.0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoStimulusHeight" scope="global" logging="when_changed" default_value="10.0" type="integer" persistant="1" groups="Photodiode Variables"/>
+      <variable tag="photoMaskSpatialFreq" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Photodiode Variables"/>
+    </folder>
+    <folder tag="Trial Variables">
+      <variable tag="isiTimeMs" scope="global" logging="when_changed" default_value="250" type="float" persistant="1"/>
+      <variable tag="randIsiTimeStart" scope="global" logging="when_changed" default_value="250" type="float" persistant="1"/>
+      <variable tag="randIsiTimeStep" scope="global" logging="when_changed" default_value="250" type="float" persistant="1"/>
+      <variable tag="randIsiTimeInterval" scope="global" logging="when_changed" default_value="4" type="float" persistant="1"/>
+      <variable tag="itiTimeMs" scope="global" logging="when_changed" default_value="2000" type="float" persistant="1"/>
+      <variable tag="stimOnTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="1"/>
+      <variable tag="stimOne" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/>
+      <variable tag="stimTwo" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/>
+      <variable tag="stimOneOffChance" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="stimList" scope="global" logging="when_changed" default_value="1, 2, 3, 4, 5, 6, 7" type="list" persistant="0"/>
+      <variable tag="setList" scope="global" logging="when_changed" default_value="'flowers'" type="list" persistant="0"/>
+
+    </folder>
+    <folder tag="Task Variables">
+      <variable tag="doRandIsiTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="doRepeatStimOne" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="doRepeatStimTwo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="doRandStimOne" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="doRandStimTwo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="doSameStims" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="doStimOneOffChance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+    </folder>
+
+    <folder tag="Internal Variables">
+      <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+
+      <variable tag="ntrials" scope="global" logging="when_changed" default_value="1" type="integer" persistant="0"/>
+      <variable tag="cItiStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cStimOneOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cStimOneOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cStimTwoOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cStimTwoOff" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+
+      <variable tag="tisiTimeMs" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
+      <variable tag="tstimOne" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+      <variable tag="tstimTwo" scope="global" logging="when_changed" default_value="1" type="float" persistant="0"/>
+
+      <variable tag="tisiTimeFrames" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
+      <variable tag="titiTimeFrames" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
+      <variable tag="tstimOnTimeFrames" scope="global" logging="when_changed" default_value="500" type="float" persistant="0"/>
+    </folder>
+  </variables>
+  <sounds tag="Sounds"/>
+  <stimuli tag="Stimuli">
+    <stimulus_group tag="images">
+      <!-- load image stimuli -->
+      <range_replicator tag="New Replicator" from="0" to="30" step="1" variable="index">
+        <stimulus type="image_file" tag="image_${index}" path="Image/${index}.jpg" x_size="xSize" y_size="ySize" x_position="xPosition" y_position="yPosition" rotation="0.0" alpha_multiplier="1.0" deferred="explicit"/>
+      </range_replicator>
+      <!-- create photodiode stimuli -->
+      <stimulus type="drifting_grating" tag="photoDiodeBlack"  direction="0" starting_phase="1" spatial_frequency="photoMaskSpatialFreq" speed="0" grating_type="sinusoid" std_dev="0.3" mean="0.1" x_size="photoStimulusWidth" y_size="photoStimulusHeight" x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" rotation="0" alpha_multiplier="1.0" color="0.0, 0.0, 0.0"></stimulus>
+      <stimulus type="drifting_grating" tag="photoDiodeWhite"  direction="0" starting_phase="1" spatial_frequency="photoMaskSpatialFreq" speed="0" grating_type="sinusoid" std_dev="0.3" mean="0.1" x_size="photoStimulusWidth" y_size="photoStimulusHeight" x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" rotation="0" alpha_multiplier="1" color="256.0, 256.0, 256.0"></stimulus>  
+    </stimulus_group>
+  </stimuli>
+  <filters tag="Filters"/>
+  <optimizers tag="Optimizers"/>
+  <experiment tag="New Experiment" full_name="" description="">
+    <protocol tag="New Protocol" nsamples="1" sampling_method="cycles" selection="sequential">
+      <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+      <action type="report" message="**** First trial since experiment load ****"/>
+      <action type="assignment" tag="Set Counter to 0" variable="counter" value="0"/>
+      <action type="assignment" tag="Set ntrials to 0" variable="ntrials" value="0"/>
+      <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
+        <task_system tag="Trial Start" interruptible="YES">
+
+          <task_system_state tag="Initialization" interruptible="YES">
+            <!-- initializing before trial -->
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="report" message="Initializing"/>
+
+            <action type="run_python_file" tag="Load script" path="stimGroups.py"/>
+
+            <action type="assignment" tag="Sync Matlab" variable="sync" value="1"/>
+            <action type="assignment" variable="tisiTimeMs" value="isiTimeMs"/>
+            <action type="assignment" variable="tstimOne" value="stimOne"/>
+            <action type="assignment" variable="tstimTwo" value="stimTwo"/>
+
+            <!-- setting images based on task variables -->
+            <action type="if" condition="doRandIsiTime">
+              <action type="assignment" variable="tisiTimeMs" value="randIsiTimeStart + disc_rand(0, randIsiTimeInterval - 1) * randIsiTimeStep"/>
+            </action>
+            <action type="if" condition="doRandStimOne">
+              <action type="assignment" variable="tstimOne" value="stimList[disc_rand(0, size(stimList) - 1)]"/>
+            </action>
+            <action type="if" condition="doRandStimTwo">
+              <action type="assignment" variable="tstimTwo" value="stimList[disc_rand(0, size(stimList) - 1)]"/>
+            </action>
+            <action type="if" condition="doSameStims">
+              <action type="assignment" variable="tstimTwo" value="tstimOne"/>
+            </action>
+            <action type="if" condition="doStimOneOffChance &amp;&amp; disc_rand(1, 100) &lt;= stimOneOffChance">
+              <action type="assignment" variable="tstimOne" value="0"/>
+            </action>
+
+            <!-- loading images -->
+            <action tag="Load Stimulus 1" type="load_stimulus" stimulus="images[tstimOne]"></action>
+            <action tag="Load Stimulus 2" type="load_stimulus" stimulus="images[tstimTwo]"></action>
+
+
+            <action type="assignment" variable="titiTimeFrames" value="ceil((itiTimeMs/1000)*frameRateHz)"/>
+            <action type="assignment" variable="tisiTimeFrames" value="ceil((tisiTimeMs/1000)*frameRateHz)"/>
+            <action type="assignment" variable="tstimOnTimeFrames" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
+
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeBlack"></action>
+            <action type="play_dynamic_stimulus" stimulus="photoDiodeBlack"></action> 
+            <action tag="Update display" type="update_stimulus_display"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition tag="Go to Iti" type="direct" target="Iti"></transition>
+          </task_system_state>
+
+          <task_system_state tag="Iti" interruptible="YES">
+            <action type="report" message="Iti"/>
+            <action type="assignment" tag="Log counter" variable="cItiStart" value="counter"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + titiTimeFrames) &amp;&amp; ntrials &lt; 1 &amp;&amp; counter > 19" target="StimOneOn"></transition>
+            <transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + titiTimeFrames) &amp;&amp; ntrials &gt; 0" target="StimOneOn"></transition>
+          </task_system_state>
+
+          <task_system_state tag="StimOneOn" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"/>
+            <action type="assignment" variable="ntrials" value="ntrials + 1"/>
+            <action tag="Queue image" type="queue_stimulus" stimulus="images[tstimOne]"/>
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeWhite"></action>
+            <action type="play_dynamic_stimulus" stimulus="photoDiodeWhite"></action> 
+            <action tag="Update display" type="update_stimulus_display"/>
+            <action type="assignment" variable="cStimOneOn" value="counter" />
+
+            <action type="report" message="StimOneOn"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimOneOn + tstimOnTimeFrames)" target="StimOneOff"></transition>
+          </task_system_state>
+
+          <task_system_state tag="StimOneOff" interruptible="YES">
+            <action type="report" message="StimOneOff"/>
+            <action tag="Dequeue image" type="dequeue_stimulus" stimulus="images[tstimOne]"/>
+            <action tag="Dequeue image" type="dequeue_stimulus" stimulus="photoDiodeWhite"/>
+            <action tag="Update display" type="update_stimulus_display"/>
+            <action type="assignment" variable="cStimOneOff" value="counter" />
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="counter &gt;= (cStimOneOff + tisiTimeFrames)" target="StimTwoOn"></transition>
+          </task_system_state>
+
+          <task_system_state tag="StimTwoOn" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"/>
+            <action tag="Queue image" type="queue_stimulus" stimulus="images[tstimTwo]"/>
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeWhite"></action>
+            <action type="play_dynamic_stimulus" stimulus="photoDiodeWhite"></action> 
+            <action tag="Update display" type="update_stimulus_display"/>
+            <action type="assignment" variable="cStimTwoOn" value="counter" />
+            <action type="report" message="StimTwoOn"/>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="counter &gt;= (cStimTwoOn + tstimOnTimeFrames)" target="StimTwoOff"></transition>
+          </task_system_state>
+
+          <task_system_state tag="StimTwoOff" interruptible="YES">
+            <action type="report" message="StimTwoOff"/>
+            <action tag="Dequeue image" type="dequeue_stimulus" stimulus="images[tstimTwo]"/>
+            <action tag="Dequeue image" type="dequeue_stimulus" stimulus="photoDiodeWhite"/>
+            <action tag="Update display" type="update_stimulus_display"/>
+            <action type="assignment" variable="cStimTwoOff" value="counter" />
+
+            <action tag="Unload Stimulus 1" type="unload_stimulus" stimulus="images[tstimOne]"></action>
+            <action tag="Unload Stimulus 2" type="unload_stimulus" stimulus="images[tstimTwo]"></action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+            <transition type="conditional" tag="Queue Visual Stimulus" condition="counter  &gt;= (cStimTwoOff + 3)" target="End Trial"></transition>
+          </task_system_state>
+
+          <task_system_state tag="End Trial" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"/>
+            <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
+            <transition_marker _unmoveable="1" tag="Transitions"/>
+            <transition tag="Return to parent task system" type="yield"/>
+          </task_system_state>
+        </task_system>
+      </trial>
+    </protocol>
+  </experiment>
+</monkeyml>
