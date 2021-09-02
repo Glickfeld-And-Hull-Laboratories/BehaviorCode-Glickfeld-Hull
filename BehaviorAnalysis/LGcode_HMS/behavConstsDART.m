@@ -17,13 +17,29 @@ switch tHostname
             rc.tammyData = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\tammy\data';
         elseif tUsername(1:5) == 'tammy'
             rc.name = 'tammy';
-            rootDir = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\tammy';
-            rc.analysis = fullfile(rootDir,'Analysis\2P');
-            rc.data = fullfile(rootDir,'Data\2P_images');
-            rc.ashleyAnalysis = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\ashley\Analysis';
-            rc.ashleyData = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\ashley\data';
-            rc.lindseyAnalysis = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\lindsey\Analysis';
-            rc.lindseyData = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\lindsey\data';
+            rootDir = 'Z:\home\ACh';
+            rc.achAnalysis = fullfile(rootDir,'Analysis');
+            rc.achData = 'Z:\home\ACh\Data';
+            rc.analysis = fullfile(rootDir,'Analysis');
+            rc.data = 'Z:\home\ACh\Data';
+
+        elseif tUsername(1:5) == 'celine'
+            rc.name = 'celine';
+            rootDir = 'Z:\home\ACh';
+            rc.achAnalysis = fullfile(rootDir,'Analysis');
+            rc.achData = 'Z:\home\ACh\Data';
+            rc.analysis = fullfile(rootDir,'Analysis');
+            rc.data = 'Z:\home\ACh\Data';
+           
+        end
+    case{'nb-hubel'}
+        if tUsername(1:5) == 'cc735'
+            rc.name = 'celine';
+            rootDir = 'Z:\home\ACh';
+            rc.achAnalysis = fullfile(rootDir,'Analysis');
+            rc.achData = 'Z:\home\ACh\Data';
+            
+            
         end
 end
 
