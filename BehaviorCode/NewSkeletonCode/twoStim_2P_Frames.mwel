@@ -2330,7 +2330,7 @@ protocol JuiceOnHoldProtocol {
                                     }
                                 }
                             }
-                            if (tDoRandMaskTF && tDoRandMaskCon) {
+                            if (tDoRandMaskTF && tDoRandMaskCon && !tDoRandMaskPhase) {
                                 tTempMask1 = tMaskNumber % (1+maskOneGratingTemporalFreqStepN)
                                 if (tTempMask1 == 1) {
                                     tMaskOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
@@ -2348,6 +2348,32 @@ protocol JuiceOnHoldProtocol {
                                     }
                                     if (tTempMask2 > 1) {
                                         tMaskTwoGratingTemporalFreqCPS = maskTwoGratingPhaseDeg * pow(maskTwoGratingTemporalFreqStepLog, (tTempMask2 % maskTwoGratingTemporalFreqStepN)-1)
+                                    }
+                                }
+                            }
+                            if (tDoRandMaskTF && tDoRandMaskCon && tDoRandMaskPhase) {
+                                tTempMask1 = tMaskNumber % ((1+maskOneGratingTemporalFreqStepN) * maskOneGratingPhaseStepN)
+                                if (tTempMask1 < maskOneGratingPhaseStepN) {
+                                    tMaskOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
+                                    tMaskOneGratingPhaseDeg = maskOneGratingPhaseDeg + (maskOneGratingPhaseStepDeg * tTempMask1)
+                                }
+                                if (tTempMask1 >= maskOneGratingPhaseStepN) {
+                                    tMaskOneGratingTemporalFreqCPS = maskOneGratingTemporalFreqCPS * pow(maskOneGratingTemporalFreqStepLog, floor(tTempMask1/maskOneGratingPhaseStepN)-1)
+                                    tMaskOneGratingPhaseDeg = maskOneGratingPhaseDeg + (maskOneGratingPhaseStepDeg * (tTempMask1 % maskOneGratingPhaseStepN))
+                                }
+                                if (matchStimOneParameters) {
+                                    tMaskTwoGratingTemporalFreqCPS = tMaskOneGratingTemporalFreqCPS
+                                    tMaskTwoGratingPhaseDeg = tMaskOneGratingPhaseDeg
+                                }
+                                if (!matchStimOneParameters) {
+                                    tTempMask2 = tMaskNumber % (1+maskTwoGratingTemporalFreqStepN)
+                                    if (tTempMask2 < maskOneGratingPhaseStepN) {
+                                        tMaskTwoGratingTemporalFreqCPS = stimTwoGratingTemporalFreqCPS
+                                        tMaskTwoGratingPhaseDeg = maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * tTempMask1)
+                                    }
+                                    if (tTempMask2 > 1) {
+                                        tMaskTwoGratingTemporalFreqCPS = maskTwoGratingTemporalFreqCPS * pow(maskTwoGratingTemporalFreqStepLog, (tTempMask2 % maskOneGratingTemporalFreqStepN)-1)
+                                        tMaskTwoGratingPhaseDeg = maskTwoGratingPhaseDeg + (maskTwoGratingPhaseStepDeg * (tTempMask2 % maskTwoGratingPhaseStepN))
                                     }
                                 }
                             }
@@ -2573,7 +2599,7 @@ protocol JuiceOnHoldProtocol {
                 
                 report ('tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast')
                 report ('tStimOneGratingDirectionDeg is $tStimOneGratingDirectionDeg; tMaskOneGratingDirectionDeg is $tMaskOneGratingDirectionDeg')
-                report ('tMaskOneGratingTemporalFreq is $tMaskOneGratingTemporalFreqCPS')
+                report ('tMaskOneGratingTemporalFreq is $tMaskOneGratingTemporalFreqCPS; tTempMask1 is $tTempMask1')
                 setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg
                 setMaskOneGratingDirectionDeg = tMaskOneGratingDirectionDeg
                 
