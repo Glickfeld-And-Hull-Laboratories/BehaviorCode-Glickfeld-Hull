@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<monkeyml version="1.0">
+  <io_devices tag="IO Devices">
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6"
+      pulse_duration="juice"
+      strobed_digital_word="strobedDigitalWord"
+      counter="counter"
+      optic_device="optic_device"
+      do2led="do2led" led_seq="led_seq" LED_duration="LED_durationMS" led1_status="led1_status" led2_status="led2_status"
+      do_wheelspeed="DoWheelSpeed"
+      ws_durationUS="speedIntervalUS"
+      wheel_speed="wheelSpeed"
+      doCB="doCerebellarStim"/>
+      <iodevice tag="FakeMonkey" priority="" type="fake_monkey" id="" alt="" spike_rate="10"/>
+      <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
+    </io_devices>
+    <variables tag="Variables">
+      <folder tag="Behavioral Control">
+        <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="ExptStruct"/>
+        <variable tag="frameRateHz" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="ExptStruct"/>
+        <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"></variable>
+      </folder>
+
+      <folder tag="Stimuli">
+        <variable tag="backgroundLuminance" scope="global" logging="when_changed" default_value="0.5" type="float" persistant="1" groups="Stimulus"/>
+        <variable tag="barWidth" scope="global" logging="when_changed" persistant="1" default_value="5" type="any" groups="Stimulus"/>
+        <variable tag="stimOnTimeMs" scope="global" logging="when_changed" persistant="0" default_value="100" type="any" groups="Stimulus"/>
+        <variable tag="nScansOff" scope="global" logging="when_changed" persistant="1" default_value="50" type="any" groups="Stimulus"/>
+
+        <variable tag="monitorXDeg" scope="global" logging="when_changed" persistant="1" default_value="80" type="any" groups="Monitor"/>
+        <variable tag="monitorYDeg" scope="global" logging="when_changed" persistant="1" default_value="60" type="any" groups="Monitor"/>
+        <variable tag="barOrientationDeg" scope="global" logging="when_changed" persistant="1" default_value="0" type="any" groups="Monitor"/>
+      </folder>
+      
+      <folder tag="Online Display">
+          <variable tag="sync" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      </folder>
+      
+      <folder tag="Hardware variables">
+          <variable tag="sendSerialParams" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+          <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Hardware"/>
+          <variable tag="juice" full_name="juice" scope="global" logging="when_changed" default_value="0" type="integer" groups="Hardware"/>
+          <variable tag="strobedDigitalWord" full_name="strobedDigitalWord" default_value="0" scope="global" type="integer" logging="when_changed" persistant="0"/>
+          <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Hardware"/>
+          <variable tag="LED_durationMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Hardware"/>
+          <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Hardware"/>
+          <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0" groups="Hardware"/>
+          <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0" groups="Hardware"/>
+      </folder>
+      <folder tag="Internal Variables">
+        
+        <variable tag="cITIStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="cStimOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tStimStartTime" scope="global" logging="when_changed" persistant="0" type="float" default_value="0"/>
+        <variable tag="tXStartPos" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tYStartPos" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tXSizeDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tYSizeDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tXDirection" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tYDirection" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tBarOrientationDeg" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+        <variable tag="tTrialsDoneSinceStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="tStimulusNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+        <variable tag="doReset" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable type="selection" tag="svSeqStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39" selection="sequential_ascending" nsamples="40" sampling_method="samples"/>
+              
+        <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Wheel"/>
+        <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Wheel"/>
+        <variable tag="speedIntervalMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Wheel"/>
+        <variable tag="wheelSpeed" scope="global" logging="when_changed" default_value="0" type="float" persistant="0" groups="Wheel"/>
+        <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
+        <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      </folder>
+    </variables>  
+
+    <stimuli tag="Stimuli">
+      <stimulus type="blank_screen" tag="background" color="backgroundLuminance,backgroundLuminance,backgroundLuminance"></stimulus>
+      <stimulus type="frame_list" tag="bar" stimulus_group="bar_frames" ending="" ended="" loop="YES" repeats="0" autoplay="YES"></stimulus>
+      <stimulus_group tag="bar_frames">
+           <stimulus type="rectangle" tag="bar_frame" color="1,1,1" x_size="tXSizeDeg" y_size="tYSizeDeg" 
+            x_position="tXStartPos" 
+            y_position="tYStartPos" 
+            rotation="0" alpha_multiplier="1"></stimulus>
+           
+      </stimulus_group>
+    </stimuli>
+
+    <filters tag="Filters"></filters>
+    <optimizers tag="Optimizers"></optimizers>
+    <resources tag="Resources"></resources>
+    <experiment tag="Experiment" full_name="">
+      <protocol tag="New Protocol" full_name="" selection="sequential" nsamples="1" sampling_method="cycles" description="" interruptible="YES">
+        <action type="queue_stimulus" stimulus="background"></action>
+        <action tag="Start IO Device" type="start_device_IO" device="LabJackU6"></action>
+        <action type="assignment" variable="cITIStart" value="0"></action>
+        <!-- init actions before running trials after any press of start-->
+
+        <action type="assignment" variable="tTrialsDoneSinceStart" value="0"></action>
+          <trial tag="Trial" full_name="Trial" description="" interruptible="1" selection="sequential" nsamples="1" sampling_method="cycles">
+            <trial tag="New List" nsamples="9999" sampling_method="samples" selection="random_without_replacement">
+              <!--<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> -->
+              <task_system tag="TS" full_name="TS" description="" interruptible="YES" >
+
+                <task_system_state tag="Inter Stimulus Interval" interruptible="YES">
+                  <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                  
+                  <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+                  <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+                  <action type="assignment" tag="Encode START" variable="strobedDigitalWord" value="170"></action>
+                  
+                  <action type="assignment" tag="Sync Matlab" variable="sync" value="1"></action>
+                  
+                  <action type="assignment" variable="cITIStart" value="counter"></action>
+                  <!-- reset selection var -->
+                  <action type="if" condition="tTrialsDoneSinceStart == 0">  
+                    <action type="reset_selection" selection="svSeqStimNumber"></action>
+                    <action type="assignment" variable="tNStimAccepted" value="0"></action>
+                  </action> 
+
+                  <action type="assignment" variable="tStimulusNumber" value="svSeqStimNumber"/>
+                  
+
+                  <action type="if" condition="barOrientationDeg == 0">
+                  <action type="if" condition="tXStartPos &lt; monitorXDeg/2 ">
+                    <action type="assignment" variable="tBarOrientationDeg" value="barOrientationDeg"></action>
+                    <action type="assignment" variable="tXSizeDeg" value="barWidth"></action>
+                    <action type="assignment" variable="tYSizeDeg" value="monitorYDeg"></action>
+                    <action type="assignment" variable="tYStartPos" value="0"></action>
+                    <action type="assignment" variable="tYDirection" value="0"></action>
+                    <action type="if" condition="tTrialsDoneSinceStart == 0">
+                    <action type="assignment" variable="tXStartPos" value="(-1*(monitorXDeg/2))+(barWidth/2)"></action>
+                  </action>
+                  <action type="if" condition="tTrialsDoneSinceStart &gt; 0">
+                      <action type="assignment" variable="tXStartPos" value="tXStartPos+barWidth"></action>
+                    </action>
+                      <action type="assignment" variable="tXDirection" value="1"></action>
+                      <action type="assignment" variable="doReset" value="0"></action>
+                    </action> 
+                    <action type="if" condition="tXStartPos &gt;= monitorXDeg/2">
+                      <action type="assignment" variable="tBarOrientationDeg" value="barOrientationDeg"></action>
+                    <action type="assignment" variable="tXSizeDeg" value="barWidth"></action>
+                    <action type="assignment" variable="tYSizeDeg" value="monitorYDeg"></action>
+                    <action type="assignment" variable="tYStartPos" value="0"></action>
+                    <action type="assignment" variable="tYDirection" value="0"></action>
+                      <action type="assignment" variable="tXStartPos" value="(-1*(monitorXDeg/2))+(barWidth/2)"></action>
+                      <action type="assignment" variable="tXDirection" value="1"></action>
+                      <action type="assignment" variable="doReset" value="1"></action>
+                    </action> 
+                  </action>
+
+                  <action type="if" condition="barOrientationDeg == 90">
+                  <action type="if" condition="tYStartPos &lt; monitorYDeg/2 ">
+                    <action type="assignment" variable="tBarOrientationDeg" value="barOrientationDeg"></action>
+                    <action type="assignment" variable="tYSizeDeg" value="barWidth"></action>
+                    <action type="assignment" variable="tXSizeDeg" value="monitorXDeg"></action>
+                    <action type="assignment" variable="tXStartPos" value="0"></action>
+                    <action type="assignment" variable="tYDirection" value="1"></action>
+                    <action type="if" condition="tTrialsDoneSinceStart == 0">
+                      <action type="assignment" variable="tYStartPos" value="(-1*(monitorYDeg/2))+(barWidth/2)"></action>
+                  </action>
+                    <action type="if" condition="tTrialsDoneSinceStart &gt; 0">
+                      <action type="assignment" variable="tYStartPos" value="tYStartPos+barWidth"></action>
+                    </action>
+                      <action type="assignment" variable="tXDirection" value="0"></action>
+                      <action type="assignment" variable="doReset" value="0"></action>
+                    </action> 
+                    <action type="if" condition="tYStartPos &gt;= monitorYDeg/2">
+                      <action type="assignment" variable="tBarOrientationDeg" value="barOrientationDeg"></action>
+                    <action type="assignment" variable="tYSizeDeg" value="barWidth"></action>
+                    <action type="assignment" variable="tXSizeDeg" value="monitorXDeg"></action>
+                    <action type="assignment" variable="tXStartPos" value="0"></action>
+                    <action type="assignment" variable="tYDirection" value="1"></action>
+                      <action type="assignment" variable="tYStartPos" value="(-1*(monitorYDeg/2))+(barWidth/2)"></action>
+                      <action type="assignment" variable="tXDirection" value="0"></action>
+                      <action type="assignment" variable="doReset" value="1"></action>
+                    </action> 
+                  </action>
+                  
+
+                  <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                  <transition type="conditional" tag="If nScansOff, move to StimOn" condition="cITIStart == 0 &amp;&amp; counter == 1" target="StimOn"></transition>
+                  <transition type="conditional" tag="If nScansOff, move to StimOn" condition="cITIStart > 0 &amp;&amp; counter >= nScansOff+cITIStart" target="StimOn"></transition>
+
+                </task_system_state>
+
+                <task_system_state tag="StimOn" interruptible="YES">
+                  <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+                  <action type="start_timer" tag="Start stim on timer" timer="stimOnTimer" timebase="" duration="stimOnTimeMs" duration_units="ms"></action>
+
+                  <action tag="Live queue bar" type="live_queue_stimulus" stimulus="bar"></action>
+                  <action type="assignment" tag="Store start time" variable="tStimStartTime" value="now()"></action>
+                  <action tag="Update display" type="update_stimulus_display" predicted_output_time=""></action>                 
+
+                  <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                  <transition type="conditional" tag="If finished stim time on, end Trial" condition="timerExpired(stimOnTimer)" target="EndTrial"></transition>
+                </task_system_state>
+
+                <task_system_state tag="EndTrial" interruptible="YES">
+                  <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                  <action tag="Dequeue bar" type="dequeue_stimulus" stimulus="bar"></action>
+                  <action tag="Update display" type="update_stimulus_display" predicted_output_time=""></action>
+
+                  
+                  <action type="next_selection" selection="svSeqStimNumber"/>
+                  <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+                  
+                  <action type="if" condition="doReset">
+                    <action type="reset_selection" selection="svSeqStimNumber"/>
+                    <action type="assignment" variable="tNStimAccepted" value="0"></action>
+                  </action>
+
+                  <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
+            
+                  <action type="assignment" variable="tTrialsDoneSinceStart" value="tTrialsDoneSinceStart+1"/>
+                    
+                  <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+                  <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+                  <action type="assignment" tag="Encode END" variable="strobedDigitalWord" value="85"></action>
+
+                  <!-- trigger serial param dump to cyberkinetics -->
+                  <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="1"></action>
+                  <action type="assignment" tag="Send serial params" variable="sendSerialParams" value="0"></action>
+                  
+                  <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                  <transition type="yield" tag="return to parent task system"></transition>
+                </task_system_state>
+                
+              </task_system>
+            </trial>
+          </trial>
+          <action tag="Stop IO Device" type="stop_device_IO" device="LabJackU6"></action>
+        </protocol>
+    </experiment>
+</monkeyml>
