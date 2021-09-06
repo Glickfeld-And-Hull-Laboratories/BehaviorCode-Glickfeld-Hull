@@ -2251,6 +2251,19 @@ protocol JuiceOnHoldProtocol {
                     }
                 }
                 // end doBlock2 
+
+                if (tDoMask) {
+                    tPlaidDirectionDeg = (tMaskDirectionDeg + tGratingDirectionDeg)/2
+                    if (tDoType2Mask) {
+                        if (tLeftTrial) {
+                        tPlaidDirectionDeg = 68.1
+                        }
+                        if (!tLeftTrial) {
+                        tPlaidDirectionDeg = 21.9
+                        }
+                    }
+                }
+                
                 // calculate target threshold
                 if (tLeftTrial == 0 && !doOriDiscrim) {
                     tGratingEccentricityDeg = gratingTargetEccentricity+gratingEccentricityDeg
@@ -2302,17 +2315,6 @@ protocol JuiceOnHoldProtocol {
                 tGratingEccentricityStart = tGratingEccentricityDeg
                 tGratingDirectionStart = tGratingDirectionDeg
                 tMaskDirectionStart = tMaskDirectionDeg
-                if (tDoMask) {
-                    tPlaidDirectionDeg = (tMaskDirectionDeg + tGratingDirectionDeg)/2
-                    if (tDoType2Mask) {
-                        if (tLeftTrial) {
-                        tPlaidDirectionDeg = 68.1
-                        }
-                        if (!tLeftTrial) {
-                        tPlaidDirectionDeg = 21.9
-                        }
-                    }
-                }
                 tPlaidDirectionStart = tPlaidDirectionDeg
 
                 if (doLaserStim) {
@@ -2719,7 +2721,8 @@ protocol JuiceOnHoldProtocol {
                 }
                 start_timer (
                     timer = idleTimer
-                    duration = 500
+                    duration = 5
+                    duration_units = ms
                     )
                 goto (
                     target = StimOff
