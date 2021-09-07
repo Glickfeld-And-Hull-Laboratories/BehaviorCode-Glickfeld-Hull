@@ -2096,7 +2096,8 @@ protocol JuiceOnHoldProtocol {
                         tGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
                     }
                     if (tDoMask) {
-                        tMaskContrast = gratingMaxContrast
+                        tMaskContrast = tGratingContrast/2
+                        tGratingContrast = tGratingContrast/2
                         if (doRandMaskPhase) {
                             tMaskStartingPhaseDeg = disc_rand(0,1)*180
                         }
