@@ -72,7 +72,7 @@
     <folder tag="LED Control">
       <variable tag="doLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="LED"/>
       <variable tag="LEDintensity" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="LED"/>
-      <variable tag="optoMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="LED"/>
+      <variable tag="optoMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="LED"/> <!-- this has to be longer than fixedReqHoldTimeMs otherwise no reward-->
     </folder>
 
     <folder tag="Stimuli">
@@ -1207,7 +1207,15 @@
 
             <action type="assignment" tag="Encode LeverPressStart" variable="strobedDigitalWord" value="3"></action>
               <action type="assignment" variable="cLeverDown" value="counter"></action>
-              <action type="run_python_file" tag="Load script" path="L1.py"></action>  <!--  run python code to turn laser on -->
+              <action type="run_python_file" tag="Load script" path="L1.py"></action>  <!--  run python code to turn pockel cell on -->
+
+            <!--  for shuyang's optogenetics -->
+            <action type="if" condition="doLED == 1 &amp;&amp; optic_device == 'laserblue' &amp;&amp; tNRewards > -1"> 
+              <action type="assignment" variable="laserTrigger" value="1"></action>
+              <action type="assignment" variable="LEDpower" value="LEDintensity"></action>
+              <action type="report" message="LED was on ******************************"></action>
+              <action type="start_timer" tag="StartTimer" timer="optoTimer" timebase="" duration="optoMs" duration_units="ms"></action>
+            </action>
 
             <action type="if" condition="doVisualStim">
               <action type="if" condition="!doITIStim">
@@ -1449,12 +1457,6 @@
           <task_system_state tag="GiveReward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
-            <action type="if" condition="doLED == 1 &amp;&amp; optic_device == 'laserblue' &amp;&amp; tNRewards > -1"> 
-              <action type="assignment" variable="laserTrigger" value="1"></action>
-              <action type="assignment" variable="LEDpower" value="LEDintensity"></action>
-              <action type="report" message="LED was on ******************************"></action>
-              <action type="start_timer" tag="StartTimer" timer="optoTimer" timebase="" duration="optoMs" duration_units="ms"></action>
-            ></action>
             <action type="if" condition="rewardDelayPercent != 0 &amp;&amp; tNRewards > -1">
               <action type="assignment" variable="tRewardDelayTrial" value="(int)(disc_rand(0,100) &lt; rewardDelayPercent)"/>
               <action type="report" message="the tRewardDelayTrial is $tRewardDelayTrial"/>

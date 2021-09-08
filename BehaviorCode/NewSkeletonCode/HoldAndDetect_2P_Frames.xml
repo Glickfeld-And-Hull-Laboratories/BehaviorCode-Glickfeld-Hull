@@ -7,6 +7,7 @@
               lever1_solenoid="MIO0"
               laser_trigger="laserTrigger"
               optic_device="optic_device"
+              trial_laser_powerMw= "tTrialLaserPowerMw"
               strobed_digital_word="strobedDigitalWord"
               quadrature="quadrature"
               counter="counter"
@@ -264,6 +265,7 @@
       <variable tag="tITIUnexpectRewardNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tTrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
+      <variable tag="tTrialLaserPowerMw_trigger" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tBlock2TrialNumber" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -790,7 +792,7 @@
                         message="doVisualStim must be 1 for block2DoGratingAppearance == 1"/>
 
                 <!-- same for both types of block2 trials -->
-                <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+                <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>
 
                 <action type="if" condition="tBlock2TrialNumber == 0">
                   <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
@@ -896,7 +898,7 @@
                 <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/>
 
                 <action type="if" condition="tBlock2TrialNumber == 0"> <!-- off -->
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"/>
+                  <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"/>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
                   <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="gratingMaxContrastStep"></action>
@@ -906,7 +908,7 @@
                 </action>
 
                 <action type="if" condition="tBlock2TrialNumber == 1"> <!-- on -->
-                  <action type="assignment" variable="tTrialLaserPowerMw" value="block2TrialLaserPowerMw"/>
+                  <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="block2TrialLaserPowerMw"/>
                   <action type="assignment" variable="tTrialLaserOnTimeMs" value="block2TrialLaserOnTimeMs"></action>
                   <action type="assignment" variable="tTrialLaserOffTimeMs" value="block2TrialLaserOffTimeMs"></action>
                   <action type="assignment" variable="tGratingMaxContrastStep" value="block2GratingMaxContrastStep"></action>
@@ -957,7 +959,7 @@
               <action type="assignment" variable="tLaserDoPulseTrain" value="laserDoPulseTrain"></action>
               <action type="assignment" variable="tLaserBaselinePowerMw" value="laserBaselinePowerMw"></action>
 
-              <action type="assignment" variable="tTrialLaserPowerMw" value="trialLaserPowerMw"></action>
+              <action type="assignment" variable="tTrialLaserPowerMw_trigger" value="trialLaserPowerMw"></action>
               <action type="assignment" variable="tTrialLaserOnTimeMs" value="trialLaserOnTimeMs"></action>
               <action type="assignment" variable="tTrialLaserOffTimeMs" value="trialLaserOffTimeMs"></action>
 
@@ -993,7 +995,7 @@
               </action>
 
               <action type="report" message="Laser power this trial is $tLaserPowerMw"></action>
-
+              <action type="assignment" variable="tTrialLaserPowerMw" value="0"/>
               <action type="assert" condition="tTrialLaserPowerMw == 0" stop_on_failure="1"
                       message="bug: tLaserPowerMw and tTrialLaserPowerMw != 0"/>
             </action>
@@ -1110,11 +1112,11 @@
             <action type="report" message="In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press"></action>
 
             <!-- if trialLaser, send params to controller -->
-            <action type="if" condition="tTrialLaserPowerMw > 0">
+            <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="1"></action>
               <action type="assignment" tag="Send laser params to controller" variable="sendLaserParams" value="0"></action>
               <action type="assert" condition="tLaserPowerMw == 0" stop_on_failure="1"
-                      message="bug: tLaserPowerMw and tTrialLaserPowerMw > 0"/>
+                      message="bug: tLaserPowerMw and tTrialLaserPowerMw_trigger > 0"/>
               <action type="assert" stop_on_failure="1"
                       condition="(tTrialLaserOnTimeMs == 0 &amp;&amp; tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 &amp;&amp; tTrialLaserOffTimeMs > 0)"
                       message="For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set"/>
@@ -1216,8 +1218,9 @@
             <action type="update_stimulus_display" tag="-"></action>
 
             <!-- turn on trial laser if requested -->
-            <action type="if" condition="tTrialLaserPowerMw > 0">
+            <action type="if" condition="tTrialLaserPowerMw_trigger > 0">
               <action type="assignment" variable="laserTrigger" value="1"></action>
+              <action type="assignment" variable="tTrialLaserPowerMw" value="tTrialLaserPowerMw_trigger"></action>
               <action type="report" message="********* SENDING LASER TRIGGER *********"/>
               <action type="assignment" tag="Encode LaserStimOn" variable="strobedDigitalWord" value="5"></action>
             </action>
@@ -1570,6 +1573,7 @@
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="assignment" variable="laserTrigger" value="0"></action> <!-- disable trigger no matter if it went high or not -->
+            <action type="assignment" variable="tTrialLaserPowerMw" value="0"></action>  
               <action type="assignment" variable="cTrialEnd" value="counter"></action>
 
             <action tag="Dequeue Stimulus 0" type="dequeue_stimulus" stimulus="target_grating"></action>
