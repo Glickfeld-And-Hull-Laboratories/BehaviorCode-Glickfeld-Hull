@@ -6,6 +6,7 @@
               lever1="FIO1"
               lever1_solenoid="MIO0"
               laser_trigger="laserTrigger"
+              trial_laser_powerMw="LEDpower"
               optic_device="optic_device"
               strobed_digital_word="strobedDigitalWord"
               quadrature="quadrature"
@@ -18,7 +19,7 @@
     <folder tag="Behavioral Control">
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
-      <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
+      <variable tag="optic_device" scope="global" logging="when_changed" default_value="laserblue" type="string" persistant="0"/>
       <variable tag="doAnalogLever" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doVisualStim" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doLaserStim" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
@@ -31,7 +32,6 @@
       <variable tag="doIncorrectSound" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="doRewardSound" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
 
-      <variable tag="doLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="LED Debug"/>
 
       <variable tag="doLeverSolenoidAllTrials" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
       <variable tag="doLeverSolenoidOnMiss" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Solenoid"/>
@@ -69,6 +69,12 @@
       <variable tag="itiRewardUnexpectPercent" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Reward"/>
 
     </folder>
+    <folder tag="LED Control">
+      <variable tag="doLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="LED"/>
+      <variable tag="LEDintensity" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="LED"/>
+      <variable tag="optoMs" scope="global" logging="when_changed" default_value="300" type="integer" persistant="1" groups="LED"/>
+    </folder>
+
     <folder tag="Stimuli">
       <variable tag="baseGratingDirectionDeg" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="baseGratingContrast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Stimulus Parameters"/>
@@ -299,6 +305,8 @@
       <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable type="selection" tag="svStimNumber" values="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79"
                 selection="random_without_replacement" nsamples="80" sampling_method="samples"/>
+
+      <variable tag="LEDpower" scope="global" logging="when_changed" default_value="0" type="float" persistant="1"/>
     </folder>
   </variables>
   <sounds tag="Sounds">
@@ -805,8 +813,7 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="gratingWidthDeg"></action>
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="gratingSpatialFreqCPD"></action>
                   <action type="assignment" variable="tGratingSpeedDPS" value="gratingSpeedDPS"></action>
-                  <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>
-
+                  <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"/></action>
                   <action type="assignment" variable="soundTargetAmplitude" value="block1ToneAmplitude"></action>  <!-- allow different tone amplitude in block 1 and 2-->
                 </action>
 
@@ -823,13 +830,12 @@
                   <action type="assignment" variable="tGratingWidthDeg" value="block2GratingWidthDeg"></action>
                   <action type="assignment" variable="tGratingSpatialFreqCPD" value="block2GratingSpatialFreqCPD"></action>
                   <action type="assignment" variable="tGratingSpeedDPS" value="block2GratingSpeedDPS"></action>
-                  <action type="assignment" variable="tGratingDurationMs" value="block2GratingDurationMs"></action>
-
+                  <action type="assignment" variable="tGratingDurationMs" value="block2GratingDurationMs"/></action>
                   <action type="assignment" variable="soundTargetAmplitude" value="block2ToneAmplitude"></action>
                 </action>
 
 
-              </action>
+              
 
               <!-- ramp length for block 2 -->
               <action type="if" condition="block2DoRampLength">
@@ -927,15 +933,11 @@
                 <action type="assignment" variable="tGratingDurationMs" value="gratingDurationMs"></action>
               </action>
 
-            </action> <!-- end doBlock2 -->
+             <!-- end doBlock2 -->
 
             <!-- if no block 2 randomization, just set all affected vars to fixed values -->
             <action type="if" condition="! doBlock2">
-
               <action type="assignment" variable="soundTargetAmplitude" value="block1ToneAmplitude"></action>
-
-              <action type="assignment" variable="soundTargetAmplitude" value="block1ToneAmplitude"></action> 
-
               <action type="assignment" variable="tBaseGratingDirectionDeg" value="baseGratingDirectionDeg"></action>
               <action type="assignment" variable="tBaseGratingContrast" value="baseGratingContrast"></action>
               <action type="assignment" variable="tGratingElevationDeg" value="gratingElevationDeg"></action>
@@ -1391,6 +1393,7 @@
             <action type="assignment" variable="tConsecErrors" value="0"></action>
 
             <action type="assignment" tag="Assign reward" variable="tTotalRewardTimeUs" value="minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
+
 			<action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
 
 
@@ -1446,6 +1449,12 @@
           <task_system_state tag="GiveReward" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <action type="assignment" tag="tNRewards--" variable="tNRewards" value="tNRewards-1"></action>
+            <action type="if" condition="doLED == 1 &amp;&amp; optic_device == 'laserblue' &amp;&amp; tNRewards > -1"> 
+              <action type="assignment" variable="laserTrigger" value="1"></action>
+              <action type="assignment" variable="LEDpower" value="LEDintensity"></action>
+              <action type="report" message="LED was on ******************************"></action>
+              <action type="start_timer" tag="StartTimer" timer="optoTimer" timebase="" duration="optoMs" duration_units="ms"></action>
+            ></action>
             <action type="if" condition="rewardDelayPercent != 0 &amp;&amp; tNRewards > -1">
               <action type="assignment" variable="tRewardDelayTrial" value="(int)(disc_rand(0,100) &lt; rewardDelayPercent)"/>
               <action type="report" message="the tRewardDelayTrial is $tRewardDelayTrial"/>
@@ -1456,11 +1465,12 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="if rewards remain, go to SingleReward (note must be -1)" condition="tNRewards > -1 &amp;&amp; tRewardDelayTrial == 0" target="SingleReward"></transition>
             <transition type="conditional" tag="if rewards remain, go to DelayReward (note must be -1)" condition="tNRewards > -1 &amp;&amp; tRewardDelayTrial != 0" target="DelayReward"></transition>
-            <transition type="direct" tag="Always Go to PRP" target="PostRewardPause"></transition>
+            <transition type="timer_expired" tag="if LED timer is expired" target="PostRewardPause" timer="optoTimer"></transition>
           </task_system_state>
 
           <task_system_state tag="PostRewardPause" interruptible="YES">
             <action type="start_timer" tag="StartTimer" timer="postRewardTimer" timebase="" duration="postRewardMs" duration_units="ms"></action>
+            <action type="assignment" variable="LEDpower" value="0" ></action>
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" target="PossibleEndTimeout" timer="postRewardTimer"></transition>
@@ -1559,6 +1569,8 @@
               	<action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               </action>
             </action>
+
+
 
             <transition type="conditional" tag="- bypass timer checking if no timeout requested"
                         condition="tConsecErrors &lt; nConsecErrorsCauseTimeout" target="EndTrial"></transition>

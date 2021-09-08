@@ -25,7 +25,7 @@ l_con(find(x_s==1)) = x_dcon(find(x_s==1)); %actual left con
 
 %% contrast discrim
 %probability of correct choice by contrast diff
-d_p = [0.6 0.7 0.85 1];
+d_p = [0.6 0.8 1 1];
 y_s = zeros(1,ntrials);
 for i = 1:ntrials
     if rand(1)<=d_p(x_d(i))
