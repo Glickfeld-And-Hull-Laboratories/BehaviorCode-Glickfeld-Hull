@@ -54,6 +54,16 @@ switch tHostname
             rc.carolynAnalysis = fullfile(rootDir,'home\carolyn\Analysis');
             rc.carolynData = fullfile(rootDir,'home\carolyn\Data');
         end
+    case{'nb-hubel'}
+        if tUsername(1:5) == 'cc735'
+            rc.name = 'celine';
+            rootDir = 'Z:\home\ACh';
+            rc.celineAnalysis  = fullfile(rootDir,'Analysis\2p_analysis');
+            rc.achAnalysis = fullfile(rootDir,'Analysis\2p_analysis');
+            rc.achData = 'Z:\home\ACh\Data';
+            
+            
+        end
 end
 
 rc.fitOutputTextCols = { 'DateStr', 'DataBlock', 'DateTimeStarted', 'PdfFigFilename', 'MatFilename' };

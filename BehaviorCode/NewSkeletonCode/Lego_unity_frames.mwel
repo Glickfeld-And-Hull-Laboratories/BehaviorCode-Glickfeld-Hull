@@ -13,7 +13,11 @@ iodevice/labjacku6 LabJackU6 (
     optic_device = optic_device
     strobed_digital_word = strobedDigitalWord
     counter = counter
-    puff_duration = tPuffDurationMs
+    do2led = do2led
+    led_seq = led_seq
+    LED_duration = LED_durationMS
+    led1_status = led1_status
+    led2_status = led2_status
     )
 fake_monkey FakeMonkey (spike_rate = 10)
 serverside_conduit 'Server-side Event Conduit' ()
@@ -37,10 +41,6 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Task Control'
         )
-    var doSizeDiscrim = (bool)(0) (
-        persistant = 1
-        groups = 'Task Control'
-        )
     var doOriDiscrim = (bool)(0) (
         persistant = 1
         groups = 'Task Control'
@@ -52,7 +52,11 @@ group 'Behavioral Control' {
     var doMask = (bool)(0) (
         persistant = 1
         groups = 'Task Control'
-        )    
+        )        
+    var frameRateHz = (float)(30) (
+        persistant = 1
+        groups = 'Task Control'
+        )
     var stationaryPeriodMs = 0 (
         persistant = 1
         groups = 'Task Control'
@@ -70,10 +74,6 @@ group 'Behavioral Control' {
         groups = 'Task Control'
         )
     var doExtendedStationaryPeriod = (bool)(0) (
-        persistant = 1
-        groups = 'Task Control'
-        )
-    var doExtendedStatPerWithoutAbort = (bool)(0) (
         persistant = 1
         groups = 'Task Control'
         )
@@ -121,38 +121,6 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Adapt Control'
         )
-    var fractionMaskTrials = (float)(0.1) (
-        persistant = 1
-        groups = 'Mask Control'
-        )
-    var maskDirectionDeg = (float)(90) (
-        persistant = 1
-        groups = 'Mask Control'
-        )
-    var maskStartingPhaseDeg = (float)(0) (
-        persistant = 1
-        groups = 'Mask Control'
-        )    
-    var doRandMaskPhase = (bool)(0) (
-        persistant = 1
-        groups = 'Mask Control'
-        )
-    var doType2Mask = (float)(0) (
-        persistant = 1
-        groups = 'Mask Control'
-        )
-    var fractionType2MaskTrials = (float)(0.2) (
-        persistant = 1
-        groups = 'Mask Control'
-        )      
-    var maskSpeedDPS = (float)(15) (
-        persistant = 1
-        groups = 'Mask Control'
-        )
-    var type2MaskDirectionDeg = (float)(150) (
-        persistant = 1
-        groups = 'Mask Control'
-        )
     var adaptContrast = (float)(0) (
         persistant = 1
         groups = 'Adapt Control'
@@ -197,6 +165,38 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Adapt Control'
         )
+    var fractionMaskTrials = (float)(0.1) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
+    var maskDirectionDeg = (float)(90) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
+    var maskStartingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask Control'
+        )    
+    var doRandMaskPhase = (bool)(0) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
+    var doType2Mask = (float)(0) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
+    var fractionType2MaskTrials = (float)(0.2) (
+        persistant = 1
+        groups = 'Mask Control'
+        )      
+    var maskSpeedDPS = (float)(15) (
+        persistant = 1
+        groups = 'Mask Control'
+        )
+    var type2MaskDirectionDeg = (float)(150) (
+        persistant = 1
+        groups = 'Mask Control'
+        )    
     var doFeedbackMotion = (bool)(0) (
         persistant = 1
         groups = 'Feedback Motion'
@@ -205,7 +205,7 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Feedback Motion'
         )
-    var gratingTargetDirection = 45 (
+    var gratingTargetDirection = 0 (
         persistant = 1
         groups = 'Feedback Motion'
         )
@@ -281,10 +281,6 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Reward
         )
-    var doRandReward = (bool)(0) (
-        persistant = 1
-        groups = Reward
-        )
     var doRewardBias = (bool)(0) (
         persistant = 1
         groups = Reward
@@ -298,11 +294,11 @@ group 'Behavioral Control' {
         groups = Reward
         )
     var ignoreTimeoutMs = 5000 (
-        groups = Timeouts
+        groups = Time-Outs
         persistant = 1
         )
     var incorrectTimeoutMs = 2000 (
-        groups = Timeouts
+        groups = Time-Outs
         persistant = 1
         )
     var nConsecErrorsCauseTimeout = 10 (
@@ -341,7 +337,6 @@ group 'Behavioral Control' {
         persistant = 1
         groups = Markov/Bias
         )
-    var tLeftBias = 0.5 (groups = Markov/Bias)
     var stimProbAvgLeft = 0.5 (
         persistant = 1
         groups = Markov/Bias
@@ -353,6 +348,7 @@ group 'Behavioral Control' {
     var tMarkovOdds = (float)(0)
     var a = 0.5
     var b = 0.5
+    var tLeftBias = 0.5
     var doTestRobot = (bool)(0) (
         persistant = 1
         groups = 'Test Robot'
@@ -381,20 +377,11 @@ group 'Behavioral Control' {
     var block2MaskStartingPhaseDeg = (float)(0) (
         persistant = 1
         groups = Block2
-        )        
+        )            
     var tBlock2TrialNumber = 0
-    var doPuffIncorrect = (bool)(0) (
-        persistant = 1
-        groups = 'Air Puff'
-        )
-    var puffDurationMs = 0 (persistant = 1)
 }
 group Stimuli {
     var startSoundVolume = (float)(1) (
-        persistant = 1
-        groups = Sounds
-        )
-    var targetSoundVolume = (float)(0) (
         persistant = 1
         groups = Sounds
         )
@@ -426,10 +413,6 @@ group Stimuli {
         persistant = 1
         groups = 'Visual Stimuli'
         )
-    var doRandPhase = (bool)(0) (
-        persistant = 1
-        groups = 'Visual Stimuli'
-        )
     var gratingMaxContrast = (float)(0) (
         persistant = 1
         groups = 'Visual Stimuli'
@@ -438,7 +421,7 @@ group Stimuli {
         persistant = 1
         groups = 'Visual Stimuli'
         )
-    var gratingMaxContrastDiff = (float)(0) (
+    var gratingMaxDiff = (float)(0) (
         persistant = 1
         groups = 'Visual Stimuli'
         )
@@ -454,43 +437,7 @@ group Stimuli {
         persistant = 1
         groups = 'Visual Stimuli'
         )
-    var minDiscrimTarget = (float)(0) (
-        persistant = 1
-        groups = 'Visual Stimuli'
-        )
-    var doRandContrast = (bool)(0) (
-        persistant = 1
-        groups = 'Visual Stimuli'
-        )
-    var nRandContrast = 1 (
-        persistant = 1
-        groups = 'Visual Stimuli'
-        )
-    var conDiff = (float)(0) (
-        persistant = 1
-        groups = 'Trial Structure'
-        )
-    var doLogCon = (bool)(0) (
-        persistant = 1
-        groups = 'Trial Structure'
-        )
-    var gratingType = 'sinusoid' (
-        persistant = 1
-        groups = 'Visual Stimuli'
-        )
-    var gratingMean = 0.1 (
-        persistant = 1
-        groups = 'Visual Stimuli'
-        )
-    var gratingStd = 0.3 (
-        persistant = 1
-        groups = 'Visual Stimuli'
-        ) 
-    var gratingEdge = 0.125 (
-        persistant = 1
-        groups = 'Visual Stimuli'
-        )       
-    var gratingMaxDiameterDeg = (float)(0) (
+    var gratingMaxDiameterDeg = (float)(40) (
         persistant = 1
         groups = 'Visual Stimuli'
         )
@@ -540,6 +487,22 @@ group Stimuli {
         groups = 'Visual Stimuli'
         )
     var gratingStartingPhaseDeg = 0 (
+        persistant = 1
+        groups = 'Visual Stimuli'
+        )
+    var gratingType = 'sinusoid' (
+        persistant = 1
+        groups = 'Visual Stimuli'
+        )
+    var gratingMean = 0.1 (
+        persistant = 1
+        groups = 'Visual Stimuli'
+        )
+    var gratingStd = 0.3 (
+        persistant = 1
+        groups = 'Visual Stimuli'
+        ) 
+    var gratingEdge = 0.125 (
         persistant = 1
         groups = 'Visual Stimuli'
         )
@@ -610,6 +573,42 @@ group Stimuli {
     var leftTrPer80Level8 = 0 (
         persistant = 1
         groups = 'Visual Stimuli'
+        )
+    var doPhotodiode = (bool)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusContrast = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusAzimuth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusElevation = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusWidth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusHeight = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoMaskSpatialFreq = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var Do2LED = (bool)(0) (
+        persistant = 1
+        groups = 'Alternating LED'
+        )
+    var LED_sequence = [1,1,1,2] (
+        persistant = 1
+        groups = 'Alternating LED'
         )
 }
 group 'LED Variables' {
@@ -806,7 +805,6 @@ group 'Task Status' {
     var abort = 0
     var trialStartTimeMs = (float)(0)
     var stimTimestampMs = (float)(0)
-    var adapterTimestampMs = (float)(0)
     var actualHoldTimeMs = (float)(0)
 }
 group 'Online Display' {
@@ -821,6 +819,11 @@ group 'Hardware variables' {
     var counter2 = 0 (groups = Hardware)
     var sendLaserParams = 0
     var sendSerialParams = 0
+    var do2led = (bool)(0)
+    var LED_durationMS = (float)(0)
+    var led1_status = (bool)(0)
+    var led2_status = (bool)(0)
+    var led_seq = [1,1,1,2]
 }
 group 'Temporary Trial Variables' {
     var tCounter2 = 0
@@ -832,6 +835,7 @@ group 'Temporary Trial Variables' {
     var tLeftResponse = (bool)(0)
     var tRightResponse = (bool)(0)
     var tStimProbAvgLeft = 0.5
+    var isFirstTrial = (bool)(0)
     var leftDecisionThreshold = (float)(0)
     var rightDecisionThreshold = (float)(0)
     var trackMotion = (float)(0)
@@ -842,14 +846,14 @@ group 'Temporary Trial Variables' {
     var tGratingEccentricityDeg = 0
     var dGratingEccentricityDeg = 0
     var tGratingContrast = (float)(0)
-    var dGratingContrast = (float)(0)
     var aGratingContrast = (float)(0)
+    var dGratingContrast = (float)(0)
     var dGratingContrastDiff = (float)(1)
     var tGratingDiameterDeg = (float)(0)
     var dGratingDiameterDeg = (float)(0)
     var dGratingDiameterDiff = (float)(1)
     var tGratingDirectionDeg = (float)(0)
-    var tGratingDirectionStart = (float)0
+    var tGratingDirectionStart = 0
     var tGratingStartingPhaseDeg = (float)(0)
     var tGratingSpatialFreqCPD = (float)(0)
     var aGratingDirectionDeg = (float)(0)
@@ -868,8 +872,8 @@ group 'Temporary Trial Variables' {
     var tDoType2Mask = (bool)(0)
     var tempRand = (float)(0)
     var flashOn = (bool)(0)
-    var tDoFeedbackMotion = (bool)(0)
     var tRewardTimeUs = 0
+    var tDoFeedbackMotion = (bool)(0)
     var isNotTooFast = (bool)(0)
     var stimIsOff = (bool)(0)
     var stationaryReset = (bool)(0)
@@ -881,25 +885,43 @@ group 'Temporary Trial Variables' {
     var qTrialStart = (float)(0)
     var qStartReact = (float)(0)
     var tTrialsDoneSinceStart = 90
+    var tLastTrialIgnore = (bool)(0)
     var tTrialStartMWTimestampMs = 90
     var tThisTrialStartTimeMs = 90
     var tLastTrialStartTimeMs = 90
     var tLastTrialCorrect = (bool)(0)
-    var tLastTrialIgnore = (bool)(0)
     var tLastTrialAbort = (bool)(0)
     var tConsecCorrects = 0
     var tConsecErrors = 0
     var tNTrialsCompleted = 0
-    var tRandBlockNumber = 0
     var tNBlockLeftTrsCompleted = 0 (groups = 'Block Control')
     var tNBlockRightTrsCompleted = 0 (groups = 'Block Control')
     var tRobotReactTimeMs = (float)(0)
+    var tRandBlockNumber = 0
     var tStationaryPeriodMs = (float)(0)
     var tItiTimeMs = (float)(0)
     var tFeedbackMotionSensitivity = (float)(0)
+    // frame conversion 
+    var nFramesStationary = 0
+    var nFramesIti = 0
+    var nFramesAdapt = 0
+    var nFramesDelay = 0 (persistant = 1)
+    var nFramesOn = 0 (persistant = 1)
+    var nFramesTooFast = 0 (persistant = 1)
+    var nFramesReact = 0 (persistant = 1)
+    var nFramesIncorrectTimeout = 0 (persistant = 1)
+    var nFramesIgnoreTimeout = 0 (persistant = 1)
+    // tracking counter 
+    var cItiStart = 0
+    var cStationaryStart = 0
+    var cAdaptOn = 0
+    var cAdaptOn_all = 0
+    var cTrialStart = 0
+    var cStimOn = 0
+    var cStimOff = 0
+    var cDecision = 0
     var tRandProbIndex = 0
     var tRandProbIndexLast = 0 (persistant = 1)
-    var tPuffDurationMs = 0
     var tTrPer80Level1 = 0
     var tTrPer80Level2 = 0
     var tTrPer80Level3 = 0
@@ -917,6 +939,7 @@ group 'Temporary Trial Variables' {
     var tLeftTrPer80Level7 = 0
     var tLeftTrPer80Level8 = 0
     // Shadow Vars From Mark 
+    var rrStimulusNumber = 0 (scope = local)
     var tStimulusNumber = 0
     var tStimulusNumber2 = 0
     var tSvStimNumber = 0
@@ -946,10 +969,6 @@ wav_file startSound (
     path = 'wavs/1000Hz_pt3s.wav'
     amplitude = startSoundVolume
     )
-wav_file targetSound (
-    path = 'wavs/1000Hz_pt3s.wav'
-    amplitude = targetSoundVolume
-    )
 wav_file goSound (
     path = 'wavs/1000Hz_pt3s.wav'
     amplitude = goSoundVolume
@@ -976,8 +995,6 @@ wav_file stationaryPeriodSound (
 //
 
 blank_screen background ()
-
-
 layer targetGrating_gaussian {
     drifting_grating target_grating_gaussian (
         direction = tGratingDirectionDeg
@@ -1279,6 +1296,40 @@ drifting_grating rewardGrating (
     rotation = gratingDirectionDeg
     alpha_multiplier = tGratingContrast
     )
+drifting_grating photoDiodeGrating (
+    direction = 0
+    autoplay = YES
+    starting_phase = 0
+    spatial_frequency = .000000000001
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = photoStimulusContrast
+    )
+drifting_grating photoDiodeMask (
+    direction = 0
+    autoplay = YES
+    starting_phase = 180
+    spatial_frequency = photoMaskSpatialFreq
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = 1
+    )
 
 //
 // Protocols
@@ -1286,18 +1337,24 @@ drifting_grating rewardGrating (
 
 protocol JuiceOnHoldProtocol {
     queue_stimulus (background)
+    if (doPhotodiode) {
+        live_queue_stimulus (photoDiodeMask)
+    }
+    start_device_io (LabJackU6)
     // init actions before running trials after any press of start
     juice = 0
     counter = 0
     counter2 = 0
-    tCounter2 = 0
-    ttCounter2 = 0
     quadrature = 0
     tConsecCorrects = 0
     tConsecErrors = 0
     tNTrialsCompleted = 0
     tLastTrialWasLeft = 0
-    if (success+ignore+incorrect+abort == 0) {
+    tNStimAccepted = 0
+    tNStimAccepted2 = 0
+    isFirstTrial = 1
+    stationaryReset = 0
+    if (success+ignore+incorrect == 0) {
         // reset selection var 
         reset_selection (svStimNumber)
         reset_selection (svStimNumber2)
@@ -1309,11 +1366,12 @@ protocol JuiceOnHoldProtocol {
         interruptible = 1
         nsamples = 10000
         ) {
-        //<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> 
         task TS {
             state InterTrialInterval {
-                sync = 1
-                start_device_io (LabJackU6)
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
                 if (tLastTrialAbort) {
                     tItiTimeMs = 100
                 }
@@ -1321,39 +1379,31 @@ protocol JuiceOnHoldProtocol {
                     tItiTimeMs = itiTimeMs
                 }
                 report ('**** In Inter-Trial Interval for $tItiTimeMs ms ****')
-                start_timer (
-                    timer = itiTimerMs
-                    duration = tItiTimeMs
-                    duration_units = ms
-                    )
-                counter = 0
-                counter2 = 0
-                tCounter2 = 0
-                ttCounter2 = 0
-                tTrialLaserPowerMw_trigger = 0
-                if (!doOriDiscrim) {
-                    quadrature = 0
-                }
-                stationaryReset = 0
+                quadrature = 0
+                sync = 1
                 stimulusOn = 0
                 juice = 0
                 isNotTooFast = 0
                 tBlock2TrialNumber = 0
                 tLeftTrial = 0
+                cItiStart = counter
+                led_seq = LED_sequence
+                do2led = Do2LED
+                LED_durationMS = round(1/frameRateHz*1000)
                 tThisTrialStartTimeMs = now()/1000
                 qTrialStart = quadrature
-                if (doRandStationaryPeriod) {
-                    tStationaryPeriodMs = stationaryPeriodMs + disc_rand(0,randStationaryPeriodMs)
-                }
-                if (!doRandStationaryPeriod) {
-                    tStationaryPeriodMs = stationaryPeriodMs
-                }
-                if (tLastTrialAbort) {
-                    tItiTimeMs = 100
+                start_timer (
+                    timer = itiTimerMs
+                    duration = tItiTimeMs
+                    duration_units = ms
+                    )
+                if (success+ignore+incorrect > 0) {
+                    isFirstTrial = 0
                 }
                 if (tLastTrialCorrect == 1) {
                     if (doRewardGrating == 1) {
-                        live_queue_stimulus (rewardGrating)
+                        queue_stimulus (rewardGrating)
+                        play_dynamic_stimulus (rewardGrating)
                         update_stimulus_display ()
                         schedule (
                             delay = 125 ms
@@ -1418,6 +1468,21 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                 }
+                if (doRandStationaryPeriod) {
+                    tStationaryPeriodMs = stationaryPeriodMs + disc_rand(0,randStationaryPeriodMs)
+                }
+                if (!doRandStationaryPeriod) {
+                    tStationaryPeriodMs = stationaryPeriodMs
+                }
+                nFramesOn = ceil((stimOnTimeMs/1000)*frameRateHz)
+                nFramesAdapt = ceil((adaptPeriodMs/1000)*frameRateHz)
+                nFramesStationary = ceil((tStationaryPeriodMs/1000)*frameRateHz)
+                nFramesDelay = ceil((delayTimeMs/1000)*frameRateHz)
+                nFramesIti = ceil((tItiTimeMs/1000)*frameRateHz)
+                nFramesTooFast = ceil((tooFastTimeMs/1000)*frameRateHz)
+                nFramesReact = ceil((reactionTimeMs/1000)*frameRateHz)
+                nFramesIncorrectTimeout = ceil((incorrectTimeoutMs/1000)*frameRateHz)
+                nFramesIgnoreTimeout = ceil((ignoreTimeoutMs/1000)*frameRateHz)
                 tSvStimNumber = svStimNumber
                 // choose a value from selection var, 0-origin 
                 tSvStimNumber2 = svStimNumber2
@@ -1471,7 +1536,7 @@ protocol JuiceOnHoldProtocol {
                         tLeftTrial = 1
                     }
                 }
-                
+
                 tDoMask = 0
                 tDoType2Mask = 0
                 if (doMask) {
@@ -1484,7 +1549,7 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                  }
-                    
+
                 if (doBlocks==1 && doCorrectiveTrials == 0) {
                     if ((tNBlockLeftTrsCompleted < blockLeftTrs) && tLastTrialWasLeft==1) {
                         tLeftTrial = 1
@@ -1938,7 +2003,8 @@ protocol JuiceOnHoldProtocol {
                 if (!tBlock2TrialNumber) {
                     tGratingSpatialFreqCPD = gratingSpatialFreqCPD
                     tMaskStartingPhaseDeg = gratingStartingPhaseDeg
-                    }    
+                    } 
+
                 // added preblock where all early trials are easy 
                 tDoFeedbackMotion = doFeedbackMotion
                 if (tNTrialsCompleted < easyStartTrialNumber && doEasyStart) {
@@ -1946,17 +2012,11 @@ protocol JuiceOnHoldProtocol {
                     tStimulusNumber2 = 0
                     tDoMask = 0
                     tDoType2Mask = 0
-                    tBlock2TrialNumber = 0
                     if (doEasyStartWithFeedback) {
                         tDoFeedbackMotion = 1
                     }
                 }
                 report ('tLeftTrial is $tLeftTrial!!!!')
-                // error checking                
-                /*<action type="assert" stop_on_failure="1"  
-  condition="tTempStimOdds == 80"
-  message="stim odds must sum to 80!  (sum now is $tTempStimOdds )"/> */
-                // stop_on_failure=0: allow slop so it can be changed while running 
                 if (doBlock2 && !doBlock2SeparateOdds) {
                     assert (
                         condition = trPer80Level1-(((int)trPer80Level1)/2)*2 == 0
@@ -2005,12 +2065,9 @@ protocol JuiceOnHoldProtocol {
                 }
                 if (doContrastDiscrim) {
                     tGratingContrast = gratingMaxContrast / (pow(2, 1.0*tStimulusNumber/gratingContrastSPO))
-                    dGratingContrastDiff = gratingMaxContrastDiff / (pow(2, 1.0*tStimulusNumber2/gratingContrastDiffSPO)) + 1
+                    dGratingContrastDiff = gratingMaxDiff / (pow(2, 1.0*tStimulusNumber2/gratingContrastDiffSPO)) + 1
                     if (doOnlyMaxDiff) {
-                        dGratingContrastDiff = gratingMaxContrastDiff
-                    }
-                    if (tGratingContrast < minDiscrimTarget) {
-                        dGratingContrastDiff = gratingMaxContrastDiff
+                        dGratingContrastDiff = gratingMaxDiff
                     }
                     if (doContrastDetect) {
                         dGratingContrast = 0
@@ -2018,41 +2075,15 @@ protocol JuiceOnHoldProtocol {
                     if (!doContrastDetect) {
                         dGratingContrast = tGratingContrast / dGratingContrastDiff
                     }
-                    if (doRandSize) {
-                        tGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
-                        dGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
-                    }
+                    tGratingDirectionDeg = gratingDirectionDeg
                     if (!doRandSize) {
                         tGratingDiameterDeg = gratingMaxDiameterDeg
                         dGratingDiameterDeg = gratingMaxDiameterDeg
                     }
-                    tGratingDirectionDeg = gratingDirectionDeg
-                }
-                if (doSizeDiscrim) {
-                    tGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*tStimulusNumber/gratingDiameterSPO))
-                    dGratingDiameterDiff = gratingMaxDiameterDiff / (pow(2, 1.0*tStimulusNumber2/gratingDiameterDiffSPO)) + 1
-                    if (doOnlyMaxDiff) {
-                        dGratingDiameterDiff = gratingMaxDiameterDiff
+                    if (doRandSize) {
+                        tGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
+                        dGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
                     }
-                    if (tGratingDiameterDeg < minDiscrimTarget) {
-                        dGratingContrastDiff = gratingMaxContrastDiff
-                    }
-                    dGratingDiameterDeg = tGratingDiameterDeg / dGratingDiameterDiff
-                    if (doRandContrast) {
-                        if (doLogCon) {
-                            tGratingContrast = gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))
-                            dGratingContrast = gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))
-                        }
-                        if (!doLogCon) {
-                            tGratingContrast = gratingMaxContrast + (disc_rand(-1,1)*conDiff)
-                            dGratingContrast = gratingMaxContrast + (disc_rand(-1,1)*conDiff)
-                        }
-                    }
-                    if (!doRandContrast) {
-                        tGratingContrast = gratingMaxContrast
-                        dGratingContrast = gratingMaxContrast
-                    }
-                    tGratingDirectionDeg = gratingDirectionDeg
                 }
                 if (doOriDiscrim) {
                     if (tLeftTrial) {
@@ -2078,26 +2109,11 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                     dGratingContrast = 0
-                    if (!doRandContrast) {
-                        tGratingContrast = gratingMaxContrast
-                    }
-                    if (!doRandSize) {
-                        tGratingDiameterDeg = gratingMaxDiameterDeg
-                    }
-                    if (doRandContrast) {
-                        if (doLogCon) {
-                            tGratingContrast = gratingMaxContrast / (pow(2, 1.0*disc_rand(0,nRandContrast-1)/gratingContrastSPO))
-                        }
-                        if (!doLogCon) {
-                            tGratingContrast = gratingMaxContrast + (disc_rand(-1,1)*conDiff)
-                        }
-                    }
-                    if (doRandSize) {
-                        tGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
-                    }
+                    tGratingContrast = gratingMaxContrast
+                    tGratingDiameterDeg = gratingMaxDiameterDeg
                     if (tDoMask) {
                         tMaskContrast = tGratingContrast/2
-                        tGratingContrast = tGratingContrast/2
+                        tGratingContrastb = tGratingContrast/2
                         if (doRandMaskPhase) {
                             tMaskStartingPhaseDeg = disc_rand(0,1)*180
                         }
@@ -2115,36 +2131,19 @@ protocol JuiceOnHoldProtocol {
                         aGratingContrast = 0
                     }
                     tBlock2TrialNumber = disc_rand(0,1)
-                    tAGratingDirectionDeg = adaptDirectionDeg+ (tBlock2TrialNumber*adaptDirectionStepDeg)
-                    aGratingDirectionDeg = tAGratingDirectionDeg
-                    aGratingPhaseDeg = 0
+                    aGratingDirectionDeg = adaptDirectionDeg+ (tBlock2TrialNumber*adaptDirectionStepDeg)
                 }
                 if (!doAdapt) {
                     aGratingContrast = 0
                     aGratingDirectionDeg = tGratingDirectionDeg
                 }
-                if (doRandPhase) {
-                    tGratingStartingPhaseDeg = gratingStartingPhaseDeg + (disc_rand(0,7)*45)
-                }
-                if (!doRandPhase) {
-                    tGratingStartingPhaseDeg = gratingStartingPhaseDeg
-                }
+                report ('**** Adapter contrast is $aGratingContrast ****')
                 if (doNoGo && tStimulusNumber == 8) {
                     isNoGo = 1
                     report ('This is a NoGo trial')
-                    if (doContrastDiscrim) {
-                        tGratingContrast = 0
-                        dGratingContrast = 0
-                        dGratingContrastDiff = 1
-                        tGratingDiameterDeg = gratingMaxDiameterDeg
-                        dGratingDiameterDeg = gratingMaxDiameterDeg
-                    }
-                    if (doSizeDiscrim) {
-                        tGratingDiameterDeg = gratingMaxDiameterDeg
-                        dGratingDiameterDeg = gratingMaxDiameterDeg
-                        tGratingContrast = gratingMaxContrast
-                        dGratingContrast = gratingMaxContrast
-                    }
+                    tGratingContrast = 0
+                    dGratingContrast = 0
+                    dGratingContrastDiff = 1
                     tLeftTrial = round(rand(0,1))
                 }
                 if (doZeroConTrials && tStimulusNumber == 8) {
@@ -2162,10 +2161,6 @@ protocol JuiceOnHoldProtocol {
                     report ('Target contrast this trial is $tGratingContrast')
                     report ('Distractor contrast this trial is $dGratingContrast')
                 }
-                if (doSizeDiscrim) {
-                    report ('Target size this trial is $tGratingDiameterDeg')
-                    report ('Distractor size this trial is $dGratingDiameterDeg')
-                }
                 if (doOriDiscrim) {
                     report ('Target ori this trial is $tGratingDirectionDeg')
                     report ('Target contrast this trial is $tGratingContrast')
@@ -2180,13 +2175,13 @@ protocol JuiceOnHoldProtocol {
                     }
                 }
                 if (doBlock2) {
-                    /* assert (
+                    assert (
                         stop_on_failure = 1
-                        condition = (block2DoRampLength+block2DoRampVTrain+block2DoTrialLaser) > 1
+                        condition = (block2DoRampLength+block2DoRampVTrain+block2DoTrialLaser) == 1
                         message = 'must select exactly one of block2Do variables!'
-                        ) */
+                        )
                     tTrialLaserPowerMw_trigger = trialLaserPowerMw
-                    /* trial numbers assigned above in switch statement.  Note equal probability 
+                    /* trial numbers assigned above in switch statement.  Note equal probability
               - if more complicated odds wanted; add a set of block2 level odds */
                     // ramp length for block 2 
                     if (block2DoRampLength) {
@@ -2256,9 +2251,8 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                 }
-                
-                tGratingDirectionStart = tGratingDirectionDeg
-                tMaskDirectionStart = tMaskDirectionDeg
+                // end doBlock2 
+
                 if (tDoMask) {
                     tPlaidDirectionDeg = (tMaskDirectionDeg + tGratingDirectionDeg)/2
                     if (tDoType2Mask) {
@@ -2270,9 +2264,7 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                 }
-
-                tPlaidDirectionStart = tPlaidDirectionDeg
-                // end doBlock2 
+                
                 // calculate target threshold
                 if (tLeftTrial == 0 && !doOriDiscrim) {
                     tGratingEccentricityDeg = gratingTargetEccentricity+gratingEccentricityDeg
@@ -2303,11 +2295,7 @@ protocol JuiceOnHoldProtocol {
                             tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
                         }
                     }
-                    
                 }
-                
-                tGratingEccentricityStart = tGratingEccentricityDeg
-                
                 if (tLeftTrial == 1 && doOriDiscrim) {
                     tGratingEccentricityDeg = gratingEccentricityDeg
                     leftDecisionThreshold = gratingTargetDirection
@@ -2325,8 +2313,11 @@ protocol JuiceOnHoldProtocol {
                     }
                     report('plaid direction is $tPlaidDirectionDeg')
                 }
-                
-                
+                tGratingEccentricityStart = tGratingEccentricityDeg
+                tGratingDirectionStart = tGratingDirectionDeg
+                tMaskDirectionStart = tMaskDirectionDeg
+                tPlaidDirectionStart = tPlaidDirectionDeg
+
                 if (doLaserStim) {
                     sendLaserParams = 1
                     sendLaserParams = 0
@@ -2346,34 +2337,67 @@ protocol JuiceOnHoldProtocol {
                         )
                 }
                 goto (
-                    target = AdaptOn
-                    when = timerExpired(itiTimerMs) && doAdapt
-                    )
-                goto (
-                    target = TrialStart
-                    when = timerExpired(itiTimerMs) && tStationaryPeriodMs == 0
+                    target = WaitForInitiate
+                    when = counter >= (cItiStart + nFramesIti) && isFirstTrial && counter > 19 && !doAdapt
                     )
                 goto (
                     target = WaitForInitiate
-                    when = timerExpired(itiTimerMs) && tStationaryPeriodMs > 0
+                    when = counter >= (cItiStart + nFramesIti) && !isFirstTrial && !doAdapt
+                    )
+                goto (
+                    target = AdaptOn
+                    when = counter >= (cItiStart + nFramesIti) && isFirstTrial && counter > 19 && doAdapt
+                    )
+                goto (
+                    target = AdaptOn
+                    when = counter >= (cItiStart + nFramesIti) && !isFirstTrial && doAdapt
+                    )
+                goto (
+                    target = ExitTask
+                    when = !isFirstTrial && timerExpired(itiTimerMs) && counter == cDecision
+                    )
+            }
+            state ExitTask {
+                assert (
+                    stop_on_failure = 1
+                    condition = counter > cDecision
+                    message = 'Not receiving triggers from microscope'
+                    )
+            }
+            state WaitForInitiate {
+                if (stationaryReset==1) {
+                    play_sound (stationaryPeriodSound)
+                }
+                cStationaryStart = counter
+                tQuadrature = quadrature
+                stationaryReset = 1
+                report ('**** In stationary period for $nFramesStationary frames')
+                goto (
+                    target = TrialStart
+                    when = counter-cStationaryStart >= nFramesStationary
+                    )
+                goto (
+                    target = WaitForInitiate
+                    when = abs(quadrature-tQuadrature) > stationaryThreshold
                     )
             }
             state AdaptOn {
                 report ('**** adapting for $adaptPeriodMs ms')
-                report ('**** $aGratingDirectionDeg')
                 start_timer (
                     timer = adaptTimer
                     duration = adaptPeriodMs
                     duration_units = ms
                     )
                 if (doGaussianMask) {
-                    live_queue_stimulus (adapterGrating_gaussian)
+                    queue_stimulus (adapterGrating_gaussian)
                 }
                 if (doEllipseMask) {
-                    live_queue_stimulus (adapterGrating_ellipse)
+                    queue_stimulus (adapterGrating_ellipse)
                 }
-                update_stimulus_display ()
-                adapterTimestampMs = now()/1000
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeGrating)
+                    dequeue_stimulus (photoDiodeMask)
+                }
                 if (doDynamicAdapt) {
                     start_timer (
                         timer = dynAdaptTimer
@@ -2384,9 +2408,12 @@ protocol JuiceOnHoldProtocol {
                         flashOn = 1
                     }
                 }
-                timer_expired (
-                    timer = adaptTimer
+                update_stimulus_display ()
+                cAdaptOn = counter
+                cAdaptOn_all = counter
+                goto (
                     target = TrialStart
+                    when = counter-cAdaptOn >= nFramesAdapt
                     )
                 goto (
                     target = DynamicAdapt
@@ -2416,10 +2443,14 @@ protocol JuiceOnHoldProtocol {
                     }
                 }
                 if (doGaussianMask) {
-                    live_queue_stimulus (adapterGrating_gaussian)
+                    queue_stimulus (adapterGrating_gaussian)
                 }
                 if (doEllipseMask) {
-                    live_queue_stimulus (adapterGrating_ellipse)
+                    queue_stimulus (adapterGrating_ellipse)
+                }
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeGrating)
+                    dequeue_stimulus (photoDiodeMask)
                 }
                 start_timer (
                     timer = dynAdaptTimer
@@ -2428,6 +2459,7 @@ protocol JuiceOnHoldProtocol {
                     )
                 update_stimulus_display ()
                 flashOn = 1
+                cAdaptOn_all = counter
                 timer_expired (
                     timer = adaptTimer
                     target = TrialStart
@@ -2448,6 +2480,10 @@ protocol JuiceOnHoldProtocol {
             state DynamicAdaptOff {
                 dequeue_stimulus (adapterGrating_gaussian)
                 dequeue_stimulus (adapterGrating_ellipse)
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
                 update_stimulus_display ()
                 start_timer (
                     timer = dynAdaptTimer
@@ -2474,45 +2510,12 @@ protocol JuiceOnHoldProtocol {
                 }
                 tQuadrature = quadrature
                 stationaryReset = 1
-                timer_expired (
-                    timer = adaptTimer
+                goto (
                     target = TrialStart
+                    when = counter-cAdaptOn >= nFramesAdapt
                     )
                 goto (
                     target = MovementNoise
-                    when = abs(quadrature-tQuadrature) > stationaryThreshold
-                    )
-                goto (
-                    target = DynamicAdapt
-                    when = doDynamicAdapt && !doDynamicFlash && timerExpired(dynAdaptTimer)
-                    )
-                goto (
-                    target = DynamicAdapt
-                    when = doDynamicAdapt && doDynamicFlash && !flashOn && timerExpired(dynAdaptTimer)
-                    )
-                goto (
-                    target = DynamicAdaptOff
-                    when = doDynamicAdapt && doDynamicFlash && flashOn && timerExpired(dynAdaptTimer)
-                    )
-            }
-            state WaitForInitiate {
-                report ('**** In stationary period for $tStationaryPeriodMs ms')
-                if (stationaryReset==1) {
-                    play_sound (stationaryPeriodSound)
-                }
-                start_timer (
-                    timer = stationaryTimerMs
-                    duration = tStationaryPeriodMs
-                    duration_units = ms
-                    )
-                tQuadrature = quadrature
-                stationaryReset = 1
-                timer_expired (
-                    timer = stationaryTimerMs
-                    target = TrialStart
-                    )
-                goto (
-                    target = WaitForInitiate
                     when = abs(quadrature-tQuadrature) > stationaryThreshold
                     )
             }
@@ -2520,15 +2523,15 @@ protocol JuiceOnHoldProtocol {
                 if (doAdapt) {
                     dequeue_stimulus (adapterGrating_gaussian)
                     dequeue_stimulus (adapterGrating_ellipse)
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeMask)
+                        dequeue_stimulus (photoDiodeGrating)
+                    }
                     update_stimulus_display ()
                 }
                 report ('**** Trial Starting: playing tone and beginning delay')
                 play_sound (startSound)
-                start_timer (
-                    timer = delayTimerMs
-                    duration = delayTimeMs
-                    duration_units = ms
-                    )
+                cTrialStart = counter
                 if (doTestRobot && doAllCorrects==0) {
                     robotGoLeft = robotLeftProb >= rand(0,1)
                     tRobotReactTimeMs = rand(0,maxRobotReactTimeMs)
@@ -2538,13 +2541,13 @@ protocol JuiceOnHoldProtocol {
                         duration_units = ms
                         )
                 }
-                timer_expired (
-                    timer = delayTimerMs
+                goto (
                     target = StimOn
+                    when = counter-cTrialStart >= nFramesDelay
                     )
                 goto (
                     target = Abort
-                    when = doExtendedStationaryPeriod && doExtendedStatPerWithoutAbort == 0 && abs(quadrature-tQuadrature) > stationaryThreshold
+                    when = doExtendedStationaryPeriod && abs(quadrature-tQuadrature) > stationaryThreshold
                     )
             }
             state StimOn {
@@ -2554,87 +2557,54 @@ protocol JuiceOnHoldProtocol {
                     strobedDigitalWord = 5
                 }
                 report ('*****-=STIMULI ON=-*****')
-                play_sound (targetSound)
-                if (doContrastDiscrim || doContrastDetect || doSizeDiscrim) {
-                    trackMotion = tGratingEccentricityStart
-                    }
-                if (doOriDiscrim) {
-                    trackMotion = tGratingDirectionStart
-                    }
                 stimulusOn = 1
                 stimIsOff = 0
-                report ('In Reaction Time for $reactionTimeMs ms ')
-                start_timer (
-                    timer = tooFastTimerMs
-                    duration = tooFastTimeMs
-                    duration_units = ms
-                    )
-                start_timer (
-                    timer = stimOnTimerMs
-                    duration = stimOnTimeMs
-                    duration_units = ms
-                    )
+                cStimOn = counter
+                report ('In Reaction Time for $nFramesReact frames ')
                 start_timer (
                     timer = reactionTimerMs
                     duration = reactionTimeMs
                     duration_units = ms
                     )
                 if (doGaussianMask) {
-                    if (!doOriDiscrim) {
-                        live_queue_stimulus (distractorGrating_gaussian)
-                    }
-                    live_queue_stimulus (targetGrating_gaussian)
-                    report ('queue gaussian')
+                    queue_stimulus (distractorGrating_gaussian)
+                    queue_stimulus (targetGrating_gaussian)
                 }
                 if (doEllipseMask) {
-                    if (!doOriDiscrim) {
-                        live_queue_stimulus (distractorGrating_ellipse)
-                    }
-                    live_queue_stimulus (targetGrating_ellipse)
-                    report ('queue ellipse')
+                    queue_stimulus (distractorGrating_ellipse)
+                    queue_stimulus (targetGrating_ellipse)
+                }
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeGrating)
+                    dequeue_stimulus (photoDiodeMask)
                 }
                 update_stimulus_display ()
                 stimTimestampMs = now()/1000
                 qStimOn = quadrature
                 goto (
+                    target = StimOff
+                    when = counter-cStimOn >= nFramesOn
+                    )
+                goto (
+                    target = ZeroQuad
+                    when = counter-cStimOn >= nFramesTooFast
+                    )
+                goto (
                     target = Abort
-                    when = doExtendedStationaryPeriod && doExtendedStatPerWithoutAbort == 0 && abs(quadrature-tQuadrature) > stationaryThreshold
-                    )
-                goto (
-                    target = ExtendedStationaryPeriod
-                    when = doExtendedStationaryPeriod && doExtendedStatPerWithoutAbort && abs(quadrature-tQuadrature) > stationaryThreshold
-                    )
-                timer_expired (
-                    timer = stimOnTimerMs
-                    target = StimOff
-                    )
-                timer_expired (
-                    timer = tooFastTimerMs
-                    target = ZeroQuad
-                    )
-            }
-            state ExtendedStationaryPeriod {
-                play_sound (stationaryPeriodSound)
-                tQuadrature = quadrature
-                goto (
-                    target = ExtendedStationaryPeriod
-                    when = doExtendedStationaryPeriod && doExtendedStatPerWithoutAbort && abs(quadrature-tQuadrature) > stationaryThreshold
-                    )
-                goto (
-                    target = StimOff
-                    when = stimIsOff == 0 && timerExpired(stimOnTimerMs)
-                    )
-                goto (
-                    target = ZeroQuad
-                    when = timerExpired(tooFastTimerMs)
+                    when = doExtendedStationaryPeriod && abs(quadrature-tQuadrature) > stationaryThreshold
                     )
             }
             state StimOff {
                 stimIsOff = 1
+                cStimOff = counter
                 dequeue_stimulus (distractorGrating_gaussian)
                 dequeue_stimulus (targetGrating_gaussian)
                 dequeue_stimulus (distractorGrating_ellipse)
                 dequeue_stimulus (targetGrating_ellipse)
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
                 update_stimulus_display ()
                 goto (
                     target = Reaction
@@ -2642,33 +2612,24 @@ protocol JuiceOnHoldProtocol {
                     )
                 goto (
                     target = ZeroQuad
-                    when = !isNotTooFast && timerExpired(tooFastTimerMs)
+                    when = !isNotTooFast && counter-cStimOn >= nFramesTooFast
                     )
                 goto (
                     target = Abort
-                    when = !isNotTooFast && doExtendedStationaryPeriod && doExtendedStatPerWithoutAbort == 0 && abs(quadrature-tQuadrature) > stationaryThreshold
-                    )
-                goto (
-                    target = ExtendedStationaryPeriod
-                    when = !isNotTooFast && doExtendedStationaryPeriod && doExtendedStatPerWithoutAbort && abs(quadrature-tQuadrature) > stationaryThreshold
+                    when = !isNotTooFast && doExtendedStationaryPeriod && abs(quadrature-tQuadrature) > stationaryThreshold
                     )
             }
             state ZeroQuad {
                 isNotTooFast = 1
                 tQuadrature = quadrature
                 qStartReact = quadrature
+                play_sound (goSound)
                 report ('**** Quad zeroed *****')
                 tTrialLaserPowerMw = 0
-                play_sound (goSound)
                 goto (Reaction)
             }
             state Reaction {
-                start_timer (
-                    timer = reactionLoopTimer
-                    duration = 5
-                    duration_units = ms
-                    )
-                if (doTestRobot==0 && doContrastDiscrim || doContrastDetect || doSizeDiscrim) {
+                if (doTestRobot==0 && doContrastDiscrim || doContrastDetect) {
                     trackMotion = (feedbackMotionSensitivity*(quadrature-tQuadrature))+tGratingEccentricityStart
                     dTrackMotion = (feedbackMotionSensitivity*(quadrature-tQuadrature))-tGratingEccentricityStart
                 }
@@ -2682,23 +2643,41 @@ protocol JuiceOnHoldProtocol {
                     trackMotion = 1000
                 }
                 if (tDoFeedbackMotion==1) {
-                    if (doContrastDiscrim || doContrastDetect || doSizeDiscrim) {
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeGrating)
+                        dequeue_stimulus (photoDiodeMask)
+                    }
+                    if (doContrastDiscrim || doContrastDetect) {
                         if ((tLeftTrial && trackMotion <= gratingTargetEccentricity) || (tLeftTrial == 0 && trackMotion >= gratingTargetEccentricity)) {
                             tGratingEccentricityDeg = trackMotion
                             dGratingEccentricityDeg = dTrackMotion
                             if (doGaussianMask) {
-                                live_queue_stimulus (targetGrating_gaussian)
-                                live_queue_stimulus (distractorGrating_gaussian)
+                                queue_stimulus (targetGrating_gaussian)
+                                queue_stimulus (distractorGrating_gaussian)
                             }
                             if (doEllipseMask) {
-                                live_queue_stimulus (targetGrating_ellipse)
-                                live_queue_stimulus (distractorGrating_ellipse)
+                                queue_stimulus (targetGrating_ellipse)
+                                queue_stimulus (distractorGrating_ellipse)
                             }
                         }
-                        
+                        if ((tLeftTrial && trackMotion >= gratingTargetEccentricity) || (tLeftTrial == 0 && trackMotion <= gratingTargetEccentricity)) {
+                            tGratingEccentricityDeg = gratingTargetEccentricity
+                            if (doGaussianMask) {
+                                queue_stimulus (targetGrating_gaussian)
+                                queue_stimulus (distractorGrating_gaussian)
+                            }
+                            if (doEllipseMask) {
+                                queue_stimulus (targetGrating_ellipse)
+                                queue_stimulus (distractorGrating_ellipse)
+                            }
+                        }
                         update_stimulus_display ()
                     }
                     if (doOriDiscrim) {
+                        if (doPhotodiode) {
+                            live_queue_stimulus (photoDiodeGrating)
+                            dequeue_stimulus (photoDiodeMask)
+                        }
                         if (!tDoMask) {
                             if ((tLeftTrial && trackMotion >= gratingTargetDirection) || (tLeftTrial == 0 && trackMotion <= gratingTargetDirection)) {
                                 tGratingDirectionDeg = trackMotion
@@ -2729,7 +2708,6 @@ protocol JuiceOnHoldProtocol {
                                 }
                             }
                         }
-
                         if (doGaussianMask) {
                             live_queue_stimulus (targetGrating_gaussian)
                         }
@@ -2739,17 +2717,25 @@ protocol JuiceOnHoldProtocol {
                         update_stimulus_display ()
                     }
                 }
+                if (doTestRobot && doAllCorrects==0) {
+                    robotGoLeft = robotLeftProb >= rand(0,1)
+                }
+                start_timer (
+                    timer = idleTimer
+                    duration = 5
+                    duration_units = ms
+                    )
                 goto (
                     target = StimOff
-                    when = timerExpired(stimOnTimerMs) && !stimIsOff
+                    when = counter-cStimOn >= nFramesOn && !stimIsOff
                     )
                 goto (
                     target = Ignore
-                    when = timerExpired(reactionTimerMs) && !isNoGo
+                    when = counter-cStimOn >= nFramesReact && !isNoGo
                     )
                 goto (
                     target = Reward
-                    when = timerExpired(reactionTimerMs) && isNoGo
+                    when = counter-cStimOn >= nFramesReact && isNoGo
                     )
                 goto (
                     target = Incorrect
@@ -2766,7 +2752,7 @@ protocol JuiceOnHoldProtocol {
                 goto (
                     target = Reward
                     when = doOriDiscrim && doTestRobot==0 && tLeftTrial==1 && !invertDirection && trackMotion <= leftDecisionThreshold
-                    )  
+                    )
                 goto (
                     target = Incorrect
                     when = !doOriDiscrim && doTestRobot==0 && tLeftTrial==1 && invertDirection && trackMotion >= leftDecisionThreshold
@@ -2844,8 +2830,8 @@ protocol JuiceOnHoldProtocol {
                     when = timerExpired(robotTimerMs) && doTestRobot==1 && isNoGo && doAllCorrects==0 && robotGoLeft == 0 && tLeftTrial==0
                     )
                 goto (
-                target = Reaction
-                    when = timerExpired(reactionLoopTimer)
+                    target = Reaction
+                    when = timerExpired(idleTimer)
                     )
             }
             state Reward {
@@ -2855,29 +2841,25 @@ protocol JuiceOnHoldProtocol {
                     dequeue_stimulus (distractorGrating_gaussian)
                     dequeue_stimulus (targetGrating_ellipse)
                     dequeue_stimulus (distractorGrating_ellipse)
-                    update_stimulus_display ()
                 }
-                start_timer (
-                    timer = stimTimer
-                    duration = 2000
-                    duration_units = ms
-                    )
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
+                update_stimulus_display ()
+                if (!stimIsOff) {
+                    cStimOff = counter
+                }
+                update_stimulus_display ()
                 play_sound (correctSound)
                 tConsecCorrects = tConsecCorrects+1
-                if (!didNoGo) {
-                    tConsecErrors = 0
-                }
-                if (didNoGo) {
-                    tConsecErrors = tConsecErrors
-                }
                 tDecisionTimeMs =  (now()/1000) - stimTimestampMs
+                cDecision = counter
                 report ('Decision Time = $tDecisionTimeMs')
                 report ('** Success!!! **')
                 // update running variables 
                 success = success+1
                 tLastTrialCorrect = 1
-                tLastTrialIgnore = 0
-                tLastTrialAbort = 0
                 if (doConsecCorrectReward==1) {
                     if (tConsecCorrects < maxConsecCorrects) {
                         tRewardTimeUs = tConsecCorrects*consecCorrRewardInterval
@@ -2885,6 +2867,18 @@ protocol JuiceOnHoldProtocol {
                     if (tConsecCorrects >= maxConsecCorrects) {
                         tRewardTimeUs = maxConsecCorrects*consecCorrRewardInterval
                     }
+                }
+                if (isNoGo) {
+                    didNoGo = 1
+                }
+                if (!isNoGo) {
+                    didNoGo = 0
+                }
+                if (!didNoGo) {
+                    tConsecErrors = 0
+                }
+                if (didNoGo) {
+                    tConsecErrors = tConsecErrors
                 }
                 if (doConsecCorrectReward==0) {
                     tRewardTimeUs = rewardTimeUs
@@ -2897,21 +2891,13 @@ protocol JuiceOnHoldProtocol {
                         tRewardTimeUs = rewardTimeUs*highProbRewardScale
                     }
                 }
-                if (doRandReward) {
-                    tRewardTimeUs = rewardTimeUs*rand(0.5,1.5)
-                }
-
-                if (isNoGo) {
-                    didNoGo = 1
-                }
-                if (!isNoGo) {
-                    didNoGo = 0
-                }
                 juice = tRewardTimeUs
                 start_timer (
-                    timer = rewardTimerUs
-                    duration = rewardTimeUs
+                    timer = postRewardTimerUs
+                    duration = 100000
                     )
+                tLastTrialIgnore = 0
+                tLastTrialAbort = 0
                 // accept stim selection 
                 accept_selections (svStimNumber)
                 tNStimAccepted = tNStimAccepted + 1
@@ -2937,12 +2923,8 @@ protocol JuiceOnHoldProtocol {
                     next_selection (svStimNumber2)
                     report ('Next selection,tNStimAccepted2=$tNStimAccepted2')
                 }
-                goto (
-                    target = EndTrial
-                    when = timerExpired(rewardTimerUs) && tDoFeedbackMotion == 0
-                    )
                 timer_expired (
-                    timer = stimTimer
+                    timer = postRewardTimerUs
                     target = EndTrial
                     )
             }
@@ -2953,24 +2935,22 @@ protocol JuiceOnHoldProtocol {
                     dequeue_stimulus (distractorGrating_gaussian)
                     dequeue_stimulus (targetGrating_ellipse)
                     dequeue_stimulus (distractorGrating_ellipse)
-                    update_stimulus_display ()
                 }
-                start_timer (
-                    timer = stimTimer
-                    duration = 2000
-                    duration_units = ms
-                    )
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
+                update_stimulus_display ()
+                if (!stimIsOff) {
+                    cStimOff = counter
+                }
+                cDecision = counter
                 tDecisionTimeMs =  (now()/1000) - stimTimestampMs
                 tLastTrialCorrect = 0
-                tLastTrialIgnore = 0
-                tLastTrialAbort = 0
                 report ('** Incorrect: Time-Out for $incorrectTimeoutMs **')
                 update_stimulus_display ()
                 play_sound (incorrectSound)
                 play_sound (whiteNoiseSound)
-                if (doPuffIncorrect == 1 && tGratingContrast == 1) {
-                    tPuffDurationMs = puffDurationMs
-                }
                 start_timer (
                     timer = incorrectTimeoutTimer
                     duration = incorrectTimeoutMs
@@ -2980,6 +2960,8 @@ protocol JuiceOnHoldProtocol {
                 tConsecErrors = tConsecErrors+1
                 tConsecCorrects = 0
                 didNoGo = 0
+                tLastTrialIgnore = 0
+                tLastTrialAbort = 0
                 // accept stim selection 
                 accept_selections (svStimNumber)
                 if (doCorrectiveTrials==0) {
@@ -3019,12 +3001,18 @@ protocol JuiceOnHoldProtocol {
                 dequeue_stimulus (distractorGrating_gaussian)
                 dequeue_stimulus (targetGrating_ellipse)
                 dequeue_stimulus (distractorGrating_ellipse)
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
+                if (!stimIsOff) {
+                    cStimOff = counter
+                }
+                cDecision = counter
                 tDecisionTimeMs =  (now()/1000) - stimTimestampMs
                 report ('** Ignore: Time-Out for $ignoreTimeoutMs **')
                 update_stimulus_display ()
                 tLastTrialCorrect = 0
-                tLastTrialIgnore = 1
-                tLastTrialAbort = 0
                 play_sound (incorrectSound)
                 play_sound (whiteNoiseSound)
                 start_timer (
@@ -3038,6 +3026,8 @@ protocol JuiceOnHoldProtocol {
                 didNoGo = 1
                 tLeftResponse = 0
                 tRightResponse = 0
+                tLastTrialIgnore = 1
+                tLastTrialAbort = 0
                 // accept stim selection 
                 accept_selections (svStimNumber)
                 if (doCorrectiveTrials==0) {
@@ -3077,9 +3067,17 @@ protocol JuiceOnHoldProtocol {
                 dequeue_stimulus (distractorGrating_gaussian)
                 dequeue_stimulus (targetGrating_ellipse)
                 dequeue_stimulus (distractorGrating_ellipse)
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
+                update_stimulus_display ()
+                if (!stimIsOff) {
+                    cStimOff = counter
+                }
+                cDecision = counter
                 tDecisionTimeMs =  (now()/1000) - stimTimestampMs
                 report ('** Abort: End Trial **')
-                update_stimulus_display ()
                 tLastTrialCorrect = 0
                 tLastTrialIgnore = 0
                 tLastTrialAbort = 1
@@ -3141,10 +3139,15 @@ protocol JuiceOnHoldProtocol {
                     )
             }
             state EndTrial {
+                strobedDigitalWord = 85
                 dequeue_stimulus (targetGrating_gaussian)
                 dequeue_stimulus (distractorGrating_gaussian)
                 dequeue_stimulus (targetGrating_ellipse)
                 dequeue_stimulus (distractorGrating_ellipse)
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
                 update_stimulus_display ()
                 strobedDigitalWord = 85
                 tTrialLaserPowerMw = 0
@@ -3206,7 +3209,6 @@ protocol JuiceOnHoldProtocol {
                         tNBlockRightTrsCompleted = tNBlockRightTrsCompleted+1
                     }
                 }
-                stop_device_io (LabJackU6)
                 sync = 0
                 yield ()
             }
