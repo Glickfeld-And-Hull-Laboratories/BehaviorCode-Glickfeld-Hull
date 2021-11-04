@@ -8,6 +8,7 @@ Tix = setdiff(1:length(input.trialOutcomeCell), [Nix Iix]);
 maxD = max(cell2mat(input.tDecisionTimeMs(Tix)),[],2);
 qTimes_act = nan(18001, uint16(length(input.trialOutcomeCell)));
 qTimes_thresh = nan(1, uint16(length(input.trialOutcomeCell)));
+qVals_final = nan(18001, uint16(length(input.trialOutcomeCell)));
 for trN = 1:length(input.trialOutcomeCell)-1
     if find(Tix == trN)
         qTimes = double([input.quadratureTimesUs{trN} input.quadratureTimesUs{trN+1}]./1000);
