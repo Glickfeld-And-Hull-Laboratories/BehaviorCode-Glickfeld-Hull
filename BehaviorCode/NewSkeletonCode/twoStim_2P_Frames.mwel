@@ -1790,7 +1790,7 @@ protocol JuiceOnHoldProtocol {
                         tTempStim1 = tStimulusNumber % stimOneGratingOnTimeStepN
                         tStimOneGratingOnTimeMs = stimOneGratingOnTimeMs * pow(stimOneGratingOnTimeStepLog,tTempStim1)
                         if (matchStimOneParameters) {
-                            tStimTwoGratingOnTimeMs = tStimOneGratingOnTimeMs
+                            tStimTwoGratingOnTimeMs = (double)tStimOneGratingOnTimeMs
                         }
                         if (!matchStimOneParameters) {
                             tTempStim2 = tStimulusNumber2 % stimTwoGratingOnTimeStepN
@@ -2472,6 +2472,31 @@ protocol JuiceOnHoldProtocol {
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+                    if (tDoRandStimOnTime && tDoRandDir) {
+                        tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingOnTimeStepN)
+                        if (tTempStim1 < stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
+                            tStimOneGratingOnTimeMs = (double)stimOneGratingOnTimeMs
+                        }
+                        if (tTempStim1 >= stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg+ (stimOneGratingDirectionStepDeg * ((tTempStim1) % stimOneGratingDirectionStepN))
+                            tStimOneGratingOnTimeMs = stimOneGratingOnTimeMs * pow(stimOneGratingOnTimeStepLog, (floor(tTempStim1 / stimOneGratingDirectionStepN)))
+                        }
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                        }
+                        if (!matchStimOneParameters) {
+                            tTempStim2 = tStimulusNumber2 % (stimTwoGratingDirectionStepN * isiTimeN)
+                            if (tTempStim2 < stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg + (stimTwoGratingDirectionStepDeg * (tTempStim2))
+                                tStimTwoGratingOnTimeMs = (double)stimTwoGratingOnTimeMs
+                            }
+                            if (tTempStim2 >= stimTwoGratingDirectionStepN) {
+                                tStimTwoGratingDirectionDeg = stimTwoGratingDirectionDeg+ (stimTwoGratingDirectionStepDeg * ((tTempStim2) % stimTwoGratingDirectionStepN))
+                                tStimTwoGratingOnTimeMs = stimTwoGratingOnTimeMs * pow(stimTwoGratingOnTimeStepLog, (floor(tTempStim2 / stimTwoGratingDirectionStepN)))
                             }
                         }
                     }

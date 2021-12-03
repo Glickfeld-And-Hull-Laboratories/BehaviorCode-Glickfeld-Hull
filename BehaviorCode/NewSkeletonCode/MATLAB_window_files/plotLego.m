@@ -124,13 +124,16 @@ noGoCorrIx(noGoInd(noGoInc)) = 0;
 
 %Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
-tLeftResponse = celleqel2mat_padded(input.tLeftResponse);
+tLeftResponse_temp = celleqel2mat_padded(input.tLeftResponse);
+tLeftResponse = tLeftResponse_temp;
 if input.doOriDiscrim
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)),find(strcmp(input.trialOutcomeCell, 'success')))) = 1;
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 0;
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'success')))) = 0;
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 1;
 end
+catchIx = celleqel2mat_padded(input.tDoCatchTrial);
+tLeftResponse(find(catchIx)) = tLeftResponse_temp(find(catchIx));
 
 tRightResponse = celleqel2mat_padded(input.tRightResponse);
 tLeftNoGo = nan(size(tLeftResponse));
@@ -943,7 +946,7 @@ for kk=1:length(nLevelsB1)
     totalNTrialsValB1 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&~maskIx));
     totalNTrialsValB1_100 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&curr100&~maskIx));
     if min(differenceRight) < 0
-      if valB1>=0,
+      if valB1>0,
           ind = setdiff(intersect(find(valIxB1),find(correctIx)), [find(block2Ix) find(maskIx)]);  
           rightNTrialsValB1 = length(ind);
           ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), [find(block2Ix) find(maskIx)]));  
@@ -957,6 +960,13 @@ for kk=1:length(nLevelsB1)
           rightNTrialsValB1_100 = length(ind2);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
           percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
+      elseif valB1==0,
+          ind = setdiff(intersect(find(valIxB1),find(tRightResponse)), [find(block2Ix) find(maskIx)]);
+          rightNTrialsValB1 = length(ind);
+          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(tRightResponse)), [find(block2Ix) find(maskIx)]));
+          rightNTrialsValB1_100 = length(ind2);
+          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+          percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;    
       end
     else
         if valB1>=1,
@@ -987,7 +997,7 @@ if sum(maskIx)>0
           valIxM1 = differenceRight_mask==valM1;
           totalNTrialsValM1 = length(differenceRight_mask(valIxM1&(correctIx|incorrectIx)&~block2Ix&type1MaskIx));
           if min(differenceRight_mask) < 0
-            if valM1>=0,
+            if valM1>0,
                 ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(correctIx))), find(block2Ix));
                 rightNTrialsValM1 = length(ind);
                 percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
@@ -995,6 +1005,10 @@ if sum(maskIx)>0
                 ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(incorrectIx))), find(block2Ix));
                 rightNTrialsValM1 = length(ind);
                 percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
+            elseif valM1==0,
+                ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(tRightResponse))), find(block2Ix));
+                rightNTrialsValM1 = length(ind);
+                percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;    
             end
           else
               if valM1>=1,
