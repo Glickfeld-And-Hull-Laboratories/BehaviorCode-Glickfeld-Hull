@@ -132,8 +132,11 @@ if input.doOriDiscrim
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'success')))) = 0;
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 1;
 end
-catchIx = celleqel2mat_padded(input.tDoCatchTrial);
-tLeftResponse(find(catchIx)) = tLeftResponse_temp(find(catchIx));
+
+if isfield(input, 'tDoCatchTrial')
+  catchIx = celleqel2mat_padded(input.tDoCatchTrial);
+  tLeftResponse(find(catchIx)) = tLeftResponse_temp(find(catchIx));
+end
 
 tRightResponse = celleqel2mat_padded(input.tRightResponse);
 tLeftNoGo = nan(size(tLeftResponse));
