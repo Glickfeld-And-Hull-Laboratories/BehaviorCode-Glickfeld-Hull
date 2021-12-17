@@ -18,12 +18,8 @@
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
   <variables tag="Variables">
-    <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="0"/>
-    <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="100000" type="float" persistant="0"/>
       <!-- creating variables -->
     <folder tag="Behavioral Control">
-      <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
-      <variable tag="speedIntervalMS" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Wheel Speed"/>
       <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="12" type="integer" persistant="0"/>
@@ -37,12 +33,12 @@
       <variable tag="juice" full_name="juice" scope="GLOBAL" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="counter" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="wheelSpeed" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
-      
       <variable tag="LED_durationMS" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="led1_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0"/>
       <variable tag="quadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
     </folder>
@@ -55,7 +51,6 @@
       <variable tag="xPosition" scope="global" logging="when_changed" default_value="0.0" type="float" persistant="1"/>
       <variable tag="yPosition" scope="global" logging="when_changed" default_value="0.0" type="float" persistant="1"/>
       <variable tag="numImages" scope="global" logging="when_changed" default_value="30" type="integer" persistant="0"/>
-
       <variable tag="Do2LED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Alternating LED"/>
       <variable tag="LED_sequence" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="1" groups="Alternating LED"/>
 
@@ -92,6 +87,7 @@
       <variable tag="doRandStimTwo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="doSameStims" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="doStimOneOffChance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
+      <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
     </folder>
 
     <folder tag="Internal Variables">
@@ -133,10 +129,10 @@
       <action type="report" message="**** First trial since experiment load ****"/>
       <action type="assignment" tag="Set Counter to 0" variable="counter" value="0"/>
       <action type="assignment" tag="Set ntrials to 0" variable="ntrials" value="0"/>
-      
+
       <action type="reset_selection" selection="svStimNumber"></action>
       <action type="assignment" variable="tNStimAccepted" value="0"></action>
-      
+
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
         <task_system tag="Trial Start" interruptible="YES">
 
@@ -152,13 +148,6 @@
             <action type="assignment" variable="tstimOne" value="stimOne"/>
             <action type="assignment" variable="tstimTwo" value="stimTwo"/>
 
-            <!-- do wheel speed -->
-            <action type="if" condition="doWheelSpeed == 1">
-              <action type="assignment" variable="doCerebellarStim" value="0"/>
-              <action type="assignment" variable="DoWheelSpeed" value="doWheelSpeed"/>
-              <action type="assignment" variable="speedIntervalUS" value="speedIntervalMS*1000"/>
-            </action>
-            
             <!-- setting images based on task variables -->
             <action type="if" condition="doRandIsiTime">
               <action type="assignment" variable="tisiTimeMs" value="randIsiTimeStart + disc_rand(0, randIsiTimeInterval - 1) * randIsiTimeStep"/>
@@ -256,11 +245,8 @@
 
           <task_system_state tag="End Trial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"/>
-            <action type="if" condition="doWheelSpeed == 1">
-              <action type="assignment" variable="DoWheelSpeed" value="0"/>
-            </action>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
-            
+
             <!-- accept stim selection -->
             <action type="accept_selections" selection="svStimNumber"></action>
             <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
@@ -272,7 +258,7 @@
             <action type="if" condition="tNStimAccepted &lt; 30">
               <action type="next_selection" selection="svStimNumber"/>
             </action>
-            
+
             <transition_marker _unmoveable="1" tag="Transitions"/>
             <transition tag="Return to parent task system" type="yield"/>
           </task_system_state>
