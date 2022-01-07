@@ -23,6 +23,9 @@ else
     for i = 1:nTrials
          quadVals = input.quadratureValues{i};
          quadTimes = input.quadratureTimesUs{i};
+         if length(input.delayTimeMs)>1
+             input.delayTimeMs = input.delayTimeMs(1);
+         end
          tDecision = input.stimTimestampMs{i}+decisionTime(i)-input.delayTimeMs;
          [min_val min_ind] = min(abs(quadTimes-(tDecision*1000)));
          qDecision(i) = quadVals(min_ind);
