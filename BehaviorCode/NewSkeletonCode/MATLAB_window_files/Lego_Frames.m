@@ -169,6 +169,8 @@ if input.doContrastDiscrim
 fprintf(1,'Con: T=%0.2f, D=%0.2f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', input.tGratingContrast{trN}, input.dGratingContrast{trN}, tLeftStr, outcomeStr, decisionTime, input.tBlock2TrialNumber{trN}+1, rewS)
 elseif input.doOriDiscrim
 fprintf(1,'Ori: T=%2.0f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', abs(input.gratingTargetDirection - input.tGratingDirectionStart{trN}), tLeftStr, outcomeStr, decisionTime, input.tBlock2TrialNumber{trN}+1, rewS)
+elseif input.doDotsDiscrim
+fprintf(1,'Dir: T=%2.0f, %s, %s, RT: %0.0f ms, B%1.0f, Rew: %2.0f\n ', abs(input.gratingTargetDirection - input.tGratingDirectionStart{trN}), tLeftStr, outcomeStr, decisionTime, input.tBlock2TrialNumber{trN}+1, rewS)
 end
 
 %itiStr = sprintf('iti %d, ', round(input.tItiWaitTimeMs{trN}));
