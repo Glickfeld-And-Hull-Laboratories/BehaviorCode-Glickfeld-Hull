@@ -10,6 +10,8 @@ function outS = concatenateDataBlocks(blockC)
             trs = length(blockC(iblock).trialOutcomeCell);
         elseif isfield(blockC, 'tGratingContrast')
             trs = length(blockC(iblock).tGratingContrast);
+        elseif isfield(blockC, 'tStimOneGratingContrast')
+            trs = length(blockC(iblock).tStimOneGratingContrast);
         end
         if iblock == 1
             outS.trialsSinceReset = trs;
