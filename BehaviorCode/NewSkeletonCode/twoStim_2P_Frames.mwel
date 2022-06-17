@@ -2609,11 +2609,12 @@ protocol JuiceOnHoldProtocol {
                 if (tMaskTwoGratingContrast < 0) {
                     tMaskTwoGratingContrast = 0
                 }
-                if (doStimPair)
-                    if (tStimOneGratingDirectionDeg == stimPairDir)
+                if (doStimPair) {
+                    tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                    if (tStimOneGratingDirectionDeg == stimPairDir) {
                         tStimOneGratingContrast = 1
                     }
-                    if (tStimOneGratingDirectionDeg != stimPairDir)
+                    if (tStimOneGratingDirectionDeg != stimPairDir) {
                         tStimOneGratingContrast = 0
                     }
                 }
