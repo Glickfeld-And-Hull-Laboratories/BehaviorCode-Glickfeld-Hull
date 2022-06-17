@@ -110,6 +110,14 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Task Type'
         )
+    var doStimPair = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var stimPairDir = (float)(0) (
+        persistant = 1
+        groups = 'Stim Pair'
+        )
     var doMask = (bool)(0) (
         persistant = 1
         groups = Mask
@@ -2600,6 +2608,14 @@ protocol JuiceOnHoldProtocol {
                 }
                 if (tMaskTwoGratingContrast < 0) {
                     tMaskTwoGratingContrast = 0
+                }
+                if (doStimPair)
+                    if (tStimOneGratingDirectionDeg == stimPairDir)
+                        tStimOneGratingContrast = 1
+                    }
+                    if (tStimOneGratingDirectionDeg != stimPairDir)
+                        tStimOneGratingContrast = 0
+                    }
                 }
                 if (tDoMask) {
                     if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
