@@ -1300,6 +1300,7 @@ layer distractorGrating_ellipse {
         y_position = gratingElevationDeg
         rotation = aGratingDirectionDeg
         alpha_multiplier = aGratingContrast
+        autoplay = true
         )
 
     drifting_grating adapterGrating_ellipse (
@@ -1316,6 +1317,7 @@ layer distractorGrating_ellipse {
         y_position = gratingElevationDeg
         rotation = aGratingDirectionDeg
         alpha_multiplier = aGratingContrast
+        autoplay = true
         )    
 
 drifting_grating rewardGrating (
@@ -2460,10 +2462,10 @@ protocol JuiceOnHoldProtocol {
                     duration_units = ms
                     )
                 if (doGaussianMask) {
-                    queue_stimulus (adapterGrating_gaussian)
+                    live_queue_stimulus (adapterGrating_gaussian)
                 }
                 if (doEllipseMask) {
-                    queue_stimulus (adapterGrating_ellipse)
+                    live_queue_stimulus (adapterGrating_ellipse)
                 }
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
@@ -2514,10 +2516,10 @@ protocol JuiceOnHoldProtocol {
                     }
                 }
                 if (doGaussianMask) {
-                    queue_stimulus (adapterGrating_gaussian)
+                    live_queue_stimulus (adapterGrating_gaussian)
                 }
                 if (doEllipseMask) {
-                    queue_stimulus (adapterGrating_ellipse)
+                    live_queue_stimulus (adapterGrating_ellipse)
                 }
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
