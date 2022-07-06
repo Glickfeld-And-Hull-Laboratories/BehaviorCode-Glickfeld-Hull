@@ -1,8 +1,8 @@
 <monkeyml version="1.0">
   <io_devices tag="IO Devices">
-    <iodevice tag="LabJackU6" priority="" type="LabJackU6" 
-              pulse_duration="juice" pulse_on="juice" 
-              lever1="FIO1" 
+    <iodevice tag="LabJackU6" priority="" type="LabJackU6"
+              pulse_duration="juice" pulse_on="juice"
+              lever1="FIO1"
               lever1_solenoid="MIO0"
               laser_trigger="laserTrigger"
               optic_device="optic_device"
@@ -18,8 +18,12 @@
     <iodevice type="serverside_conduit" tag="Server-side Event Conduit" resource_name="server_conduit"/>
   </io_devices>
   <variables tag="Variables">
+    <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="0"/>
+    <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="100000" type="float" persistant="0"/>
       <!-- creating variables -->
     <folder tag="Behavioral Control">
+      <variable tag="doWheelSpeed" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="speedIntervalMS" scope="global" logging="when_changed" default_value="100" type="float" persistant="1" groups="Wheel Speed"/>
       <variable tag="optic_device" scope="global" logging="when_changed" default_value="led" type="string"/>
       <variable tag="experimentXmlTrialId" scope="global" logging="when_changed" default_value="8" type="integer" persistant="1"/> <!-- n.b. it is forcibly set each trial below -->
       <variable tag="subjectNum" scope="global" logging="when_changed" default_value="12" type="integer" persistant="0"/>
@@ -38,7 +42,6 @@
       <variable tag="led2_status" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="led_seq" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="0"/>
       <variable tag="quadrature" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="speedIntervalUS" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="doCerebellarStim" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
       <variable tag="do2led" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
     </folder>
@@ -50,8 +53,7 @@
       <variable tag="ySize" scope="global" logging="when_changed" default_value="20.0" type="float" persistant="1"/>
       <variable tag="xPosition" scope="global" logging="when_changed" default_value="0.0" type="float" persistant="1"/>
       <variable tag="yPosition" scope="global" logging="when_changed" default_value="0.0" type="float" persistant="1"/>
-      <variable tag="numImages" scope="global" logging="when_changed" default_value="7" type="integer" persistant="0"/>
-
+      <variable tag="numImages" scope="global" logging="when_changed" default_value="30" type="integer" persistant="0"/>
       <variable tag="Do2LED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Alternating LED"/>
       <variable tag="LED_sequence" scope="global" logging="when_changed" default_value="1,1,1,2" type="list" persistant="1" groups="Alternating LED"/>
 
@@ -73,9 +75,12 @@
       <variable tag="stimOne" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/>
       <variable tag="stimTwo" scope="global" logging="when_changed" default_value="1" type="float" persistant="1"/>
       <variable tag="stimOneOffChance" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
-      <variable tag="stimList" scope="global" logging="when_changed" default_value="1, 2, 3, 4, 5, 6, 7" type="list" persistant="0"/>
-      <variable tag="setList" scope="global" logging="when_changed" default_value="'flowers'" type="list" persistant="0"/>
-
+      <variable tag="stimList" scope="global" logging="when_changed" default_value="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30" type="list" persistant="0"/>
+      <variable tag="setList" scope="global" logging="when_changed" default_value="'shadow_top'" type="list" persistant="0"/>
+      
+      <variable tag="tNStimAccepted" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable type="selection" tag="svStimNumber" values="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30"
+                selection="random_without_replacement" nsamples="1" sampling_method="cycles"/>
     </folder>
     <folder tag="Task Variables">
       <variable tag="doRandIsiTime" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
@@ -85,7 +90,6 @@
       <variable tag="doRandStimTwo" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="doSameStims" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
       <variable tag="doStimOneOffChance" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1"/>
-      <variable tag="DoWheelSpeed" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
     </folder>
 
     <folder tag="Internal Variables">
@@ -116,7 +120,7 @@
       </range_replicator>
       <!-- create photodiode stimuli -->
       <stimulus type="drifting_grating" tag="photoDiodeBlack"  direction="0" starting_phase="1" spatial_frequency="photoMaskSpatialFreq" speed="0" grating_type="sinusoid" std_dev="0.3" mean="0.1" x_size="photoStimulusWidth" y_size="photoStimulusHeight" x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" rotation="0" alpha_multiplier="1.0" color="0.0, 0.0, 0.0"></stimulus>
-      <stimulus type="drifting_grating" tag="photoDiodeWhite"  direction="0" starting_phase="1" spatial_frequency="photoMaskSpatialFreq" speed="0" grating_type="sinusoid" std_dev="0.3" mean="0.1" x_size="photoStimulusWidth" y_size="photoStimulusHeight" x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" rotation="0" alpha_multiplier="1" color="256.0, 256.0, 256.0"></stimulus>  
+      <stimulus type="drifting_grating" tag="photoDiodeWhite"  direction="0" starting_phase="1" spatial_frequency="photoMaskSpatialFreq" speed="0" grating_type="sinusoid" std_dev="0.3" mean="0.1" x_size="photoStimulusWidth" y_size="photoStimulusHeight" x_position="photoStimulusAzimuth" y_position="photoStimulusElevation" rotation="0" alpha_multiplier="1" color="256.0, 256.0, 256.0"></stimulus>
     </stimulus_group>
   </stimuli>
   <filters tag="Filters"/>
@@ -127,6 +131,10 @@
       <action type="report" message="**** First trial since experiment load ****"/>
       <action type="assignment" tag="Set Counter to 0" variable="counter" value="0"/>
       <action type="assignment" tag="Set ntrials to 0" variable="ntrials" value="0"/>
+
+      <action type="reset_selection" selection="svStimNumber"></action>
+      <action type="assignment" variable="tNStimAccepted" value="0"></action>
+
       <trial tag="Trial 01" nsamples="2500" sampling_method="cycles" selection="sequential">
         <task_system tag="Trial Start" interruptible="YES">
 
@@ -141,13 +149,19 @@
             <action type="assignment" variable="tisiTimeMs" value="isiTimeMs"/>
             <action type="assignment" variable="tstimOne" value="stimOne"/>
             <action type="assignment" variable="tstimTwo" value="stimTwo"/>
-
+            <!-- do wheel speed -->
+            <action type="if" condition="doWheelSpeed == 1">
+              <action type="assignment" variable="doCerebellarStim" value="0"/>
+              <action type="assignment" variable="DoWheelSpeed" value="doWheelSpeed"/>
+              <action type="assignment" variable="speedIntervalUS" value="speedIntervalMS*1000"/>
+            </action>
+            
             <!-- setting images based on task variables -->
             <action type="if" condition="doRandIsiTime">
               <action type="assignment" variable="tisiTimeMs" value="randIsiTimeStart + disc_rand(0, randIsiTimeInterval - 1) * randIsiTimeStep"/>
             </action>
             <action type="if" condition="doRandStimOne">
-              <action type="assignment" variable="tstimOne" value="stimList[disc_rand(0, size(stimList) - 1)]"/>
+              <action type="assignment" variable="tstimOne" value="svStimNumber"/>
             </action>
             <action type="if" condition="doRandStimTwo">
               <action type="assignment" variable="tstimTwo" value="stimList[disc_rand(0, size(stimList) - 1)]"/>
@@ -161,7 +175,9 @@
 
             <!-- loading images -->
             <action tag="Load Stimulus 1" type="load_stimulus" stimulus="images[tstimOne]"></action>
+            <action type="wait" tag="Wait" duration="0.1" duration_units="s"></action>
             <action tag="Load Stimulus 2" type="load_stimulus" stimulus="images[tstimTwo]"></action>
+            <action type="wait" tag="Wait" duration="0.1" duration_units="s"></action>
 
 
             <action type="assignment" variable="titiTimeFrames" value="ceil((itiTimeMs/1000)*frameRateHz)"/>
@@ -169,7 +185,7 @@
             <action type="assignment" variable="tstimOnTimeFrames" value="ceil((stimOnTimeMs/1000)*frameRateHz)"/>
 
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeBlack"></action>
-            <action type="play_dynamic_stimulus" stimulus="photoDiodeBlack"></action> 
+            <action type="play_dynamic_stimulus" stimulus="photoDiodeBlack"></action>
             <action tag="Update display" type="update_stimulus_display"/>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -189,7 +205,7 @@
             <action type="assignment" variable="ntrials" value="ntrials + 1"/>
             <action tag="Queue image" type="queue_stimulus" stimulus="images[tstimOne]"/>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeWhite"></action>
-            <action type="play_dynamic_stimulus" stimulus="photoDiodeWhite"></action> 
+            <action type="play_dynamic_stimulus" stimulus="photoDiodeWhite"></action>
             <action tag="Update display" type="update_stimulus_display"/>
             <action type="assignment" variable="cStimOneOn" value="counter" />
 
@@ -214,7 +230,7 @@
             <action_marker _unmoveable="1" tag="Actions"/>
             <action tag="Queue image" type="queue_stimulus" stimulus="images[tstimTwo]"/>
             <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeWhite"></action>
-            <action type="play_dynamic_stimulus" stimulus="photoDiodeWhite"></action> 
+            <action type="play_dynamic_stimulus" stimulus="photoDiodeWhite"></action>
             <action tag="Update display" type="update_stimulus_display"/>
             <action type="assignment" variable="cStimTwoOn" value="counter" />
             <action type="report" message="StimTwoOn"/>
@@ -239,7 +255,23 @@
 
           <task_system_state tag="End Trial" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"/>
+            <action type="if" condition="doWheelSpeed == 1">
+              <action type="assignment" variable="DoWheelSpeed" value="0"/>
+            </action>
             <action type="assignment" tag="End Matlab Sync" variable="sync" value="0"></action>
+
+            <!-- accept stim selection -->
+            <action type="accept_selections" selection="svStimNumber"></action>
+            <action type="assignment" variable="tNStimAccepted" value="tNStimAccepted + 1"></action>
+            <!-- update selection variable -->
+            <action type="if" condition="tNStimAccepted >= 30">
+              <action type="reset_selection" selection="svStimNumber"/>
+              <action type="assignment" variable="tNStimAccepted" value="0"></action>
+            </action>
+            <action type="if" condition="tNStimAccepted &lt; 30">
+              <action type="next_selection" selection="svStimNumber"/>
+            </action>
+
             <transition_marker _unmoveable="1" tag="Transitions"/>
             <transition tag="Return to parent task system" type="yield"/>
           </task_system_state>
