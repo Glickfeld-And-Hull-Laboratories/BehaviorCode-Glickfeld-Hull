@@ -3,8 +3,11 @@ close all
 
 %%
 %contrast discrim 
-data_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\camaron\BehaviorSummaries';
-load(fullfile(data_path, 'CurrMouseList.mat')) 
+% data_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\camaron\BehaviorSummaries';
+data_path = 'C:\Users\camaron\Documents\MATLAB\BehaviorCode-Glickfeld-Hull\BehaviorAnalysis\CLM_analysis';
+% load(fullfile(data_path, 'CurrMouseList.mat'))
+dataset = 'CurrentMouseList';
+eval(dataset)
 behav_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\Behavior\Data\';
 spSz = {4,2};
 save_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\camaron\BehaviorSummaries\';
