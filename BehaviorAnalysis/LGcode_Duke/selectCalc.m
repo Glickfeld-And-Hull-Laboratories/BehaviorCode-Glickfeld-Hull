@@ -6,6 +6,9 @@ function [s, b] = selectCalc(input,trials)
         end
     end
     if isfield(input,'doContrastDiscrim')
+        if ~isfield(input, 'doSizeDiscrim')
+            input.doSizeDiscrim = 0;
+        end
         if input.doContrastDiscrim
             rCon = celleqel2mat_padded(input.rightGratingContrast);
             lCon = celleqel2mat_padded(input.leftGratingContrast);

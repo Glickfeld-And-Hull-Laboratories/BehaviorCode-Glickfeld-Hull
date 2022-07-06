@@ -3,8 +3,13 @@ function [qVals_final qTimes_thresh] = wheelTrajectory(input,thresh);
 %qTimes_thresh gives the time that the wheel trajectory is >thresh ticks
 
 Iix = find(strcmp(input.trialOutcomeCell, 'ignore'));
-Nix = find(celleqel2mat_padded(input.didNoGo));
-Tix = setdiff(1:length(input.trialOutcomeCell), [Nix Iix]);
+
+if isfield(input, 'didNoGo')
+    Nix = find(celleqel2mat_padded(input.didNoGo));
+    Tix = setdiff(1:length(input.trialOutcomeCell), [Nix Iix]);
+else
+    Tix = setdiff(1:length(input.trialOutcomeCell), Iix);
+end
 maxD = max(cell2mat(input.tDecisionTimeMs(Tix)),[],2);
 qTimes_act = nan(18001, uint16(length(input.trialOutcomeCell)));
 qTimes_thresh = nan(1, uint16(length(input.trialOutcomeCell)));

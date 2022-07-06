@@ -3,7 +3,7 @@ close all
 
 %%
 behav_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\Behavior\Data';
-mouse = 'i474';
+mouse = 'i488';
 ds= [mouse '_exptList'];
 eval(ds)
 doFit = 1;
@@ -170,8 +170,8 @@ sumTrials = length(input.trialOutcomeCell);
 % save(['\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\camaron\Analysis\Contrast_discrim\'...
 %      mouse 'goodData.mat'],'input');
 
-save(['\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\camaron\Analysis\Orientation_discrim\'...
-     mouse 'goodData.mat'],'input');
+% save(['\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\camaron\Analysis\Orientation_discrim\'...
+%      mouse 'goodData.mat'],'input');
 
 % save(['\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\camaron\Analysis\Contrast_discrim\'...
 %      mouse '_variables.mat'],'dates', 'trials', 'good_exp', 'mouse', 'pct_right', 'ci_right', 'pows', 'ratios', 'sumTrials', 'n_goodDays',...
