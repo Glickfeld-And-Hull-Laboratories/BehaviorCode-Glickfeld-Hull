@@ -33,7 +33,8 @@ for m = 1:length(allmice)
     info(m).mouse = mouse;
     %% dates
    
-   dates = [220628; 220629; 220630];
+   dates = [220701; 220702; 220705; 220706; 220707];
+
    folder_dates = dates;
    trials = cell(1, length(dates));
 %    mat_use{1} = 2;
@@ -873,7 +874,12 @@ for m = 1:length(allmice)
         mkdir(save_path, save_daterange)
     end
     cd(['\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\home\camaron\BehaviorSummaries\', save_daterange, '\'])
-    print(mouse, '-dpdf')
+%     print(mouse, '-dpdf')
+    exportgraphics(gcf, [mouse '.pdf'], 'Append', true)
+    selectivity_v_stimvars_for_summary_figs(smooth_select, tdays, stim_info)
+    exportgraphics(gcf, [mouse '.pdf'], 'Append', true)
+
+
     
  
         
