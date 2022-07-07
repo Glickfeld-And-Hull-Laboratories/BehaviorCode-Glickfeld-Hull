@@ -1,8 +1,8 @@
-function [smooth_select, smooth_MeanDT, tdays, smooth_select2, tdays2] = getTrainingHistory2(behav_path, mouse)
+function [smooth_select, smooth_MeanDT, tdays, smooth_select2, tdays2, stim_info] = getTrainingHistory2(behav_path, mouse)
 %    behav_path = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff\Behavior\Data\';
 %     mouse = 'i484';
 %     
-    info2 = struct();
+    stim_info = struct();
     expt_mat2 = dir(fullfile(behav_path, ['data-' mouse '-*']));
 %     if m == 9 % i476 swtiched tasks on jun 8 2020 -Lego notes
 %         expt_mat2 = expt_mat2(9:end);
@@ -56,12 +56,40 @@ function [smooth_select, smooth_MeanDT, tdays, smooth_select2, tdays2] = getTrai
         MeanDecisionTime(id2) =  mean(rawDT(correctIx|incorrectIx));
     %     info(m).meanDT = MeanDecisionTime;
 
+        
+        size(id2) = input.gratingMaxDiameterDeg;
+        eccentricity(id2) = input.gratingEccentricityDeg;
+        FB(id2) = input.doFeedbackMotion;
+        FB_motion(id2) = input.feedbackMotionSensitivity;
+        LVL1(id2) = input.trPer80Level1;
+        LVL2(id2) = input.trPer80Level2;
+        LVL3(id2) = input.trPer80Level3;
+        LVL4(id2) = input.trPer80Level4;
 
     end
 
     select = select(1:find(select,1,'last'));
     select2 = select2(1:find(select,1,'last'));
     MeanDecisionTime(select == 0) = [];
+    
+    size(select == 0) = [];
+    eccentricity(select == 0) = [];
+    FB(select == 0) = [];
+    FB_motion(select == 0) = [];
+    LVL1(select == 0) = [];
+    LVL2(select == 0) = [];
+    LVL3(select == 0) = [];
+    LVL4(select == 0) = [];
+    
+    stim_info.size = size;
+    stim_info.eccentricity = eccentricity;
+    stim_info.FB = FB;
+    stim_info.FB_motion = FB_motion;
+    stim_info.LVL1 = LVL1;
+    stim_info.LVL2 = LVL2;
+    stim_info.LVL3 = LVL3;
+    stim_info.LVL4 = LVL4;
+    
     if ~exist('select2','var')
         select2 = nan(1,length(select));
         tdays2 = nan(1,length(select));

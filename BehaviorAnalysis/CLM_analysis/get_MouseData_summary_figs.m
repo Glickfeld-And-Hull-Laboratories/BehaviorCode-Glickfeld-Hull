@@ -833,7 +833,7 @@ for m = 1:length(allmice)
 %     
     
 %     [smooth_select, smooth_MeanDT, tdays] = getTrainingHistory(behav_path, mouse);
-    [smooth_select, smooth_MeanDT, tdays, smooth_select2, tdays2] = getTrainingHistory2(behav_path, mouse);
+    [smooth_select, smooth_MeanDT, tdays, smooth_select2, tdays2, stim_info] = getTrainingHistory2(behav_path, mouse);
 
     axI = subplot(spSz{:}, 8);	
     plot(tdays, smooth_select, 'k', 'LineWidth', 1.25);
