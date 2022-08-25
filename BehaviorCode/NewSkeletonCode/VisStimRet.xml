@@ -959,11 +959,6 @@
               <action type="assignment" variable="setGratingStartingPhaseDeg" value= "tGratingStartingPhaseDeg"/>
               <action type="assignment" variable="tempBackgroundLuminance" value= "tBackgroundLuminance"/>
 
-              <action type="if" condition="doPhotodiode">
-                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
-                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action> 
-              </action>
-
               <action type="if" condition="doMovingDots != 1">
                 <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="base_grating"></action>
                 <action type="if" condition="doAnnulusStim == 0">
@@ -983,6 +978,11 @@
                 </action>
               </action>
 
+              <action type="if" condition="doPhotodiode">
+                <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="photoDiodeGrating"></action>
+                <action tag="Dequeue Stimulus" type="dequeue_stimulus" stimulus="photoDiodeMask"></action>
+              </action>
+              
               <!-- update display, finalize variables -->
               <action tag="Update Display" type="update_stimulus_display"></action>
               <action type="assignment" variable="MIO0" value="1"/>

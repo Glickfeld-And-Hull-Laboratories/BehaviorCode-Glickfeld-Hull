@@ -45,6 +45,18 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Task Control'
         )
+    var doDotsDiscrim = (bool)(0) (
+        persistant = 1
+        groups = 'Task Control'
+        )
+    var doCatchTrial= (bool)(0) (
+        persistant = 1
+        groups = 'Task Control'
+        )
+    var fractionCatchTrial= (float)(0) (
+        persistant = 1
+        groups = 'Task Control'
+        )        
     var doAdapt = (bool)(0) (
         persistant = 1
         groups = 'Task Control'
@@ -506,6 +518,18 @@ group Stimuli {
         persistant = 1
         groups = 'Visual Stimuli'
         )
+    var dotDensity = 1 (
+        persistant = 1
+        groups = 'Visual Stimuli'
+        )
+    var dotSizeDeg = 0.2 (
+        persistant = 1
+        groups = 'Visual Stimuli'
+        )
+    var dotCoherence = 1 (
+        persistant = 1
+        groups = 'Visual Stimuli'
+        )        
     var trPer80Level1 = 80 (
         persistant = 1
         groups = 'Visual Stimuli'
@@ -868,6 +892,7 @@ group 'Temporary Trial Variables' {
     var dMaskStartingPhaseDeg = (float)(0)
     var tMaskContrast = (float)(0)
     var dMaskContrast = (float)(0)
+    var tDoCatchTrial = (bool)(0)
     var tDoMask = (bool)(0)
     var tDoType2Mask = (bool)(0)
     var tempRand = (float)(0)
@@ -995,6 +1020,19 @@ wav_file stationaryPeriodSound (
 //
 
 blank_screen background ()
+
+moving_dots targetDots(
+    direction = tGratingDirectionDeg
+    dot_density= dotDensity 
+    dot_size= dotSizeDeg 
+    coherence= dotCoherence 
+    speed= gratingSpeedDPS 
+    field_radius= gratingMaxDiameterDeg/2 
+    field_center_x= tGratingEccentricityDeg
+    field_center_y= gratingElevationDeg 
+    alpha_multiplier= tGratingContrast
+    max_num_dots = 500
+)
 layer targetGrating_gaussian {
     drifting_grating target_grating_gaussian (
         direction = tGratingDirectionDeg
@@ -1262,6 +1300,7 @@ layer distractorGrating_ellipse {
         y_position = gratingElevationDeg
         rotation = aGratingDirectionDeg
         alpha_multiplier = aGratingContrast
+        autoplay = true
         )
 
     drifting_grating adapterGrating_ellipse (
@@ -1278,6 +1317,7 @@ layer distractorGrating_ellipse {
         y_position = gratingElevationDeg
         rotation = aGratingDirectionDeg
         alpha_multiplier = aGratingContrast
+        autoplay = true
         )    
 
 drifting_grating rewardGrating (
@@ -1371,6 +1411,7 @@ protocol JuiceOnHoldProtocol {
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
                     dequeue_stimulus (photoDiodeGrating)
+                    update_stimulus_display ()
                 }
                 if (tLastTrialAbort) {
                     tItiTimeMs = 100
@@ -2005,6 +2046,15 @@ protocol JuiceOnHoldProtocol {
                     tMaskStartingPhaseDeg = gratingStartingPhaseDeg
                     } 
 
+                tDoCatchTrial= 0    
+                if (doCatchTrial) {
+                    if (rand(0,1)<fractionCatchTrial) {
+                        tDoCatchTrial = 1
+                        tDoType2Mask = 0
+                    }
+                }
+                report ('tDoCatchTrial is $tDoCatchTrial')
+
                 // added preblock where all early trials are easy 
                 tDoFeedbackMotion = doFeedbackMotion
                 if (tNTrialsCompleted < easyStartTrialNumber && doEasyStart) {
@@ -2012,6 +2062,7 @@ protocol JuiceOnHoldProtocol {
                     tStimulusNumber2 = 0
                     tDoMask = 0
                     tDoType2Mask = 0
+                    tDoCatchTrial = 0
                     if (doEasyStartWithFeedback) {
                         tDoFeedbackMotion = 1
                     }
@@ -2074,6 +2125,9 @@ protocol JuiceOnHoldProtocol {
                     }
                     if (!doContrastDetect) {
                         dGratingContrast = tGratingContrast / dGratingContrastDiff
+                        if (tDoCatchTrial) {
+                            dGratingContrast = tGratingContrast
+                        }
                     }
                     tGratingDirectionDeg = gratingDirectionDeg
                     if (!doRandSize) {
@@ -2085,9 +2139,12 @@ protocol JuiceOnHoldProtocol {
                         dGratingDiameterDeg = gratingMaxDiameterDeg / (pow(2, 1.0*disc_rand(0,nRandSize-1)/gratingDiameterSPO))
                     }
                 }
-                if (doOriDiscrim) {
+                if (doOriDiscrim || doDotsDiscrim) {
                     if (tLeftTrial) {
                         tGratingDirectionDeg = gratingTargetDirection + gratingMaxDirectionDiff / (pow(2, 1.0*tStimulusNumber/gratingDirectionDiffSPO))
+                        if (tDoCatchTrial) {
+                            tGratingDirectionDeg = gratingTargetDirection
+                        }
                         if (tDoMask) {
                             tGratingDirectionDeg = tGratingDirectionDeg - maskDirectionDeg/2
                             tMaskDirectionDeg = tGratingDirectionDeg + maskDirectionDeg
@@ -2099,6 +2156,9 @@ protocol JuiceOnHoldProtocol {
                     }
                     if (!tLeftTrial) {
                         tGratingDirectionDeg = gratingTargetDirection - gratingMaxDirectionDiff / (pow(2, 1.0*tStimulusNumber/gratingDirectionDiffSPO))
+                        if (tDoCatchTrial) {
+                            tGratingDirectionDeg = gratingTargetDirection
+                        }
                         if (tDoMask) {
                             tGratingDirectionDeg = tGratingDirectionDeg + maskDirectionDeg/2
                             tMaskDirectionDeg = tGratingDirectionDeg - maskDirectionDeg
@@ -2113,7 +2173,7 @@ protocol JuiceOnHoldProtocol {
                     tGratingDiameterDeg = gratingMaxDiameterDeg
                     if (tDoMask) {
                         tMaskContrast = tGratingContrast/2
-                        tGratingContrastb = tGratingContrast/2
+                        tGratingContrast = tGratingContrast/2
                         if (doRandMaskPhase) {
                             tMaskStartingPhaseDeg = disc_rand(0,1)*180
                         }
@@ -2165,6 +2225,9 @@ protocol JuiceOnHoldProtocol {
                     report ('Target ori this trial is $tGratingDirectionDeg')
                     report ('Target contrast this trial is $tGratingContrast')
                     report ('Mask contrast this trial is $tMaskContrast')
+                }
+                if (doDotsDiscrim) {
+                    report('Target direction on this trial is $tGratingDirectionDeg')
                 }
                 if ((doCorrectiveTrials == 1) && (tConsecErrors > 0)) {
                     if (wasNoGo) {
@@ -2266,21 +2329,21 @@ protocol JuiceOnHoldProtocol {
                 }
                 
                 // calculate target threshold
-                if (tLeftTrial == 0 && !doOriDiscrim) {
+                if (tLeftTrial == 0 && (!doOriDiscrim && !doDotsDiscrim)) {
                     tGratingEccentricityDeg = gratingTargetEccentricity+gratingEccentricityDeg
                     dGratingEccentricityDeg = gratingTargetEccentricity-gratingEccentricityDeg
                     rightDecisionThreshold = gratingTargetEccentricity
                     leftDecisionThreshold = tGratingEccentricityDeg+(tGratingEccentricityDeg-gratingTargetEccentricity)
                     tFeedbackMotionSensitivity = feedbackMotionSensitivity
                 }
-                if (tLeftTrial == 1 && !doOriDiscrim) {
+                if (tLeftTrial == 1 && (!doOriDiscrim && !doDotsDiscrim)) {
                     tGratingEccentricityDeg = gratingTargetEccentricity-gratingEccentricityDeg
                     dGratingEccentricityDeg = gratingTargetEccentricity+gratingEccentricityDeg
                     leftDecisionThreshold = gratingTargetEccentricity
                     rightDecisionThreshold = tGratingEccentricityDeg+(tGratingEccentricityDeg-gratingTargetEccentricity)
                     tFeedbackMotionSensitivity = feedbackMotionSensitivity
                 }
-                if (tLeftTrial == 0 && doOriDiscrim) {
+                if (tLeftTrial == 0 && (doOriDiscrim || doDotsDiscrim)) {
                     tGratingEccentricityDeg = gratingEccentricityDeg
                     rightDecisionThreshold = gratingTargetDirection
                     leftDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-gratingTargetDirection)
@@ -2296,7 +2359,7 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                 }
-                if (tLeftTrial == 1 && doOriDiscrim) {
+                if (tLeftTrial == 1 && (doOriDiscrim || doDotsDiscrim)) {
                     tGratingEccentricityDeg = gratingEccentricityDeg
                     leftDecisionThreshold = gratingTargetDirection
                     rightDecisionThreshold = tGratingDirectionDeg+(tGratingDirectionDeg-gratingTargetDirection)
@@ -2311,8 +2374,18 @@ protocol JuiceOnHoldProtocol {
                             tFeedbackMotionSensitivity = feedbackMotionSensitivity * abs((tPlaidDirectionDeg-gratingTargetDirection)/gratingMaxDirectionDiff)
                         }
                     }
+                    
                     report('plaid direction is $tPlaidDirectionDeg')
                 }
+                if (tDoCatchTrial && (doOriDiscrim || doDotsDiscrim)) {
+                    leftDecisionThreshold = -gratingMaxDirectionDiff
+                    rightDecisionThreshold = gratingMaxDirectionDiff
+                }
+                if (tDoCatchTrial && (!doOriDiscrim && !doDotsDiscrim)) {
+                    leftDecisionThreshold = -gratingEccentricityDeg
+                    rightDecisionThreshold = gratingEccentricityDeg
+                }
+
                 tGratingEccentricityStart = tGratingEccentricityDeg
                 tGratingDirectionStart = tGratingDirectionDeg
                 tMaskDirectionStart = tMaskDirectionDeg
@@ -2389,10 +2462,10 @@ protocol JuiceOnHoldProtocol {
                     duration_units = ms
                     )
                 if (doGaussianMask) {
-                    queue_stimulus (adapterGrating_gaussian)
+                    live_queue_stimulus (adapterGrating_gaussian)
                 }
                 if (doEllipseMask) {
-                    queue_stimulus (adapterGrating_ellipse)
+                    live_queue_stimulus (adapterGrating_ellipse)
                 }
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
@@ -2443,10 +2516,10 @@ protocol JuiceOnHoldProtocol {
                     }
                 }
                 if (doGaussianMask) {
-                    queue_stimulus (adapterGrating_gaussian)
+                    live_queue_stimulus (adapterGrating_gaussian)
                 }
                 if (doEllipseMask) {
-                    queue_stimulus (adapterGrating_ellipse)
+                    live_queue_stimulus (adapterGrating_ellipse)
                 }
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
@@ -2566,13 +2639,21 @@ protocol JuiceOnHoldProtocol {
                     duration = reactionTimeMs
                     duration_units = ms
                     )
-                if (doGaussianMask) {
-                    queue_stimulus (distractorGrating_gaussian)
-                    queue_stimulus (targetGrating_gaussian)
+                if (!doDotsDiscrim) {    
+                    if (doGaussianMask) {
+                        queue_stimulus (distractorGrating_gaussian)
+                        queue_stimulus (targetGrating_gaussian)
+                    }
+                    if (doEllipseMask) {
+                        queue_stimulus (distractorGrating_ellipse)
+                        queue_stimulus (targetGrating_ellipse)
+                    }
                 }
-                if (doEllipseMask) {
-                    queue_stimulus (distractorGrating_ellipse)
-                    queue_stimulus (targetGrating_ellipse)
+                if (doDotsDiscrim) { 
+                    stop_dynamic_stimulus (targetDots)
+                    live_queue_stimulus (targetDots)
+                    play_dynamic_stimulus (targetDots)
+                    report('Queuing dots- contrast is $tGratingContrast')
                 }
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeGrating)
@@ -2601,14 +2682,19 @@ protocol JuiceOnHoldProtocol {
                 dequeue_stimulus (targetGrating_gaussian)
                 dequeue_stimulus (distractorGrating_ellipse)
                 dequeue_stimulus (targetGrating_ellipse)
+                dequeue_stimulus(targetDots)
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
                     dequeue_stimulus (photoDiodeGrating)
                 }
                 update_stimulus_display ()
                 goto (
+                    target = Catch
+                    when = isNotTooFast && tDoCatchTrial
+                    )
+                goto (
                     target = Reaction
-                    when = isNotTooFast
+                    when = isNotTooFast && !tDoCatchTrial
                     )
                 goto (
                     target = ZeroQuad
@@ -2626,14 +2712,19 @@ protocol JuiceOnHoldProtocol {
                 play_sound (goSound)
                 report ('**** Quad zeroed *****')
                 tTrialLaserPowerMw = 0
-                goto (Reaction)
+                goto (
+                    target = Reaction
+                    when = !tDoCatchTrial)
+                goto (
+                    target = Catch
+                    when = tDoCatchTrial)   
             }
             state Reaction {
-                if (doTestRobot==0 && doContrastDiscrim || doContrastDetect) {
+                if (doTestRobot==0 && (doContrastDiscrim || doContrastDetect)) {
                     trackMotion = (feedbackMotionSensitivity*(quadrature-tQuadrature))+tGratingEccentricityStart
                     dTrackMotion = (feedbackMotionSensitivity*(quadrature-tQuadrature))-tGratingEccentricityStart
                 }
-                if (doTestRobot==0 && doOriDiscrim) {
+                if (doTestRobot==0 && (doOriDiscrim || doDotsDiscrim)) {
                     trackMotion = (tFeedbackMotionSensitivity*(tQuadrature-quadrature))+tGratingDirectionStart
                     trackMaskMotion = (tFeedbackMotionSensitivity*(tQuadrature-quadrature))+tMaskDirectionStart
                     trackPlaidMotion = (tFeedbackMotionSensitivity*(tQuadrature-quadrature))+tPlaidDirectionStart
@@ -2673,7 +2764,7 @@ protocol JuiceOnHoldProtocol {
                         }
                         update_stimulus_display ()
                     }
-                    if (doOriDiscrim) {
+                    if (doOriDiscrim || doDotsDiscrim) {
                         if (doPhotodiode) {
                             live_queue_stimulus (photoDiodeGrating)
                             dequeue_stimulus (photoDiodeMask)
@@ -2708,12 +2799,18 @@ protocol JuiceOnHoldProtocol {
                                 }
                             }
                         }
-                        if (doGaussianMask) {
-                            live_queue_stimulus (targetGrating_gaussian)
+                        if (!doDotsDiscrim) {
+                            if (doGaussianMask) {
+                                live_queue_stimulus (targetGrating_gaussian)
+                            }
+                            if (doEllipseMask) {
+                                live_queue_stimulus (targetGrating_ellipse)
+                            }    
                         }
-                        if (doEllipseMask) {
-                            live_queue_stimulus (targetGrating_ellipse)
+                        if (doDotsDiscrim) {
+                            live_queue_stimulus (targetDots)
                         }
+                        queue_stimulus (distractorGrating_gaussian)
                         update_stimulus_display ()
                     }
                 }
@@ -2739,67 +2836,67 @@ protocol JuiceOnHoldProtocol {
                     )
                 goto (
                     target = Incorrect
-                    when = doOriDiscrim && doTestRobot==0 && tLeftTrial==0 && !invertDirection && trackMotion <= leftDecisionThreshold
+                    when = (doOriDiscrim || doDotsDiscrim) && doTestRobot==0 && tLeftTrial==0 && !invertDirection && trackMotion <= leftDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = doOriDiscrim && doTestRobot==0 && tLeftTrial==1 && !invertDirection && trackMotion >= rightDecisionThreshold
+                    when = (doOriDiscrim || doDotsDiscrim) && doTestRobot==0 && tLeftTrial==1 && !invertDirection && trackMotion >= rightDecisionThreshold
                     )
                 goto (
                     target = Reward
-                    when = doOriDiscrim && doTestRobot==0 && tLeftTrial==0 && !invertDirection && trackMotion >= rightDecisionThreshold
+                    when = (doOriDiscrim || doDotsDiscrim) && doTestRobot==0 && tLeftTrial==0 && !invertDirection && trackMotion >= rightDecisionThreshold
                     )
                 goto (
                     target = Reward
-                    when = doOriDiscrim && doTestRobot==0 && tLeftTrial==1 && !invertDirection && trackMotion <= leftDecisionThreshold
+                    when = (doOriDiscrim || doDotsDiscrim) && doTestRobot==0 && tLeftTrial==1 && !invertDirection && trackMotion <= leftDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = !doOriDiscrim && doTestRobot==0 && tLeftTrial==1 && invertDirection && trackMotion >= leftDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && tLeftTrial==1 && invertDirection && trackMotion >= leftDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = !doOriDiscrim && doTestRobot==0 && tLeftTrial==0 && invertDirection && trackMotion <= rightDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && tLeftTrial==0 && invertDirection && trackMotion <= rightDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = !doOriDiscrim && doTestRobot==0 && tLeftTrial==0 && !invertDirection && trackMotion >= leftDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && tLeftTrial==0 && !invertDirection && trackMotion >= leftDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = !doOriDiscrim && doTestRobot==0 && tLeftTrial==1 && !invertDirection && trackMotion <= rightDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && tLeftTrial==1 && !invertDirection && trackMotion <= rightDecisionThreshold
                     )
                 goto (
                     target = Reward
-                    when = !doOriDiscrim && doTestRobot==0 && !isNoGo && tLeftTrial==0 && invertDirection && trackMotion >= leftDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && !isNoGo && tLeftTrial==0 && invertDirection && trackMotion >= leftDecisionThreshold
                     )
                 goto (
                     target = Reward
-                    when = !doOriDiscrim && doTestRobot==0 && !isNoGo && tLeftTrial==1 && invertDirection && trackMotion <= rightDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && !isNoGo && tLeftTrial==1 && invertDirection && trackMotion <= rightDecisionThreshold
                     )
                 goto (
                     target = Reward
-                    when = !doOriDiscrim && doTestRobot==0 && !isNoGo && tLeftTrial==1 && !invertDirection && trackMotion >= leftDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && !isNoGo && tLeftTrial==1 && !invertDirection && trackMotion >= leftDecisionThreshold
                     )
                 goto (
                     target = Reward
-                    when = !doOriDiscrim && doTestRobot==0 && !isNoGo && tLeftTrial==0 && !invertDirection && trackMotion <= rightDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && !isNoGo && tLeftTrial==0 && !invertDirection && trackMotion <= rightDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = !doOriDiscrim && doTestRobot==0 && isNoGo && tLeftTrial==0 && invertDirection && trackMotion >= leftDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && isNoGo && tLeftTrial==0 && invertDirection && trackMotion >= leftDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = !doOriDiscrim && doTestRobot==0 && isNoGo && tLeftTrial==1 && invertDirection && trackMotion <= rightDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && isNoGo && tLeftTrial==1 && invertDirection && trackMotion <= rightDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = !doOriDiscrim && doTestRobot==0 && isNoGo && tLeftTrial==1 && !invertDirection && trackMotion >= leftDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && isNoGo && tLeftTrial==1 && !invertDirection && trackMotion >= leftDecisionThreshold
                     )
                 goto (
                     target = Incorrect
-                    when = !doOriDiscrim && doTestRobot==0 && isNoGo && tLeftTrial==0 && !invertDirection && trackMotion <= rightDecisionThreshold
+                    when = (!doOriDiscrim && !doDotsDiscrim) && doTestRobot==0 && isNoGo && tLeftTrial==0 && !invertDirection && trackMotion <= rightDecisionThreshold
                     )
                 goto (
                     target = Reward
@@ -2841,6 +2938,7 @@ protocol JuiceOnHoldProtocol {
                     dequeue_stimulus (distractorGrating_gaussian)
                     dequeue_stimulus (targetGrating_ellipse)
                     dequeue_stimulus (distractorGrating_ellipse)
+                    dequeue_stimulus (targetDots)
                 }
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
@@ -2928,6 +3026,117 @@ protocol JuiceOnHoldProtocol {
                     target = EndTrial
                     )
             }
+
+            state Catch {
+                if (doTestRobot==0 && doContrastDiscrim || doContrastDetect) {
+                    trackMotion = feedbackMotionSensitivity*(quadrature-tQuadrature)
+                }
+                if (doTestRobot==0 && (doOriDiscrim || doDotsDiscrim)) {
+                    trackMotion = feedbackMotionSensitivity*(tQuadrature-quadrature)
+                }
+                if (doTestRobot==1) {
+                    trackMotion = 1000
+                }
+
+                start_timer (
+                    timer = idleTimer
+                    duration = 5
+                    duration_units = ms
+                    )
+                goto (
+                    target = Ignore
+                    when = counter-cStimOn >= nFramesReact && !isNoGo
+                    )
+                goto (
+                    target = Reward
+                    when = (!doOriDiscrim && !doDotsDiscrim) && abs(trackMotion) >= tGratingEccentricityStart
+                    )
+                goto (
+                    target = Reward
+                    when = (doOriDiscrim || doDotsDiscrim) && abs(trackMotion) >= gratingMaxDirectionDiff
+                    )
+                goto (
+                    target = Catch
+                    when = timerExpired(idleTimer)
+                    )    
+            }
+
+            state CatchReward {
+                tTrialLaserPowerMw = 0
+                if (tDoFeedbackMotion==0) {
+                    dequeue_stimulus (targetGrating_gaussian)
+                    dequeue_stimulus (distractorGrating_gaussian)
+                    dequeue_stimulus (targetGrating_ellipse)
+                    dequeue_stimulus (distractorGrating_ellipse)
+                    dequeue_stimulus (targetDots)
+                }
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
+                update_stimulus_display ()
+                if (!stimIsOff) {
+                    cStimOff = counter
+                }
+                update_stimulus_display ()
+                play_sound (correctSound)
+                tConsecCorrects = tConsecCorrects+1
+                tDecisionTimeMs =  (now()/1000) - stimTimestampMs
+                cDecision = counter
+                report ('Decision Time = $tDecisionTimeMs')
+                // update running variables 
+                success = success+1
+                tLastTrialCorrect = 1
+                if (doConsecCorrectReward==1) {
+                    if (tConsecCorrects < maxConsecCorrects) {
+                        tRewardTimeUs = tConsecCorrects*consecCorrRewardInterval
+                    }
+                    if (tConsecCorrects >= maxConsecCorrects) {
+                        tRewardTimeUs = maxConsecCorrects*consecCorrRewardInterval
+                    }
+                }
+                
+                if (doConsecCorrectReward==0) {
+                    tRewardTimeUs = rewardTimeUs
+                }
+
+                juice = tRewardTimeUs
+                start_timer (
+                    timer = postRewardTimerUs
+                    duration = 100000
+                    )
+                tLastTrialIgnore = 0
+                tLastTrialAbort = 0
+                // accept stim selection 
+                accept_selections (svStimNumber)
+                tNStimAccepted = tNStimAccepted + 1
+                // update selection variable 
+                if (tNStimAccepted >= 80) {
+                    reset_selection (svStimNumber)
+                    tNStimAccepted = 0
+                    report ('Should be resetting selections,tNStimAccepted=$tNStimAccepted')
+                }
+                if (tNStimAccepted < 80) {
+                    next_selection (svStimNumber)
+                    report ('Next selection,tNStimAccepted=$tNStimAccepted')
+                }
+                accept_selections (svStimNumber2)
+                tNStimAccepted2 = tNStimAccepted2 + 1
+                // update selection variable 
+                if (tNStimAccepted2 >= 80) {
+                    reset_selection (svStimNumber2)
+                    tNStimAccepted2 = 0
+                    report ('Should be resetting selections,tNStimAccepted2=$tNStimAccepted2')
+                }
+                if (tNStimAccepted2 < 80) {
+                    next_selection (svStimNumber2)
+                    report ('Next selection,tNStimAccepted2=$tNStimAccepted2')
+                }
+                timer_expired (
+                    timer = postRewardTimerUs
+                    target = EndTrial
+                    )
+            }
             state Incorrect {
                 tTrialLaserPowerMw = 0
                 if (tDoFeedbackMotion==0) {
@@ -2935,6 +3144,7 @@ protocol JuiceOnHoldProtocol {
                     dequeue_stimulus (distractorGrating_gaussian)
                     dequeue_stimulus (targetGrating_ellipse)
                     dequeue_stimulus (distractorGrating_ellipse)
+                    dequeue_stimulus (targetDots)
                 }
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
@@ -3001,6 +3211,7 @@ protocol JuiceOnHoldProtocol {
                 dequeue_stimulus (distractorGrating_gaussian)
                 dequeue_stimulus (targetGrating_ellipse)
                 dequeue_stimulus (distractorGrating_ellipse)
+                dequeue_stimulus (targetDots)
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
                     dequeue_stimulus (photoDiodeGrating)
@@ -3067,6 +3278,7 @@ protocol JuiceOnHoldProtocol {
                 dequeue_stimulus (distractorGrating_gaussian)
                 dequeue_stimulus (targetGrating_ellipse)
                 dequeue_stimulus (distractorGrating_ellipse)
+                dequeue_stimulus (targetDots)
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
                     dequeue_stimulus (photoDiodeGrating)
@@ -3144,6 +3356,7 @@ protocol JuiceOnHoldProtocol {
                 dequeue_stimulus (distractorGrating_gaussian)
                 dequeue_stimulus (targetGrating_ellipse)
                 dequeue_stimulus (distractorGrating_ellipse)
+                dequeue_stimulus (targetDots)
                 if (doPhotodiode) {
                     live_queue_stimulus (photoDiodeMask)
                     dequeue_stimulus (photoDiodeGrating)
@@ -3157,7 +3370,7 @@ protocol JuiceOnHoldProtocol {
                 if (tLastTrialAbort) {
                     play_sound (stationaryPeriodSound)
                 }
-                if (!doOriDiscrim) {
+                if (!doOriDiscrim && !doDotsDiscrim) {
                     if (trackMotion >= leftDecisionThreshold) {
                         if (invertDirection) {
                             tLeftResponse = 0
@@ -3179,7 +3392,7 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                 }
-                if (doOriDiscrim) {
+                if (doOriDiscrim || doDotsDiscrim) {
                     if (trackMotion >= leftDecisionThreshold) {
                         if (invertDirection) {
                             tLeftResponse = 1

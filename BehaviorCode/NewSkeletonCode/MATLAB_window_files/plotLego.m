@@ -124,12 +124,18 @@ noGoCorrIx(noGoInd(noGoInc)) = 0;
 
 %Left bias indexing
 left_correct_ind = find((double(leftTrialIx)+double(correctIx))==2);
-tLeftResponse = celleqel2mat_padded(input.tLeftResponse);
-if input.doOriDiscrim
+tLeftResponse_temp = celleqel2mat_padded(input.tLeftResponse);
+tLeftResponse = tLeftResponse_temp;
+if input.doOriDiscrim || input.doDotsDiscrim
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)),find(strcmp(input.trialOutcomeCell, 'success')))) = 1;
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 0;
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'success')))) = 0;
   tLeftResponse(intersect(find(celleqel2mat_padded(input.tLeftTrial)==0),find(strcmp(input.trialOutcomeCell, 'incorrect')))) = 1;
+end
+
+if isfield(input, 'tDoCatchTrial')
+  catchIx = celleqel2mat_padded(input.tDoCatchTrial);
+  tLeftResponse(find(catchIx)) = tLeftResponse_temp(find(catchIx));
 end
 
 tRightResponse = celleqel2mat_padded(input.tRightResponse);
@@ -274,7 +280,7 @@ end
         
 if input.doContrastDiscrim || input.doContrastDetect || input.doSizeDiscrim
   decisionThreshold = (input.gratingEccentricityDeg-input.gratingTargetEccentricity)./ input.feedbackMotionSensitivity;
-elseif input.doOriDiscrim
+elseif input.doOriDiscrim || input.doDotsDiscrim
   decisionThreshold = input.gratingMaxDirectionDiff./ input.feedbackMotionSensitivity;
 end
 
@@ -296,7 +302,10 @@ if isfield(input,'doContrastDiscrim')
       input.gratingMaxDiameterDeg, input.gratingDiameterSPO, input.gratingMaxDiameterDiff, input.gratingDiameterDiffSPO);
   elseif input.doOriDiscrim
     taskStr = sprintf(['MaxOriDiff: %d ; SPO: %2.2f \n'] ,...
-      input.gratingMaxDirectionDiff, input.gratingDirectionDiffSPO);  
+      input.gratingMaxDirectionDiff, input.gratingDirectionDiffSPO); 
+  elseif input.doDotsDiscrim
+    taskStr = sprintf(['MaxDirDiff: %d ; SPO: %2.2f \n'] ,...
+      input.gratingMaxDirectionDiff, input.gratingDirectionDiffSPO); 
   end
 else
   taskStr = sprintf(['MaxCon: %d ; SPO: %2.2f ; MaxDiff: %d ; SPO: %4.2f \n'] ,...
@@ -578,7 +587,7 @@ if nCorr>0  %&& input.doTestRobot==0,
       else
         contDiffV = chop(celleqel2mat_padded(input.tGratingDiameterDeg) - celleqel2mat_padded(input.dGratingDiameterDeg),2);
       end
-    elseif input.doOriDiscrim
+    elseif input.doOriDiscrim || input.doDotsDiscrim
       contDiffV = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
     end
 
@@ -639,7 +648,7 @@ if nCorr>0  %&& input.doTestRobot==0,
         possDiffV = double(input.gratingMaxDiameterDiff) ./ (2 .^ (lev./double(input.gratingDiameterDiffSPO)))+1;
         minX = min(possDiffV,[],2);
         maxX = max(possDiffV,[],2);
-      elseif input.doOriDiscrim
+      elseif input.doOriDiscrim || input.doDotsDiscrim
         possDiffV = double(input.gratingMaxDirectionDiff) ./ (2 .^ (lev./double(input.gratingDirectionDiffSPO)))+1;
         minX = min(possDiffV,[],2);
         maxX = max(possDiffV,[],2);
@@ -736,6 +745,9 @@ if nCorr>0  %&& input.doTestRobot==0,
         elseif input.doOriDiscrim
            xlabel('Ori Difference')
            title('Decision Time by Ori Difference')
+        elseif input.doDotsDiscrim
+           xlabel('Dir Difference')
+           title('Decision Time by Dir Difference')   
         end
 end
 %%%%%%%%%%%%%%%%%
@@ -769,7 +781,7 @@ if nCorr>0 && input.doTestRobot==0,
         percentContCellNoGoByDiff{kk} = totalNTrialsValNoGo/totalNTrialsVal;
       end
     end
-    if input.doOriDiscrim == 0 
+    if input.doOriDiscrim || input.doDotsDiscrim == 0 
     if ~find(uqDiff <=0)
       pH = plot(uqDiff, cell2mat(percentCell));
     else
@@ -815,6 +827,9 @@ if nCorr>0 && input.doTestRobot==0,
         elseif input.doOriDiscrim
            xlabel('Ori Difference')
            title('Percent Correct by Ori Difference')
+        elseif input.doDotsDiscrim
+           xlabel('Dir Difference')
+           title('Percent Correct by Dir Difference')
       else
         if input.doContrastDetect == 0
          xlabel('Contrast Ratio (T/D)')
@@ -911,7 +926,7 @@ hold on
     elseif isfield(input, 'dGratingDiameterDiff') & input.gratingDiameterDiffSPO <= 10
         differenceRight =chop(celleqel2mat_padded(input.rightGratingDiameterDeg) ./ celleqel2mat_padded(input.leftGratingDiameterDeg),2);
     end
-  elseif input.doOriDiscrim
+  elseif input.doOriDiscrim || input.doDotsDiscrim
       differenceRight = chop(celleqel2mat_padded(input.tGratingDirectionStart) - double(input.gratingTargetDirection),2);
       if isfield(input,'doMask')
           differenceRight_mask = chop(celleqel2mat_padded(input.tPlaidDirectionStart) - double(input.gratingTargetDirection),2);
@@ -943,7 +958,7 @@ for kk=1:length(nLevelsB1)
     totalNTrialsValB1 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&~maskIx));
     totalNTrialsValB1_100 = length(differenceRight(valIxB1&(correctIx|incorrectIx)&~block2Ix&curr100&~maskIx));
     if min(differenceRight) < 0
-      if valB1>=0,
+      if valB1>0,
           ind = setdiff(intersect(find(valIxB1),find(correctIx)), [find(block2Ix) find(maskIx)]);  
           rightNTrialsValB1 = length(ind);
           ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(correctIx)), [find(block2Ix) find(maskIx)]));  
@@ -957,6 +972,13 @@ for kk=1:length(nLevelsB1)
           rightNTrialsValB1_100 = length(ind2);
           percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
           percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;
+      elseif valB1==0,
+          ind = setdiff(intersect(find(valIxB1),find(tRightResponse)), [find(block2Ix) find(maskIx)]);
+          rightNTrialsValB1 = length(ind);
+          ind2 = intersect(find(curr100), setdiff(intersect(find(valIxB1),find(tRightResponse)), [find(block2Ix) find(maskIx)]));
+          rightNTrialsValB1_100 = length(ind2);
+          percentContCellB1{kk} = rightNTrialsValB1/totalNTrialsValB1;
+          percentContCellB1_100{kk} = rightNTrialsValB1_100/totalNTrialsValB1_100;    
       end
     else
         if valB1>=1,
@@ -987,7 +1009,7 @@ if sum(maskIx)>0
           valIxM1 = differenceRight_mask==valM1;
           totalNTrialsValM1 = length(differenceRight_mask(valIxM1&(correctIx|incorrectIx)&~block2Ix&type1MaskIx));
           if min(differenceRight_mask) < 0
-            if valM1>=0,
+            if valM1>0,
                 ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(correctIx))), find(block2Ix));
                 rightNTrialsValM1 = length(ind);
                 percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
@@ -995,6 +1017,10 @@ if sum(maskIx)>0
                 ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(incorrectIx))), find(block2Ix));
                 rightNTrialsValM1 = length(ind);
                 percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;
+            elseif valM1==0,
+                ind = setdiff(intersect(find(type1MaskIx),intersect(find(valIxM1),find(tRightResponse))), find(block2Ix));
+                rightNTrialsValM1 = length(ind);
+                percentContCellM1{kk} = rightNTrialsValM1/totalNTrialsValM1;    
             end
           else
               if valM1>=1,
@@ -1221,6 +1247,11 @@ if min(differenceRight) < 0
         set(gca, 'XTick', [-input.gratingMaxDirectionDiff:5:input.gratingMaxDirectionDiff], ...
                  'YTick', [0:0.25:1],...
                  'XGrid', 'on');
+    elseif input.doDotsDiscrim
+        xlabel('Dir Difference')
+        set(gca, 'XTick', [-input.gratingMaxDirectionDiff:5:input.gratingMaxDirectionDiff], ...
+                 'YTick', [0:0.25:1],...
+                 'XGrid', 'on');         
     end
   else
     xlabel('Contrast Difference (R-L)')
@@ -1240,13 +1271,15 @@ else
       xlabel('Size Difference (R/L)')
     elseif input.doOriDiscrim
       xlabel('Ori Difference')
+    elseif input.doDotsDiscrim
+      xlabel('Dir Difference')
     end
   else
     xlabel('Contrast Difference (R/L)')
   end
 end
 
-if input.doOriDiscrim
+if input.doOriDiscrim || input.doDotsDiscrim
     ylabel('% Left/Ignore')
 else
     ylabel('% Right/Ignore')
@@ -1290,7 +1323,7 @@ if nCorr>0 %&& input.doTestRobot==0,
       contTargetV = celleqel2mat_padded(input.tGratingContrast);
     elseif input.doSizeDiscrim
       contTargetV = celleqel2mat_padded(input.tGratingDiameterDeg);
-    elseif input.doOriDiscrim
+    elseif input.doOriDiscrim || input.doDotsDiscrim
       contTargetV = abs(celleqel2mat_padded(input.tGratingDirectionStart)-double(input.gratingTargetDirection));
     end
   else
@@ -1353,7 +1386,7 @@ if nCorr>0 %&& input.doTestRobot==0,
     elseif input.doSizeDiscrim
       minX = 1;
       maxX = 100;
-    elseif input.doOriDiscrim
+    elseif input.doOriDiscrim || input.doDotsDiscrim
       minX = 1;
       maxX = 45;
     end
@@ -1386,6 +1419,9 @@ if nCorr>0 %&& input.doTestRobot==0,
          elseif input.doOriDiscrim
            xlabel('Abs Ori diff')
            title('Percent Correct by Ori Diff')
+         elseif input.doDotsDiscrim
+           xlabel('Abs Dir diff')
+           title('Percent Correct by Dir Diff')
          end
         else
           xlabel('Target Contrast')
