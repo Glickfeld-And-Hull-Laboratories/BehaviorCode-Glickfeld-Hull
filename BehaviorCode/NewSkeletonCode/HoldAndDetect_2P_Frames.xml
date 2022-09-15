@@ -29,8 +29,9 @@
       <variable tag="doNoStimulusChange" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
       <variable tag="doAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
-      <variable tag="doIncorrectSound" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
-      <variable tag="doRewardSound" scope="global" logging="when_changed" default_value="1" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doStartCueSound" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Task Type"/>
+      <variable tag="doIncorrectSound" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
+      <variable tag="doRewardSound" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="Task Type"/>
 
       <variable tag="doLED" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="1" groups="LED Debug"/>
 
@@ -95,9 +96,14 @@
       <variable tag="trPer80Level6" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="trPer80Level7" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
       <variable tag="trPer80Level8" scope="global" logging="when_changed" default_value="10" type="integer" persistant="1" groups="Stimulus Parameters"/>
-
-      <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
-      <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="1" type="float" persistant="1" groups="Sound"/>
+      
+      <!-- sound variables -->
+      <variable tag="soundDuration200ms" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Sound"/>
+      <variable tag="soundDuration767ms" scope="global" logging="when_changed" default_value="1" type="integer" persistant="1" groups="Sound"/>
+      <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
+      <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sound"/>
+      <variable tag="soundStartCueAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
+      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
       <variable tag="block1ToneAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sound"/>
       <variable tag="block2ToneAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
 
@@ -134,7 +140,7 @@
       <variable tag="block2TrPer80Level7" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
       <variable tag="block2TrPer80Level8" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Stimulus"/>
 
-	  <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
+    <variable tag="block2DoTrialLaser" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserPowerMw" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOnTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
       <variable tag="block2TrialLaserOffTimeMs" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Block2 Laser"/>
@@ -186,6 +192,7 @@
       <variable tag="failure" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="leverResult" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="stimulusOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
+      <variable tag="startCueOn" scope="global" logging="when_changed" default_value="0" type="boolean"/>
       <variable tag="success" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="ignore" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="trialStart" scope="global" logging="when_changed" default_value="0" type="boolean"/>
@@ -210,10 +217,10 @@
       <variable tag="leverThreshold" full_name="leverThreshold" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"  groups="Lever"/>
     </folder>
     <folder tag="Internal Variables">
-      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="0"/>
       <variable tag="tTrialStartMWTimestampMs" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tDoAllCorrects" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tTotalReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
+      <variable tag="tTotalBaselineTimeMs" scope="global" logging="when_changed" default_value="900" type="integer"/>
       <variable tag="tTotalRewardTimeUs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tRandReqHoldTimeMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
       <variable tag="tFakeMouseReactMs" scope="global" logging="when_changed" default_value="0" type="integer"/>
@@ -272,20 +279,22 @@
 
       <!-- frame conversion -->
       <variable tag="tTotalReqHoldFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="tTotalBaselineFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="tItiWaitFrames" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="nFramesOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesTooFast" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesReact" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesEarlyTimeout" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
       <variable tag="nFramesMissedTimeout" scope="global" logging="when_changed" default_value="0" type="integer" persistant="1"/>
-
-  <!-- counter variables -->
-  	  <variable tag="cTrialStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      
+      <!-- counter variables -->
+      <variable tag="cTrialStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="cTrialEnd" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0" groups="Counter"/>
       <variable tag="cItiStart" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="cLeverDown" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="cTargetOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
       <variable tag="cLeverUp" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
+      <variable tag="cStartCueOn" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
 
       <variable tag="tRewardOmissionTrial" scope="global" logging="when_changed" default_value="0" type="boolean" persistant="0"/>
       <variable tag="tOmissionRewardNum" scope="global" logging="when_changed" default_value="0" type="integer" persistant="0"/>
@@ -309,7 +318,9 @@
     <sound tag="correctSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
     <sound tag="incorrectSound" type="wav_file" path="wavs/incorrectMouse.wav"></sound>
     <sound tag="rewardSound" type="wav_file" path="wavs/shortCorrect.wav"></sound>
-    <sound tag="targetSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.2s.wav" amplitude="soundTargetAmplitude"></sound>
+    <sound tag="trialStartSound" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.2s.wav" amplitude="soundStartCueAmplitude"></sound> 
+    <sound tag="targetSound200ms" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.2s.wav" amplitude="soundTargetAmplitude"></sound> 
+    <sound tag="targetSound767ms" type="wav_file" path="/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.767s.wav" amplitude="soundTargetAmplitude"></sound> 
   </sounds>
   <stimuli tag="Stimuli">
     <stimulus type="blank_screen" tag="background" color="0.5,0.5,0.5"></stimulus>
@@ -335,12 +346,12 @@
 
       <!-- init actions before running trials after any press of start-->
       <action type="queue_stimulus" stimulus="background"></action>
-      <action type="if" condition="doVisualStim">
-        <action type="if" condition="doITIStim">
-          <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
-          <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
-      </action>
-      </action>
+        <action type="if" condition="doVisualStim">
+          <action type="if" condition="doITIStim">
+            <action tag="Queue Stimulus" type="live_queue_stimulus" stimulus="base_grating"></action>
+            <action type="play_dynamic_stimulus" stimulus="base_grating" tag="start"></action>
+          </action>
+        </action>
       <action type="update_stimulus_display" tag="-"></action>
       <action type="assignment" tag="consecCorrects = 0" variable="consecCorrects" value="0"></action>
       <action type="assignment" tag="tempNCorrect = 0" variable="tempNCorrect" value="0"></action>
@@ -982,6 +993,7 @@
 
             <action type="assignment" variable="tTotalReqHoldTimeMs" value="fixedReqHoldTimeMs + tRandReqHoldTimeMs"></action>
             <action type="assignment" variable="tTotalReqHoldFrames" value="ceil((tTotalReqHoldTimeMs/1000)*frameRateHz)"></action>
+            <action type="assignment" variable="tTotalBaselineFrames" value="ceil((tTotalBaselineTimeMs/1000)*frameRateHz)"></action>
 
             <!-- choose laser power -->
             <action type="if" condition="doLaserStim">
@@ -1230,8 +1242,33 @@
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever &amp;&amp; quadrature &lt; leverThreshold &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Target Stimulus Presentation" condition="counter  &gt;= cLeverDown + tTotalReqHoldFrames" target="StimOn"></transition>
+            <transition type="conditional" tag="Trial Start Cue Presentation" condition="counter  &gt;= cLeverDown + tTotalBaselineFrames &amp;&amp; doStartCueSound" target="StartCueOn"></transition>
+            <transition type="conditional" tag="Target Stimulus Presentation" condition="counter  &gt;= cLeverDown + tTotalReqHoldFrames &amp;&amp; !doStartCueSound" target="StimOn"></transition>
           </task_system_state>
+
+          <!-- startCueStimulus on-->
+         <task_system_state tag="StartCueOn" interruptible="YES">
+            <action_marker _unmoveable="1" tag="Actions"></action_marker>
+
+              <action type="assignment" tag="Set StartCueOn" variable="startCueOn" value="1"></action>
+              <action tag="Report StartCueOn" full_name="ReportDigital" type="report" message="Start Cue On (still holding; signaling release ok)"></action>
+                <action type="assignment" variable="cStartCueOn" value="counter"></action>
+
+              <action type="if" condition="rewardUnexpectPercent !=0 &amp;&amp; (success+ignore+failure) == tUnexpectRewardNum">
+                <action type="assignment" variable="tDoNoStimulusChange" value="1"/>
+              </action>
+
+            
+               <action type="assignment" variable="soundTrialStartAmplitude" value="soundTrialStartAmplitude"></action> <!-- modify amplitude manually each trial-->
+               <action type="report" tag="Report" message="soundAmplitude = $soundTargetAmplitude"></action>
+               <action type="if" condition="doStartCueSound">
+                 <action type="play_sound" sound="trialStartSound"/> 
+               </action>
+
+            <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+              <transition type="conditional" tag="Target Stimulus Presentation" condition="counter  &gt;= cLeverDown + tTotalReqHoldFrames" target="StimOn"></transition>
+          </task_system_state>
+
 
           <task_system_state tag="StimOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
@@ -1256,7 +1293,12 @@
               </action>
                <action type="assignment" variable="soundTargetAmplitude" value="soundTargetAmplitude"></action> <!-- modify amplitude manually each trial-->
                <action type="report" tag="Report" message="soundAmplitude = $soundTargetAmplitude"></action>
-               <action type="play_sound" sound="targetSound"/>
+               <action type="if" condition="soundDuration200ms">
+                 <action type="play_sound" sound="targetSound200ms"/> 
+               </action>
+               <action type="if" condition="soundDuration767ms">
+                 <action type="play_sound" sound="targetSound767ms"/> 
+               </action>
 
               <!-- laser stim on -->
               <action type="if" condition="doLaserStim">
@@ -1394,7 +1436,7 @@
             <action type="assignment" variable="tConsecErrors" value="0"></action>
 
             <action type="assignment" tag="Assign reward" variable="tTotalRewardTimeUs" value="minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
-			<action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
+      <action type="assignment" tag="summing corrects" variable="tempNCorrect" value="tempNCorrect+1"></action>
 
 
             <!-- assign reward size based on elapsed rand if rampdown == 0 -->
@@ -1422,13 +1464,13 @@
             </action>
 
 
-			<!-- give reward on every N corrects -->
-			<action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
-			<action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="0"></action>
-			</action>
-			<action type="if" condition="tempNCorrect == rewardEveryNCorrect">
-			<action type="assignment" tag="rezero tempNCorrect" variable="tempNCorrect" value="0"></action>
-			</action>
+      <!-- give reward on every N corrects -->
+      <action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+      <action type="assignment" tag="Assign tTotalRewardTimeUs" variable="tTotalRewardTimeUs" value="0"></action>
+      </action>
+      <action type="if" condition="tempNCorrect == rewardEveryNCorrect">
+      <action type="assignment" tag="rezero tempNCorrect" variable="tempNCorrect" value="0"></action>
+      </action>
 
             <!-- scale based on consec corrects -->
             <action type="if" tag="if consecCorrects &lt; max" condition="consecCorrects &lt; maxConsecCorrects">
@@ -1498,12 +1540,12 @@
 
             <action type="if" condition= "tempNCorrect == 0">
               <action type="report" tag="Report" message="juice = $juice"></action>
-			      </action>
-			      <action type="if" condition= "tempNCorrect &gt; 0">
-			         <action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
+            </action>
+            <action type="if" condition= "tempNCorrect &gt; 0">
+               <action type="if" condition= "tempNCorrect &lt; rewardEveryNCorrect">
                 <action type="report" tag="Report" message="juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect"></action>
-			         </action>
-			       </action>
+               </action>
+             </action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="timer_expired" tag="If interRewardIntervalTimer expired, go to GiveReward" target="GiveReward" timer="interRewardIntervalTimer"></transition>
           </task_system_state>
@@ -1559,7 +1601,7 @@
               <action type="report" message="***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors"></action>
               <action type="start_timer" timer="consecErrorTimer" timebase="" duration="consecErrorTimeoutS" duration_units="s"></action>
               <action type="if" condition="doSolenoidOnTimeout==1">
-              	<action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
+                <action type="assignment" tag="lever Solenoid on" variable="MIO0" value="1"></action>
               </action>
             </action>
 
@@ -1609,4 +1651,3 @@
     </protocol>
   </experiment>
 </monkeyml>
-
