@@ -1108,6 +1108,8 @@
 
             <action type="start_timer" tag="Start interTrialTimer" timer="interTrialTimer"
                     timebase="" duration="tItiWaitTimeMs" duration_units="ms"></action>
+                    <action type="start_timer" tag="Start interTrialTimer" timer="halfInterTrialTimer"
+                    timebase="" duration="tItiWaitTimeMs/2" duration_units="ms"></action>
             <action type="assignment" tag="Log counter" variable="cItiStart" value="counter"></action>
             <action type="run_python_file" tag="Load script" path="L0.py"></action> <!--  run python code to turn laser off -->
             <action type="assignment" tag="Clear stimulusOn" variable="stimulusOn" value="0"></action>
@@ -1142,15 +1144,15 @@
             <action type="report" message="during ITI and wait for tItiWaitFrames to start"></action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional"  tag="if do unexpected reward during mid ITI, Go to itiReward" condition="itiRewardUnexpectPercent !=0 &amp;&amp; (success+ignore+failure) == tITIUnexpectRewardNum &amp;&amp; (counter &gt;= (cItiStart + tItiWaitFrames/2))" target="itiReward" ></transition>
-            <transition type="conditional" tag="if counter larger than tItiWaitFrames" condition="counter &gt;= (cItiStart + tItiWaitFrames)" target="StartTrial"></transition>
+            <transition type="conditional"  tag="if do unexpected reward during mid ITI, Go to itiReward" condition="itiRewardUnexpectPercent !=0 &amp;&amp; (success+ignore+failure) == tITIUnexpectRewardNum &amp;&amp; timerExpired(halfInterTrialTimer)" target="itiReward" ></transition>
+            <transition type="timer_expired" tag="if Iti Expired" timer="InterTrialTimer" target="StartTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="itiReward" full_name="" description="" interruptible="YES">
             <action type="assignment" variable="tItiUnexpectedRewardTrial" value="1"></action>
             <action type="assignment" tag="Start reward" variable="juice" value="minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )"></action>
             <action type="report" message="----- Unexpected Reward in ITI -----"></action>
-            <transition type="conditional" tag="if counter larger than tItiWaitFrames" condition="counter &gt;= (cItiStart + tItiWaitFrames)" target="StartTrial"></transition>
+            <transition type="timer_expired" tag="if Iti Expired" timer="InterTrialTimer" target="StartTrial"></transition>
           </task_system_state>
 
           <task_system_state tag="StartTrial" full_name="" description="" interruptible="YES">
@@ -1170,9 +1172,7 @@
             </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="if first trial, counter = 20 and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; isFirstTrial &amp;&amp; counter > 19" target="WaitForLeverPress"></transition>
-            <transition type="conditional" tag="if not first trial, counter still going and ITI over" condition="counter &gt;= (cItiStart + tItiWaitFrames) &amp;&amp; !isFirstTrial &amp;&amp; counter > cLeverUp" target="WaitForLeverPress"></transition>
-            <transition type="conditional" tag="if not first trial, counter stopped" condition="!isFirstTrial &amp;&amp; counter == cLeverUp" target="ExitTask"></transition>
+            <transition type="timer_expired" tag="if Iti Expired" timer="InterTrialTimer" target="WaitForLeverPress"></transition>
           </task_system_state>
 
           <task_system_state tag="ExitTask" interruptible="YES">
@@ -1212,7 +1212,14 @@
 
           <task_system_state tag="HoldLever" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="start_timer" tag="Start Fake mouse timer" timer="fakeMouseTimer"
+                    timebase="" duration="fakeMouseMaxReactMs" duration_units="ms"></action>
+            <action type="start_timer" tag="Start baseline timer" timer="baselineTimer"
+                    timebase="" duration="tTotalBaselineTimeMs" duration_units="ms"></action>
+            <action type="start_timer" tag="Start required timer" timer="requiredTimer"
+                    timebase="" duration="tTotalReqHoldTimeMs" duration_units="ms"></action>
             <action type="assignment" variable="laserTrigger" value="1"></action>
+
             <action tag="p" type="play_sound" sound="louderPressSound"></action>
             <action type="assignment" tag="leverResult = 1" variable="leverResult" value="1"></action>
             <action type="assignment" tag="set pressTimestampMs" variable="pressTimestampMs" value="now()/1000"></action>
@@ -1241,15 +1248,14 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever &amp;&amp; quadrature &lt; leverThreshold &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="Trial Start Cue Presentation" condition="counter  &gt;= cLeverDown + tTotalBaselineFrames &amp;&amp; doStartCueSound" target="StartCueOn"></transition>
-            <transition type="conditional" tag="Target Stimulus Presentation" condition="counter  &gt;= cLeverDown + tTotalReqHoldFrames &amp;&amp; !doStartCueSound" target="StimOn"></transition>
+            <transition type="timer_expired" tag="If Fake mouse frames elapsed, Go To EarlyRelease" timer="fakeMouseTimer" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="Trial Start Cue Presentation" condition="timerExpired(baselineTimer) &amp;&amp; doStartCueSound" target="StartCueOn"></transition>
+            <transition type="conditional" tag="Target Stimulus Presentation" condition="timerExpired(requiredTimer) &amp;&amp; !doStartCueSound" target="StimOn"></transition>
           </task_system_state>
 
           <!-- startCueStimulus on-->
          <task_system_state tag="StartCueOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
-
               <action type="assignment" tag="Set StartCueOn" variable="startCueOn" value="1"></action>
               <action tag="Report StartCueOn" full_name="ReportDigital" type="report" message="Start Cue On (still holding; signaling release ok)"></action>
                 <action type="assignment" variable="cStartCueOn" value="counter"></action>
@@ -1266,12 +1272,18 @@
                </action>
 
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" tag="Target Stimulus Presentation" condition="counter  &gt;= cLeverDown + tTotalReqHoldFrames" target="StimOn"></transition>
+              <transition type="timer_expired" tag="Target Stimulus Presentation" condition="requiredTimer" target="StimOn"></transition>
           </task_system_state>
 
 
           <task_system_state tag="StimOn" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+              <action type="start_timer" tag="Start target timer" timer="targetTimer"
+                    timebase="" duration="tGratingDurationMs" duration_units="ms"></action>
+              <action type="start_timer" tag="Start too fast timer" timer="tooFastTimer"
+                    timebase="" duration="tooFastTimeMs" duration_units="ms"></action>
+              <action type="start_timer" tag="Start react timer" timer="reactTimer"
+                    timebase="" duration="reactTimeMs" duration_units="ms"></action>
 
               <action type="assignment" tag="Set StimulusOn" variable="stimulusOn" value="1"></action>
               <action tag="Report StimOn" full_name="ReportDigital" type="report" message="StimOn (still holding; signaling release ok)"></action>
@@ -1314,9 +1326,9 @@
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
               <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up, Go To EarlyRelease" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1" target="EarlyRelease"></transition>
-              <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
-              <transition type="conditional" tag="if nFramesTooFast elapsed, go to React"  condition="(counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
-              <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff"></transition>
+              <transition type="conditional" tag="If Fake mouse frames elapsed, Go To EarlyRelease" condition="expiredTimer(tFakeMouseReactMs)) &amp;&amp; !doLever" target="EarlyRelease"></transition>
+              <transition type="expired_timer" tag="if nFramesTooFast elapsed, go to React"  condition="expiredTimer(tooFastTimer)" target="React"></transition>
+              <transition type="expired_timer" tag="Dequeue Visual Stimulus" condition="expiredTimer(targetTimer)" target="EndTrialStimOff"></transition>
           </task_system_state>
 
           <task_system_state tag="EndTrialStimOff" interruptible="YES">
@@ -1333,12 +1345,12 @@
           <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
             <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up, and too fast Go To EarlyRelease" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
-            <transition type="conditional" tag="If fake mouse timer expired, and too fast Go To EarlyRelease" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames)) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
+            <transition type="conditional" tag="If fake mouse timer expired, and too fast Go To EarlyRelease" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 1" target="EarlyRelease"></transition>
             <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up, and too fast expired Go To Reward" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1 &amp;&amp; isTooFast == 0" target="Reward"></transition>
-            <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="(counter &gt;= (cLeverDown + tFakeMouseReactFrames))&amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
-            <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; (counter &gt;= (cTargetOn + nFramesTooFast))" target="React"></transition>
-            <transition type="conditional" tag="Go to Missed" condition="(counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
+            <transition type="conditional" tag="If fake mouse timer expired, and too fast expired Go To Reward" condition="timerExpired(fakeMouseTimer) &amp;&amp; !doLever &amp;&amp; isTooFast == 0" target="Reward"></transition>
+            <transition type="conditional" tag="if tooFastTimer expired, go to React" condition="(isTooFast==1) &amp;&amp; timerExpired(tooFastTimer)" target="React"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="timerExpired(reactTimer)" target="Missed"></transition>
           </task_system_state>
 
           <task_system_state tag="React" interruptible="YES">
@@ -1349,14 +1361,15 @@
             <transition type="conditional" tag="If Unexpected Reward" condition="!doLever &amp;&amp; rewardUnexpectPercent!=0 &amp;&amp; (success+ignore+failure) == tDoNoStimulusChange" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="doAnalogLever==0 &amp;&amp; FIO1 == 0 &amp;&amp; doLever == 1" target="Reward"></transition>
             <transition type="conditional" tag="If Lever Up" condition="doAnalogLever &amp;&amp; (quadrature &lt; leverThreshold) &amp;&amp; doLever == 1" target="Reward"></transition>
-            <transition type="conditional" tag="If Lever Up" condition="!doLever &amp;&amp; (counter &gt;= (cLeverDown + tFakeMouseReactFrames))" target="Reward"></transition>
-
-            <transition type="conditional" tag="Go to Missed" condition="(counter &gt;= (cTargetOn + nFramesReact))" target="Missed"></transition>
-            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="(counter &gt;= (cTargetOn + nFramesOn))" target="EndTrialStimOff" ></transition>
+            <transition type="conditional" tag="If Lever Up" condition="!doLever &amp;&amp; timerExpired(fakeMouseTimer)" target="Reward"></transition>
+            <transition type="conditional" tag="Go to Missed" condition="timerExpired(reactTimer)" target="Missed"></transition>
+            <transition type="conditional" tag="Dequeue Visual Stimulus" condition="timerExpired(targetTimer)" target="EndTrialStimOff" ></transition>
           </task_system_state>
 
           <task_system_state tag="EarlyRelease" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="start_timer" tag="Start early TO timer" timer="earlyTimeoutTimer"
+                    timebase="" duration="earlyTimeoutMs" duration_units="ms"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
               <action type="assignment" variable="cLeverUp" value="counter"></action>
 
@@ -1394,7 +1407,7 @@
             </action>
             <action tag="Update Display" type="update_stimulus_display"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-              <transition type="conditional" tag="Early timeout elapsed" condition="counter &gt;= (cLeverUp + nFramesEarlyTimeout)" target="EndTrial"></transition>
+              <transition type="conditional" tag="Early timeout elapsed" condition="timerExpired(earlyTimeoutTimer)" target="EndTrial"></transition>
             </task_system_state>
 
           <task_system_state tag="Reward" interruptible="YES">
@@ -1552,6 +1565,8 @@
 
           <task_system_state tag="Missed" interruptible="YES">
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
+            <action type="start_timer" tag="Start missed TO timer" timer="missedTimeoutTimer"
+                    timebase="" duration="missedTimeoutMs" duration_units="ms"></action>
             <action type="assignment" tag="leverResult = 0" variable="leverResult" value="0"></action>
             <action type="assignment" tag="Encode LeverNoReleaseMiss" variable="strobedDigitalWord" value="11"></action>
               <action type="assignment" variable="cLeverUp" value="counter"></action>
@@ -1590,7 +1605,7 @@
             </action>
             <action tag="Update Display" type="update_stimulus_display"></action>
             <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
-            <transition type="conditional" tag="Missed timeout elapsed" condition="counter &gt;= (cLeverUp + nFramesMissedTimeout)" target="EndTrial"></transition>
+            <transition type="conditional" tag="Missed timeout elapsed" condition="timerExpired(missedTimeoutTimer)" target="EndTrial"></transition>
           </task_system_state>
 
 
