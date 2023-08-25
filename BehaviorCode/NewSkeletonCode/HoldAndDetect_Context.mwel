@@ -905,7 +905,19 @@ opaque_grating surround (
     azimuth_deg = tGratingAzimuthDeg
     elevation_deg = tGratingElevationDeg
     contrast = tGratingContrast
-    )    
+    )
+
+opaque_grating border (
+    direction_deg = tGratingDirectionDeg
+    phase_deg = tGratingStartingPhaseDeg + 360 * tGratingSpatialFreqCPD * (tGratingWidthDeg / 2)
+    spatial_freq_cpd = tGratingSpatialFreqCPD
+    speed_dps = tGratingSpeedDPS
+    width_deg = tGratingWidthDeg+5
+    height_deg = tGratingHeightDeg+5
+    azimuth_deg = tGratingAzimuthDeg
+    elevation_deg = tGratingElevationDeg
+    contrast = 0
+    )        
     
 
 //
@@ -924,7 +936,6 @@ protocol JuiceOnHoldProtocol {
         if (doITIStim) {
             setBaseGratingContrast = itiContrast
             live_queue_stimulus (base)
-            play_dynamic_stimulus (base)
         }
     }
     update_stimulus_display ()
@@ -1221,6 +1232,8 @@ protocol JuiceOnHoldProtocol {
                             tGratingSpatialFreqCPD = gratingSpatialFreqCPD
                             tGratingDurationMs = gratingDurationMs
                             tMatchSurroundGratingDirection = matchSurroundGratingDirection
+                            tSurroundGratingWidthDeg = surroundGratingWidthDeg
+                            tSurroundGratingHeightDeg = surroundGratingHeightDeg
                         }
                         if (tBlock2TrialNumber == 1) {
                             tBaseGratingDirectionDeg = block2BaseGratingDirectionDeg
@@ -1239,6 +1252,8 @@ protocol JuiceOnHoldProtocol {
                             tGratingSpatialFreqCPD = block2GratingSpatialFreqCPD
                             tGratingDurationMs = block2GratingDurationMs
                             tMatchSurroundGratingDirection = block2MatchSurroundGratingDirection
+                            tSurroundGratingWidthDeg = surroundGratingWidthDeg
+                            tSurroundGratingHeightDeg = surroundGratingHeightDeg
                         }
                     }
                     // ramp length for block 2 
@@ -1652,7 +1667,6 @@ protocol JuiceOnHoldProtocol {
                     }
                     setBaseGratingContrast = tBaseGratingContrast
                     live_queue_stimulus (base)
-                    play_dynamic_stimulus (base)
                 }
                 update_stimulus_display ()
                 // turn on trial laser if requested 
@@ -1696,6 +1710,7 @@ protocol JuiceOnHoldProtocol {
                     duration_units = ms
                     )
                 report ('LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)')
+                report ('surround is $tSurroundGratingWidthDeg diam + $tSurroundGratingDirectionDeg deg)')
                 goto (
                     target = EarlyRelease
                     when = doAnalogLever==0 && FIO1 == 0 && doLever == 1 && doAllCorrects==0
@@ -1729,9 +1744,8 @@ protocol JuiceOnHoldProtocol {
                 // vis stim on 
                 if (doVisualStim && doNoStimulusChange==0) {
                     queue_stimulus (surround)
-                    play_dynamic_stimulus (surround)
+                    queue_stimulus (border)
                     queue_stimulus (target)
-                    play_dynamic_stimulus (target)
                     update_stimulus_display ()
                     strobedDigitalWord = 4
                 }
@@ -1758,12 +1772,12 @@ protocol JuiceOnHoldProtocol {
                     // so we only turn it off once here 
                     if ((((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs) {
                         dequeue_stimulus (surround)
+                        dequeue_stimulus (border)
                         dequeue_stimulus (target)
                         update_stimulus_display ()
                         if (doITIStim==1) {
                             setBaseGratingContrast = itiContrast
                             live_queue_stimulus (base)
-                            play_dynamic_stimulus (base)
                         }
                         update_stimulus_display ()
                         tStimTurnedOn = 0
@@ -1793,11 +1807,11 @@ protocol JuiceOnHoldProtocol {
                     // so we only turn it off once here 
                     if ((((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs) {
                         dequeue_stimulus (surround)
+                        dequeue_stimulus (border)
                         dequeue_stimulus (target)
                         if (doITIStim) {
                             setBaseGratingContrast = itiContrast
                             live_queue_stimulus (base)
-                            play_dynamic_stimulus (base)
                         }
                         update_stimulus_display ()
                         tStimTurnedOn = 0
@@ -1851,6 +1865,7 @@ protocol JuiceOnHoldProtocol {
                     strobedDigitalWord = 12
                 }
                 dequeue_stimulus (surround)
+                queue_stimulus (border)
                 dequeue_stimulus (target)
                 report ('~~~~~~~~~tBaseGratingDirectionDeg is $tBaseGratingDirectionDeg  EarlyRelease')
                 if (doITIStim) {
@@ -1862,7 +1877,6 @@ protocol JuiceOnHoldProtocol {
                     }
                     setBaseGratingContrast = itiContrast
                     live_queue_stimulus (base)
-                    play_dynamic_stimulus (base)
                 }
                 if (doITIStim==0) {
                     dequeue_stimulus (base)
@@ -1944,6 +1958,7 @@ protocol JuiceOnHoldProtocol {
                 }
                 tNRewards = consecCorrects
                 dequeue_stimulus (surround)
+                dequeue_stimulus (border)
                 dequeue_stimulus (target)
                 if (doRandBaseOri) {
                     tBaseGratingDirectionDeg = (tBaseGratingDirectionDeg + (disc_rand(0,baseGratingDirectionStepN-1) * baseGratingDirectionStepDeg)) % 180
@@ -1951,7 +1966,6 @@ protocol JuiceOnHoldProtocol {
                 if (doITIStim==1) {
                     setBaseGratingContrast = itiContrast
                     live_queue_stimulus (base)
-                    play_dynamic_stimulus (base)
                 }
                 update_stimulus_display ()
                 goto (GiveReward)
@@ -2065,6 +2079,7 @@ protocol JuiceOnHoldProtocol {
                     strobedDigitalWord = 12
                 }
                 dequeue_stimulus (surround)
+                dequeue_stimulus (border)
                 dequeue_stimulus (target)
                 if (doRandBaseOri) {
                     tBaseGratingDirectionDeg = (tBaseGratingDirectionDeg + (disc_rand(0,baseGratingDirectionStepN-1) * baseGratingDirectionStepDeg)) % 180
@@ -2072,7 +2087,6 @@ protocol JuiceOnHoldProtocol {
                 if (doITIStim==1) {
                     tBaseGratingContrast = itiContrast
                     live_queue_stimulus (base)
-                    play_dynamic_stimulus (base)
                 }
                 update_stimulus_display ()
                 timer_expired (
@@ -2111,6 +2125,7 @@ protocol JuiceOnHoldProtocol {
                 }
                 stop_device_io (LabJackU6)
                 dequeue_stimulus (surround)
+                dequeue_stimulus (border)
                 dequeue_stimulus (target)
                 update_stimulus_display ()
                 if (doITIStim == 0) {
