@@ -6,11 +6,11 @@ function outS = concatenateDataBlocks(blockC)
     outS = struct;
     
     for iblock = 1:size(blockC,2)
-        if isfield(blockC, 'trialOutcomeCell')
+        if isfield(blockC(1), 'trialOutcomeCell')
             trs = length(blockC(iblock).trialOutcomeCell);
-        elseif isfield(blockC, 'tGratingContrast')
+        elseif isfield(blockC(1), 'tGratingContrast')
             trs = length(blockC(iblock).tGratingContrast);
-        elseif isfield(blockC, 'tStimOneGratingContrast')
+        elseif isfield(blockC(1), 'tStimOneGratingContrast')
             trs = length(blockC(iblock).tStimOneGratingContrast);
         end
         if iblock == 1
