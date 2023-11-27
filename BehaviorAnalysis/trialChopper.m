@@ -33,6 +33,8 @@ if isfield(ds, 'trialOutcomeCell')
     nTrs = length(ds.trialOutcomeCell);
 elseif isfield(ds, 'tGratingContrast')
     nTrs = length(ds.tGratingContrast);
+elseif isfield(ds,'tStimulusNumber')
+    nTrs = length(ds.tStimulusNumber);
 end
 
 for i=1:nFNs,

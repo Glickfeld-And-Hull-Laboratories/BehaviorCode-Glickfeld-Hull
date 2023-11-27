@@ -18,7 +18,7 @@ switch tHostname
         elseif tUsername(1:5) == 'tammy'
             rc.name = 'tammy';
             rootDir = 'Z:\home\ACh';
-            rc.achAnalysis = fullfile(rootDir,'Analysis');
+            rc.achAnalysis = fullfile(rootDir,'Analysis','2p_analysis');
             rc.achData = 'Z:\home\ACh\Data';
             rc.analysis = fullfile(rootDir,'Analysis');
             rc.data = 'Z:\home\ACh\Data';
@@ -36,7 +36,7 @@ switch tHostname
         if tUsername(1:5) == 'cc735'
             rc.name = 'celine';
             rootDir = 'Z:\home\ACh';
-            rc.achAnalysis = fullfile(rootDir,'Analysis');
+            rc.achAnalysis = fullfile(rootDir,'Analysis','2p_analysis');
             rc.achData = 'Z:\home\ACh\Data';
             
             
