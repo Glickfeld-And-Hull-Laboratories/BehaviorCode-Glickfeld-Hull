@@ -1,0 +1,398 @@
+
+//
+// I/O Devices
+//
+
+iodevice/labjacku6 LabJackU6 (
+    pulse_duration = juice
+    pulse_on = juice
+    lever1 = FIO1
+    lever1_solenoid = MIO0
+    laser_trigger = laserTrigger
+    optic_device = optic_device
+    strobed_digital_word = strobedDigitalWord
+    counter = counter
+    do2led = do2led
+    led_seq = led_seq
+    LED_duration = LED_durationMS
+    led1_status = led1_status
+    led2_status = led2_status
+    do_wheelspeed = DoWheelSpeed
+    ws_durationUS = speedIntervalUS
+    wheel_speed = wheelSpeed
+    doCB = doCerebellarStim
+    quadrature = quadrature
+    )
+//<iodevice type="stimulus_display" tag="Stimulus Display" background_color="0.5, 0.5, 0.5"/>
+//background color, range 0-1
+fake_monkey FakeMonkey (spike_rate = 10)
+serverside_conduit 'Server-side Event Conduit' ()
+
+//
+// Variables
+//
+
+var DoWheelSpeed = (bool)(1)
+var speedIntervalUS = (float)(100000)
+// creating variables 
+group 'Behavioral Control' {
+    var doWheelSpeed = (bool)(1) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var speedIntervalMS = (float)(100) (
+        persistant = 1
+        groups = 'Wheel Speed'
+        )
+    var optic_device = 'led'
+    var experimentXmlTrialId = 8 (persistant = 1)
+    // n.b. it is forcibly set each trial below 
+    var subjectNum = 999
+}
+group 'Hardware Variables' {
+    var FIO1 = 0
+    var MIO0 = (bool)(0)
+    var laserTrigger = (bool)(0)
+    var strobedDigitalWord = 0
+    var juice = 0
+    var counter = 0
+    var wheelSpeed = (float)(0)
+    var LED_durationMS = (float)(0)
+    var led1_status = (bool)(0)
+    var led2_status = (bool)(0)
+    var led_seq = [1,1,1,2]
+    var quadrature = 0
+    var doCerebellarStim = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var do2led = (bool)(0)
+}
+group 'Stimuli Variables' {
+    var index = 'DEFAULT' (scope = local)
+    var frameRateHz = 30 (persistant = 1)
+    var xSize = 30.0 (persistant = 1)
+    var ySize = 30.0 (persistant = 1)
+    var xPosition = 0.0 (persistant = 1)
+    var yPosition = 0.0 (persistant = 1)
+    var numImages = 6 // TODO: update when change stim
+    var maskType = 'gaussian' (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var gratingMean = 0.1 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var gratingStd = 0.3 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        ) 
+    var gratingEdge = 0.125 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var Do2LED = (bool)(0) (
+        persistant = 1
+        groups = 'Alternating LED'
+        )
+    var LED_sequence = [1,1,1,2] (
+        persistant = 1
+        groups = 'Alternating LED'
+        )
+    var doPhotodiode = (bool)(1) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusContrast = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusAzimuth = (int)(-47) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusElevation = 25 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusWidth = (int)(10.0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusHeight = (int)(10.0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoMaskSpatialFreq = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+}
+group 'Trial Variables' {
+    var isiTimeMs = (float)(250) (persistant = 1)
+    var randIsiTimeStart = (float)(250) (persistant = 1)
+    var randIsiTimeStep = (float)(250) (persistant = 1)
+    var randIsiTimeInterval = (float)(4) (persistant = 1)
+    var itiTimeMs = (float)(2000) (persistant = 1)
+    var stimOnTimeMs = (float)(500) (persistant = 1)
+    var stimOne = (float)(0) (persistant = 1)
+    var stimTwo = (float)(0) (persistant = 1)
+    var stimOneOffChance = 0
+    var stimList = [1, 2, 3, 4, 5, 6] // this get rewritten by stimgroup.py - just here to initialize
+    var setList = ['grat_SF6'] // stimgroup.py input setlist to get stimlist
+    var tNStimAccepted = 0
+    selection svStimNumber (
+        values = 0, 1, 2, 3, 4, 5 // svstimnumber is 0 indexing, bc it's the index number you select from the image list
+        // TODO: update when change stim. if new set of img, write into stimgroups.py
+        selection = random_without_replacement
+        )
+}
+group 'Task Variables' {
+    var doRandIsiTime = (bool)(0) (persistant = 1)
+    var doRepeatStimOne = (bool)(0) (persistant = 1)
+    var doRepeatStimTwo = (bool)(0) (persistant = 1)
+    var doRandStimOne = (bool)(0) (persistant = 1)
+    var doRandStimTwo = (bool)(0) (persistant = 1)
+    var doSameStims = (bool)(0) (persistant = 1)
+    var doStimOneOffChance = (bool)(0) (persistant = 1)
+}
+group 'Internal Variables' {
+    var sync = 0
+    var ntrials = 1
+    var cItiStart = 0
+    var cStimOneOn = 0
+    var cStimOneOff = 0
+    var cStimTwoOn = 0
+    var cStimTwoOff = 0
+    var tisiTimeMs = (float)(500)
+    var tstimOne = (float)(0)
+    var tstimTwo = (float)(0)
+    var tisiTimeFrames = (float)(500)
+    var titiTimeFrames = (float)(500)
+    var tstimOnTimeFrames = (float)(500)
+}
+
+//
+// Sounds
+//
+
+
+//
+// Stimuli
+//
+
+stimulus_group images {
+    // load image stimuli 
+    range_replicator (
+        from = 1 // always from 1, when meaningful img start from 1.png
+        to = 6 // update when using new paradigm. value should be n_img. TODO: update when change stim
+        step = 1
+        variable = index
+        ) {
+        image_file image_${index} (
+            path = 'Image/${index}.png'
+            x_size = xSize
+            y_size = ySize
+            x_position = xPosition
+            y_position = yPosition
+            deferred = explicit
+            )
+        }
+}
+
+// make a rectangle with a hole in the center
+layer gray_surround { // live_queue_stimulus (gray_surround) after drawing image stim1
+    rectangle (
+        color = 0.5, 0.5, 0.5 // gray like background
+        x_size = xSize
+        y_size = ySize
+        x_position = xPosition
+        y_position = yPosition
+        )
+    mask transparency_alpha_mask (
+        mask = maskType
+        std_dev = gratingStd
+        mean = gratingMean
+        edge_width = gratingEdge
+        x_size = xSize
+        y_size = ySize
+        x_position = xPosition
+        y_position = yPosition
+        inverted = true // inverted so that the hole is transparent, showing the stimulus image beneath
+        )
+}
+
+// create photodiode stimuli 
+
+rectangle photoDiodeBlack (
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    color = 0.0, 0.0, 0.0
+    )
+rectangle photoDiodeWhite (
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    alpha_multiplier = 1
+    color = 256.0, 256.0, 256.0
+    )
+
+//
+// Filters
+//
+
+
+//
+// Optimizers
+//
+
+
+//
+// Protocols
+//
+
+protocol 'New Protocol' {
+    start_device_io (LabJackU6)
+    report ('**** First trial since experiment load ****')
+    counter = 0
+    ntrials = 0
+    reset_selection (svStimNumber)
+    tNStimAccepted = 0
+    trial 'Trial 01' (nsamples = 2500) {
+        task 'Trial Start' {
+            state Initialization {
+                // initializing before trial 
+                report (Initializing)
+                run_python_file ('stimGroups.py')
+                sync = 1
+                tisiTimeMs = isiTimeMs
+                tstimOne = stimOne
+                tstimTwo = stimTwo
+                // do wheel speed 
+                if (doWheelSpeed == 1) {
+                    doCerebellarStim = 0
+                    DoWheelSpeed = doWheelSpeed
+                    speedIntervalUS = speedIntervalMS*1000
+                }
+                // setting images based on task variables 
+                if (doRandIsiTime) {
+                    tisiTimeMs = randIsiTimeStart + disc_rand(0, randIsiTimeInterval - 1) * randIsiTimeStep
+                }
+                if (doRandStimOne) {
+                    tstimOne = svStimNumber
+                }
+                if (doRandStimTwo) {
+                    tstimTwo = stimList[disc_rand(0, size(stimList) - 1)]
+                }
+                if (doSameStims) {
+                    tstimTwo = tstimOne
+                }
+                if (doStimOneOffChance && disc_rand(1, 100) <= stimOneOffChance) {
+                    tstimOne = 0
+                }
+                // loading images 
+                load_stimulus (images[tstimOne])
+                wait (
+                    duration = 0.1
+                    duration_units = s
+                    )
+                load_stimulus (images[tstimTwo])
+                wait (
+                    duration = 0.1
+                    duration_units = s
+                    )
+                titiTimeFrames = ceil((itiTimeMs/1000)*frameRateHz)
+                tisiTimeFrames = ceil((tisiTimeMs/1000)*frameRateHz)
+                tstimOnTimeFrames = ceil((stimOnTimeMs/1000)*frameRateHz)
+                live_queue_stimulus (photoDiodeBlack)
+                update_stimulus_display ()
+                goto (Iti)
+            }
+            state Iti {
+                report (Iti)
+                cItiStart = counter
+                goto (
+                    target = StimOneOn
+                    when = counter >= (cItiStart + titiTimeFrames) && ntrials < 1 && counter > 19
+                    )
+                goto (
+                    target = StimOneOn
+                    when = counter >= (cItiStart + titiTimeFrames) && ntrials > 0
+                    )
+            }
+            state StimOneOn {
+                ntrials = ntrials + 1
+                queue_stimulus (images[tstimOne])
+                live_queue_stimulus (gray_surround) // draw masked rectangle after stim1 to be in the front
+                live_queue_stimulus (photoDiodeWhite)
+                update_stimulus_display ()
+                cStimOneOn = counter
+                report (StimOneOn)
+                goto (
+                    target = StimOneOff
+                    when = counter >= (cStimOneOn + tstimOnTimeFrames)
+                    )
+            }
+            state StimOneOff {
+                report (StimOneOff)
+                dequeue_stimulus (images[tstimOne])
+                dequeue_stimulus (gray_surround)
+                dequeue_stimulus (photoDiodeWhite)
+                update_stimulus_display ()
+                cStimOneOff = counter
+                goto (
+                    target = StimTwoOn
+                    when = counter >= (cStimOneOff + tisiTimeFrames)
+                    )
+            }
+            state StimTwoOn {
+                queue_stimulus (images[tstimTwo])
+                live_queue_stimulus (gray_surround)
+                live_queue_stimulus (photoDiodeWhite)
+                update_stimulus_display ()
+                cStimTwoOn = counter
+                report (StimTwoOn)
+                goto (
+                    target = StimTwoOff
+                    when = counter >= (cStimTwoOn + tstimOnTimeFrames)
+                    )
+            }
+            state StimTwoOff {
+                report (StimTwoOff)
+                dequeue_stimulus (images[tstimTwo])
+                dequeue_stimulus (gray_surround)
+                dequeue_stimulus (photoDiodeWhite)
+                update_stimulus_display ()
+                cStimTwoOff = counter
+                unload_stimulus (images[tstimOne])
+                unload_stimulus (images[tstimTwo])
+                goto (
+                    target = 'End Trial'
+                    when = counter  >= (cStimTwoOff + 3)
+                    )
+            }
+            state 'End Trial' {
+                if (doWheelSpeed == 1) {
+                    DoWheelSpeed = 0
+                }
+                sync = 0
+                // accept stim selection 
+                accept_selections (svStimNumber)
+                tNStimAccepted = tNStimAccepted + 1
+                // update selection variable 
+                if (tNStimAccepted >= numImages) { // when a round of pseudo rand stimlist is completed, reset the counter to 0 
+                    reset_selection (svStimNumber)
+                    tNStimAccepted = 0
+                }
+                if (tNStimAccepted < numImages) {
+                    next_selection (svStimNumber)
+                }
+                yield ()
+            }
+        }
+    }
+}

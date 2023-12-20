@@ -13,7 +13,6 @@ iodevice/labjacku6 LabJackU6 (
     optic_device = optic_device
     quadrature = quadrature
     strobed_digital_word = strobedDigitalWord
-    counter = counter
     )
 fake_monkey FakeMonkey (spike_rate = 10)
 serverside_conduit 'Server-side Event Conduit' ()
@@ -102,10 +101,6 @@ group 'Behavioral Control' {
     var evaluationWindow = 40 (
         persistant = 1
         groups = Training
-        )
-    var frameRateHz = 30 (
-        persistant = 1
-        groups = 'Trial Structure'
         )
     var tooFastTimeMs = 100 (
         persistant = 1
@@ -658,11 +653,6 @@ group 'Fake Mouse' {
         persistant = 1
         groups = 'Fake Mouse'
         )
-    var doFakeMouseSuccessOnly = 0 (
-        persistant = 1
-        groups = 'Fake Mouse'
-        )
-
 }
 group 'Task Status' {
     var failure = 0
@@ -692,7 +682,6 @@ group 'Hardware variables' {
     var MIO0 = (bool)(0)
     var laserTrigger = (bool)(0)
     var quadrature = 0 (groups = Lever)
-    var counter = 0
     var leverThreshold = 0 (
         persistant = 1
         groups = Lever
@@ -771,27 +760,6 @@ group 'Internal Variables' {
     var tTrialLaserOnTimeMs = (float)(0)
     var tTrialLaserOffTimeMs = (float)(0)
     var tBlock2TrialNumber = 0
-    var isTooFast = (bool)(1)
-    var isFirstTrial = (bool)(1)
-
-    // Frame conversion
-    var tTotalReqHoldFrames = 0
-    var tItiWaitFrames = 0
-    var nFramesOn = 0
-    var nFramesTooFast = 0
-    var nFramesReact = 0
-    var nFramesEarlyTimeout = 0
-    var nFramesMissedTimeout = 0
-    var tFakeMouseReactFrames = 0
-
-    // Counter variables
-    var cTrialStart = 0
-    var cTrialEnd = 0
-    var cItiStart = 0
-    var cLeverDown = 0
-    var cTargetOn = 0
-    var cLeverUp = 0
-
     var tRewardOmissionTrial = (bool)(0)
     var tRewardDelayTrial = (bool)(0)
     var tRewardDelayDurationMs = 0
@@ -957,8 +925,7 @@ opaque_grating border (
 //
 
 protocol JuiceOnHoldProtocol {
-    // init actions before running trials after any press of start  
-
+    // init actions before running trials after any press of start
     queue_stimulus (background)
     if (doVisualStim) {
         if (doRandBaseOri) {
@@ -976,26 +943,21 @@ protocol JuiceOnHoldProtocol {
     tempNCorrect = 0
     tConsecErrors = 0
     juice = 0
-
     // init actions run only on first trial after loading experiment 
     if (success+ignore+failure == 0) {
         report ('**** First trial since experiment load - initializing')
-        start_device_io (LabJackU6)
-        counter = 0
         tLastTrialStartTimeMs = -1
         tThisTrialStartTimeMs = -1
         lastActualHoldTimeMs = 0
         // reset selection var 
         reset_selection (svStimNumber)
         tNStimAccepted = 0
-        isFirstTrial = 1
     }
     trial 'Trial 01' (nsamples = 2500) {
         task TS {
             state Intertrial {
-                if (success+ignore+failure > 0) {
-                    isFirstTrial=0
-                }
+                start_device_io (LabJackU6)
+                sync = 1
                 tTrialStartMWTimestampMs = now()/1000
                 // integer valued ms timestamp 
                 strobedDigitalWord = 170
@@ -1019,7 +981,6 @@ protocol JuiceOnHoldProtocol {
                 strobedDigitalWord = (tTrialStartMWTimestampMs - (tTrialStartMWTimestampMs/1000)*1000)
                 // ms 
                 strobedDigitalWord = 201
-                sync = 1
                 trialStart = 1
                 juice = 0
                 leverResult = 0
@@ -1031,7 +992,6 @@ protocol JuiceOnHoldProtocol {
                 tDoAllCorrects = doAllCorrects
                 tRewardDelayTrial = 0
                 tRewardDelayDurationMs = 0
-                cTrialStart = counter
                 // choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 
                 tSvStimNumber = svStimNumber
                 // choose a value from selection var, 0-origin 
@@ -1470,8 +1430,6 @@ protocol JuiceOnHoldProtocol {
                     tRandReqHoldTimeMs = geom_rand(1.0/geomHoldMeanMs, randReqHoldMaxMs)
                 }
                 tTotalReqHoldTimeMs = fixedReqHoldTimeMs + tRandReqHoldTimeMs
-                tTotalReqHoldFrames = ceil((tTotalReqHoldTimeMs/1000)*frameRateHz)
-
                 // choose laser power 
                 if (doLaserStim && tLaserPeakMaxMw !=0) {
                     tLaserPowerMw = tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)
@@ -1584,16 +1542,11 @@ protocol JuiceOnHoldProtocol {
                         tItiWaitTimeMs = tItiWaitTimeMs+tempMs
                     }
                 }
-
-                nFramesOn = ceil((tGratingDurationMs/1000)*frameRateHz)
-                nFramesTooFast = ceil((tooFastTimeMs/1000)*frameRateHz)
-                nFramesReact = ceil((reactTimeMs/1000)*frameRateHz)
-                nFramesEarlyTimeout =ceil((earlyTimeoutMs/1000)*frameRateHz)
-                nFramesMissedTimeout = ceil((missedTimeoutMs/1000)*frameRateHz)
-                tItiWaitFrames = ceil((tItiWaitTimeMs/1000)*frameRateHz)
-
-                cItiStart = counter
-
+                start_timer (
+                    timer = interTrialTimer
+                    duration = tItiWaitTimeMs
+                    duration_units = ms
+                    )
                 stimulusOn = 0
                 strobedDigitalWord = 6
                 if (doLeverSolenoidAllTrials) {
@@ -1618,9 +1571,9 @@ protocol JuiceOnHoldProtocol {
                         message = 'For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set'
                         )
                 }
-                goto (
+                timer_expired (
                     target = StartTrial
-                    when = counter > cItiStart + tItiWaitFrames
+                    timer = interTrialTimer
                     )
             }
             state StartTrial {
@@ -1633,62 +1586,72 @@ protocol JuiceOnHoldProtocol {
                 tStartTrialWaitForPressTimeMs = now()/1000.0
                 strobedDigitalWord = 7
                 play_sound (waitingForLeverSound)
-
-                goto (
-                    target = WaitForLeverPress
-                    when = counter > cItiStart + tItiWaitFrames && isFirstTrial && counter>19
-                    )    
-                goto (
-                    target = WaitForLeverPress
-                    when = counter > cItiStart + tItiWaitFrames && !isFirstTrial && counter>cLeverUp
-                    )
-                goto (
-                    target = ExitTask
-                    when = counter > cItiStart + tItiWaitFrames && !isFirstTrial && counter==cLeverUp
-                    ) 
-                }
-
-            state ExitTask {
-                assert (
-                    condition = counter > cLeverUp
-                    message = 'Not receiving triggers from microscope'
-                    stop_on_failure = 1
-                    )
-            }       
-
-            state WaitForLeverPress {
-                
                 // fake mouse calculations 
                 if (!doLever) {
                     tFakeMousePressMs = rand(0, fakeMouseMaxPressMs)
-                    tFakeMouseReactFrames = rand(0, ceil((fakeMouseMaxReactMs/1000)*frameRateHz))
-                    if (doFakeMouseSuccessOnly) {
-                        tFakeMouseReactFrames = tTotalReqHoldFrames + nFramesTooFast + ceil(0.1*frameRateHz)
-                    }
                 }
                 goto (
-                    target = LeverDown
-                    when = doLever && doAnalogLever == 0 && FIO1 == 1 && doAllCorrects==0
+                    target = HoldLever
+                    when = doLever && doAnalogLever == 0 && FIO1 == 1 && doAllCorrects==0 && doPreHoldTime == 0
                     )
                 goto (
-                    target = LeverDown
+                    target = HoldLever
                     when = doLever && doAnalogLever && (quadrature > leverThreshold) && doAllCorrects==0 
                     )
                 goto (
                     target = LeverDown
+                    when = doLever && doAnalogLever == 0 && FIO1 == 1 && doAllCorrects==0 && doPreHoldTime
+                    )
+                goto (
+                    target = LeverDown
+                    when = doLever && doAnalogLever  && (quadrature > leverThreshold) && doAllCorrects==0 && doPreHoldTime
+                    )
+                goto (
+                    target = HoldLever
                     when = !doLever && doAllCorrects==0 && ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > tFakeMousePressMs
                     )
                 goto (
-                    target = LeverDown
+                    target = HoldLever
                     when = doLever && ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000
                     )
                 goto (
+                    target = HoldLever
+                    when = doAllCorrects==1 && doPreHoldTime == 0
+                    )
+                goto (
                     target = LeverDown
-                    when = doAllCorrects==1
+                    when = doAllCorrects==1 && doPreHoldTime == 1
                     )
             }
             state LeverDown {
-                cLeverDown = counter                
+                start_timer (
+                    timer = preHoldTimer
+                    duration = preHoldTimeMs
+                    duration_units = ms
+                    )
+                play_sound (basePressSound)
+                goto (
+                    target = StartTrial
+                    when = doLever && doAnalogLever == 0 && FIO1 == 0
+                    )
+                goto (
+                    target = StartTrial
+                    when = doLever && doAnalogLever && (quadrature < leverThreshold)
+                    )
+                goto (
+                    target = HoldLever
+                    when = timerExpired(preHoldTimer) && doLever && doAnalogLever == 0 && FIO1 == 1
+                    )
+                goto (
+                    target = HoldLever
+                    when = timerExpired(preHoldTimer) && doLever && doAnalogLever == 1 && (quadrature > leverThreshold)
+                    )
+                goto (
+                    target = HoldLever
+                    when = doAllCorrects==1 && timerExpired(preHoldTimer)
+                    )
+            }
+            state HoldLever {
                 if (sendElectrophysSync == 1) {
                     laserTrigger = 1
                 }
@@ -1717,7 +1680,35 @@ protocol JuiceOnHoldProtocol {
                     report ('********* SENDING LASER TRIGGER and laser power is $tTrialLaserPowerMw_trigger *********')
                     strobedDigitalWord = 5
                 }
-                
+                if (!doLever && doAllCorrects==0) {
+                    tFakeMouseReactMs = rand(0, fakeMouseMaxReactMs)
+                    start_timer (
+                        timer = fakeMouseTimer
+                        duration = tFakeMouseReactMs
+                        duration_units = ms
+                        )
+                    report ('fake mouse to react in $tFakeMouseReactMs ms')
+                }
+                if (doAllCorrects==1) {
+                    start_timer (
+                        timer = fakeMouseTimer
+                        duration = 100000
+                        duration_units = ms
+                        )
+                    report ('**DoAllCorrects starting lever press**')
+                }
+                if (doLever) {
+                    start_timer (
+                        timer = fakeMouseTimer
+                        duration = 100000
+                        duration_units = ms
+                        )
+                }
+                start_timer (
+                    timer = leverHoldTimer
+                    duration = tTotalReqHoldTimeMs
+                    duration_units = ms
+                    )
                 report ('LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)')
                 report ('surround is $tSurroundGratingWidthDeg diam + $tSurroundGratingDirectionDeg deg)')
                 goto (
@@ -1728,18 +1719,26 @@ protocol JuiceOnHoldProtocol {
                     target = EarlyRelease
                     when = doAnalogLever && quadrature < leverThreshold && doLever == 1 && doAllCorrects==0
                     )
-                goto (
+                timer_expired (
                     target = EarlyRelease
-                    when = counter >= (cLeverDown + tFakeMouseReactFrames) && !doLever
+                    timer = fakeMouseTimer
                     )
-                goto (
+                timer_expired (
                     target = StimOn
-                    when = counter  >= cLeverDown + tTotalReqHoldFrames
+                    timer = leverHoldTimer
                     )
             }
-
             state StimOn {
-                cTargetOn = counter
+                start_timer (
+                    timer = tooFastTimer
+                    duration = tooFastTimeMs
+                    duration_units = ms
+                    )
+                start_timer (
+                    timer = reactTimeTimer
+                    duration = reactTimeMs
+                    duration_units = ms
+                    )
                 stimulusOn = 1
                 report ('StimOn (still holding; signaling release ok)')
                 // vis stim on 
@@ -1758,7 +1757,36 @@ protocol JuiceOnHoldProtocol {
                 }
                 // update display, finalize variables 
                 tStimTurnedOn = 1
-
+                goto (
+                    target = CheckTooFastTime
+                    when = tooFastTimeMs > 0 
+                    )
+                goto (
+                    target = React
+                    when = tooFastTimeMs == 0 
+                    )
+            }
+            state CheckTooFastTime {
+                // turn off stimulus if longer than gratingDurationMs 
+                if (tStimTurnedOn == 1) {
+                    // so we only turn it off once here 
+                    if ((((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs) {
+                        dequeue_stimulus (surround)
+                        dequeue_stimulus (border)
+                        dequeue_stimulus (target)
+                        update_stimulus_display ()
+                        if (doITIStim==1) {
+                            setBaseGratingContrast = itiContrast
+                            live_queue_stimulus (base)
+                        }
+                        update_stimulus_display ()
+                        tStimTurnedOn = 0
+                    }
+                }
+                timer_expired (
+                    target = React
+                    timer = tooFastTimer
+                    )
                 goto (
                     target = EarlyRelease
                     when = doAnalogLever==0 && FIO1 == 0 && doLever == 1 && doAllCorrects==0
@@ -1767,22 +1795,14 @@ protocol JuiceOnHoldProtocol {
                     target = EarlyRelease
                     when = doAnalogLever && (quadrature < leverThreshold) && doLever == 1 && doAllCorrects==0
                     )
-                goto (
+                timer_expired (
                     target = EarlyRelease
-                    when = doLever == 0 && counter >= (cLeverDown + tFakeMouseReactFrames)
+                    timer = fakeMouseTimer
                     )
-                goto (
-                    target = React
-                    when = counter >= (cTargetOn + nFramesTooFast)
-                )    
-                goto ( 
-                    target = EndTrialStimOff
-                    when = counter >= (cTargetOn + nFramesOn)
-                )
+                goto (CheckTooFastTime)
             }
-
-            state EndTrialStimOff {
-                 // turn off stimulus if longer than gratingDurationMs 
+            state React {
+                // turn off stimulus if longer than gratingDurationMs 
                 if (tStimTurnedOn == 1) {
                     // so we only turn it off once here 
                     if ((((now()/1000) - pressTimestampMs) - tTotalReqHoldTimeMs) > tGratingDurationMs) {
@@ -1797,43 +1817,6 @@ protocol JuiceOnHoldProtocol {
                         tStimTurnedOn = 0
                     }
                 }
-
-                goto (
-                    target = EarlyRelease
-                    when = doAnalogLever==0 && FIO1 == 0 && doLever == 1 && isTooFast == 1 && doAllCorrects==0
-                    )
-                goto (
-                    target = EarlyRelease
-                    when = doAnalogLever && (quadrature < leverThreshold) && doLever == 1 && isTooFast == 1 && doAllCorrects==0
-                    )
-                goto (
-                    target = EarlyRelease
-                    when = doLever == 0 && counter >= (cLeverDown + tFakeMouseReactFrames)
-                    )
-                goto (
-                    target = Reward
-                    when = isTooFast == 0 && doAnalogLever==0 && FIO1 == 0 && counter >= (cTargetOn + nFramesTooFast)
-                )
-                goto (
-                    target = Reward
-                    when = doAnalogLever==1 && (quadrature < leverThreshold) && doLever == 1 && isTooFast == 0
-                )
-                goto (
-                target = Reward
-                when = counter >= (cLeverDown + tFakeMouseReactFrames) && doLever==0 && isTooFast == 0
-                )
-                goto (
-                    target = React
-                    when = isTooFast == 1 && counter >= (cTargetOn + nFramesTooFast)
-                )
-                goto (
-                    target = Missed
-                    when = counter >= (cTargetOn + nFramesReact)
-                )
-            }
-
-            state React {
-                isTooFast = 0
                 goto (
                     target = Reward
                     when = doAnalogLever==0 && FIO1 == 0 && doLever == 1 
@@ -1846,20 +1829,17 @@ protocol JuiceOnHoldProtocol {
                     target = Reward
                     when = doAllCorrects==1
                     )
-                goto (
+                timer_expired (
                     target = Reward
-                    when = doLever==0 && counter >= (cLeverDown + tFakeMouseReactFrames)
+                    timer = fakeMouseTimer
                     )
-                goto (
+                timer_expired (
                     target = Missed
-                    when = counter >= (cTargetOn + nFramesReact)
+                    timer = reactTimeTimer
                     )
-                goto (
-                    target = EndTrialStimOff
-                    when = counter >= (cTargetOn + nFramesOn)
-                    )
+                goto (React)
+                // spin on this state to turn off stim if necessary 
             }
-
             state EarlyRelease {
                 leverResult = 0
                 laserTrigger = 0
@@ -1868,7 +1848,6 @@ protocol JuiceOnHoldProtocol {
                 }
                 strobedDigitalWord = 8
                 actualHoldTimeMs =  (now()/1000) - pressTimestampMs
-                cLeverUp = counter
                 if (doTraining == 1) {
                     run_python_string (add_to_reactTimesTotal())
                 }
@@ -1904,15 +1883,19 @@ protocol JuiceOnHoldProtocol {
                     update_stimulus_display ()
                 }
                 update_stimulus_display ()
-                goto (
-                target = EndTrial
-                when = counter >= (cLeverUp + nFramesEarlyTimeout)    
-                )
+                start_timer (
+                    timer = earlyTimeoutTimer
+                    duration = earlyTimeoutMs
+                    duration_units = ms
+                    )
+                timer_expired (
+                    target = PossibleEndTimeout
+                    timer = earlyTimeoutTimer
+                    )
             }
             state Reward {
                 laserTrigger = 0
                 leverResult = 0
-                cLeverUp = counter
                 if (doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly) {
                     // Raise solenoid after correct trial for any solenoid 
                     MIO0 = 1
@@ -2064,7 +2047,6 @@ protocol JuiceOnHoldProtocol {
                     tTrialLaserPowerMw = 0
                 }
                 leverResult = 0
-                cLeverUp = counter
                 strobedDigitalWord = 11
                 actualHoldTimeMs =  (now()/1000) - pressTimestampMs
                 if (doTraining == 1) {
@@ -2087,7 +2069,11 @@ protocol JuiceOnHoldProtocol {
                 if (tNStimAccepted < 80) {
                     next_selection (svStimNumber)
                 }
-            
+                start_timer (
+                    timer = missedTimeoutTimer
+                    duration = missedTimeoutMs
+                    duration_units = ms
+                    )
                 if (doLeverSolenoidAllTrials || doLeverSolenoidOnMiss) {
                     MIO0 = 1
                     strobedDigitalWord = 12
@@ -2103,9 +2089,9 @@ protocol JuiceOnHoldProtocol {
                     live_queue_stimulus (base)
                 }
                 update_stimulus_display ()
-                goto (
+                timer_expired (
                     target = PossibleEndTimeout
-                    when = counter >= (cLeverUp + nFramesMissedTimeout)
+                    timer = missedTimeoutTimer
                     )
             }
             state PossibleEndTimeout {
@@ -2132,12 +2118,12 @@ protocol JuiceOnHoldProtocol {
                     )
             }
             state EndTrial {
-                cTrialEnd = counter
                 laserTrigger = 0
                 // disable trigger no matter if it went high or not 
                 if (optic_device == 'led') {
                     tTrialLaserPowerMw = 0
                 }
+                stop_device_io (LabJackU6)
                 dequeue_stimulus (surround)
                 dequeue_stimulus (border)
                 dequeue_stimulus (target)

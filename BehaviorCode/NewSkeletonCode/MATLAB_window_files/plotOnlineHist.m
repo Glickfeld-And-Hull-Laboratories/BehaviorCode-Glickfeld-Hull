@@ -48,7 +48,7 @@ nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
 if isfield(input, 'tDoNoStimulusChange'),
-    dnscIx = boolean(celleqel2mat_padded(input.tDoNoStimulusChange));
+    dnscIx = celleqel2mat_padded(input.tDoNoStimulusChange) == 1;
     dnscTrs = find(dnscIx);
     dnscCorrIx = dnscIx & successIx;
     dnscCorrTrs = find(dnscCorrIx);
@@ -1194,7 +1194,9 @@ if doPpBlock2Grating
   tV.gratingElevationDeg = input.block2GratingElevationDeg;
   tV.gratingSpatialFreqCPD = input.block2GratingSpatialFreqCPD;
   tV.gratingDurationMs = input.block2GratingDurationMs;
-  tV.gratingSpeedDPS = input.block2BaseGratingSpeedDPS;
+  if isfield(input,'block2BaseGratingSpeedDPS')
+    tV.gratingSpeedDPS = input.block2BaseGratingSpeedDPS;
+  end
 else
   tV.gratingWidthDeg = input.gratingWidthDeg;
   tV.gratingHeightDeg = input.gratingHeightDeg;
@@ -1202,7 +1204,9 @@ else
   tV.gratingElevationDeg = input.gratingElevationDeg;
   tV.gratingSpatialFreqCPD = input.gratingSpatialFreqCPD;
   tV.gratingDurationMs = input.gratingDurationMs;
-  tV.gratingSpeedDPS = input.baseGratingSpeedDPS;
+  if isfield(input,'baseGratingSpeedDPS')
+    tV.gratingSpeedDPS = input.baseGratingSpeedDPS;
+  end
 end
 
 outStr = sprintf('%gx%gdeg, at (%g,%g), %gcpd, %dms', ...
@@ -1213,9 +1217,10 @@ outStr = sprintf('%gx%gdeg, at (%g,%g), %gcpd, %dms', ...
                  tV.gratingSpatialFreqCPD, ...
                  tV.gratingDurationMs);
 
-
-if tV.gratingSpeedDPS ~= 0 
-  outStr = strcat(outStr, sprintf(' %d deg/s', tV.gratingSpeedDPS));
+if isfield(input,'baseGratingSpeedDPS')
+  if tV.gratingSpeedDPS ~= 0 
+    outStr = strcat(outStr, sprintf(' %d deg/s', tV.gratingSpeedDPS));
+  end
 end
 
 %%%%%%%%%%%%%%%%

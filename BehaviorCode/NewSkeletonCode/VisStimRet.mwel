@@ -1,0 +1,1575 @@
+
+//
+// I/O Devices
+//
+
+iodevice/labjacku6 LabJackU6 (
+    pulse_duration = juice
+    pulse_on = juice
+    lever1 = FIO1
+    lever1_solenoid = MIO0
+    quadrature = quadrature
+    trial_laser_powerMw = tTrialLaserPowerMw
+    laser_trigger = laserTrigger
+    optic_device = optic_device
+    strobed_digital_word = strobedDigitalWord
+    counter = counter
+    do2led = do2led
+    led_seq = led_seq
+    LED_duration = LED_durationMS
+    led1_status = led1_status
+    led2_status = led2_status
+    do_wheelspeed = DoWheelSpeed
+    ws_durationUS = speedIntervalUS
+    wheel_speed = wheelSpeed
+    doCB = doCerebellarStim
+    )
+fake_monkey FakeMonkey (spike_rate = 10)
+serverside_conduit 'Server-side Event Conduit' ()
+
+//
+// Variables
+//
+
+group 'Behavioral Control' {
+    var subjectNum = 0 (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var experimentXmlTrialId = 90 (persistant = 1)
+    // n.b. it is forcibly set each trial below 
+    var optic_device = 'laserblue'
+}
+group Stimuli {
+    var stopAfterNTrials = 90 (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var nScansOn = 200 (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var nScansOff = 200 (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var doMatrix = (bool)(0) (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var doRand = (bool)(0) (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var doLEDStim = (bool)(0) (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var backgroundLuminance = 0.5 (
+        persistant = 1
+        groups = Background
+        )
+    var doBackgroundStim = (bool)(0) (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var backgroundLuminanceStepLog = (float)(2) (
+        persistant = 1
+        groups = Background
+        )
+    var backgroundLuminanceStepDir = (float)(1) (
+        persistant = 1
+        groups = Background
+        )
+    var backgroundLuminanceStepN = (float)(6) (
+        persistant = 1
+        groups = Background
+        )
+    var nTotalImagingFrames = 3600 (
+        persistant = 1
+        groups = ImagingVars
+        )
+    var frameImagingRateMs = (float)(500) (
+        persistant = 1
+        groups = ImagingVars
+        )
+    var frameImagingExposureMs = 450 (
+        persistant = 1
+        groups = ImagingVars
+        )
+    var frameImagingBinning = 4 (
+        persistant = 1
+        groups = ImagingVars
+        )
+    var doRetStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doConStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doDirStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doSFStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doTFStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doSizeStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doAnnulusStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doAnnulusSizeStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doPhaseStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doLoomStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doGaussianMask = (bool)(1) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doEllipseMask = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doPhaseRev = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doMovingDots = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var doDotsSpeedStim = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var doDotsSizeStim = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var doDotsCoherenceStim = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var doDotsDirectionStim = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var doDotsContrastStim = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var doDotsDensityStim = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var doRunFeedback = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var runFeedbackGain = (bool)(0) (
+        persistant = 1
+        groups = DotsExptStruct
+        )
+    var baseGratingContrast = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var baseGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var baseGratingStartingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var target_mask = 'none' (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingElevationDeg = (float)(20) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingElevationStepDeg = (float)(-20) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingElevationStepN = (float)(3) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingAzimuthDeg = (float)(-30) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingAzimuthStepDeg = (float)(30) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingAzimuthStepN = (float)(3) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingContrast = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingContrastStepDir = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingContrastStepN = (float)(6) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingSpatialFreqCPD = 0.02 (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingSpatialFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingSpatialFreqStepDir = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingSpatialFreqStepN = (float)(6) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingTemporalFreqCPS = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingTemporalFreqStepLog = (float)(2) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingTemporalFreqStepDir = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingTemporalFreqStepN = (float)(6) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDiameterDeg = (float)(40) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDiameterStepDeg = (float)(-5) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDiameterStepN = (float)(6) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var doSizeStepLog = (bool)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDiameterStepLog = (float)(2) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDiameterStepDir = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingStartingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingStartingPhaseStepDeg = (float)(45) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingStartingPhaseStepN = (float)(8) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var nScansPhaseCyc = (float)(60) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var greymaskDiameterDeg = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var AnnulusgratingDiameterStepN = (float)(2) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var AnnulusgratingDiameterMinN = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var AnnulusgratingDiameterMaxN = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var loomSpeedDPS = (float)(5) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var maxLoomDiameterDeg = (float)(5) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var loomSpeedStepLog = (float)(2) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var loomSpeedStepDir = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var loomSpeedStepN = (float)(5) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var LEDPowerMw = (float)(0) (
+        persistant = 1
+        groups = LEDSpecs
+        )
+    var LEDPowerStepMw = 0.01 (
+        persistant = 1
+        groups = LEDSpecs
+        )
+    var LEDPowerStepN = (float)(2) (
+        persistant = 1
+        groups = LEDSpecs
+        )
+    var LaserPowerMw = (float)(0) (
+        persistant = 1
+        groups = LaserSpecs
+        )
+    var baseDotContrast = (float)(0) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var baseDotSpeedDPS = (float)(0) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var baseDotDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var baseDotCoherence = (float)(0) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var baseDotSizeDeg = .5 (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var baseDotDensity = .5 (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotElevationDeg = (float)(0) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotAzimuthDeg = (float)(0) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotFieldSizeDeg = (float)(30) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotDensity = (float)(1) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotDensityStep = (float)(30) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotDensityStepN = (float)(12) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotContrast = (float)(1) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotContrastStepLog = (float)(2) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotContrastStepDir = (float)(-1) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotContrastStepN = (float)(5) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotCoherence = (float)(1) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotCoherenceStepLog = (float)(2) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotCoherenceStepDir = (float)(-1) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotCoherenceStepN = (float)(5) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotSizeDeg = .5 (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotSizeStepDeg = (float)(2) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotSizeStepN = (float)(4) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotSpeedDPS = (float)(5) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotSpeedStepLog = (float)(2) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotSpeedStepDir = (float)(1) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var dotSpeedStepN = (float)(5) (
+        persistant = 1
+        groups = DotSpecs
+        )
+    var doPhotodiode = (bool)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusContrast = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusAzimuth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusElevation = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusWidth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusHeight = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoMaskSpatialFreq = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var Do2LED = (bool)(0) (
+        persistant = 1
+        groups = 'Alternating LED'
+        )
+    var LED_sequence = [1,1,1,2] (
+        persistant = 1
+        groups = 'Alternating LED'
+        )
+    var LED_DurationMS = 33 (
+        persistant = 1
+        groups = 'Alternating LED'
+        )
+}
+group 'Task Status' {
+    var stimulusOn = (bool)(0)
+    var trialStart = (bool)(0)
+}
+group 'Online Display' {
+    var sync = 0
+}
+group 'Hardware variables' {
+    var FIO1 = 0 (groups = Hardware)
+    var MIO0 = (bool)(0) (groups = Hardware)
+    var laserTrigger = (bool)(0) (groups = Hardware)
+    var strobedDigitalWord = 0
+    var juice = 0 (groups = Hardware)
+    var counter = 0 (groups = Hardware)
+    var quadrature = 0 (groups = Hardware)
+    var do2led = (bool)(0) (groups = Hardware)
+    var LED_durationMS = (float)(0) (groups = Hardware)
+    var led1_status = (bool)(0) (groups = Hardware)
+    var led2_status = (bool)(0) (groups = Hardware)
+    var led_seq = [1,1,1,2] (groups = Hardware)
+    var sendLaserParams = 0
+    var sendSerialParams = 0
+}
+group 'Internal Variables' {
+    var tTempStim = 0
+    var doWheelSpeed = (bool)(0) (
+        persistant = 1
+        groups = Wheel
+        )
+    var doCerebellarStim = (bool)(0) (
+        persistant = 1
+        groups = Wheel
+        )
+    var speedIntervalMS = (float)(0) (
+        persistant = 1
+        groups = Wheel
+        )
+    var wheelSpeed = (float)(0) (groups = Wheel)
+    var tQuadrature = 0
+    var runFeedbackCounter = 0
+    var tTrialsDoneSinceStart = 90 (persistant = 1)
+    var tTrialStartMWTimestampMs = 90 (persistant = 1)
+    var tThisTrialStartTimeMs = 90 (persistant = 1)
+    var tLastTrialStartTimeMs = 90 (persistant = 1)
+    var rrStimulusNumber = 0 (scope = local)
+    var tStimulusNumber = 0
+    var tBackgroundLuminance = (float)(0)
+    var tempBackgroundLuminance = (float)(0)
+    var tBaseGratingDiameterDeg = (float)(0)
+    var tBaseGratingDirectionDeg = (float)(0)
+    var tBaseGratingContrast = (float)(0)
+    var tGratingDirectionDeg = (float)(0)
+    var tGratingContrast = (float)(0)
+    var tGratingElevationDeg = (float)(0)
+    var tGratingAzimuthDeg = (float)(0)
+    var tGratingDiameterDeg = (float)(0)
+    var tAnnulusGratingDiameterDeg = (float)(0)
+    var tGreymaskDiameterDeg = (float)(0)
+    var tGratingSpatialFreqCPD = (float)(1)
+    var tGratingTemporalFreqCPS = (float)(0)
+    var tGratingSpeedDPS = (float)(0)
+    var tGratingStartingPhaseDeg = (float)(0)
+    var setGratingStartingPhaseDeg = (float)(0)
+    var tGratingLoomSpeedDPS = (float)(0)
+    var tTrialLaserPowerMw = (float)(0)
+    var tTrialLaserPowerMw_trigger = (float)(0)
+    var phaseCount = 0
+    var tDotDirectionDeg = (float)(0)
+    var tDotContrast = (float)(0)
+    var tDotElevationDeg = (float)(0)
+    var tDotAzimuthDeg = (float)(0)
+    var tDotFieldSizeDeg = (float)(30)
+    var tDotSizeDeg = .1
+    var tDotDensity = (float)(1)
+    var tDotSpeedDPS = (float)(0)
+    var tDotCoherence = (float)(1)
+    var setDotSpeedDPS = (float)(0)
+    var setDotDirectionDeg = (float)(90)
+    var setDotContrast = (float)(0)
+    var setDotSizeDeg = (float)(0)
+    var setDotCoherence = (float)(0)
+    var setDotDensity = (float)(1)
+    var targetStimOnMs = 0
+    var tNStimAccepted = 0
+    var frameCountN = 0
+    var DoWheelSpeed = (bool)(0)
+    var speedIntervalUS = (float)(0)
+    selection svRandStimNumber (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89
+        selection = random_without_replacement
+        nsamples = 90
+        sampling_method = samples
+        )
+    selection svSeqStimNumber (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89
+        selection = sequential_ascending
+        nsamples = 90
+        sampling_method = samples
+        )
+}
+
+//
+// Sounds
+//
+
+
+//
+// Stimuli
+//
+
+blank_screen background (color = tempBackgroundLuminance,tempBackgroundLuminance,tempBackgroundLuminance)
+drifting_grating base_grating (
+    direction = 0
+    autoplay = YES
+    starting_phase = baseGratingStartingPhaseDeg
+    spatial_frequency = tGratingSpatialFreqCPD
+    speed = tGratingSpeedDPS
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = tBaseGratingDiameterDeg
+    y_size = tBaseGratingDiameterDeg
+    x_position = tGratingAzimuthDeg
+    y_position = tGratingElevationDeg
+    rotation = tBaseGratingDirectionDeg
+    alpha_multiplier = tBaseGratingContrast
+    )
+circle inner_mask (
+    color = tempBackgroundLuminance,tempBackgroundLuminance,tempBackgroundLuminance
+    x_size = tGreymaskDiameterDeg
+    y_size = tGreymaskDiameterDeg
+    x_position = tGratingAzimuthDeg
+    y_position = tGratingElevationDeg
+    rotation = 0
+    )
+drifting_grating target_grating_annulus (
+    direction = 0
+    autoplay = YES
+    starting_phase = tGratingStartingPhaseDeg
+    spatial_frequency = tGratingSpatialFreqCPD
+    speed = tGratingSpeedDPS
+    grating_type = sinusoid
+    mask = ellipse
+    std_dev = 0.3
+    mean = 0.1
+    x_size = tAnnulusGratingDiameterDeg
+    y_size = tAnnulusGratingDiameterDeg
+    x_position = tGratingAzimuthDeg
+    y_position = tGratingElevationDeg
+    rotation = tGratingDirectionDeg
+    alpha_multiplier = tGratingContrast
+    )
+list_replicator (
+    values = gaussian, ellipse
+    variable = target_mask
+    ) {
+    drifting_grating target_grating_$target_mask (
+        direction = 0
+        autoplay = YES
+        starting_phase = setGratingStartingPhaseDeg
+        spatial_frequency = tGratingSpatialFreqCPD
+        speed = tGratingSpeedDPS
+        grating_type = sinusoid
+        mask = $target_mask
+        std_dev = 0.3
+        mean = 0.1
+        x_size = tGratingDiameterDeg
+        y_size = tGratingDiameterDeg
+        x_position = tGratingAzimuthDeg
+        y_position = tGratingElevationDeg
+        rotation = tGratingDirectionDeg
+        alpha_multiplier = tGratingContrast
+        )
+}
+moving_dots moving_dots (
+    direction = setDotDirectionDeg
+    autoplay = YES
+    dot_density = setDotDensity
+    dot_size = setDotSizeDeg
+    coherence = setDotCoherence
+    speed = setDotSpeedDPS
+    field_radius = tDotFieldSizeDeg/2
+    field_center_x = tDotAzimuthDeg
+    field_center_y = tDotElevationDeg
+    alpha_multiplier = setDotContrast
+    )
+drifting_grating photoDiodeGrating (
+    direction = 0
+    autoplay = YES
+    starting_phase = 0
+    spatial_frequency = .000000000001
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = photoStimulusContrast
+    )
+drifting_grating photoDiodeMask (
+    direction = 0
+    autoplay = YES
+    starting_phase = 180
+    spatial_frequency = photoMaskSpatialFreq
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = 1
+    )
+
+//
+// Protocols
+//
+
+protocol JuiceOnHoldProtocol {
+    tempBackgroundLuminance = backgroundLuminance
+    queue_stimulus (background)
+    start_device_io (LabJackU6)
+    // init actions before running trials after any press of start
+    tTrialsDoneSinceStart = 0
+    juice = 0
+    counter = 0
+    quadrature = 0
+    led_seq = LED_sequence
+    do2led = Do2LED
+    LED_durationMS = LED_DurationMS
+    trial Trial (interruptible = 1) {
+        trial 'New List' (
+            nsamples = 9999
+            sampling_method = samples
+            selection = random_without_replacement
+            ) {
+            //<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> 
+            task TS {
+                state 'Inter Stimulus Interval' {
+                    // reset selection var 
+                    if (tTrialsDoneSinceStart == 0) {
+                        reset_selection (svRandStimNumber)
+                        reset_selection (svSeqStimNumber)
+                        tNStimAccepted = 0
+                    }
+                    if (doWheelSpeed == 1) {
+                        doCerebellarStim = 0
+                        DoWheelSpeed = doWheelSpeed
+                        speedIntervalUS = speedIntervalMS*1000
+                    }
+                    tQuadrature = quadrature
+                    setDotSpeedDPS = baseDotSpeedDPS
+                    setDotDirectionDeg = baseDotDirectionDeg
+                    setDotContrast = baseDotContrast
+                    setDotCoherence = baseDotCoherence
+                    setDotSizeDeg = baseDotSizeDeg
+                    setDotDensity = baseDotDensity
+                    tDotFieldSizeDeg = dotFieldSizeDeg
+                    tDotAzimuthDeg = dotAzimuthDeg
+                    tDotElevationDeg = dotElevationDeg
+                    tBaseGratingDiameterDeg = gratingDiameterDeg
+                    tGratingDiameterDeg = gratingDiameterDeg
+                    tGreymaskDiameterDeg = greymaskDiameterDeg
+                    tBaseGratingContrast = baseGratingContrast
+                    tBaseGratingDirectionDeg = baseGratingDirectionDeg
+                    if (doMovingDots != 1) {
+                        live_queue_stimulus (base_grating)
+                    }
+                    if (doMovingDots == 1) {
+                        live_queue_stimulus (moving_dots)
+                    }
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeMask)
+                    }
+                    update_stimulus_display ()
+                    // if we have done enough trials, abort this trial - before any encodes/sync are done 
+                    if (stopAfterNTrials > 0 && tTrialsDoneSinceStart > stopAfterNTrials) {
+                        report ('** Stopping after completing $stopAfterNTrials trials')
+                        stop_experiment ()
+                    }
+                    tTrialStartMWTimestampMs = now()/1000
+                    // integer valued ms timestamp 
+                    strobedDigitalWord = 170
+                    strobedDigitalWord = 170
+                    strobedDigitalWord = 170
+                    //Transmit the trial timestamp so strobed code sequences are unique 
+                    assert (
+                        condition = tTrialStartMWTimestampMs <= 2147483648
+                        message = 'tTrialStartMWTimestampMs is too large - should happen only after several days of running!?'
+                        stop_on_failure = 1
+                        )
+                    // prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML 
+                    // encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms 
+                    strobedDigitalWord = 200
+                    strobedDigitalWord = 201
+                    sync = 1
+                    trialStart = 1
+                    juice = 0
+                    laserTrigger = 0
+                    // choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 
+                    if (doRand == 1) {
+                        tStimulusNumber = svRandStimNumber
+                    }
+                    if (doRand == 0) {
+                        tStimulusNumber = svSeqStimNumber
+                    }
+                    //set background luminance 
+                    //Select luminance 
+                    if (doBackgroundStim == 1) {
+                        tTempStim = tStimulusNumber % backgroundLuminanceStepN
+                        tBackgroundLuminance = backgroundLuminance + (backgroundLuminanceStepLog*tTempStim)
+                        report ('Luminance is $tBackgroundLuminance')
+                        queue_stimulus (background)
+                        send_stimulus_to_back (background)
+                        update_stimulus_display ()
+                    }
+                    if (doBackgroundStim == 0) {
+                        tBackgroundLuminance = backgroundLuminance
+                    }
+                    //Select retinotopy position; choose a value from selection var, 0-origin 
+                    if (doRetStim) {
+                        //Select direction with Retinotopy 
+                        if (doDirStim) {
+                            tTempStim = tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingDirectionStepN)
+                            if (tTempStim < (gratingAzimuthStepN * gratingDirectionStepN)) {
+                                tGratingElevationDeg = gratingElevationDeg
+                                tGratingAzimuthDeg = gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(tTempStim/gratingDirectionStepN))
+                                tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim % gratingDirectionStepN))
+                                report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Direction is $tGratingDirectionDeg')
+                            }
+                            if (tTempStim >= (gratingAzimuthStepN * gratingDirectionStepN)) {
+                                tGratingElevationDeg = gratingElevationDeg + (gratingElevationStepDeg * (floor((tTempStim % (gratingAzimuthStepN * gratingDirectionStepN *gratingElevationStepN)) / (gratingAzimuthStepN * gratingDirectionStepN))))
+                                tGratingAzimuthDeg = gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(((tTempStim) % (gratingAzimuthStepN * gratingDirectionStepN))/gratingDirectionStepN))
+                                tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim % gratingDirectionStepN))
+                                report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ;  $tGratingDirectionDeg')
+                            }
+                        }
+                        if (!doDirStim) {
+                            tTempStim = tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)
+                            if (tTempStim < gratingAzimuthStepN) {
+                                tGratingAzimuthDeg = gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim))
+                                tGratingElevationDeg = gratingElevationDeg
+                                report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg')
+                            }
+                            if (tTempStim >= gratingAzimuthStepN) {
+                                tGratingAzimuthDeg = gratingAzimuthDeg+ (gratingAzimuthStepDeg * ((tTempStim) % gratingAzimuthStepN))
+                                tGratingElevationDeg = gratingElevationDeg+ (gratingElevationStepDeg * (floor(tTempStim / gratingAzimuthStepN)))
+                                report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg')
+                            }
+                        }
+                        //set to only have two possible phases- otherwise not enough stimulus conditions for ret 
+                        if (doPhaseStim) {
+                            tTempStim = rand(0,1) > 0.5
+                            tGratingStartingPhaseDeg = gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim % gratingStartingPhaseStepN))
+                            report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ;  $tGratingStartingPhaseDeg')
+                        }
+                        if (doSFStim && doConStim) {
+                            tTempStim = tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN)
+                            if (tTempStim < (gratingAzimuthStepN * gratingContrastStepN)) {
+                                tGratingElevationDeg = gratingElevationDeg
+                                tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                                tGratingAzimuthDeg = gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(tTempStim/gratingContrastStepN))
+                                tGratingContrast = gratingContrast * pow(gratingContrastStepLog, gratingContrastStepDir*(tTempStim % gratingContrastStepN))
+                                report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Con is $tGratingContrast ; SF is tGratingSpatialFreqCPD')
+                            }
+                            if (tTempStim >= (gratingAzimuthStepN * gratingContrastStepN) && tTempStim < (gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN)) {
+                                tGratingElevationDeg = gratingElevationDeg
+                                tGratingSpatialFreqCPD = gratingSpatialFreqCPD *pow(gratingSpatialFreqStepLog,gratingSpatialFreqStepDir*(floor(tTempStim / (gratingAzimuthStepN * gratingContrastStepN))))
+                                tGratingAzimuthDeg = gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(((tTempStim) % (gratingAzimuthStepN * gratingContrastStepN))/gratingContrastStepN))
+                                tGratingContrast = gratingContrast * pow(gratingContrastStepLog,gratingContrastStepDir*(tTempStim % gratingContrastStepN))
+                                report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Con is $tGratingContrast ; SF is tGratingSpatialFreqCPD')
+                            }
+                            if (tTempStim >= (gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN)) {
+                                tGratingElevationDeg = gratingElevationDeg + (gratingElevationStepDeg * (floor(tTempStim % (gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN *gratingElevationStepN)) / (gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN)))
+                                tGratingSpatialFreqCPD = gratingSpatialFreqCPD * pow(gratingSpatialFreqStepLog,gratingSpatialFreqStepDir*(floor(tTempStim % (gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN))/ (gratingAzimuthStepN * gratingContrastStepN)))
+                                tGratingAzimuthDeg = gratingAzimuthDeg + (gratingAzimuthStepDeg * floor(((tTempStim) % (gratingAzimuthStepN * gratingContrastStepN * gratingSpatialFreqStepN))/gratingContrastStepN))
+                                tGratingContrast = gratingContrast * pow(gratingContrastStepLog,gratingContrastStepDir*(tTempStim % gratingContrastStepN))
+                                report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Con is $tGratingContrast ; SF is tGratingSpatialFreqCPD')
+                            }
+                        }
+                        /*
+                          <action type="if" condition="!doSFStim &amp;&amp; !doConStim">
+                            <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>    
+                            <action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
+                             <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim))"/>
+                             <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
+                             <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
+                           </action>
+                           <action type="if" condition="tTempStim &gt;= gratingAzimuthStepN">
+                             <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg+ (gratingAzimuthStepDeg * ((tTempStim) % gratingAzimuthStepN))"/>
+                             <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg+ (gratingElevationStepDeg * (floor(tTempStim / gratingAzimuthStepN)))"/>
+                             <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
+                           </action>
+                         </action>
+                        */
+                    }
+                    if (doRetStim == 0) {
+                        tGratingAzimuthDeg = gratingAzimuthDeg
+                        tGratingElevationDeg = gratingElevationDeg
+                    }
+                    //Select features if not in matrix mode 
+                    if (doMatrix == 0) {
+                        //Select size 
+                        if ('doSizeStim = 1') {
+                            tTempStim = tStimulusNumber % gratingDiameterStepN
+                            if ('doSizeStepLog = 0') {
+                                tGratingDiameterDeg = gratingDiameterDeg + (gratingDiameterStepDeg * (tTempStim))
+                            }
+                            if ('doSizeStepLog = 1') {
+                                tGratingDiameterDeg = gratingDiameterDeg * (pow(gratingDiameterStepLog,(gratingDiameterStepDir*(tTempStim))))
+                            }
+                            report ('Diameter is $tGratingDiameterDeg')
+                        }
+                        if (doAnnulusSizeStim == 1) {
+                            tTempStim = tStimulusNumber % AnnulusgratingDiameterStepN
+                            tAnnulusGratingDiameterDeg = AnnulusgratingDiameterMinN * tGreymaskDiameterDeg + ((AnnulusgratingDiameterMaxN - AnnulusgratingDiameterMinN) * tGreymaskDiameterDeg/(AnnulusgratingDiameterStepN-1)*(tTempStim))
+                            report ('Annulus Diameter is $tAnnulusGratingDiameterDeg')
+                        }
+                        if (doSizeStim == 0) {
+                            tGratingDiameterDeg = gratingDiameterDeg
+                        }
+                        //Select spatial frequency 
+                        if (doSFStim == 1 && !doConStim) {
+                            tTempStim = tStimulusNumber % gratingSpatialFreqStepN
+                            if ('doRetStim = 1') {
+                                tTempStim = floor((tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingSpatialFreqStepN))/(gratingElevationStepN * gratingAzimuthStepN))
+                            }
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*(tTempStim))))
+                            report ('Spatial Frequency is $tGratingSpatialFreqCPD')
+                        }
+                        if (doSFStim == 0) {
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                        }
+                        //Select temporal frequency 
+                        if ('doTFStim = 1') {
+                            tTempStim = tStimulusNumber % gratingTemporalFreqStepN
+                            //Select temporal frequency with Retinotopy 
+                            if ('doRetStim = 1') {
+                                tTempStim = floor((tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN * gratingTemporalFreqStepN))/(gratingElevationStepN * gratingAzimuthStepN))
+                            }
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog,(gratingTemporalFreqStepDir*(tTempStim))))
+                            report ('Temporal Frequency is $tGratingTemporalFreqCPS')
+                        }
+                        if (doTFStim == 0) {
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                        }
+                        //Select direction 
+                        if ((doDirStim == 1) && !doMatrix && doRetStim == 0) {
+                            tTempStim = tStimulusNumber % gratingDirectionStepN
+                            tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim))
+                            report ('Direction is $tGratingDirectionDeg')
+                        }
+                        if (doDirStim == 0) {
+                            tGratingDirectionDeg = gratingDirectionDeg
+                        }
+                        //Select contrast 
+                        if (!doMatrix && !doRetStim && doConStim == 1) {
+                            tTempStim = tStimulusNumber % gratingContrastStepN
+                            tGratingContrast = gratingContrast * (pow(gratingContrastStepLog,(gratingContrastStepDir*(tTempStim))))
+                            report ('Contrast is $tGratingContrast')
+                        }
+                        if (doConStim == 0) {
+                            tGratingContrast = gratingContrast
+                        }
+                        // do Phase 
+                        if ('!doMatrix && doPhaseStim = 1 && !doRetStim ') {
+                            tTempStim = tStimulusNumber % gratingStartingPhaseStepN
+                            tGratingStartingPhaseDeg = gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))
+                            report ('Starting phase is $tGratingStartingPhaseDeg')
+                        }
+                        if (doPhaseStim == 0) {
+                            tGratingStartingPhaseDeg = gratingStartingPhaseDeg
+                        }
+                        if (!doMatrix && doLoomStim == 1) {
+                            tTempStim = tStimulusNumber % loomSpeedStepN
+                            tGratingLoomSpeedDPS = loomSpeedDPS * (pow(loomSpeedStepLog,(loomSpeedStepDir*(tTempStim))))
+                            report ('Speed is $tGratingLoomSpeedDPS')
+                        }
+                        if (doLoomStim == 0) {
+                            tGratingLoomSpeedDPS = loomSpeedDPS
+                        }
+                        //Select speed- for moving dots only 
+                        if (!doMatrix && doDotsSpeedStim == 1) {
+                            tTempStim = tStimulusNumber % dotSpeedStepN
+                            tDotSpeedDPS = dotSpeedDPS * (pow(dotSpeedStepLog,(dotSpeedStepDir*(tTempStim))))
+                            report ('Speed is $tDotSpeedDPS')
+                        }
+                        if (doDotsSpeedStim == 0) {
+                            tDotSpeedDPS = dotSpeedDPS
+                        }
+                        if ('doDotsDirectionStim = 1') {
+                            tTempStim = tStimulusNumber % dotDirectionStepN
+                            tDotDirectionDeg = dotDirectionDeg + (dotDirectionStepDeg * (tTempStim))
+                            report ('Direction is $tDotDirectionDeg')
+                        }
+                        if ('doDotsDirectionStim = 0') {
+                            tDotDirectionDeg = dotDirectionDeg
+                        }
+                        //Select contrast- for moving dots only 
+                        if (!doMatrix && doDotsContrastStim == 1) {
+                            tTempStim = tStimulusNumber % dotContrastStepN
+                            tDotContrast = dotContrast * (pow(dotContrastStepLog,(dotContrastStepDir*(tTempStim))))
+                            report ('Contrast is $tDotContrast')
+                        }
+                        if (doDotsContrastStim == 0) {
+                            tDotContrast = dotContrast
+                        }
+                        //Select coherence- for moving dots only 
+                        if (!doMatrix && doDotsCoherenceStim == 1) {
+                            tTempStim = tStimulusNumber % dotCoherenceStepN
+                            tDotCoherence = dotCoherence * (pow(dotCoherenceStepLog,(dotCoherenceStepDir*(tTempStim))))
+                            report ('Coherence is $tDotCoherence')
+                        }
+                        if (doDotsCoherenceStim == 0) {
+                            tDotCoherence = dotCoherence
+                        }
+                        //Select direction- for moving dots only 
+                        if (!doMatrix && doDotsDirectionStim == 1) {
+                            tTempStim = tStimulusNumber % dotDirectionStepN
+                            tDotDirectionDeg = dotDirectionDeg + (dotDirectionStepDeg *(tTempStim))
+                            report ('Size is $tDotDirectionDeg')
+                        }
+                        if (doDotsDirectionStim == 0) {
+                            tDotDirectionDeg = dotDirectionDeg
+                        }
+                        //Select size- for moving dots only 
+                        if (!doMatrix && doDotsSizeStim == 1) {
+                            tTempStim = tStimulusNumber % dotSizeStepN
+                            tDotSizeDeg = dotSizeDeg + (dotSizeStepDeg *(tTempStim))
+                            report ('Size is $tDotSizeDeg')
+                        }
+                        if (doDotsSizeStim == 0) {
+                            tDotSizeDeg = dotSizeDeg
+                        }
+                        //Select density- for moving dots only 
+                        if (!doMatrix && doDotsDensityStim == 1) {
+                            tTempStim = tStimulusNumber % dotDensityStepN
+                            tDotDensity = dotDensity + (dotDensityStep *(tTempStim))
+                            report ('Size is $tDotDensity')
+                        }
+                        if (doDotsDensityStim == 0) {
+                            tDotDensity = dotDensity
+                        }
+                        //Select LED power 
+                        if (!doMatrix && doLEDStim == 1) {
+                            tTempStim = tStimulusNumber % LEDPowerStepN
+                            tTrialLaserPowerMw_trigger = LEDPowerMw + (LEDPowerStepMw * (tTempStim))
+                            report ('LED Power is $tTrialLaserPowerMw_trigger')
+                        }
+                        if (doLEDStim == 0) {
+                            tTrialLaserPowerMw_trigger = LaserPowerMw
+                            // used to be value = LEDPowerMw, shuyang changed this to LaserPowerMw 
+                        }
+                    }
+                    if (LaserPowerMw > 0 && optic_device != 'led') {
+                        tTrialLaserPowerMw = LaserPowerMw
+                        tTrialLaserPowerMw_trigger = LaserPowerMw
+                        // shuyang added this line for optogenetics 
+                    }
+                    //Select features if IN matrix mode 
+                    if ('doMatrix = 1') {
+                        //Select direction and coherence with matrix- moving dots only 
+                        if (doMatrix && doDotsDirectionStim == 1 && doDotsCoherenceStim == 1) {
+                            tTempStim = tStimulusNumber % (dotDirectionStepN*dotCoherenceStepN)
+                            if (tTempStim < dotDirectionStepN) {
+                                tDotDirectionDeg = dotDirectionDeg + (dotDirectionStepDeg *(tTempStim))
+                                tDotCoherence = dotCoherence
+                            }
+                            if (tTempStim >= dotDirectionStepN) {
+                                tDotDirectionDeg = dotDirectionDeg + (dotDirectionStepDeg *(tTempStim % dotDirectionStepN))
+                                tDotCoherence = dotCoherence * (pow(dotCoherenceStepLog,(dotCoherenceStepDir*(floor(tTempStim / dotDirectionStepN)))))
+                            }
+                            report ('Direction is $tDotDirectionDeg')
+                            report ('Coherence is $tDotCoherence')
+                            tDotSpeedDPS = dotSpeedDPS
+                            tDotContrast = dotContrast
+                            tDotSizeDeg = dotSizeDeg
+                            tDotDensity = dotDensity
+                        }
+                        // Make SFxTF Matrix
+                        if ((doTFStim == 1) && (doSFStim == 1)) {
+                            tTempStim = tStimulusNumber % (gratingSpatialFreqStepN * gratingTemporalFreqStepN)
+                            if (tTempStim < gratingSpatialFreqStepN) {
+                                tGratingSpatialFreqCPD = gratingSpatialFreqCPD *(pow(gratingSpatialFreqStepLog,(gratingSpatialFreqStepDir*tTempStim)))
+                                tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                                report ('SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS')
+                            }
+                            if (tTempStim >= gratingSpatialFreqStepN) {
+                                tGratingSpatialFreqCPD = gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*(tTempStim % gratingSpatialFreqStepN))))
+                                tGratingTemporalFreqCPS = gratingTemporalFreqCPS * (pow(gratingTemporalFreqStepLog, (gratingTemporalFreqStepDir*(floor(tTempStim / gratingSpatialFreqStepN)))))
+                                report ('SF is $tGratingSpatialFreqCPD ; TF is $tGratingTemporalFreqCPS')
+                            }
+                            tGratingContrast = gratingContrast
+                            tGratingDirectionDeg = gratingDirectionDeg
+                            tGratingDiameterDeg = gratingDiameterDeg
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingElevationDeg = gratingElevationDeg
+                        }
+                        // Make SF x Dir Matrix 
+                        if ((doDirStim == 1) && (doSFStim) == 1) {
+                            tTempStim = tStimulusNumber % (gratingSpatialFreqStepN * gratingDirectionStepN)
+                            if (tTempStim < gratingSpatialFreqStepN) {
+                                tGratingSpatialFreqCPD = gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*(tTempStim))))
+                                tGratingDirectionDeg = gratingDirectionDeg
+                                report ('SF is $tGratingSpatialFreqCPD ; Direction is $tGratingDirectionDeg')
+                            }
+                            if (tTempStim >= gratingSpatialFreqStepN) {
+                                tGratingSpatialFreqCPD = gratingSpatialFreqCPD * (pow(gratingSpatialFreqStepLog, (gratingSpatialFreqStepDir*((tTempStim) % gratingSpatialFreqStepN))))
+                                tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / gratingSpatialFreqStepN)))
+                                report ('SF is $tGratingSpatialFreqCPD ; Direction is $tGratingDirectionDeg')
+                            }
+                            tGratingContrast = gratingContrast
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                            tGratingDiameterDeg = gratingDiameterDeg
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingElevationDeg = gratingElevationDeg
+                        }
+                        // Make Dir X Phase
+                        if ((doDirStim == 1) && (doPhaseStim == 1)) {
+                            if (tStimulusNumber < (gratingDirectionStepN * gratingStartingPhaseStepN)) {
+                                tTempStim = tStimulusNumber
+                            }
+                            if (tStimulusNumber >= (gratingDirectionStepN * gratingStartingPhaseStepN)) {
+                                tTempStim = tStimulusNumber % (gratingDirectionStepN * gratingStartingPhaseStepN)
+                            }
+                            if (tTempStim < gratingStartingPhaseStepN) {
+                                tGratingStartingPhaseDeg = gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))
+                                tGratingDirectionDeg = gratingDirectionDeg
+                                report ('SP is $tGratingStartingPhaseDeg ; Direction is $tGratingDirectionDeg')
+                            }
+                            if (tTempStim >= gratingStartingPhaseStepN) {
+                                tGratingStartingPhaseDeg = gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * ((tTempStim % gratingStartingPhaseStepN)))
+                                tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / gratingStartingPhaseStepN)))
+                                report ('SP is $tGratingStartingPhaseDeg; Direction is $tGratingDirectionDeg')
+                            }
+                            tGratingContrast = gratingContrast
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                            tGratingDiameterDeg = gratingDiameterDeg
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingElevationDeg = gratingElevationDeg
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                        }
+                        // Make Size x Contrast Matrix
+                        if ((doSizeStim == 1) && (doConStim == 1)) {
+                            tTempStim = tStimulusNumber % (gratingContrastStepN * gratingDiameterStepN)
+                            if (tTempStim < gratingContrastStepN) {
+                                tGratingContrast = gratingContrast *(pow(gratingContrastStepLog,(gratingContrastStepDir*tTempStim)))
+                                tGratingDiameterDeg = gratingDiameterDeg
+                                report ('Contrast is $tGratingContrast ; Size is $tGratingDiameterDeg')
+                            }
+                            if (tTempStim >= gratingContrastStepN) {
+                                tGratingContrast = gratingContrast * (pow(gratingContrastStepLog, (gratingContrastStepDir*(tTempStim % gratingContrastStepN))))
+                                if ('doSizeStepLog = 1') {
+                                    tGratingDiameterDeg = gratingDiameterDeg * (pow(gratingDiameterStepLog, (gratingDiameterStepDir*(floor(tTempStim / gratingContrastStepN)))))
+                                }
+                                if ('doSizeStepLog = 0') {
+                                    tGratingDiameterDeg = gratingDiameterDeg + (gratingDiameterStepDeg * (floor(tTempStim / gratingContrastStepN)))
+                                }
+                                report ('Contrast is $tGratingContrast ; Size is $tGratingDiameterDeg')
+                            }
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                            tGratingDirectionDeg = gratingDirectionDeg
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingElevationDeg = gratingElevationDeg
+                        }
+                        // Make Size x Direction Matrix
+                        if ((doSizeStim == 1) && (doDirStim == 1)) {
+                            tTempStim = tStimulusNumber % (gratingDirectionStepN * gratingDiameterStepN)
+                            if (tTempStim < gratingDirectionStepN) {
+                                tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim))
+                                tGratingDiameterDeg = gratingDiameterDeg
+                                report ('Direction is $tGratingDirectionDeg ; Size is $tGratingDiameterDeg')
+                            }
+                            if (tTempStim >= gratingDirectionStepN) {
+                                tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim % gratingDirectionStepN))
+                                if ('doSizeStepLog = 1') {
+                                    tGratingDiameterDeg = gratingDiameterDeg * (pow(gratingDiameterStepLog, (gratingDiameterStepDir*(floor(tTempStim / gratingDirectionStepN)))))
+                                }
+                                if ('doSizeStepLog = 0') {
+                                    tGratingDiameterDeg = gratingDiameterDeg + (gratingDiameterStepDeg * (floor(tTempStim / gratingDirectionStepN)))
+                                }
+                                report ('Direction is $tGratingDirectionDeg ; Size is $tGratingDiameterDeg')
+                            }
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                            tGratingContrast = gratingContrast
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingElevationDeg = gratingElevationDeg
+                        }
+                        // Make Dir x Contrast Matrix
+                        if ((doDirStim == 1) && (doConStim == 1)) {
+                            tTempStim = tStimulusNumber % (gratingContrastStepN * gratingDirectionStepN)
+                            if (tTempStim < gratingContrastStepN) {
+                                tGratingContrast = gratingContrast *(pow(gratingContrastStepLog,(gratingContrastStepDir*tTempStim)))
+                                tGratingDirectionDeg = gratingDirectionDeg
+                                report ('Contrast is $tGratingContrast ; Direction is $tGratingDirectionDeg')
+                            }
+                            if (tTempStim >= gratingContrastStepN) {
+                                tGratingContrast = gratingContrast * (pow(gratingContrastStepLog, (gratingContrastStepDir*(tTempStim % gratingContrastStepN))))
+                                tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / gratingContrastStepN)))
+                                report ('Contrast is $tGratingContrast ; Direction is $tGratingDirectionDeg')
+                            }
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                            tGratingDiameterDeg = gratingDiameterDeg
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingElevationDeg = gratingElevationDeg
+                        }
+                        // Make LEDpower x Dir Matrix 
+                        if ((doDirStim == 1) && (doLEDStim == 1)) {
+                            tTempStim = tStimulusNumber % (LEDPowerStepN * gratingDirectionStepN)
+                            if (tTempStim < LEDPowerStepN) {
+                                tTrialLaserPowerMw_trigger = LEDPowerMw + (LEDPowerStepMw * (tTempStim))
+                                tGratingDirectionDeg = gratingDirectionDeg
+                                report ('LED Power is $tTrialLaserPowerMw_trigger ; Direction is $tGratingDirectionDeg')
+                            }
+                            if (tTempStim >= LEDPowerStepN) {
+                                tTrialLaserPowerMw_trigger = LEDPowerMw + (LEDPowerStepMw * ((tTempStim) % LEDPowerStepN))
+                                tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / LEDPowerStepN)))
+                                report ('LED Power is $tTrialLaserPowerMw_trigger ; Direction is $tGratingDirectionDeg')
+                            }
+                            tGratingContrast = gratingContrast
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                            tGratingDiameterDeg = gratingDiameterDeg
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingElevationDeg = gratingElevationDeg
+                        }
+                        // Make LEDpower x Size Matrix 
+                        if ((doSizeStim == 1) && (doLEDStim == 1)) {
+                            tTempStim = tStimulusNumber % (LEDPowerStepN * gratingDiameterStepN)
+                            if (tTempStim < LEDPowerStepN) {
+                                tTrialLaserPowerMw_trigger = LEDPowerMw + (LEDPowerStepMw * (tTempStim))
+                                tGratingDiameterDeg = gratingDiameterDeg
+                                report ('LED Power is $tTrialLaserPowerMw_trigger ; Diameter is $tGratingDiameterDeg')
+                            }
+                            if (tTempStim >= LEDPowerStepN) {
+                                tTrialLaserPowerMw_trigger = LEDPowerMw + (LEDPowerStepMw * ((tTempStim) % LEDPowerStepN))
+                                tGratingDiameterDeg = gratingDiameterDeg + (gratingDiameterStepDeg * (floor(tTempStim / LEDPowerStepN)))
+                                report ('LED Power is $tTrialLaserPowerMw_trigger ; Diameter is $tGratingDiameterDeg')
+                            }
+                            tGratingContrast = gratingContrast
+                            tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                            tGratingDirectionDeg = gratingDirectionDeg
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingElevationDeg = gratingElevationDeg
+                        }
+                        /* check for errors in feature combos 
+	      		<action type="if" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2)) &gt; 2">
+	      			<action type="assert" condition= "1 = 1" message="Too many stim features selected for matrix mode"
+                  stop_on_failure="1"/>
+                 </action>
+                 <action type="if" condition= "(doTFStim+doSFStim+doDirStim+doConStim+doSizeStim+(doRetStim*2)) &lt; 2">
+	      			<action type="assert" condition= "1 = 1" message="Too few stim features selected for matrix mode"
+                  stop_on_failure="1"/>
+                 </action>
+	      		<action type="if" condition= "((doTFStim+doSFStim) &lt; 2) &amp;&amp; ((doDirStim+doSFStim) &lt; 2)">
+                  <action type="assert" condition= "1 = 1" message="Code not written to do matrix for these features"
+                  stop_on_failure="1"/>
+                </action> */
+                    }
+                    // check for tGratingContrast>1 
+                    if (tGratingContrast>1) {
+                        tGratingContrast = 1
+                    }
+                    // convert TF/SF to speed 
+                    if (doMovingDots != 1 && doLoomStim != 1) {
+                        tGratingSpeedDPS = tGratingTemporalFreqCPS / tGratingSpatialFreqCPD
+                        report ('Speed is $tGratingSpeedDPS')
+                    }
+                    if (tTrialLaserPowerMw_trigger > 0 && optic_device != 'led') {
+                        tTrialLaserPowerMw_trigger = LaserPowerMw
+                    }
+                    // Zero the LED port
+                    laserTrigger = 0
+                    if (optic_device == 'led') {
+                        tTrialLaserPowerMw = 0
+                    }
+                    if (tTrialLaserPowerMw_trigger > 0) {
+                        sendLaserParams = 1
+                        sendLaserParams = 0
+                    }
+                    // initialize trial start/end times 
+                    if (tThisTrialStartTimeMs == -1) {
+                        //first trial, leave lasttime as -1 
+                        tLastTrialStartTimeMs = -1
+                    }
+                    if (tThisTrialStartTimeMs != -1) {
+                        //else
+                        //later trials, copy this into last before setting this again below 
+                        tLastTrialStartTimeMs = tThisTrialStartTimeMs
+                    }
+                    tThisTrialStartTimeMs = now()/1000
+                    stimulusOn = 0
+                    strobedDigitalWord = 6
+                    report ('In InterStimInterval, waiting for $nScansOff frames')
+                    goto (
+                        target = StimOn
+                        when = counter >= ((nScansOff+nScansOn) * tTrialsDoneSinceStart) + nScansOff
+                        )
+                }
+                state StimOn {
+                    setGratingStartingPhaseDeg = tGratingStartingPhaseDeg
+                    tempBackgroundLuminance = tBackgroundLuminance
+                    if (doMovingDots != 1) {
+                        dequeue_stimulus (base_grating)
+                        if (doAnnulusStim == 0) {
+                            if (doGaussianMask == 1) {
+                                queue_stimulus (target_grating_gaussian)
+                            }
+                            if (doEllipseMask == 1) {
+                                queue_stimulus (target_grating_ellipse)
+                            }
+                        }
+                        if (doAnnulusStim == 1) {
+                            if (doEllipseMask == 1) {
+                                queue_stimulus (target_grating_annulus)
+                                queue_stimulus (inner_mask)
+                                queue_stimulus (target_grating_ellipse)
+                            }
+                        }
+                    }
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeGrating)
+                        dequeue_stimulus (photoDiodeMask)
+                    }
+                    // update display, finalize variables 
+                    update_stimulus_display ()
+                    MIO0 = 1
+                    report ('Visual Stim ON, presenting for $nScansOn scans.')
+                    report ('Laser trial and power is $tTrialLaserPowerMw_trigger')
+                    if (tTrialLaserPowerMw_trigger > 0) {
+                        report ('Laser trial and power is $tTrialLaserPowerMw_trigger')
+                        // <action type="if" condition="tTrialsDoneSinceStart > 10"> shuyang commented this out 
+                        if (tTrialsDoneSinceStart > -1) {
+                            laserTrigger = 1
+                        }
+                        if (optic_device == 'led') {
+                            laserTrigger = 1
+                            tTrialLaserPowerMw = tTrialLaserPowerMw_trigger
+                        }
+                    }
+                    tQuadrature = quadrature
+                    if (doMovingDots == 1) {
+                        setDotContrast = tDotContrast
+                        if (doDotsSpeedStim == 1) {
+                            setDotSpeedDPS = tDotSpeedDPS
+                        }
+                        if (doDotsDirectionStim == 1) {
+                            setDotDirectionDeg = tDotDirectionDeg
+                            report ('Setting Dot Direction $tDotDirectionDeg')
+                        }
+                        if (doDotsSizeStim == 1) {
+                            setDotSizeDeg = tDotSizeDeg
+                        }
+                        if (doDotsCoherenceStim == 1) {
+                            setDotCoherence = tDotCoherence
+                        }
+                        if (doDotsDensityStim == 1) {
+                            setDotDensity = tDotDensity
+                        }
+                    }
+                    strobedDigitalWord = 4
+                    if (counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)) {
+                        tQuadrature = quadrature
+                    }
+                    phaseCount = counter
+                    start_timer (
+                        timer = refreshTimer
+                        duration = 300
+                        duration_units = ms
+                        )
+                    // Can't actually jave a system state for timer 1, but it would be here
+                    goto (
+                        target = EndTrial
+                        when = counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)
+                        )
+                    goto (
+                        target = LoomState
+                        when = timerExpired(refreshTimer) && doLoomStim
+                        )
+                    goto (
+                        target = RunFeedback
+                        when = timerExpired(refreshTimer) && doRunFeedback
+                        )
+                    goto (
+                        target = PhaseRev
+                        when = counter-phaseCount >= nScansPhaseCyc && doPhaseRev
+                        )
+                }
+                state PhaseRev {
+                    phaseCount = counter
+                    tGratingStartingPhaseDeg = tGratingStartingPhaseDeg+180
+                    setGratingStartingPhaseDeg = tGratingStartingPhaseDeg
+                    queue_stimulus (target_grating_gaussian)
+                    update_stimulus_display ()
+                    report ('Phase reverse- phase is $setGratingStartingPhaseDeg')
+                    // <action type="report" message="Diameter is $tGratingDiameterDeg"/> 
+                    goto (
+                        target = EndTrial
+                        when = counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)
+                        )
+                    goto (
+                        target = PhaseRev
+                        when = counter-phaseCount >= nScansPhaseCyc
+                        )
+                }
+                state LoomState {
+                    start_timer (
+                        timer = refreshTimer
+                        duration = 30
+                        duration_units = ms
+                        )
+                    tGratingDiameterDeg = tGratingDiameterDeg + tGratingLoomSpeedDPS*.03
+                    if (doAnnulusStim == 0) {
+                        if (doGaussianMask == 1) {
+                            queue_stimulus (target_grating_gaussian)
+                        }
+                        if (doEllipseMask == 1) {
+                            queue_stimulus (target_grating_ellipse)
+                        }
+                    }
+                    if (doAnnulusStim == 1) {
+                        if (doEllipseMask == 1) {
+                            queue_stimulus (target_grating_annulus)
+                            queue_stimulus (inner_mask)
+                            queue_stimulus (target_grating_ellipse)
+                        }
+                    }
+                    update_stimulus_display ()
+                    // <action type="report" message="Diameter is $tGratingDiameterDeg"/> 
+                    goto (
+                        target = EndTrial
+                        when = counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)
+                        )
+                    goto (
+                        target = LoomState
+                        when = timerExpired(refreshTimer) && tGratingDiameterDeg < maxLoomDiameterDeg
+                        )
+                }
+                state RunFeedback {
+                    start_timer (
+                        timer = refreshTimer
+                        duration = 300
+                        duration_units = ms
+                        )
+                    runFeedbackCounter = quadrature - tQuadrature
+                    setDotSpeedDPS = runFeedbackCounter * runFeedbackGain
+                    update_stimulus_display ()
+                    report ('setDotSpeedDPS is $setDotSpeedDPS')
+                    tQuadrature = quadrature
+                    goto (
+                        target = EndTrial
+                        when = counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)
+                        )
+                    goto (
+                        target = RunFeedback
+                        when = timerExpired(refreshTimer)
+                        )
+                }
+                state EndTrial {
+                    if (doPhotodiode) {
+                        dequeue_stimulus (photoDiodeGrating)
+                        live_queue_stimulus (photoDiodeMask)
+                    }
+                    if (doMovingDots != 1) {
+                        if (doAnnulusStim == 0) {
+                            if (doGaussianMask == 1) {
+                                dequeue_stimulus (target_grating_gaussian)
+                            }
+                            if (doEllipseMask == 1) {
+                                dequeue_stimulus (target_grating_ellipse)
+                            }
+                        }
+                        if (doAnnulusStim == 1) {
+                            if (doEllipseMask == 1) {
+                                dequeue_stimulus (target_grating_annulus)
+                                dequeue_stimulus (inner_mask)
+                                dequeue_stimulus (target_grating_ellipse)
+                            }
+                        }
+                        live_queue_stimulus (base_grating)
+                        update_stimulus_display ()
+                    }
+                    MIO0 = 0
+                    // Must use next selection and reset selection here to move through rand/seq 
+                    if (doRand == 0 && tNStimAccepted < 89) {
+                        next_selection (svSeqStimNumber)
+                        tNStimAccepted = tNStimAccepted + 1
+                    }
+                    if (doRand == 0 && tNStimAccepted >= 89) {
+                        reset_selection (svSeqStimNumber)
+                        tNStimAccepted = 0
+                    }
+                    if (doRand == 1 && tNStimAccepted < 89) {
+                        next_selection (svRandStimNumber)
+                        tNStimAccepted = tNStimAccepted + 1
+                    }
+                    if (doRand == 1 && tNStimAccepted >= 89) {
+                        reset_selection (svRandStimNumber)
+                        tNStimAccepted = 0
+                    }
+                    if (optic_device == 'led') {
+                        tTrialLaserPowerMw = 0
+                    }
+                    laserTrigger = 0
+                    sync = 0
+                    strobedDigitalWord = 85
+                    strobedDigitalWord = 85
+                    strobedDigitalWord = 85
+                    // trigger serial param dump to cyberkinetics 
+                    sendSerialParams = 1
+                    sendSerialParams = 0
+                    tTrialsDoneSinceStart = tTrialsDoneSinceStart+1
+                    yield ()
+                }
+            }
+        }
+    }
+    stop_device_io (LabJackU6)
+}

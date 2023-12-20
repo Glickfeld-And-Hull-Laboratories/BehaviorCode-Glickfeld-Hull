@@ -103,7 +103,7 @@
       <variable tag="soundPressAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
       <variable tag="soundTrialStartAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sound"/>
       <variable tag="soundStartCueAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
-      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
+      <variable tag="soundTargetAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="0" groups="Sound"/>
       <variable tag="block1ToneAmplitude" scope="global" logging="when_changed" default_value="0" type="float" persistant="1" groups="Sound"/>
       <variable tag="block2ToneAmplitude" scope="global" logging="when_changed" default_value="0.8" type="float" persistant="1" groups="Sound"/>
 
@@ -357,6 +357,7 @@
       <action type="assignment" tag="tempNCorrect = 0" variable="tempNCorrect" value="0"></action>
       <action type="assignment" variable="tConsecErrors" value="0"></action>
       <action type="assignment" tag="juice = 0" variable="juice" value="0"></action>
+      <action type="report" message="*** 1st Trial - LabJack init"></action>
 
       <!-- init actions run only on first trial after loading experiment -->
       <action type="if" condition="success+ignore+failure == 0">
@@ -377,6 +378,7 @@
       <trial tag="Trial 01" nsamples="10000" sampling_method="cycles" selection="sequential">
         <task_system tag="TS" full_name="TS" description="" interruptible="YES">
           <task_system_state tag="Intertrial" interruptible="YES">
+            <action type="report" message="**** Initializing Trial"></action>
             <action_marker _unmoveable="1" tag="Actions"></action_marker>
 
             <action type="if" condition="success+ignore+failure > 0">
