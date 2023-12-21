@@ -2393,23 +2393,7 @@ protocol JuiceOnHoldProtocol {
                         }
                     }
                 }
-                if (tDoMatrix) {
-                    if (tDoMask) {
-                        multVal = rand(0,1)
-                        if (multVal >= fractMaskTrials) {
-                            tDoMask = 0
-                            tMaskOneGratingContrast = 0
-                            tMaskTwoGratingContrast = 0
-                        }
-                        if (multVal < fractMaskTrials) {
-                            tDoMask = 1
-                            tMaskOneGratingContrast = maskOneGratingContrast
-                            tMaskTwoGratingContrast = 0
-                            if (tStimTwoDoVisualStim)
-                                tMaskTwoGratingContrast = maskOneGratingContrast
-                                }
-                            }
-
+                if (tDoMatrix) {                    
                     if (tDoRandDir && tDoRandSF) {
                         tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingSpatialFreqStepN)
                         if (tTempStim1 < stimOneGratingDirectionStepN) {
@@ -2624,24 +2608,34 @@ protocol JuiceOnHoldProtocol {
                     }
                 }
                 if (tDoMask) {
-                    if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
+                    multVal = rand(0,1)
+                    if (multVal >= fractMaskTrials) {
+                        tDoMask = 0
                         tMaskOneGratingContrast = 0
-                    }
-                    if (tStimTwoGratingContrast + tMaskTwoGratingContrast > 1) {
                         tMaskTwoGratingContrast = 0
                     }
-                    if (tMaskOneGratingContrast==0 || tStimOneGratingContrast==0) {
-                        tMaskOneGratingPhaseDeg = stimOneGratingPhaseDeg
-                        tMaskTwoGratingPhaseDeg = stimTwoGratingPhaseDeg
+                    if (multVal < fractMaskTrials) {
+                        tDoMask = 1
+                        tMaskOneGratingContrast = maskOneGratingContrast
+                        tMaskTwoGratingContrast = 0
+                        if (tStimTwoDoVisualStim) {
+                            tMaskTwoGratingContrast = maskTwoGratingContrast
+                            }
+                        if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
+                            tMaskOneGratingContrast = 0
+                        }
+                        if (tStimTwoGratingContrast + tMaskTwoGratingContrast > 1) {
+                            tMaskTwoGratingContrast = 0
+                        }
+                        if (tMaskOneGratingContrast==0 || tStimOneGratingContrast==0) {
+                            tMaskOneGratingPhaseDeg = stimOneGratingPhaseDeg
+                            tMaskTwoGratingPhaseDeg = stimTwoGratingPhaseDeg
+                        }
+                        if (!doRandMaskTF) {
+                            tMaskOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
+                            tMaskTwoGratingTemporalFreqCPS = stimTwoGratingTemporalFreqCPS
+                        }
                     }
-                    if (!doRandMaskTF) {
-                        tMaskOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
-                        tMaskTwoGratingTemporalFreqCPS = stimTwoGratingTemporalFreqCPS
-                    }
-                }
-                if (!tDoMask) {
-                    tMaskOneGratingContrast = 0
-                    tMaskTwoGratingContrast = 0
                 }
                 
                 report ('tStimOneGratingContrast is $tStimOneGratingContrast; tMaskOneGratingContrast is $tMaskOneGratingContrast')
