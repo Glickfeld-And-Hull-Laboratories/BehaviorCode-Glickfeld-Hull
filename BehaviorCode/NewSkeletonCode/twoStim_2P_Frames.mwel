@@ -2588,37 +2588,31 @@ protocol JuiceOnHoldProtocol {
                             }
                         }
                     }
-                    if (tDoMask) {
-                        multVal = rand(0,1)
-                        if (multVal >= fractMaskTrials) {
-                            tDoMask = 0
-                            tMaskOneGratingContrast = 0
-                            tMaskTwoGratingContrast = 0
-                        }
-                        if (multVal < fractMaskTrials) {
-                            tDoMask = 1
-                            tMaskOneGratingContrast = maskOneGratingContrast
-                            tMaskTwoGratingContrast = 0
-                            if (tStimTwoDoVisualStim) {
-                                tMaskTwoGratingContrast = maskTwoGratingContrast
-                                }
-                            if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
-                                tMaskOneGratingContrast = 0
-                            }
-                            if (tStimTwoGratingContrast + tMaskTwoGratingContrast > 1) {
-                                tMaskTwoGratingContrast = 0
-                            }
-                            if (tMaskOneGratingContrast==0 || tStimOneGratingContrast==0) {
-                                tMaskOneGratingPhaseDeg = stimOneGratingPhaseDeg
-                                tMaskTwoGratingPhaseDeg = stimTwoGratingPhaseDeg
-                            }
-                            if (!doRandMaskTF) {
-                                tMaskOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
-                                tMaskTwoGratingTemporalFreqCPS = stimTwoGratingTemporalFreqCPS
-                            }
+                }    
+                if (tDoMask && !doMatrix) {
+                    multVal = rand(0,1)
+                    if (multVal >= fractMaskTrials) {
+                        tDoMask = 0
+                        tMaskOneGratingContrast = 0
+                        tMaskTwoGratingContrast = 0
+                    }
+                    if (multVal < fractMaskTrials) {
+                        tDoMask = 1
+                        tMaskOneGratingContrast = tStimOneGratingContrast
+                        tMaskTwoGratingContrast = 0
+                        if (tStimTwoDoVisualStim) {
+                            tMaskTwoGratingContrast = tStimTwoGratingContrast
                         }
                     }
-                }                            
+                }
+                if (tMaskOneGratingContrast==0 || tStimOneGratingContrast==0) {
+                    tMaskOneGratingPhaseDeg = stimOneGratingPhaseDeg
+                    tMaskTwoGratingPhaseDeg = stimTwoGratingPhaseDeg
+                }
+                if (!doRandMaskTF) {
+                    tMaskOneGratingTemporalFreqCPS = stimOneGratingTemporalFreqCPS
+                    tMaskTwoGratingTemporalFreqCPS = stimTwoGratingTemporalFreqCPS
+                }                           
                 if (!tStimOneDoVisualStim) {
                     tStimOneGratingContrast = 0
                     tMaskOneGratingContrast = 0
@@ -2665,6 +2659,12 @@ protocol JuiceOnHoldProtocol {
                     tStimTwoGratingContrast = 0
                 }
                 if (tMaskTwoGratingContrast < 0) {
+                    tMaskTwoGratingContrast = 0
+                }
+                if (tStimOneGratingContrast + tMaskOneGratingContrast > 1) {
+                    tMaskOneGratingContrast = 0
+                }
+                if (tStimTwoGratingContrast + tMaskTwoGratingContrast > 1) {
                     tMaskTwoGratingContrast = 0
                 }
                 if (doStimPair) {
