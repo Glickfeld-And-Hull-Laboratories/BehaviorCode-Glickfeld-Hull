@@ -90,7 +90,7 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Task Type'
         )
-    var doStimTwoRandDir = bool(0) (
+    var doStimTwoRandDir = (bool)(0) (
         persistant = 1
         groups = 'Task Type'
         )    
@@ -2420,7 +2420,7 @@ protocol JuiceOnHoldProtocol {
                             }
                         }
                     }
-                    if (tDoStimTwoMask)
+                    if (tDoStimTwoMask) {
                         multVal = rand(0,1)
                         if (multVal >= fractMaskTrials) {
                             tDoStimTwoMask = 0
@@ -2587,23 +2587,25 @@ protocol JuiceOnHoldProtocol {
                                 }
                             }
                         }
-                    }
-                }    
-                if (tDoMask && !doMatrix) {
-                    multVal = rand(0,1)
-                    if (multVal >= fractMaskTrials) {
-                        tDoMask = 0
-                        tMaskOneGratingContrast = 0
-                        tMaskTwoGratingContrast = 0
-                    }
-                    if (multVal < fractMaskTrials) {
-                        tDoMask = 1
-                        tMaskOneGratingContrast = tStimOneGratingContrast
-                        tMaskTwoGratingContrast = 0
-                        if (tStimTwoDoVisualStim) {
-                            tMaskTwoGratingContrast = tStimTwoGratingContrast
+                    }   
+                    if (tDoMask) {
+                        multVal = rand(0,1)
+                        tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
+                        tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg 
+                        if (multVal >= fractMaskTrials) {
+                            tDoMask = 0
+                            tMaskOneGratingContrast = 0
+                            tMaskTwoGratingContrast = 0
                         }
-                    }
+                        if (multVal < fractMaskTrials) {
+                            tDoMask = 1
+                            tMaskOneGratingContrast = tStimOneGratingContrast
+                            tMaskTwoGratingContrast = 0
+                            if (tStimTwoDoVisualStim) {
+                                tMaskTwoGratingContrast = tStimTwoGratingContrast
+                            }
+                        }
+                    }    
                 }
                 if (tMaskOneGratingContrast==0 || tStimOneGratingContrast==0) {
                     tMaskOneGratingPhaseDeg = stimOneGratingPhaseDeg
