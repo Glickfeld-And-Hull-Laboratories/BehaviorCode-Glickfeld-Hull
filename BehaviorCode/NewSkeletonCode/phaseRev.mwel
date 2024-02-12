@@ -1,0 +1,635 @@
+
+//
+// I/O Devices
+//
+
+iodevice/labjacku6 LabJackU6 (
+    pulse_duration = juice
+    pulse_on = juice
+    lever1 = FIO1
+    lever1_solenoid = MIO0
+    quadrature = quadrature
+    optic_device = optic_device
+    strobed_digital_word = strobedDigitalWord
+    counter = counter
+    do2led = do2led
+    led_seq = led_seq
+    LED_duration = LED_durationMS
+    led1_status = led1_status
+    led2_status = led2_status
+    do_wheelspeed = DoWheelSpeed
+    ws_durationUS = speedIntervalUS
+    wheel_speed = wheelSpeed
+    doCB = doCerebellarStim
+    )
+fake_monkey FakeMonkey (spike_rate = 10)
+serverside_conduit 'Server-side Event Conduit' ()
+
+//
+// Variables
+//
+
+group 'Behavioral Control' {
+    var subjectNum = 0 (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var experimentXmlTrialId = 90 (persistant = 1)
+    // n.b. it is forcibly set each trial below 
+    var optic_device = 'laserblue'
+}
+group 'Stimuli' {
+    var stopAfterNTrials = 90 (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var nScansOn = 200 (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var nScansOff = 200 (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var doRand = (bool)(0) (
+        persistant = 1
+        groups = ExptStruct
+        )
+    var doDirStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doPhaseStim = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doPhaseRev = (bool)(0) (
+        persistant = 1
+        groups = GratingExptStruct
+        )
+    var doMask = (bool)(0) (
+        persistant = 1
+        groups = Mask
+        )
+    var fractMaskTrials = (float)(0) (
+        persistant = 1
+        groups = Mask
+        )   
+    var gratingElevationDeg = (float)(20) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingAzimuthDeg = (float)(-30) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingContrast = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDirectionStepDeg = (float)(30) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDirectionStepN = (float)(12) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingSpatialFreqCPD = 0.02 (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingTemporalFreqCPS = (float)(1) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingDiameterDeg = (float)(40) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingStartingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingStartingPhaseStepDeg = (float)(45) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingStartingPhaseStepN = (float)(8) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var nScansPhaseCyc = (float)(60) (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var maskContrast = (float)(0) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var maskPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Mask One Parameters'
+        )
+    var gratingType = 'sinusoid' (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var maskType = 'gaussian' (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var gratingMean = 0.1 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )
+    var gratingStd = 0.3 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        ) 
+    var gratingEdge = 0.125 (
+        persistant = 1
+        groups = 'Grating Parameters'
+        )                
+    var doPhotodiode = (bool)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusContrast = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusAzimuth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusElevation = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusWidth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusHeight = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoMaskSpatialFreq = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+}
+group 'Task Status' {
+    var stimulusOn = (bool)(0)
+    var trialStart = (bool)(0)
+}
+group 'Online Display' {
+    var sync = 0
+}
+group 'Hardware variables' {
+    var FIO1 = 0 (groups = Hardware)
+    var MIO0 = (bool)(0) (groups = Hardware)
+    var laserTrigger = (bool)(0) (groups = Hardware)
+    var strobedDigitalWord = 0
+    var juice = 0 (groups = Hardware)
+    var counter = 0 (groups = Hardware)
+    var quadrature = 0 (groups = Hardware)
+    var do2led = (bool)(0) (groups = Hardware)
+    var LED_durationMS = (float)(0) (groups = Hardware)
+    var led1_status = (bool)(0) (groups = Hardware)
+    var led2_status = (bool)(0) (groups = Hardware)
+    var led_seq = [1,1,1,2] (groups = Hardware)
+    var sendLaserParams = 0
+    var sendSerialParams = 0
+}
+group 'Internal Variables' {
+    var tTempStim = 0
+    var doWheelSpeed = (bool)(0) (
+        persistant = 1
+        groups = Wheel
+        )
+    var doCerebellarStim = (bool)(0) (
+        persistant = 1
+        groups = Wheel
+        )
+    var speedIntervalMS = (float)(0) (
+        persistant = 1
+        groups = Wheel
+        )
+    var wheelSpeed = (float)(0) (groups = Wheel)
+    var tQuadrature = 0
+    var runFeedbackCounter = 0
+    var tTrialsDoneSinceStart = 90 (persistant = 1)
+    var tTrialStartMWTimestampMs = 90 (persistant = 1)
+    var tThisTrialStartTimeMs = 90 (persistant = 1)
+    var tLastTrialStartTimeMs = 90 (persistant = 1)
+    var rrStimulusNumber = 0 (scope = local)
+    var tStimulusNumber = 0
+    var tGratingDirectionDeg = (float)(0)
+    var tGratingContrast = (float)(0)
+    var tGratingElevationDeg = (float)(0)
+    var tGratingAzimuthDeg = (float)(0)
+    var tGratingDiameterDeg = (float)(0)
+    var tGratingSpatialFreqCPD = (float)(1)
+    var tGratingTemporalFreqCPS = (float)(0)
+    var tGratingSpeedDPS = (float)(0)
+    var tGratingStartingPhaseDeg = (float)(0)
+    var setGratingStartingPhaseDeg = (float)(0)
+    var tMaskDirectionDeg = (float)(0)
+    var tMaskContrast = (float)(0)
+    var tMaskStartingPhaseDeg = (float)(0)
+    var setMaskStartingPhaseDeg = (float)(0)
+    var tDoMask = 0
+    var phaseCount = 0
+    var multVal = 0
+    var targetStimOnMs = 0
+    var tNStimAccepted = 0
+    var DoWheelSpeed = (bool)(0)
+    var speedIntervalUS = (float)(0)
+    selection svRandStimNumber (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89
+        selection = random_without_replacement
+        nsamples = 90
+        sampling_method = samples
+        )
+    selection svSeqStimNumber (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89
+        selection = sequential_ascending
+        nsamples = 90
+        sampling_method = samples
+        )
+}
+
+//
+// Sounds
+//
+
+
+//
+// Stimuli
+//
+
+blank_screen background ()
+
+layer stimulus {
+    drifting_grating grating (
+        direction = tGratingDirectionDeg
+        starting_phase = setGratingStartingPhaseDeg + 360 *  tGratingSpatialFreqCPD * (tGratingDiameterDeg/2)
+        spatial_frequency = tGratingSpatialFreqCPD
+        speed = tGratingTemporalFreqCPS/tGratingSpatialFreqCPD
+        grating_type = gratingType
+        x_size = tGratingDiameterDeg
+        x_position = tGratingAzimuthDeg
+        y_position = tGratingElevationDeg
+        alpha_multiplier = tGratingContrast
+        dest_blend_factor = zero
+        autoplay = true
+        )
+
+    drifting_grating mask (
+        direction = tMaskDirectionDeg
+        starting_phase = setMaskStartingPhaseDeg + 360 *  tGratingSpatialFreqCPD * (tGratingDiameterDeg/2)
+        spatial_frequency = tGratingSpatialFreqCPD
+        speed = tGratingTemporalFreqCPS/tGratingSpatialFreqCPD
+        grating_type = gratingType
+        x_size = tGratingDiameterDeg
+        x_position = tGratingAzimuthDeg
+        y_position = tGratingElevationDeg
+        alpha_multiplier = tMaskContrast
+        dest_blend_factor = one
+        autoplay = true
+        )
+
+    rectangle grating_contrast_rectangle (
+        color = 0.5, 0.5, 0.5
+        x_size = tGratingDiameterDeg
+        x_position = tGratingAzimuthDeg
+        y_position = tGratingElevationDeg
+        alpha_multiplier = tGratingContrast + tMaskContrast
+        source_blend_factor = one_minus_source_alpha
+        dest_blend_factor = one
+        )
+
+    // Make the plaid 100% opaque.  Without this, the plaid's net alpha would
+    // be less than zero, and its color would be blended with the stimulus
+    // display background when the layer is drawn.
+    rectangle grating_opacity_rectangle (
+        x_size = tGratingDiameterDeg
+        x_position = tGratingAzimuthDeg
+        y_position = tGratingElevationDeg
+        source_blend_factor = zero
+        dest_blend_factor = one
+        source_alpha_blend_factor = one
+        dest_alpha_blend_factor = zero
+        )
+
+    mask plaid_mask (
+        mask = maskType
+        std_dev = gratingStd
+        mean = gratingMean
+        edge_width = gratingEdge
+        x_size = tGratingDiameterDeg
+        x_position = tGratingAzimuthDeg
+        y_position = tGratingElevationDeg
+        )
+}
+
+drifting_grating photoDiodeGrating (
+    direction = 0
+    autoplay = YES
+    starting_phase = 0
+    spatial_frequency = .000000000001
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = photoStimulusContrast
+    )
+drifting_grating photoDiodeMask (
+    direction = 0
+    autoplay = YES
+    starting_phase = 180
+    spatial_frequency = photoMaskSpatialFreq
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = 1
+    )
+
+//
+// Protocols
+//
+
+protocol JuiceOnHoldProtocol {
+    queue_stimulus (background)
+    start_device_io (LabJackU6)
+    // init actions before running trials after any press of start
+    tTrialsDoneSinceStart = 0
+    juice = 0
+    counter = 0
+    quadrature = 0
+    trial Trial (interruptible = 1) {
+        trial 'New List' (
+            nsamples = 9999
+            sampling_method = samples
+            selection = random_without_replacement
+            ) {
+            //<range_replicator tag="New Replicator" from="0" to="89" step="1" variable="rrStimulusNumber"> 
+            task TS {
+                state 'Inter Stimulus Interval' {
+                    // reset selection var 
+                    if (tTrialsDoneSinceStart == 0) {
+                        reset_selection (svRandStimNumber)
+                        reset_selection (svSeqStimNumber)
+                        tNStimAccepted = 0
+                    }
+                    if (doWheelSpeed == 1) {
+                        doCerebellarStim = 0
+                        DoWheelSpeed = doWheelSpeed
+                        speedIntervalUS = speedIntervalMS*1000
+                    }
+                    tQuadrature = quadrature
+
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeMask)
+                    }
+                    update_stimulus_display ()
+                    // if we have done enough trials, abort this trial - before any encodes/sync are done 
+                    if (stopAfterNTrials > 0 && tTrialsDoneSinceStart > stopAfterNTrials) {
+                        report ('** Stopping after completing $stopAfterNTrials trials')
+                        stop_experiment ()
+                    }
+                    tTrialStartMWTimestampMs = now()/1000
+                    // integer valued ms timestamp 
+                    strobedDigitalWord = 170
+                    strobedDigitalWord = 170
+                    strobedDigitalWord = 170
+                    //Transmit the trial timestamp so strobed code sequences are unique 
+                    assert (
+                        condition = tTrialStartMWTimestampMs <= 2147483648
+                        message = 'tTrialStartMWTimestampMs is too large - should happen only after several days of running!?'
+                        stop_on_failure = 1
+                        )
+                    // prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML 
+                    // encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms 
+                    strobedDigitalWord = 200
+                    strobedDigitalWord = 201
+                    sync = 1
+                    trialStart = 1
+                    juice = 0
+                    laserTrigger = 0
+                    // choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 
+                    if (doRand == 1) {
+                        tStimulusNumber = svRandStimNumber
+                    }
+                    if (doRand == 0) {
+                        tStimulusNumber = svSeqStimNumber
+                    }
+                    //set background luminance 
+                    //Select retinotopy position; choose a value from selection var, 0-origin 
+                    
+                    tGratingDirectionDeg = gratingDirectionDeg
+                    tGratingStartingPhaseDeg = gratingStartingPhaseDeg
+                    tGratingAzimuthDeg = gratingAzimuthDeg
+                    tGratingElevationDeg = gratingElevationDeg
+                    tGratingDiameterDeg = gratingDiameterDeg
+                    tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                    tGratingTemporalFreqCPS = gratingTemporalFreqCPS
+                    tGratingContrast = gratingContrast
+
+                    
+                    if (doDirStim && !doPhaseStim) {
+                        tTempStim = tStimulusNumber % gratingDirectionStepN
+                            tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (tTempStim))
+                            report ('Direction is $tGratingDirectionDeg')
+                            }
+
+                    if (doPhaseStim && !doDirStim) {
+                        tTempStim = tStimulusNumber % gratingStartingPhaseStepN
+                            tGratingStartingPhaseDeg = gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))
+                            report ('Starting phase is $tGratingStartingPhaseDeg')
+                    }
+
+                    if (doDirStim && doPhaseStim) {
+
+                        if (tStimulusNumber < (gratingDirectionStepN * gratingStartingPhaseStepN)) {
+                            tTempStim = tStimulusNumber
+                        }
+                        if (tStimulusNumber >= (gratingDirectionStepN * gratingStartingPhaseStepN)) {
+                            tTempStim = tStimulusNumber % (gratingDirectionStepN * gratingStartingPhaseStepN)
+                        }
+                        if (tTempStim < gratingStartingPhaseStepN) {
+                            tGratingStartingPhaseDeg = gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * (tTempStim))
+                            tGratingDirectionDeg = gratingDirectionDeg
+                            report ('SP is $tGratingStartingPhaseDeg ; Direction is $tGratingDirectionDeg')
+                        }
+                        if (tTempStim >= gratingStartingPhaseStepN) {
+                            tGratingStartingPhaseDeg = gratingStartingPhaseDeg + (gratingStartingPhaseStepDeg * ((tTempStim % gratingStartingPhaseStepN)))
+                            tGratingDirectionDeg = gratingDirectionDeg + (gratingDirectionStepDeg * (floor(tTempStim / gratingStartingPhaseStepN)))
+                            report ('SP is $tGratingStartingPhaseDeg; Direction is $tGratingDirectionDeg')
+                        }
+                    }
+                    
+                    if (doMask) {
+                        multVal = rand(0,1)
+                        if (multVal >= fractMaskTrials) {
+                            tDoMask = 0
+                            tMaskContrast = 0
+                        }
+                        if (multVal < fractMaskTrials) {
+                            tDoMask = 1
+                            tMaskContrast = maskContrast
+                            tMaskDirectionDeg = tGratingDirectionDeg + 90
+                            tMaskStartingPhaseDeg = gratingStartingPhaseDeg
+                        }
+                        if (tGratingContrast + tMaskContrast > 1) {
+                            tMaskContrast = 0
+                        }
+                        if (tMaskContrast==0 || tGratingContrast==0) {
+                            tGratingStartingPhaseDeg = gratingStartingPhaseDeg
+                            tMaskStartingPhaseDeg = gratingStartingPhaseDeg
+                        }
+                    }
+
+                    // check for tGratingContrast>1 
+                    if (tGratingContrast>1) {
+                        tGratingContrast = 1
+                    }
+                    
+                    // initialize trial start/end times 
+                    if (tThisTrialStartTimeMs == -1) {
+                        //first trial, leave lasttime as -1 
+                        tLastTrialStartTimeMs = -1
+                    }
+                    if (tThisTrialStartTimeMs != -1) {
+                        //else
+                        //later trials, copy this into last before setting this again below 
+                        tLastTrialStartTimeMs = tThisTrialStartTimeMs
+                    }
+                    tThisTrialStartTimeMs = now()/1000
+                    stimulusOn = 0
+                    strobedDigitalWord = 6
+                    report ('In InterStimInterval, waiting for $nScansOff frames')
+                    goto (
+                        target = StimOn
+                        when = counter >= ((nScansOff+nScansOn) * tTrialsDoneSinceStart) + nScansOff
+                        )
+                }
+                state StimOn {
+                    setGratingStartingPhaseDeg = tGratingStartingPhaseDeg
+                    setMaskStartingPhaseDeg = tMaskStartingPhaseDeg
+                    queue_stimulus (stimulus)
+                    
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeGrating)
+                        dequeue_stimulus (photoDiodeMask)
+                    }
+                    // update display, finalize variables 
+                    update_stimulus_display ()
+                    MIO0 = 1
+                    report ('Visual Stim ON, presenting for $nScansOn scans.')
+                    
+                    tQuadrature = quadrature
+                    
+                    strobedDigitalWord = 4
+                    if (counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)) {
+                        tQuadrature = quadrature
+                    }
+                    phaseCount = counter
+                    start_timer (
+                        timer = refreshTimer
+                        duration = 300
+                        duration_units = ms
+                        )
+                    // Can't actually jave a system state for timer 1, but it would be here
+                    goto (
+                        target = EndTrial
+                        when = counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)
+                        )
+                    goto (
+                        target = PhaseRev
+                        when = counter-phaseCount >= nScansPhaseCyc && doPhaseRev
+                        )
+                }
+                state PhaseRev {
+                    phaseCount = counter
+                    tGratingStartingPhaseDeg = tGratingStartingPhaseDeg+180
+                    setGratingStartingPhaseDeg = tGratingStartingPhaseDeg
+                    tMaskStartingPhaseDeg = tMaskStartingPhaseDeg+180
+                    setMaskStartingPhaseDeg = tMaskStartingPhaseDeg
+                    queue_stimulus (stimulus)
+                    update_stimulus_display ()
+                    report ('Phase reverse- phase is $setGratingStartingPhaseDeg')
+                    goto (
+                        target = EndTrial
+                        when = counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)
+                        )
+                    goto (
+                        target = PhaseRev
+                        when = counter-phaseCount >= nScansPhaseCyc
+                        )
+                }
+                state EndTrial {
+                    if (doPhotodiode) {
+                        dequeue_stimulus (photoDiodeGrating)
+                        live_queue_stimulus (photoDiodeMask)
+                    }
+                    
+                    dequeue_stimulus (stimulus)
+                    update_stimulus_display ()
+                    
+                    MIO0 = 0
+                    // Must use next selection and reset selection here to move through rand/seq 
+                    if (doRand == 0 && tNStimAccepted < 89) {
+                        next_selection (svSeqStimNumber)
+                        tNStimAccepted = tNStimAccepted + 1
+                    }
+                    if (doRand == 0 && tNStimAccepted >= 89) {
+                        reset_selection (svSeqStimNumber)
+                        tNStimAccepted = 0
+                    }
+                    if (doRand == 1 && tNStimAccepted < 89) {
+                        next_selection (svRandStimNumber)
+                        tNStimAccepted = tNStimAccepted + 1
+                    }
+                    if (doRand == 1 && tNStimAccepted >= 89) {
+                        reset_selection (svRandStimNumber)
+                        tNStimAccepted = 0
+                    }
+                    sync = 0
+                    strobedDigitalWord = 85
+                    strobedDigitalWord = 85
+                    strobedDigitalWord = 85
+                    // trigger serial param dump to cyberkinetics 
+                    sendSerialParams = 1
+                    sendSerialParams = 0
+                    tTrialsDoneSinceStart = tTrialsDoneSinceStart+1
+                    yield ()
+                }
+            }
+        }
+    }
+    stop_device_io (LabJackU6)
+}

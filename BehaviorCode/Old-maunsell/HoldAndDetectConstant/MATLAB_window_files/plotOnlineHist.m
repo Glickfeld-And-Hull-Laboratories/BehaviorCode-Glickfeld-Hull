@@ -48,7 +48,7 @@ nIg = sum(ignoreIx);
 holdStarts = [input.holdStartsMs{:}];
 nTrials = length(input.trialOutcomeCell);
 if isfield(input, 'tDoNoStimulusChange'),
-    dnscIx = boolean(celleqel2mat_padded(input.tDoNoStimulusChange));
+    dnscIx = celleqel2mat_padded(input.tDoNoStimulusChange)==1;
     dnscTrs = find(dnscIx);
     dnscCorrIx = dnscIx & successIx;
     dnscCorrTrs = find(dnscCorrIx);

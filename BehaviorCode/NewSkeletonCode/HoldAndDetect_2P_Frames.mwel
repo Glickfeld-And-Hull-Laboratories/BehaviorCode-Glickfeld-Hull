@@ -1,0 +1,2014 @@
+
+//
+// I/O Devices
+//
+
+iodevice/labjacku6 LabJackU6 (
+    pulse_duration = juice
+    pulse_on = juice
+    lever1 = FIO1
+    lever1_solenoid = MIO0
+    laser_trigger = laserTrigger
+    optic_device = optic_device
+    trial_laser_powerMw = tTrialLaserPowerMw
+    strobed_digital_word = strobedDigitalWord
+    quadrature = quadrature
+    counter = counter
+    counter2 = counter2
+    )
+fake_monkey FakeMonkey (spike_rate = 10)
+serverside_conduit 'Server-side Event Conduit' ()
+
+//
+// Variables
+//
+
+group 'Behavioral Control' {
+    var subjectNum = 0 (persistant = 1)
+    var experimentXmlTrialId = 8 (persistant = 1)
+    // n.b. it is forcibly set each trial below 
+    var optic_device = 'led'
+    var doAnalogLever = 0 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doVisualStim = 1 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doLaserStim = 0 (persistant = 1)
+    var doOriDetect = 0 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doContrastDetect = 1 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doITIStim = 1 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doNoStimulusChange = 0 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doAllCorrects = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doStartCueSound = 0 (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doIncorrectSound = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doRewardSound = (bool)(0) (
+        persistant = 1
+        groups = 'Task Type'
+        )
+    var doLED = (bool)(0) (
+        persistant = 1
+        groups = 'LED Debug'
+        )
+    var doLeverSolenoidAllTrials = 0 (
+        persistant = 1
+        groups = Solenoid
+        )
+    var doLeverSolenoidOnMiss = 0 (
+        persistant = 1
+        groups = Solenoid
+        )
+    var doLeverSolenoidOnEarly = 0 (
+        persistant = 1
+        groups = Solenoid
+        )
+    var frameRateHz = (float)(30) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var tooFastTimeMs = 100 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var randReqHoldMaxMs = 300 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var fixedReqHoldTimeMs = 400 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var doGeomHoldDist = 0 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var geomHoldMeanMs = 1 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var reactTimeMs = 1000 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var itiTimeMs = 750 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var doRandItiTime = (bool)(0) (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var itiRangeMaxTimeMs = 25000 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var itiRangeMinTimeMs = 20000 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var doExtendItiOnShortPrevTrial = 0 (
+        persistant = 1
+        groups = 'Trial Structure'
+        )
+    var doSolenoidOnTimeout = (bool)(0) (
+        persistant = 1
+        groups = Timeouts
+        )
+    var earlyTimeoutMs = 200 (
+        persistant = 1
+        groups = Timeouts
+        )
+    var missedTimeoutMs = 2000 (
+        persistant = 1
+        groups = Timeouts
+        )
+    var nConsecErrorsCauseTimeout = 10 (
+        persistant = 1
+        groups = Timeouts
+        )
+    var consecErrorTimeoutS = 0 (
+        persistant = 1
+        groups = Timeouts
+        )
+    var postRewardMs = 500 (
+        persistant = 1
+        groups = Reward
+        )
+    var minRewardUs = 20000 (
+        persistant = 1
+        groups = Reward
+        )
+    var maxRewardUs = 20000 (
+        persistant = 1
+        groups = Reward
+        )
+    var interRewardIntervalMs = 200 (
+        persistant = 1
+        groups = Reward
+        )
+    var maxConsecCorrects = 1 (
+        persistant = 1
+        groups = Reward
+        )
+    var rewardEveryNCorrect = 0 (
+        persistant = 1
+        groups = Reward
+        )
+    var rewardOmissionPercent = (float)(0) (
+        persistant = 1
+        groups = Reward
+        )
+    var rewardDelayPercent = (float)(0) (
+        persistant = 1
+        groups = Reward
+        )
+    var RewardDelayDurationMs = 500 (
+        persistant = 1
+        groups = Reward
+        )
+    var rewardUnexpectPercent = (float)(0) (
+        persistant = 1
+        groups = Reward
+        )
+    var itiRewardUnexpectPercent = (float)(0) (
+        persistant = 1
+        groups = Reward
+        )
+}
+group Stimuli {
+    var baseGratingDirectionDeg = 0 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var baseGratingContrast = 0 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingElevationDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingAzimuthDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingHeightDeg = 200 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingWidthDeg = 200 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingSpatialFreqCPD = 0.05 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingSpeedDPS = 0 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingDurationMs = 800 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingStartingPhaseDeg = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingMaxContrastStep = (float)(1) (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingContrastStepsPerOctave = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingMaxDirectionStepDeg = (float)(10) (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var gratingDirectionStepsPerOctave = (float)(0) (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var trPer80Level1 = 10 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var trPer80Level2 = 10 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var trPer80Level3 = 10 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var trPer80Level4 = 10 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var trPer80Level5 = 10 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var trPer80Level6 = 10 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var trPer80Level7 = 10 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    var trPer80Level8 = 10 (
+        persistant = 1
+        groups = 'Stimulus Parameters'
+        )
+    // sound variables 
+    var soundDuration200ms = 0 (
+        persistant = 1
+        groups = Sound
+        )
+    var soundDuration767ms = 1 (
+        persistant = 1
+        groups = Sound
+        )
+    var soundPressAmplitude = 0.8 (
+        persistant = 1
+        groups = Sound
+        )
+    var soundTrialStartAmplitude = (float)(0) (
+        persistant = 1
+        groups = Sound
+        )
+    var soundStartCueAmplitude = 0.8 (
+        persistant = 1
+        groups = Sound
+        )
+    var soundTargetAmplitude = 0.8 (
+        persistant = 1
+        groups = Sound
+        )
+    var block1ToneAmplitude = (float)(0) (
+        persistant = 1
+        groups = Sound
+        )
+    var block2ToneAmplitude = 0.8 (
+        persistant = 1
+        groups = Sound
+        )
+    // block 2 control 
+    var doBlock2 = 0 (
+        persistant = 1
+        groups = Block2
+        )
+    var doBlock2SeparateReward = 0 (
+        persistant = 1
+        groups = 'Block2 Reward'
+        )
+    var block2MinRewardUs = 20000 (
+        persistant = 1
+        groups = 'Block2 Reward'
+        )
+    var block2MaxRewardUs = 20000 (
+        persistant = 1
+        groups = 'Block2 Reward'
+        )
+    var block2DoGratingAppearance = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2BaseGratingContrast = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2BaseGratingDirectionDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingElevationDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingAzimuthDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingHeightDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingWidthDeg = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingSpatialFreqCPD = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingSpeedDPS = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingDurationMs = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingMaxContrastStep = (float)(1) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingContrastStepsPerOctave = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingMaxDirectionStepDeg = (float)(10) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2GratingDirectionStepsPerOctave = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var doBlock2SeparateOdds = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2TrPer80Level1 = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2TrPer80Level2 = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2TrPer80Level3 = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2TrPer80Level4 = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2TrPer80Level5 = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2TrPer80Level6 = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2TrPer80Level7 = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2TrPer80Level8 = 0 (
+        persistant = 1
+        groups = 'Block2 Stimulus'
+        )
+    var block2DoTrialLaser = 0 (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2TrialLaserPowerMw = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2TrialLaserOnTimeMs = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2TrialLaserOffTimeMs = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2DoRampLength = 0 (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2RampLengthMs2 = 0 (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2RampLengthPowerMaxMw2 = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2DoRampVTrain = 0 (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2RvtTrainPowerMaxMw = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2RvtTrainStepsPerOctave = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2RvtRampBaselinePowerMw = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var block2RvtTrainBaselinePowerMw = (float)(0) (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    var doBlock2SecondLaser = 0 (
+        persistant = 1
+        groups = 'Block2 Laser'
+        )
+    // stimulus control parameters 
+    var laserPeakMaxMw = 20 (persistant = 1)
+    var laserPeakStepsPerOctave = 2 (persistant = 1)
+    var laserOffPowerMw = 0 (persistant = 1)
+    var laserTransitionRampUpDownMs = 2 (persistant = 1)
+    var laserTransitionDoExpRamp = 0 (persistant = 1)
+    var laserBaselinePowerMw = (float)(0) (persistant = 1)
+    // 0: do not do baseline 
+    var laserBaselinePostStimTimeMs = (float)(500) (persistant = 1)
+    var laserDoLinearRamp = 1 (persistant = 1)
+    var laserRampLengthMs = 100 (persistant = 1)
+    var laserRampExtraConstantLengthMs = 0 (persistant = 1)
+    var laserRampDoExpRamp = 0 (persistant = 1)
+    var laserDoPulseTrain = 0 (persistant = 1)
+    var laserPulseLengthMs = 5 (persistant = 1)
+    var laserPulsePeriodMs = 20 (persistant = 1)
+    var laserTrainLengthMs = 100 (persistant = 1)
+    var laserTrainRandomNPulses = 0 (persistant = 1)
+    var laserTrainRandomType = 0 (persistant = 1)
+    var trialLaserPowerMw = (float)(0) (persistant = 1)
+    var trialLaserOnTimeMs = (float)(0) (persistant = 1)
+    var trialLaserOffTimeMs = (float)(0) (persistant = 1)
+}
+group 'Fake Mouse' {
+    var doLever = (bool)(0) (
+        persistant = 1
+        groups = 'Fake Mouse'
+        )
+    var fakeMouseMaxPressMs = 300 (
+        persistant = 1
+        groups = 'Fake Mouse'
+        )
+    var fakeMouseMaxReactMs = 5000 (
+        persistant = 1
+        groups = 'Fake Mouse'
+        )
+    var doFakeMouseSuccessOnly = 5000 (
+        persistant = 1
+        groups = 'Fake Mouse'
+        )
+}
+group 'Task Status' {
+    var failure = 0
+    var leverResult = (bool)(0)
+    var stimulusOn = (bool)(0)
+    var startCueOn = (bool)(0)
+    var success = 0
+    var ignore = 0
+    var trialStart = (bool)(0)
+    var pressTimestampMs = (float)(0)
+    var actualHoldTimeMs = (float)(0)
+}
+group 'Online Display' {
+    var sync = 0
+}
+group 'Hardware variables' {
+    var FIO1 = 0
+    var MIO0 = (bool)(0)
+    var laserTrigger = (bool)(0)
+    var strobedDigitalWord = 0
+    var juice = 0 (groups = Reward)
+    var sendLaserParams = 0
+    var sendSerialParams = 0
+    var counter = 0
+    var counter2 = 0
+    var quadrature = 0 (groups = Lever)
+    var leverThreshold = 0 (
+        persistant = 1
+        groups = Lever
+        )
+}
+group 'Internal Variables' {
+    var tTrialStartMWTimestampMs = 0
+    var tDoAllCorrects = (bool)(0)
+    var tTotalReqHoldTimeMs = 0
+    var tTotalBaselineTimeMs = 900
+    var tTotalRewardTimeUs = 0
+    var tRandReqHoldTimeMs = 0
+    var tFakeMouseReactMs = 0
+    var tFakeMousePressMs = 0
+    var tFakeMouseReactFrames = 0
+    var tStartTrialWaitForPressTimeMs = 0
+    var consecCorrects = 0
+    var tConsecErrors = 0 (persistent = 0)
+    var tempNCorrect = 0 (persistent = 0)
+    var tConsecTimeoutStartTime = 0 (persistent = 0)
+    var tNRewards = 0
+    var tInterRewardIntervalMs = 0
+    var tRewardAddPerMsHoldUs = 0
+    var tStimTurnedOn = 0
+    var tItiWaitTimeMs = 0
+    var tThisTrialStartTimeMs = 0
+    var tLastTrialStartTimeMs = 0
+    var lastActualHoldTimeMs = 0
+    var tempMs = 0
+    var tTempStimOdds = 0
+    var tStimulusNumber = 0
+    var tSvStimNumber = 0
+    var tLaserPowerMw = (float)(0)
+    var tLaserDoLinearRamp = 0
+    var tLaserDoPulseTrain = 0
+    var tLaserRampLengthMs = 0
+    var tLaserPeakMaxMw = 0
+    var tLaserBaselinePowerMw = (float)(0)
+    var tBaseGratingContrast = (float)(0)
+    var tBaseGratingDirectionDeg = (float)(0)
+    var tGratingMaxContrastStep = (float)(0)
+    var tGratingContrastStepsPerOctave = (float)(1)
+    var tGratingMaxDirectionStepDeg = (float)(0)
+    var tGratingDirectionStepsPerOctave = (float)(1)
+    var tLaserPeakStepsPerOctave = (float)(1)
+    var isFirstTrial = (bool)(0)
+    var isTooFast = (bool)(0)
+    var tGratingDirectionDeg = (float)(0)
+    var tGratingContrast = (float)(0)
+    var tGratingElevationDeg = (float)(0)
+    var tGratingAzimuthDeg = (float)(0)
+    var tGratingHeightDeg = (float)(0)
+    var tGratingWidthDeg = (float)(0)
+    var tGratingSpatialFreqCPD = (float)(0)
+    var tGratingSpeedDPS = (float)(0)
+    var tGratingDurationMs = 0
+    var tDoNoStimulusChange = 0
+    var tUnexpectRewardNum = 0
+    var tITIUnexpectRewardNum = 0
+    var tTrialLaserPowerMw = (float)(0)
+    var tTrialLaserPowerMw_trigger = (float)(0)
+    var tTrialLaserOnTimeMs = (float)(0)
+    var tTrialLaserOffTimeMs = (float)(0)
+    var tBlock2TrialNumber = 0
+    // frame conversion 
+    var tTotalReqHoldFrames = 0
+    var tTotalBaselineFrames = 0
+    var tItiWaitFrames = 0
+    var nFramesOn = 0 (persistant = 1)
+    var nFramesTooFast = 0 (persistant = 1)
+    var nFramesReact = 0 (persistant = 1)
+    var nFramesEarlyTimeout = 0 (persistant = 1)
+    var nFramesMissedTimeout = 0 (persistant = 1)
+    // counter variables 
+    var cTrialStart = 0
+    var cTrialEnd = 0 (groups = Counter)
+    var cItiStart = 0
+    var cLeverDown = 0
+    var cTargetOn = 0
+    var cLeverUp = 0
+    var cStartCueOn = 0
+    var tRewardOmissionTrial = (bool)(0)
+    var tOmissionRewardNum = 0
+    var tRewardDelayTrial = (bool)(0)
+    var tRewardDelayDurationMs = 0
+    var tItiUnexpectedRewardTrial = (bool)(0)
+    var rewardOmissionEveryN = 0
+    var rewardUnexpectEveryN = 0
+    var itiRewardUnexpectEveryN = 0
+    var NumRewardOmissionPer80 = 0
+    var tNStimAccepted = 0
+    selection svStimNumber (
+        values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79
+        selection = random_without_replacement
+        nsamples = 80
+        sampling_method = samples
+        )
+}
+
+//
+// Sounds
+//
+
+wav_file louderPressSound (
+    path = 'wavs/louderFlatterPress.wav'
+    amplitude = soundPressAmplitude
+    )
+wav_file waitingForLeverSound (
+    path = 'wavs/trialStart-F10e-short.wav'
+    amplitude = soundTrialStartAmplitude
+    )
+wav_file correctSound ('wavs/shortCorrect.wav')
+wav_file incorrectSound ('wavs/incorrectMouse.wav')
+wav_file rewardSound ('wavs/shortCorrect.wav')
+wav_file trialStartSound (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.2s.wav'
+    amplitude = soundStartCueAmplitude
+    )
+wav_file targetSound200ms (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.2s.wav'
+    amplitude = soundTargetAmplitude
+    )
+wav_file targetSound767ms (
+    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.767s.wav'
+    amplitude = soundTargetAmplitude
+    )
+
+//
+// Stimuli
+//
+
+blank_screen background ()
+drifting_grating base_grating (
+    direction = 0
+    starting_phase = gratingStartingPhaseDeg
+    spatial_frequency = tGratingSpatialFreqCPD
+    speed = tGratingSpeedDPS
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = tGratingWidthDeg
+    y_size = tGratingHeightDeg
+    x_position = tGratingAzimuthDeg
+    y_position = tGratingElevationDeg
+    rotation = tBaseGratingDirectionDeg
+    alpha_multiplier = tBaseGratingContrast
+    )
+drifting_grating target_grating (
+    direction = 0
+    starting_phase = gratingStartingPhaseDeg
+    spatial_frequency = tGratingSpatialFreqCPD
+    speed = tGratingSpeedDPS
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = tGratingWidthDeg
+    y_size = tGratingHeightDeg
+    x_position = tGratingAzimuthDeg
+    y_position = tGratingElevationDeg
+    rotation = tGratingDirectionDeg
+    alpha_multiplier = tGratingContrast
+    )
+
+//
+// Protocols
+//
+
+protocol JuiceOnHoldProtocol {
+    // init actions before running trials after any press of start
+    queue_stimulus (background)
+    if (doVisualStim) {
+        if (doITIStim) {
+            live_queue_stimulus (base_grating)
+            play_dynamic_stimulus (base_grating)
+        }
+    }
+    update_stimulus_display ()
+    consecCorrects = 0
+    tempNCorrect = 0
+    tConsecErrors = 0
+    juice = 0
+    // init actions run only on first trial after loading experiment 
+    if (success+ignore+failure == 0) {
+        report ('**** First trial since experiment load - initializing')
+        start_device_io (LabJackU6)
+        counter = 0
+        tLastTrialStartTimeMs = -1
+        tThisTrialStartTimeMs = -1
+        lastActualHoldTimeMs = 0
+        isFirstTrial = 1
+        // reset selection var 
+        reset_selection (svStimNumber)
+        tNStimAccepted = 0
+    }
+    trial 'Trial 01' (nsamples = 10000) {
+        task TS {
+            state Intertrial {
+                if (success+ignore+failure > 0) {
+                    isFirstTrial = 0
+                }
+                tTrialStartMWTimestampMs = now()/1000
+                // integer valued ms timestamp 
+                strobedDigitalWord = 170
+                strobedDigitalWord = 170
+                strobedDigitalWord = 170
+                //Transmit the trial timestamp so strobed code sequences are unique 
+                assert (
+                    condition = tTrialStartMWTimestampMs <= 2147483648
+                    message = 'tTrialStartMWTimestampMs is too large - should happen only after several days of running!?'
+                    stop_on_failure = 1
+                    )
+                // prevent overflow outside 2**31ms ~ 10 days - I don't know how to get unsigned casts in the XML 
+                // encode trialStartTimestamp in bytes: 4 bytes: millions of seconds, 1000s, s, ms 
+                strobedDigitalWord = 200
+                strobedDigitalWord = 201
+                sync = 1
+                trialStart = 1
+                juice = 0
+                leverResult = 0
+                laserTrigger = 0
+                lastActualHoldTimeMs = actualHoldTimeMs
+                experimentXmlTrialId = 8
+                tStimTurnedOn = 0
+                tDoNoStimulusChange = doNoStimulusChange
+                tDoAllCorrects = doAllCorrects
+                cTrialStart = counter
+                tRewardDelayTrial = 0
+                tRewardDelayDurationMs = 0
+                isTooFast = 1
+                // choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 
+                tSvStimNumber = svStimNumber
+                // choose a value from selection var, 0-origin 
+                tTempStimOdds = 0
+                // this variable exists only for code clarity below 
+                // choose reward omission and unexpected reward randomly
+                if (rewardOmissionPercent != 0) {
+                    rewardOmissionEveryN = round(100/rewardOmissionPercent)
+                }
+                if (rewardUnexpectPercent != 0) {
+                    rewardUnexpectEveryN = round(100/rewardUnexpectPercent)
+                }
+                if (itiRewardUnexpectPercent != 0) {
+                    itiRewardUnexpectEveryN = round(100/itiRewardUnexpectPercent)
+                }
+                // if block2 then determine the number of reward omission trials per block
+                if (doBlock2 && !doBlock2SeparateOdds) {
+                    NumRewardOmissionPer80 = round(((rewardOmissionPercent/100)*trPer80Level1)/2)
+                }
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    NumRewardOmissionPer80 = round((rewardOmissionPercent/100)*trPer80Level1)
+                }
+                // if only doing block1 then choose reward omission trial in blocks of size rewardOmissionEveryN  
+                if (!doBlock2) {
+                    if (rewardOmissionPercent != 0 && (success % rewardOmissionEveryN == 0)  ) {
+                        tOmissionRewardNum = (int)(disc_rand(1,rewardOmissionEveryN)) + success
+                        report ('the tOmissionRewardNum is $tOmissionRewardNum')
+                    }
+                    if (success==tOmissionRewardNum) {
+                        tRewardOmissionTrial = 1
+                    }
+                    if (success!=tOmissionRewardNum) {
+                        tRewardOmissionTrial = 0
+                    }
+                }
+                if (rewardUnexpectPercent != 0 && ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ) {
+                    tUnexpectRewardNum = (int)(disc_rand(0,rewardUnexpectEveryN-1)) + (success+ignore+failure)
+                    report ('the tUnexpectRewardNum is $tUnexpectRewardNum')
+                }
+                if (rewardUnexpectPercent != 0 && success+ignore+failure == 0 ) {
+                    tUnexpectRewardNum = (int)(disc_rand(0,rewardUnexpectEveryN-1))
+                    report ('the tUnexpectRewardNum is $tUnexpectRewardNum')
+                }
+                if (itiRewardUnexpectPercent != 0 && ((success+ignore+failure+1) % (rewardUnexpectEveryN) == 0) ) {
+                    tITIUnexpectRewardNum = (int)(disc_rand(0,itiRewardUnexpectEveryN-1)) + (success+ignore+failure)
+                    report ('the tITIUnexpectRewardNum is $tITIUnexpectRewardNum')
+                }
+                if (itiRewardUnexpectPercent != 0 && success+ignore+failure == 0 ) {
+                    tITIUnexpectRewardNum = (int)(disc_rand(0,itiRewardUnexpectEveryN-1))
+                    report ('the tITIUnexpectRewardNum is $tITIUnexpectRewardNum')
+                }
+                // level 1 
+                if ((tSvStimNumber < (trPer80Level1))) {
+                    // if this is a block1 trial or if doBlock2SeparateOdds==0 
+                    tStimulusNumber = 0
+                    if (doBlock2 && !doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level1-1)/2))
+                        if (doBlock2 && tBlock2TrialNumber == 0) {
+                            tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                        }
+                        if (doBlock2 && tBlock2TrialNumber) {
+                            // no reward omission trials in block 2 
+                            tRewardOmissionTrial = 0
+                        }
+                    }
+                }
+                // level 1b: b2 sep odds on 
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    tBlock2TrialNumber = (int)((tSvStimNumber) > ((int)trPer80Level1-1))
+                    tRewardOmissionTrial = 0
+                    tStimulusNumber = 0
+                    if (doBlock2 && tBlock2TrialNumber == 0) {
+                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                        report ('the tSvStimNumber is $tSvStimNumber and the tTempStimOdds is $tTempStimOdds')
+                    }
+                    if (doBlock2 && tBlock2TrialNumber) {
+                        tRewardOmissionTrial = 0
+                    }
+                    tTempStimOdds = tTempStimOdds + block2TrPer80Level1
+                }
+                tTempStimOdds = tTempStimOdds + trPer80Level1
+                // level 2 
+                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level2))) {
+                    tStimulusNumber = 1
+                    if (doBlock2 && !doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level2-1)/2))
+                    }
+                    if (doBlock2 && doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = 0
+                    }
+                    if (doBlock2 && tBlock2TrialNumber == 0) {
+                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                    }
+                    if (doBlock2 && tBlock2TrialNumber) {
+                        tRewardOmissionTrial = 0
+                    }
+                }
+                tTempStimOdds = tTempStimOdds + trPer80Level2
+                // level 2b: b2 sep odds on 
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber > (tTempStimOdds+block2TrPer80Level2))) {
+                        tStimulusNumber = 1
+                        tBlock2TrialNumber = 1
+                    }
+                    /*
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level2"/>
+              */
+                }
+                // level3 
+                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level3))) {
+                    tStimulusNumber = 2
+                    if (doBlock2 && !doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level3-1)/2))
+                    }
+                    if (doBlock2 && doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = 0
+                    }
+                    if (doBlock2 && tBlock2TrialNumber == 0) {
+                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                    }
+                    if (doBlock2 && tBlock2TrialNumber) {
+                        tRewardOmissionTrial = 0
+                    }
+                }
+                tTempStimOdds = tTempStimOdds + trPer80Level3
+                // level3b: b2 sep odds on 
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber > (tTempStimOdds+block2TrPer80Level3))) {
+                        tStimulusNumber = 2
+                        tBlock2TrialNumber = 1
+                    }
+                    /*
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level3"/>
+            */
+                }
+                // level4 
+                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level4))) {
+                    tStimulusNumber = 3
+                    if (doBlock2 && !doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level4-1)/2))
+                    }
+                    if (doBlock2 && doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = 0
+                    }
+                    if (doBlock2 && tBlock2TrialNumber == 0) {
+                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                    }
+                    if (doBlock2 && tBlock2TrialNumber) {
+                        tRewardOmissionTrial = 0
+                    }
+                }
+                tTempStimOdds = tTempStimOdds + trPer80Level4
+                // level4b: b2 sep odds on 
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber > (tTempStimOdds+block2TrPer80Level4))) {
+                        tStimulusNumber = 3
+                        tBlock2TrialNumber = 1
+                    }
+                    /*
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level4"/>
+            */
+                }
+                // level5 
+                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level5))) {
+                    tStimulusNumber = 4
+                    if (doBlock2 && !doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level5-1)/2))
+                    }
+                    if (doBlock2 && doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = 0
+                    }
+                    if (doBlock2 && tBlock2TrialNumber == 0) {
+                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                    }
+                    if (doBlock2 && tBlock2TrialNumber) {
+                        tRewardOmissionTrial = 0
+                    }
+                }
+                tTempStimOdds = tTempStimOdds + trPer80Level5
+                // level5b: b2 sep odds on 
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber > (tTempStimOdds+block2TrPer80Level5))) {
+                        tStimulusNumber = 4
+                        tBlock2TrialNumber = 1
+                    }
+                    /*
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level5"/>
+            */
+                }
+                // level6 
+                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level6))) {
+                    tStimulusNumber = 5
+                    if (doBlock2 && !doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level6-1)/2))
+                    }
+                    if (doBlock2 && doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = 0
+                    }
+                    if (doBlock2 && tBlock2TrialNumber == 0) {
+                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                    }
+                    if (doBlock2 && tBlock2TrialNumber) {
+                        tRewardOmissionTrial = 0
+                    }
+                }
+                tTempStimOdds = tTempStimOdds + trPer80Level6
+                // level6b: b2 sep odds on 
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber > (tTempStimOdds+block2TrPer80Level6))) {
+                        tStimulusNumber = 5
+                        tBlock2TrialNumber = 1
+                    }
+                    /*
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level6"/>
+            */
+                }
+                // level7 
+                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level7))) {
+                    tStimulusNumber = 6
+                    if (doBlock2 && !doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level7-1)/2))
+                    }
+                    if (doBlock2 && doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = 0
+                    }
+                    if (doBlock2 && tBlock2TrialNumber == 0) {
+                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                    }
+                    if (doBlock2 && tBlock2TrialNumber) {
+                        tRewardOmissionTrial = 0
+                    }
+                }
+                tTempStimOdds = tTempStimOdds + trPer80Level7
+                // level7b: b2 sep odds on 
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber > (tTempStimOdds+block2TrPer80Level7))) {
+                        tStimulusNumber = 6
+                        tBlock2TrialNumber = 1
+                    }
+                    /*
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level7"/>
+            */
+                }
+                // level8 
+                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level8))) {
+                    tStimulusNumber = 7
+                    if (doBlock2 && !doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level8-1)/2))
+                    }
+                    if (doBlock2 && doBlock2SeparateOdds) {
+                        tBlock2TrialNumber = 0
+                    }
+                    if (doBlock2 && tBlock2TrialNumber == 0) {
+                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
+                    }
+                    if (doBlock2 && tBlock2TrialNumber) {
+                        tRewardOmissionTrial = 0
+                    }
+                }
+                tTempStimOdds = tTempStimOdds + trPer80Level8
+                // level8b: b2 sep odds on 
+                if (doBlock2 && doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber > (tTempStimOdds+block2TrPer80Level8))) {
+                        tStimulusNumber = 7
+                        tBlock2TrialNumber = 1
+                    }
+                    /*
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
+                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
+              </action>
+              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
+                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
+              </action>
+              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level8"/>
+            */
+                }
+                // error checking                
+                assert (
+                    stop_on_failure = 1
+                    condition = tTempStimOdds == 80
+                    message = 'stim odds must sum to 80!  (sum now is $tTempStimOdds )'
+                    )
+                // stop_on_failure=0: allow slop so it can be changed while running 
+                if (doBlock2 && !doBlock2SeparateOdds) {
+                    assert (
+                        condition = trPer80Level1-(((int)trPer80Level1)/2)*2 == 0
+                        stop_on_failure = 1
+                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
+                        )
+                    assert (
+                        condition = trPer80Level2-(((int)trPer80Level2)/2)*2 == 0
+                        stop_on_failure = 1
+                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
+                        )
+                    assert (
+                        condition = trPer80Level3-(((int)trPer80Level3)/2)*2 == 0
+                        stop_on_failure = 1
+                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
+                        )
+                    assert (
+                        condition = trPer80Level4-(((int)trPer80Level4)/2)*2 == 0
+                        stop_on_failure = 1
+                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
+                        )
+                    assert (
+                        condition = trPer80Level5-(((int)trPer80Level5)/2)*2 == 0
+                        stop_on_failure = 1
+                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
+                        )
+                    assert (
+                        condition = trPer80Level6-(((int)trPer80Level6)/2)*2 == 0
+                        stop_on_failure = 1
+                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
+                        )
+                    assert (
+                        condition = trPer80Level7-(((int)trPer80Level7)/2)*2 == 0
+                        stop_on_failure = 1
+                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
+                        )
+                    assert (
+                        condition = trPer80Level8-(((int)trPer80Level8)/2)*2 == 0
+                        stop_on_failure = 1
+                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
+                        )
+                }
+                // Choose block 2 trial type 
+                if (doBlock2) {
+                    assert (
+                        stop_on_failure = 1
+                        condition = (block2DoGratingAppearance+block2DoRampLength+block2DoRampVTrain+block2DoTrialLaser) == 1
+                        message = 'must select exactly one of block2Do variables!'
+                        )
+                    /* trial numbers assigned above in switch statement.  Note equal probability
+                   - if more complicated odds wanted; add a set of block2 level odds */
+                    // grating appearance for block 2 
+                    if (block2DoGratingAppearance) {
+                        assert (
+                            condition = doVisualStim == 1
+                            stop_on_failure = 1
+                            message = 'doVisualStim must be 1 for block2DoGratingAppearance == 1'
+                            )
+                        // same for both types of block2 trials 
+                        tTrialLaserPowerMw_trigger = trialLaserPowerMw
+                        if (tBlock2TrialNumber == 0) {
+                            tBaseGratingDirectionDeg = baseGratingDirectionDeg
+                            tBaseGratingContrast = baseGratingContrast
+                            tGratingMaxContrastStep = gratingMaxContrastStep
+                            tGratingContrastStepsPerOctave = gratingContrastStepsPerOctave
+                            tGratingMaxDirectionStepDeg = gratingMaxDirectionStepDeg
+                            tGratingDirectionStepsPerOctave = gratingDirectionStepsPerOctave
+                            tGratingElevationDeg = gratingElevationDeg
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingHeightDeg = gratingHeightDeg
+                            tGratingWidthDeg = gratingWidthDeg
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                            tGratingSpeedDPS = gratingSpeedDPS
+                            tGratingDurationMs = gratingDurationMs
+                            soundTargetAmplitude = block1ToneAmplitude
+                            // allow different tone amplitude in block 1 and 2
+                        }
+                        if (tBlock2TrialNumber == 1) {
+                            tBaseGratingDirectionDeg = block2BaseGratingDirectionDeg
+                            tBaseGratingContrast = block2BaseGratingContrast
+                            tGratingMaxContrastStep = block2GratingMaxContrastStep
+                            tGratingContrastStepsPerOctave = block2GratingContrastStepsPerOctave
+                            tGratingMaxDirectionStepDeg = block2GratingMaxDirectionStepDeg
+                            tGratingDirectionStepsPerOctave = block2GratingDirectionStepsPerOctave
+                            tGratingElevationDeg = block2GratingElevationDeg
+                            tGratingAzimuthDeg = block2GratingAzimuthDeg
+                            tGratingHeightDeg = block2GratingHeightDeg
+                            tGratingWidthDeg = block2GratingWidthDeg
+                            tGratingSpatialFreqCPD = block2GratingSpatialFreqCPD
+                            tGratingSpeedDPS = block2GratingSpeedDPS
+                            tGratingDurationMs = block2GratingDurationMs
+                            soundTargetAmplitude = block2ToneAmplitude
+                        }
+                    }
+                    // ramp length for block 2 
+                    if (block2DoRampLength) {
+                        assert (
+                            condition = doLaserStim == 1
+                            stop_on_failure = 1
+                            message = 'doLaserStim must be 1 for block2DoRampLength == 1'
+                            )
+                        tLaserBaselinePowerMw = laserBaselinePowerMw
+                        if (tBlock2TrialNumber == 0) {
+                            tLaserRampLengthMs = laserRampLengthMs
+                            tLaserPeakMaxMw = laserPeakMaxMw
+                        }
+                        if (tBlock2TrialNumber == 1) {
+                            tLaserRampLengthMs = block2RampLengthMs2
+                            tLaserPeakMaxMw = block2RampLengthPowerMaxMw2
+                        }
+                    }
+                    // ramp v train for block 2 
+                    if (block2DoRampVTrain) {
+                        assert (
+                            condition = doLaserStim == 1
+                            stop_on_failure = 1
+                            message = 'doLaserStim must be 1 for block2DoRampLength == 1'
+                            )
+                        assert (
+                            condition = laserDoLinearRamp+laserDoPulseTrain == 0
+                            stop_on_failure = 1
+                            message = 'when block2 controls ramp v. train, set laserDoLinearRamp/PulseTrain both to 0'
+                            )
+                        if (tBlock2TrialNumber == 0) {
+                            // ramp 
+                            tLaserDoLinearRamp = 1
+                            tLaserRampLengthMs = laserRampLengthMs
+                            tLaserDoPulseTrain = 0
+                            tLaserPeakMaxMw = laserPeakMaxMw
+                            tLaserPeakStepsPerOctave = laserPeakStepsPerOctave
+                            tLaserBaselinePowerMw = block2RvtRampBaselinePowerMw
+                        }
+                        if (tBlock2TrialNumber == 1) {
+                            // train 
+                            tLaserDoLinearRamp = 0
+                            tLaserRampLengthMs = laserRampLengthMs
+                            tLaserDoPulseTrain = 1
+                            tLaserPeakMaxMw = block2RvtTrainPowerMaxMw
+                            tLaserPeakStepsPerOctave = block2RvtTrainStepsPerOctave
+                            tLaserBaselinePowerMw = block2RvtTrainBaselinePowerMw
+                        }
+                        // in both cases: for paired vision 
+                        if (doVisualStim == 1) {
+                            tBaseGratingDirectionDeg = baseGratingDirectionDeg
+                            tBaseGratingContrast = baseGratingContrast
+                            tGratingElevationDeg = gratingElevationDeg
+                            tGratingAzimuthDeg = gratingAzimuthDeg
+                            tGratingHeightDeg = gratingHeightDeg
+                            tGratingWidthDeg = gratingWidthDeg
+                            tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                            tGratingSpeedDPS = gratingSpeedDPS
+                            tGratingDurationMs = gratingDurationMs
+                            tGratingMaxContrastStep = gratingMaxContrastStep
+                            tGratingContrastStepsPerOctave = gratingContrastStepsPerOctave
+                            tGratingMaxDirectionStepDeg = gratingMaxDirectionStepDeg
+                            tGratingDirectionStepsPerOctave = gratingDirectionStepsPerOctave
+                        }
+                    }
+                    // using trial laser for block 2 
+                    if (block2DoTrialLaser) {
+                        assert (
+                            condition = !doLaserStim
+                            stop_on_failure = 1
+                            message = 'When using trialLaser, doLaserStim must be off'
+                            )
+                        tGratingDurationMs = gratingDurationMs
+                        if (tBlock2TrialNumber == 0) {
+                            // off 
+                            tTrialLaserPowerMw_trigger = trialLaserPowerMw
+                            tTrialLaserOnTimeMs = trialLaserOnTimeMs
+                            tTrialLaserOffTimeMs = trialLaserOffTimeMs
+                            tGratingMaxContrastStep = gratingMaxContrastStep
+                            tGratingContrastStepsPerOctave = gratingContrastStepsPerOctave
+                            tGratingMaxDirectionStepDeg = gratingMaxDirectionStepDeg
+                            tGratingDirectionStepsPerOctave = gratingDirectionStepsPerOctave
+                        }
+                        if (tBlock2TrialNumber == 1) {
+                            // on 
+                            tTrialLaserPowerMw_trigger = block2TrialLaserPowerMw
+                            tTrialLaserOnTimeMs = block2TrialLaserOnTimeMs
+                            tTrialLaserOffTimeMs = block2TrialLaserOffTimeMs
+                            tGratingMaxContrastStep = block2GratingMaxContrastStep
+                            tGratingContrastStepsPerOctave = block2GratingContrastStepsPerOctave
+                            tGratingMaxDirectionStepDeg = block2GratingMaxDirectionStepDeg
+                            tGratingDirectionStepsPerOctave = block2GratingDirectionStepsPerOctave
+                        }
+                        // in both cases 
+                        tBaseGratingDirectionDeg = baseGratingDirectionDeg
+                        tBaseGratingContrast = baseGratingContrast
+                        tGratingElevationDeg = gratingElevationDeg
+                        tGratingAzimuthDeg = gratingAzimuthDeg
+                        tGratingHeightDeg = gratingHeightDeg
+                        tGratingWidthDeg = gratingWidthDeg
+                        tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                        tGratingSpeedDPS = gratingSpeedDPS
+                        tGratingDurationMs = gratingDurationMs
+                    }
+                }
+                // end doBlock2 
+                // if no block 2 randomization, just set all affected vars to fixed values 
+                if (! doBlock2) {
+                    soundTargetAmplitude = block1ToneAmplitude
+                    soundTargetAmplitude = block1ToneAmplitude
+                    tBaseGratingDirectionDeg = baseGratingDirectionDeg
+                    tBaseGratingContrast = baseGratingContrast
+                    tGratingElevationDeg = gratingElevationDeg
+                    tGratingAzimuthDeg = gratingAzimuthDeg
+                    tGratingHeightDeg = gratingHeightDeg
+                    tGratingWidthDeg = gratingWidthDeg
+                    tGratingSpatialFreqCPD = gratingSpatialFreqCPD
+                    tGratingSpeedDPS = gratingSpeedDPS
+                    tGratingDurationMs = gratingDurationMs
+                    tLaserRampLengthMs = laserRampLengthMs
+                    tLaserPeakMaxMw = laserPeakMaxMw
+                    tLaserPeakStepsPerOctave = laserPeakStepsPerOctave
+                    tGratingMaxContrastStep = gratingMaxContrastStep
+                    tGratingContrastStepsPerOctave = gratingContrastStepsPerOctave
+                    tGratingMaxDirectionStepDeg = gratingMaxDirectionStepDeg
+                    tGratingDirectionStepsPerOctave = gratingDirectionStepsPerOctave
+                    tLaserDoLinearRamp = laserDoLinearRamp
+                    tLaserDoPulseTrain = laserDoPulseTrain
+                    tLaserBaselinePowerMw = laserBaselinePowerMw
+                    tTrialLaserPowerMw_trigger = trialLaserPowerMw
+                    tTrialLaserOnTimeMs = trialLaserOnTimeMs
+                    tTrialLaserOffTimeMs = trialLaserOffTimeMs
+                    // !doBlock2 error checking 
+                    assert (
+                        stop_on_failure = 1
+                        condition = !doLaserStim || (laserDoLinearRamp || laserDoPulseTrain)
+                        message = 'When doLaserStim, ramp or train must be set'
+                        )
+                }
+                // !doBlock2 
+                // choose hold time this trial 
+                if (!doGeomHoldDist) {
+                    // default, uniform 
+                    tRandReqHoldTimeMs = rand(0,randReqHoldMaxMs)
+                }
+                if (doGeomHoldDist) {
+                    tRandReqHoldTimeMs = geom_rand(1.0/geomHoldMeanMs, randReqHoldMaxMs)
+                }
+                tTotalReqHoldTimeMs = fixedReqHoldTimeMs + tRandReqHoldTimeMs
+                tTotalReqHoldFrames = ceil((tTotalReqHoldTimeMs/1000)*frameRateHz)
+                tTotalBaselineFrames = ceil((tTotalBaselineTimeMs/1000)*frameRateHz)
+                // choose laser power 
+                if (doLaserStim) {
+                    tLaserPowerMw = tLaserPeakMaxMw / pow(2, 1.0*tStimulusNumber/tLaserPeakStepsPerOctave)
+                    // adjust from baseline 
+                    if (tLaserBaselinePowerMw > 0) {
+                        tLaserPowerMw = tLaserPowerMw + tLaserBaselinePowerMw
+                    }
+                    report ('Laser power this trial is $tLaserPowerMw')
+                    tTrialLaserPowerMw = 0
+                    assert (
+                        condition = tTrialLaserPowerMw == 0
+                        stop_on_failure = 1
+                        message = bug: tLaserPowerMw and tTrialLaserPowerMw != 0
+                        )
+                }
+                if (!doLaserStim) {
+                    tLaserPowerMw = 0
+                }
+                // choose vis stim ori/dir 
+                if (doVisualStim) {
+                    if (doOriDetect) {
+                        tGratingDirectionDeg = tBaseGratingDirectionDeg + (tGratingMaxDirectionStepDeg / (pow(2, tStimulusNumber/tGratingDirectionStepsPerOctave)))
+                        tGratingContrast = tBaseGratingContrast
+                        report ('Grating direction this trial is $tGratingDirectionDeg')
+                    }
+                    if (doContrastDetect) {
+                        tGratingContrast = tBaseGratingContrast + (tGratingMaxContrastStep / (pow(2, 1.0*tStimulusNumber/tGratingContrastStepsPerOctave)))
+                        tGratingDirectionDeg = tBaseGratingDirectionDeg
+                        report ('Grating contrast this trial is $tGratingContrast')
+                    }
+                }
+                if (!doVisualStim) {
+                    tGratingContrast = 0
+                    tGratingDirectionDeg = 0
+                }
+                assert (
+                    condition = tGratingContrast >= 0
+                    stop_on_failure = 1
+                    message = 'No negative contrasts allowed'
+                    )
+                assert (
+                    condition = abs(tBaseGratingDirectionDeg-tGratingDirectionDeg) <= 360
+                    stop_on_failure = 1
+                    message = 'Maximum direction step is 360 degrees'
+                    )
+                // send laser params to controller 
+                if (doLaserStim) {
+                    sendLaserParams = 1
+                    sendLaserParams = 0
+                }
+                // lock down the min stimulus value to a fixed number if variable not negative 
+                // initialize trial start/end times 
+                if (tThisTrialStartTimeMs == -1) {
+                    //first trial, leave lasttime as -1 
+                    tLastTrialStartTimeMs = -1
+                }
+                if (tThisTrialStartTimeMs != -1) {
+                    //else
+                    //later trials, copy this into last before setting this again below 
+                    tLastTrialStartTimeMs = tThisTrialStartTimeMs
+                }
+                tThisTrialStartTimeMs = now()/1000
+                // debug 
+                report ('tNStimAccepted == $tNStimAccepted, svStimN is $svStimNumber, tb2TrN is $tBlock2TrialNumber ')
+                nFramesOn = ceil((tGratingDurationMs/1000)*frameRateHz)
+                nFramesTooFast = ceil((tooFastTimeMs/1000)*frameRateHz)
+                nFramesReact = ceil((reactTimeMs/1000)*frameRateHz)
+                nFramesEarlyTimeout = ceil((earlyTimeoutMs/1000)*frameRateHz)
+                nFramesMissedTimeout = ceil((missedTimeoutMs/1000)*frameRateHz)
+                // compute ITI time 
+                // initialize with a const value 
+                if (doRandItiTime == 0) {
+                    tItiWaitTimeMs = itiTimeMs
+                }
+                if (doRandItiTime == 1) {
+                    tItiWaitTimeMs = disc_rand(itiRangeMinTimeMs/100, itiRangeMaxTimeMs/100)*100
+                }
+                report ('-------The randomization of ITI is $tItiWaitTimeMs')
+                // extend based on previous hold and max stim time, if asked for 
+                if (!isFirstTrial) {
+                    if (doExtendItiOnShortPrevTrial == 1) {
+                        tempMs = (fixedReqHoldTimeMs+randReqHoldMaxMs)-lastActualHoldTimeMs
+                        if (tempMs > 0) {
+                            //add to ITI
+                            tItiWaitTimeMs = tItiWaitTimeMs+tempMs
+                        }
+                    }
+                }
+                if (isFirstTrial) {
+                    tempMs = 0
+                }
+                tItiWaitFrames = ceil((tItiWaitTimeMs/1000)*frameRateHz)
+                start_timer (
+                    timer = interTrialTimer
+                    duration = tItiWaitTimeMs
+                    duration_units = ms
+                    )
+                cItiStart = counter
+                run_python_file ('L0.py')
+                //  run python code to turn laser off 
+                stimulusOn = 0
+                strobedDigitalWord = 6
+                if (doLeverSolenoidAllTrials) {
+                    // Turn on solenoid for ITI only if doLS is true, not if doLSErrorsOnly 
+                    MIO0 = 1
+                    strobedDigitalWord = 12
+                }
+                if (!doLeverSolenoidAllTrials) {
+                    MIO0 = 0
+                    strobedDigitalWord = 13
+                }
+                report ('In ITI, waiting for $tItiWaitTimeMs ms, then waiting for press')
+                // if trialLaser, send params to controller 
+                if (tTrialLaserPowerMw_trigger > 0) {
+                    sendLaserParams = 1
+                    sendLaserParams = 0
+                    assert (
+                        condition = tLaserPowerMw == 0
+                        stop_on_failure = 1
+                        message = bug: tLaserPowerMw and tTrialLaserPowerMw_trigger > 0
+                        )
+                    assert (
+                        stop_on_failure = 1
+                        condition = (tTrialLaserOnTimeMs == 0 && tTrialLaserOffTimeMs == 0) || (tTrialLaserOnTimeMs > 0 && tTrialLaserOffTimeMs > 0)
+                        message = 'For constant trial laser, set on and off time to 0.  Otherwise on/off time must both be set'
+                        )
+                }
+                // start iti unexpected reward timer 
+                if (itiRewardUnexpectPercent !=0 && (success+ignore+failure) != tITIUnexpectRewardNum) {
+                    tItiUnexpectedRewardTrial = 0
+                }
+                report ('during ITI and wait for tItiWaitFrames to start')
+                goto (
+                    target = itiReward
+                    when = itiRewardUnexpectPercent !=0 && (success+ignore+failure) == tITIUnexpectRewardNum && (counter >= (cItiStart + tItiWaitFrames/2))
+                    )
+                goto (
+                    target = StartTrial
+                    when = counter >= (cItiStart + tItiWaitFrames)
+                    )
+            }
+            state itiReward {
+                tItiUnexpectedRewardTrial = 1
+                juice = minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )
+                report ('----- Unexpected Reward in ITI -----')
+                goto (
+                    target = StartTrial
+                    when = counter >= (cItiStart + tItiWaitFrames)
+                    )
+            }
+            state StartTrial {
+                if (doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly) {
+                    // Lower solenoid at beginning of trial for any solenoid 
+                    MIO0 = 0
+                    strobedDigitalWord = 13
+                }
+                tStartTrialWaitForPressTimeMs = now()/1000.0
+                strobedDigitalWord = 7
+                play_sound (waitingForLeverSound)
+                // fake mouse calculations 
+                if (!doLever) {
+                    tFakeMousePressMs = rand(0, fakeMouseMaxPressMs)
+                }
+                goto (
+                    target = WaitForLeverPress
+                    when = counter >= (cItiStart + tItiWaitFrames) && isFirstTrial && counter > 19
+                    )
+                goto (
+                    target = WaitForLeverPress
+                    when = counter >= (cItiStart + tItiWaitFrames) && !isFirstTrial && counter > cLeverUp
+                    )
+                goto (
+                    target = ExitTask
+                    when = !isFirstTrial && counter == cLeverUp
+                    )
+            }
+            state ExitTask {
+                assert (
+                    stop_on_failure = 1
+                    condition = counter > cLeverUp
+                    message = 'Not receiving triggers from microscope'
+                    )
+            }
+            state WaitForLeverPress {
+                if (doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly) {
+                    // Lower solenoid at beginning of trial for any solenoid 
+                    MIO0 = 0
+                    strobedDigitalWord = 13
+                }
+                tStartTrialWaitForPressTimeMs = now()/1000.0
+                strobedDigitalWord = 7
+                report ('in WaitforLever Stage')
+                // fake mouse calculations 
+                if (!doLever) {
+                    tFakeMouseReactFrames = rand(0, ceil((fakeMouseMaxReactMs/1000)*frameRateHz))
+                    if (doFakeMouseSuccessOnly) {
+                        tFakeMouseReactFrames = tTotalReqHoldFrames + nFramesTooFast + ceil(0.1*frameRateHz)
+                    }
+                }
+                goto (
+                    target = HoldLever
+                    when = doLever && doAnalogLever == 0 && FIO1 == 1
+                    )
+                goto (
+                    target = HoldLever
+                    when = doLever && doAnalogLever && (quadrature > leverThreshold)
+                    )
+                goto (
+                    target = HoldLever
+                    when = !doLever && ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 100
+                    )
+                goto (
+                    target = HoldLever
+                    when = doLever && ( (now()/1000.0)-tStartTrialWaitForPressTimeMs) > 120*1000
+                    )
+            }
+            state HoldLever {
+                laserTrigger = 1
+                play_sound (louderPressSound)
+                leverResult = 1
+                pressTimestampMs = now()/1000
+                strobedDigitalWord = 3
+                cLeverDown = counter
+                run_python_file ('L1.py')
+                //  run python code to turn laser on 
+                if (doVisualStim) {
+                    if (!doITIStim) {
+                        live_queue_stimulus (base_grating)
+                        play_dynamic_stimulus (base_grating)
+                    }
+                }
+                update_stimulus_display ()
+                // turn on trial laser if requested 
+                if (tTrialLaserPowerMw_trigger > 0) {
+                    laserTrigger = 1
+                    tTrialLaserPowerMw = tTrialLaserPowerMw_trigger
+                    report ('********* SENDING LASER TRIGGER *********')
+                    strobedDigitalWord = 5
+                }
+                report ('LeverDown (need to hold for $tTotalReqHoldTimeMs + tooFastTime ms)')
+                goto (
+                    target = EarlyRelease
+                    when = doAnalogLever==0 && FIO1 == 0 && doLever == 1
+                    )
+                goto (
+                    target = EarlyRelease
+                    when = doAnalogLever && quadrature < leverThreshold && doLever == 1
+                    )
+                goto (
+                    target = EarlyRelease
+                    when = (counter >= (cLeverDown + tFakeMouseReactFrames)) && !doLever
+                    )
+                goto (
+                    target = StartCueOn
+                    when = counter  >= cLeverDown + tTotalBaselineFrames && doStartCueSound
+                    )
+                goto (
+                    target = StimOn
+                    when = counter  >= cLeverDown + tTotalReqHoldFrames && !doStartCueSound
+                    )
+            }
+            // startCueStimulus on
+            state StartCueOn {
+                startCueOn = 1
+                report ('Start Cue On (still holding; signaling release ok)')
+                cStartCueOn = counter
+                if (rewardUnexpectPercent !=0 && (success+ignore+failure) == tUnexpectRewardNum) {
+                    tDoNoStimulusChange = 1
+                }
+                soundTrialStartAmplitude = soundTrialStartAmplitude
+                // modify amplitude manually each trial
+                report ('soundAmplitude = $soundTargetAmplitude')
+                if (doStartCueSound) {
+                    play_sound (trialStartSound)
+                }
+                goto (
+                    target = StimOn
+                    when = counter  >= cLeverDown + tTotalReqHoldFrames
+                    )
+            }
+            state StimOn {
+                stimulusOn = 1
+                report ('StimOn (still holding; signaling release ok)')
+                cTargetOn = counter
+                if (rewardUnexpectPercent !=0 && (success+ignore+failure) == tUnexpectRewardNum) {
+                    tDoNoStimulusChange = 1
+                }
+                // vis stim on 
+                if (doVisualStim && tDoNoStimulusChange == 0) {
+                    dequeue_stimulus (base_grating)
+                    update_stimulus_display ()
+                    queue_stimulus (target_grating)
+                    play_dynamic_stimulus (target_grating)
+                    update_stimulus_display ()
+                    strobedDigitalWord = 4
+                }
+                soundTargetAmplitude = soundTargetAmplitude
+                // modify amplitude manually each trial
+                report ('soundAmplitude = $soundTargetAmplitude')
+                if (soundDuration200ms) {
+                    play_sound (targetSound200ms)
+                }
+                if (soundDuration767ms) {
+                    play_sound (targetSound767ms)
+                }
+                // laser stim on 
+                if (doLaserStim) {
+                    laserTrigger = 1
+                    strobedDigitalWord = 5
+                }
+                // update display, finalize variables 
+                update_stimulus_display ()
+                tStimTurnedOn = 1
+                goto (
+                    target = EarlyRelease
+                    when = doAnalogLever==0 && FIO1 == 0 && doLever == 1
+                    )
+                goto (
+                    target = EarlyRelease
+                    when = doAnalogLever && (quadrature < leverThreshold) && doLever == 1
+                    )
+                goto (
+                    target = EarlyRelease
+                    when = (counter >= (cLeverDown + tFakeMouseReactFrames)) && !doLever
+                    )
+                goto (
+                    target = React
+                    when = (counter >= (cTargetOn + nFramesTooFast))
+                    )
+                goto (
+                    target = EndTrialStimOff
+                    when = (counter >= (cTargetOn + nFramesOn))
+                    )
+            }
+            state EndTrialStimOff {
+                dequeue_stimulus (target_grating)
+                update_stimulus_display ()
+                if (doITIStim==1) {
+                    live_queue_stimulus (base_grating)
+                    play_dynamic_stimulus (base_grating)
+                }
+                update_stimulus_display ()
+                tStimTurnedOn = 0
+                goto (
+                    target = EarlyRelease
+                    when = doAnalogLever==0 && FIO1 == 0 && doLever == 1 && isTooFast == 1
+                    )
+                goto (
+                    target = EarlyRelease
+                    when = doAnalogLever && (quadrature < leverThreshold) && doLever == 1 && isTooFast == 1
+                    )
+                goto (
+                    target = EarlyRelease
+                    when = (counter >= (cLeverDown + tFakeMouseReactFrames)) && !doLever && isTooFast == 1
+                    )
+                goto (
+                    target = Reward
+                    when = doAnalogLever==0 && FIO1 == 0 && doLever == 1 && isTooFast == 0
+                    )
+                goto (
+                    target = Reward
+                    when = doAnalogLever && (quadrature < leverThreshold) && doLever == 1 && isTooFast == 0
+                    )
+                goto (
+                    target = Reward
+                    when = (counter >= (cLeverDown + tFakeMouseReactFrames))&& !doLever && isTooFast == 0
+                    )
+                goto (
+                    target = React
+                    when = (isTooFast==1) && (counter >= (cTargetOn + nFramesTooFast))
+                    )
+                goto (
+                    target = Missed
+                    when = (counter >= (cTargetOn + nFramesReact))
+                    )
+            }
+            state React {
+                isTooFast = 0
+                goto (
+                    target = Reward
+                    when = !doLever && rewardUnexpectPercent!=0 && (success+ignore+failure) == tDoNoStimulusChange
+                    )
+                goto (
+                    target = Reward
+                    when = doAnalogLever==0 && FIO1 == 0 && doLever == 1
+                    )
+                goto (
+                    target = Reward
+                    when = doAnalogLever && (quadrature < leverThreshold) && doLever == 1
+                    )
+                goto (
+                    target = Reward
+                    when = !doLever && (counter >= (cLeverDown + tFakeMouseReactFrames))
+                    )
+                goto (
+                    target = Missed
+                    when = (counter >= (cTargetOn + nFramesReact))
+                    )
+                goto (
+                    target = EndTrialStimOff
+                    when = (counter >= (cTargetOn + nFramesOn))
+                    )
+            }
+            state EarlyRelease {
+                leverResult = 0
+                cLeverUp = counter
+                strobedDigitalWord = 8
+                actualHoldTimeMs =  (now()/1000) - pressTimestampMs
+                report ('actualHoldTimeMs = $actualHoldTimeMs')
+                report ('** Early Release **')
+                // update running variables 
+                failure = failure+1
+                consecCorrects = 0
+                tConsecErrors = tConsecErrors+1
+                if (doIncorrectSound == 1) {
+                    play_sound (incorrectSound)
+                }
+                // reject stim selection 
+                reject_selections (svStimNumber)
+                if (doLeverSolenoidAllTrials || doLeverSolenoidOnEarly) {
+                    MIO0 = 1
+                    strobedDigitalWord = 12
+                }
+                dequeue_stimulus (target_grating)
+                update_stimulus_display ()
+                if (doITIStim==1) {
+                    live_queue_stimulus (base_grating)
+                    play_dynamic_stimulus (base_grating)
+                    update_stimulus_display ()
+                }
+                if (doITIStim==0) {
+                    dequeue_stimulus (base_grating)
+                    update_stimulus_display ()
+                }
+                update_stimulus_display ()
+                goto (
+                    target = EndTrial
+                    when = counter >= (cLeverUp + nFramesEarlyTimeout)
+                    )
+            }
+            state Reward {
+                leverResult = 0
+                cLeverUp = counter
+                if (success+ignore+failure == tUnexpectRewardNum) {
+                    report ('~~~~~Unexpected Reward~~~~~for total trial.')
+                }
+                if (doLeverSolenoidAllTrials || doLeverSolenoidOnMiss || doLeverSolenoidOnEarly) {
+                    // Raise solenoid after correct trial for any solenoid 
+                    MIO0 = 1
+                    strobedDigitalWord = 13
+                }
+                strobedDigitalWord = 9
+                // accept stim selection 
+                accept_selections (svStimNumber)
+                tNStimAccepted = tNStimAccepted + 1
+                // update selection variable 
+                if (tNStimAccepted >= 80) {
+                    reset_selection (svStimNumber)
+                    tNStimAccepted = 0
+                }
+                if (tNStimAccepted < 80) {
+                    next_selection (svStimNumber)
+                }
+                actualHoldTimeMs =  (now()/1000) - pressTimestampMs
+                report ('actualHoldTimeMs = $actualHoldTimeMs')
+                report ('** Success')
+                // update running variables 
+                success = success+1
+                tConsecErrors = 0
+                tTotalRewardTimeUs = minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )
+                tempNCorrect = tempNCorrect+1
+                // assign reward size based on elapsed rand if rampdown == 0 
+                if (doBlock2 == 1) {
+                    if (doBlock2SeparateReward == 0) {
+                        tRewardAddPerMsHoldUs = (maxRewardUs - minRewardUs) / ( randReqHoldMaxMs )
+                        tTotalRewardTimeUs = minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )
+                    }
+                    if (doBlock2SeparateReward == 1) {
+                        if (tBlock2TrialNumber == 0) {
+                            tRewardAddPerMsHoldUs = (maxRewardUs - minRewardUs) / ( randReqHoldMaxMs )
+                            tTotalRewardTimeUs = minRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )
+                        }
+                        if (tBlock2TrialNumber == 1) {
+                            tRewardAddPerMsHoldUs = (block2MaxRewardUs - block2MinRewardUs) / ( randReqHoldMaxMs )
+                            tTotalRewardTimeUs = block2MinRewardUs + ( tRewardAddPerMsHoldUs * tRandReqHoldTimeMs )
+                        }
+                    }
+                }
+                // give reward on every N corrects 
+                if (tempNCorrect < rewardEveryNCorrect) {
+                    tTotalRewardTimeUs = 0
+                }
+                if (tempNCorrect == rewardEveryNCorrect) {
+                    tempNCorrect = 0
+                }
+                // scale based on consec corrects 
+                if (consecCorrects < maxConsecCorrects) {
+                    consecCorrects = consecCorrects+1
+                }
+                tNRewards = consecCorrects
+                dequeue_stimulus (target_grating)
+                if (doITIStim==1) {
+                    live_queue_stimulus (base_grating)
+                    play_dynamic_stimulus (base_grating)
+                }
+                update_stimulus_display ()
+                goto (GiveReward)
+            }
+            state GiveReward {
+                tNRewards = tNRewards-1
+                if (rewardDelayPercent != 0 && tNRewards > -1) {
+                    tRewardDelayTrial = (int)(disc_rand(0,100) < rewardDelayPercent)
+                    report ('the tRewardDelayTrial is $tRewardDelayTrial')
+                    if (tRewardDelayTrial != 0) {
+                        tRewardDelayDurationMs = RewardDelayDurationMs
+                    }
+                }
+                goto (
+                    target = SingleReward
+                    when = tNRewards > -1 && tRewardDelayTrial == 0
+                    )
+                goto (
+                    target = DelayReward
+                    when = tNRewards > -1 && tRewardDelayTrial != 0
+                    )
+                goto (PostRewardPause)
+            }
+            state PostRewardPause {
+                start_timer (
+                    timer = postRewardTimer
+                    duration = postRewardMs
+                    duration_units = ms
+                    )
+                timer_expired (
+                    target = PossibleEndTimeout
+                    timer = postRewardTimer
+                    )
+            }
+            state DelayReward {
+                start_timer (
+                    timer = DelayRewardTimer
+                    duration = tRewardDelayDurationMs
+                    duration_units = ms
+                    )
+                report ('Delay Reward for $tRewardDelayDurationMs ms.')
+                timer_expired (
+                    target = SingleReward
+                    timer = DelayRewardTimer
+                    )
+            }
+            state SingleReward {
+                tInterRewardIntervalMs = interRewardIntervalMs + ( tTotalRewardTimeUs / 1000 )
+                start_timer (
+                    timer = interRewardIntervalTimer
+                    duration = tInterRewardIntervalMs
+                    duration_units = ms
+                    )
+                if (tRewardOmissionTrial) {
+                    report ('~~~~~Omitted Reward~~~~~for $success success trial.')
+                }
+                if (!tRewardOmissionTrial) {
+                    juice = tTotalRewardTimeUs
+                }
+                strobedDigitalWord = 10
+                if (doRewardSound == 1) {
+                    play_sound (rewardSound)
+                }
+                if (tempNCorrect == 0) {
+                    report ('juice = $juice')
+                }
+                if (tempNCorrect > 0) {
+                    if (tempNCorrect < rewardEveryNCorrect) {
+                        report ('juice = $juice, $tempNCorrect correct: need $rewardEveryNCorrect')
+                    }
+                }
+                timer_expired (
+                    target = GiveReward
+                    timer = interRewardIntervalTimer
+                    )
+            }
+            state Missed {
+                leverResult = 0
+                strobedDigitalWord = 11
+                cLeverUp = counter
+                actualHoldTimeMs =  (now()/1000) - pressTimestampMs
+                report ('actualHoldTimeMs = $actualHoldTimeMs')
+                ignore = ignore + 1
+                consecCorrects = 0
+                tConsecErrors = tConsecErrors+1
+                report ('** Ignored react stimulus')
+                if (doIncorrectSound == 1) {
+                    play_sound (incorrectSound)
+                }
+                // accept stim selection 
+                accept_selections (svStimNumber)
+                tNStimAccepted = tNStimAccepted + 1
+                // update selection variable 
+                if (tNStimAccepted >= 80) {
+                    reset_selection (svStimNumber)
+                    tNStimAccepted = 0
+                }
+                if (tNStimAccepted < 80) {
+                    next_selection (svStimNumber)
+                }
+                if (doLeverSolenoidAllTrials || doLeverSolenoidOnMiss) {
+                    MIO0 = 1
+                    strobedDigitalWord = 12
+                }
+                dequeue_stimulus (target_grating)
+                if (doITIStim==1) {
+                    live_queue_stimulus (base_grating)
+                    play_dynamic_stimulus (base_grating)
+                }
+                update_stimulus_display ()
+                goto (
+                    target = EndTrial
+                    when = counter >= (cLeverUp + nFramesMissedTimeout)
+                    )
+            }
+            state PossibleEndTimeout {
+                /* do timeout if too many recent errors:
+                 use a state rather than a wait action because states are interruptible */
+                if (tConsecErrors >= nConsecErrorsCauseTimeout) {
+                    report ('***!!*** $consecErrorTimeoutS s timeout after $tConsecErrors consecutive errors')
+                    start_timer (
+                        timer = consecErrorTimer
+                        duration = consecErrorTimeoutS
+                        duration_units = s
+                        )
+                    if (doSolenoidOnTimeout==1) {
+                        MIO0 = 1
+                    }
+                }
+                goto (
+                    target = EndTrial
+                    when = tConsecErrors < nConsecErrorsCauseTimeout
+                    )
+                timer_expired (
+                    target = EndTrial
+                    timer = consecErrorTimer
+                    )
+            }
+            state EndTrial {
+                laserTrigger = 0
+                // disable trigger no matter if it went high or not 
+                tTrialLaserPowerMw = 0
+                cTrialEnd = counter
+                dequeue_stimulus (target_grating)
+                update_stimulus_display ()
+                if (doITIStim == 0) {
+                    dequeue_stimulus (base_grating)
+                    update_stimulus_display ()
+                }
+                sync = 0
+                // allow two trials after each timeout is over 
+                if (tConsecErrors == nConsecErrorsCauseTimeout) {
+                    tConsecErrors = nConsecErrorsCauseTimeout-2
+                }
+                strobedDigitalWord = 85
+                strobedDigitalWord = 85
+                strobedDigitalWord = 85
+                // trigger serial param dump to cyberkinetics 
+                sendSerialParams = 1
+                sendSerialParams = 0
+                yield ()
+            }
+        }
+    }
+    dequeue_stimulus (base_grating)
+    update_stimulus_display ()
+}

@@ -1,4 +1,4 @@
-#!/usr/bin/python2.5
+#!/usr/bin/python3
 #
 #  requires python2.5; tested only on Snow Leopard, will probably not work on Lion or later.  
 #    (for upgrade: check the PyObjC calls
@@ -11,8 +11,13 @@
 
 from __future__ import with_statement
 
-from Foundation import NSMutableDictionary, NSUserDefaults, NSCFArray, objc
-import numpy as np
+import objc
+from Foundation import (
+    NSMutableDictionary, 
+    NSUserDefaults, 
+    NSDictionary, 
+    NSCFArray, 
+)
 from copy import copy
 import os
 import re
@@ -20,7 +25,7 @@ import re
 domainName = "org.mworks-project.MWClient"
 
 
-outFile = os.path.expanduser(os.path.join('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/Scripts/Plists', 'org.Behavior.HAD_wLick.plist'))
+outFile = os.path.expanduser(os.path.join('~/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/Scripts/Plists', 'org.Behavior.HoldAndDetect_2P_Frames.plist'))
 keyNames = [ 
   'MATLAB client window - selected variables',
   'MATLAB client window - MATLAB .m file',
@@ -42,7 +47,7 @@ def replaceUserdirWithStr(inObj):
             inObj[i] = replaceUserdirWithStr(inObj[i])
         return inObj
     else:
-        print type(inObj)
+        print (type(inObj))
         #import pdb; pdb.set_trace()
         raise Exception('Error: Type unknown')
     return 

@@ -3,12 +3,11 @@ function rc = behavConstsAV
 
 tHostname = lower(hostname);
 [s,tUsername] = dos('ECHO %USERNAME%');
+rc.pathStr = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\Behavior\Data';
+rc.dataPat = 'data-i%03d-%s.mat';
 
 switch tHostname
     case {'nuke'}
-        rc.pathStr = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\Behavior\Data';
-        rc.dataPat = 'data-i%03d-%s.mat';
-        
         if tUsername(1:5) == 'linds'
             rc.name = 'linds';
             rootDir = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\all_staff\home\lindsey';
@@ -61,8 +60,12 @@ switch tHostname
             rc.celineAnalysis  = fullfile(rootDir,'Analysis\2p_analysis');
             rc.achAnalysis = fullfile(rootDir,'Analysis\2p_analysis');
             rc.achData = 'Z:\home\ACh\Data';
-            
-            
+        elseif tUsername(1:5) == 'lg137'    
+            rootDirIsilon = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_staff\home\ashley';
+            outDirIsilon = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_staff\home\lindsey';
+            rc.caOutputDir = fullfile(rootDirIsilon,'Analysis', 'FSAV Summaries');
+            rc.ashleyAnalysis = fullfile(rootDirIsilon,'Analysis');
+            rc.lindseyAnalysis = fullfile(outDirIsilon,'Analysis\2P\Adaptation\AshleyData');
         end
 end
 

@@ -773,6 +773,8 @@ protocol JuiceOnHoldProtocol {
                     )
             }
             state AdaptBlank {
+                report ('in blank')
+                cAdaptTemp = counter
                 dequeue_stimulus (adapt_plaid)
                 if (doPhotodiode) {
                     dequeue_stimulus (photoDiodeGrating)

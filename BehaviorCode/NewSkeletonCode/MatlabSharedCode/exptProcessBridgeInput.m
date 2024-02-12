@@ -191,7 +191,11 @@ end
 trN = input.trialSinceReset;
 
 % first find constList
-persistentNames = codecStruct.tagname(codecStruct.persistant==1);
+if isfield(codecStruct,'persistent')
+  persistentNames = codecStruct.tagname(codecStruct.persistent==1);
+elseif isfield(codecStruct,'persistant')
+  persistentNames = codecStruct.tagname(codecStruct.persistant==1);
+end
 input.constList = persistentNames;
 nConsts = length(input.constList);
 
