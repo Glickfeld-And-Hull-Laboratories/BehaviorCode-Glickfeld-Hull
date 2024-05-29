@@ -803,6 +803,7 @@ protocol JuiceOnHoldProtocol {
                         reset_selection (svRandStimNumber)
                         reset_selection (svSeqStimNumber)
                         tNStimAccepted = 0
+                        usedList = []
                     }
                     if (doWheelSpeed == 1) {
                         doCerebellarStim = 0
@@ -860,7 +861,7 @@ protocol JuiceOnHoldProtocol {
                     laserTrigger = 0
                     // choose correct stimulus number based on odds; block2 tr number does not get assigned if ! doBlock2 
                     if (pythonStimSelect == 0) {
-                        if (doRand == 1) 
+                        if (doRand == 1) {
                             tStimulusNumber = svRandStimNumber
                         }
                         if (doRand == 0) {

@@ -2,13 +2,10 @@ import math
 import numpy
 import random
 
-if tTrialsDoneSinceStart == 0:
-	usedList = []
-else:
-	usedList = getvar('usedList')
+usedList = getvar('usedList')
 
 nStimCond = getvar('nStimCond')
-stimList = list(range(0,nStimCond*5-1))
+stimList = list(range(0,nStimCond*5))
 
 unUsedList = list(set(usedList).symmetric_difference(set(stimList)))
 if len(unUsedList)==0:
