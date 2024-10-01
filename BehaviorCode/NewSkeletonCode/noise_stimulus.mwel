@@ -1,0 +1,139 @@
+python_file ('noise_stimulus.py')
+
+
+var capture_display_image = false
+
+stimulus_display (
+    capture_format = PNG
+    capture_enabled = capture_display_image
+    )
+
+
+white_noise_background noise (
+    randomize_on_draw = true
+    )
+
+
+var noise_duration = 0.5s
+var noise_frames_per_trial = ceil(refresh_rate() * noise_duration / 1e6)
+var noise_frames_ended = false
+
+frame_list noise_frames (
+    ended = noise_frames_ended
+    autoplay = true
+    deferred = explicit
+    ) {
+    range_replicator (
+        variable = rr_index
+        from = 1
+        to = noise_frames_per_trial
+        step = 1
+    ) {
+        image_file noise_frame_${rr_index} (
+            path = 'images/trial_${trial_number}/frame_${rr_index}.png'
+            fullscreen = true
+            deferred = explicit
+            )
+    }
+}
+
+
+var num_trials = 3
+
+var trial_number = 0
+var image_number = 0
+
+
+protocol 'Present noise' {
+    task {
+        state 'Start' {
+            trial_number = 0
+
+            goto ('Begin trial')
+        }
+
+        state 'Begin trial' {
+            trial_number += 1
+
+            noise_frames_ended = false
+            load_stimulus (noise_frames)
+            queue_stimulus (noise_frames)
+            update_display ()
+
+            goto (
+                target = 'End trial'
+                when = noise_frames_ended
+                )
+        }
+
+        state 'End trial' {
+            dequeue_stimulus (noise_frames)
+            update_display ()
+            unload_stimulus (noise_frames)
+
+            wait (1s)
+
+            goto (
+                target = 'Begin trial'
+                when = trial_number < num_trials
+                )
+            goto ('Stop')
+        }
+
+        state 'Stop' {
+            yield ()
+        }
+    }
+}
+
+
+protocol 'Generate noise' {
+    task {
+        state 'Start' {
+            queue_stimulus (noise)
+            trial_number = 0
+
+            goto ('Begin trial')
+        }
+
+        state 'Begin trial' {
+            trial_number += 1
+            image_number = 0
+
+            goto ('Capture image')
+        }
+
+        state 'Capture image' {
+            image_number += 1
+            capture_display_image = true
+            update_display ()
+
+            goto (
+                target = 'Capture complete'
+                when = not capture_display_image
+                )
+        }
+
+        state 'Capture complete' {
+            goto (
+                target = 'Capture image'
+                when = image_number < noise_frames_per_trial
+                )
+            goto ('End trial')
+        }
+
+        state 'End trial' {
+            goto (
+                target = 'Begin trial'
+                when = trial_number < num_trials
+                )
+            goto ('Stop')
+        }
+
+        state 'Stop' {
+            clear_display ()
+
+            yield ()
+        }
+    }
+}
