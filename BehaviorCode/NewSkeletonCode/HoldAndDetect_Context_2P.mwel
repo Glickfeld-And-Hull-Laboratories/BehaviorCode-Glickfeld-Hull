@@ -236,7 +236,35 @@ group Stimuli {
     var gratingEdge = 0.125 (
         persistant = 1
         groups = 'Grating Parameters'
-        ) 
+        )
+    var doPhotodiode = (bool)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusContrast = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusAzimuth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusElevation = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusWidth = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusHeight = 0 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoMaskSpatialFreq = (float)(0) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )     
     var baseGratingDirectionDeg = 0 (
         persistant = 1
         groups = 'Stimulus Parameters'
@@ -949,7 +977,42 @@ opaque_grating border (
     azimuth_deg = tGratingAzimuthDeg
     elevation_deg = tGratingElevationDeg
     contrast = 0
-    )        
+    )
+
+drifting_grating photoDiodeGrating (
+    direction = 0
+    autoplay = YES
+    starting_phase = 0
+    spatial_frequency = .000000000001
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = photoStimulusContrast
+    )
+drifting_grating photoDiodeMask (
+    direction = 0
+    autoplay = YES
+    starting_phase = 180
+    spatial_frequency = photoMaskSpatialFreq
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = 1
+    )            
     
 
 //
@@ -996,6 +1059,12 @@ protocol JuiceOnHoldProtocol {
                 if (success+ignore+failure > 0) {
                     isFirstTrial=0
                 }
+
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    update_stimulus_display ()
+                }
+
                 tTrialStartMWTimestampMs = now()/1000
                 // integer valued ms timestamp 
                 strobedDigitalWord = 170
@@ -1704,6 +1773,10 @@ protocol JuiceOnHoldProtocol {
                     }
                     setBaseGratingContrast = tBaseGratingContrast
                     live_queue_stimulus (base)
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeMask)
+                        update_stimulus_display ()
+                    }
                 }
                 update_stimulus_display ()
                 // turn on trial laser if requested 
@@ -1747,8 +1820,12 @@ protocol JuiceOnHoldProtocol {
                     queue_stimulus (surround)
                     queue_stimulus (border)
                     queue_stimulus (target)
-                    update_stimulus_display ()
                     strobedDigitalWord = 4
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeGrating)
+                        dequeue_stimulus (photoDiodeMask)
+                    }
+                    update_stimulus_display ()
                 }
                 play_sound (targetSound)
                 // laser stim on 
@@ -1792,6 +1869,10 @@ protocol JuiceOnHoldProtocol {
                         if (doITIStim) {
                             setBaseGratingContrast = itiContrast
                             live_queue_stimulus (base)
+                        }
+                        if (doPhotodiode) {
+                            live_queue_stimulus (photoDiodeMask)
+                            dequeue_stimulus (photoDiodeGrating)
                         }
                         update_stimulus_display ()
                         tStimTurnedOn = 0
@@ -1888,6 +1969,7 @@ protocol JuiceOnHoldProtocol {
                 dequeue_stimulus (surround)
                 queue_stimulus (border)
                 dequeue_stimulus (target)
+
                 report ('~~~~~~~~~tBaseGratingDirectionDeg is $tBaseGratingDirectionDeg  EarlyRelease')
                 if (doITIStim) {
                     if (doRandBaseOri) {
@@ -1901,6 +1983,10 @@ protocol JuiceOnHoldProtocol {
                 }
                 if (doITIStim==0) {
                     dequeue_stimulus (base)
+                    update_stimulus_display ()
+                }
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
                     update_stimulus_display ()
                 }
                 update_stimulus_display ()
@@ -1983,6 +2069,10 @@ protocol JuiceOnHoldProtocol {
                 if (doITIStim==1) {
                     setBaseGratingContrast = itiContrast
                     live_queue_stimulus (base)
+                }
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    update_stimulus_display ()
                 }
                 update_stimulus_display ()
                 goto (GiveReward)
@@ -2102,6 +2192,10 @@ protocol JuiceOnHoldProtocol {
                     tBaseGratingContrast = itiContrast
                     live_queue_stimulus (base)
                 }
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    update_stimulus_display ()
+                }
                 update_stimulus_display ()
                 goto (
                     target = PossibleEndTimeout
@@ -2144,6 +2238,10 @@ protocol JuiceOnHoldProtocol {
                 update_stimulus_display ()
                 if (doITIStim == 0) {
                     dequeue_stimulus (base)
+                    update_stimulus_display ()
+                }
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
                     update_stimulus_display ()
                 }
                 if (doRandBaseOri) {

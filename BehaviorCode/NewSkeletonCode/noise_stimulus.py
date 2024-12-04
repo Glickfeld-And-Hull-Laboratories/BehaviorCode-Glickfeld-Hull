@@ -3,11 +3,11 @@ import time
 
 
 # Absolute path to the directory where the noise images are stored
-imagepath = ('/Users/cstawarz/Documents/Work/McGovern/mworks/'
-             'mworks-user-examples/Lindsey/noise_stimulus/capture/images')
+fname = getvar('folderName')
+imagepath = ('/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/images/NoiseStimulusCapture/' + fname)
 
 # Name of the subdirectory for the current session (date and time stamp)
-sessiondir = time.strftime('%Y%m%d-%H%M%S')
+sessiondir = '.' #time.strftime('%Y%m%d-%H%M%S')
 
 # In order for MWorks to access the noise image directory, we need to create a
 # symbolic link to it inside the current working directory
