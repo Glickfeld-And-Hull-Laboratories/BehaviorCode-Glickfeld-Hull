@@ -241,6 +241,10 @@ group Stimuli {
         persistant = 1
         groups = 'Distractor One Parameters'
         )
+    var distractOneMatchTargetOne = (float)(0) (
+        persistant = 1
+        groups = 'Distractor One Parameters'
+        )
     var distractOneGratingContrastStepN = (float)(5) (
         persistant = 1
         groups = 'Distractor One Parameters'
@@ -1053,15 +1057,28 @@ protocol JuiceOnHoldProtocol {
                 tTargetOneGratingSpatialFreqCPD = targetOneGratingSpatialFreqCPD
                 tTargetOneGratingTemporalFreqCPS = targetOneGratingTemporalFreqCPS
                 tTargetOneGratingPhaseDeg = targetOneGratingPhaseDeg
-                tDistractOneGratingDirectionDeg = distractOneGratingDirectionDeg
-                tDistractOneGratingContrast = distractOneGratingContrast
-                tDistractOneGratingPhaseDeg = distractOneGratingPhaseDeg
-                tDistractOneGratingTemporalFreqCPS = distractOneGratingTemporalFreqCPS
-                tDistractOneGratingSpatialFreqCPD = distractOneGratingSpatialFreqCPD
-                tDistractOneGratingAzimuthDeg = distractOneGratingAzimuthDeg
-                tDistractOneGratingElevationDeg = distractOneGratingElevationDeg
-                tDistractOneGratingDiameterDeg = distractOneGratingDiameterDeg 
-                tStimTwoDoVisualStim = stimTwoDoVisualStim
+                if (!distractOneMatchTargetOne) {
+                    tDistractOneGratingDirectionDeg = distractOneGratingDirectionDeg
+                    tDistractOneGratingContrast = distractOneGratingContrast
+                    tDistractOneGratingPhaseDeg = distractOneGratingPhaseDeg
+                    tDistractOneGratingTemporalFreqCPS = distractOneGratingTemporalFreqCPS
+                    tDistractOneGratingSpatialFreqCPD = distractOneGratingSpatialFreqCPD
+                    tDistractOneGratingAzimuthDeg = distractOneGratingAzimuthDeg
+                    tDistractOneGratingElevationDeg = distractOneGratingElevationDeg
+                    tDistractOneGratingDiameterDeg = distractOneGratingDiameterDeg 
+                    tStimTwoDoVisualStim = stimTwoDoVisualStim
+                }
+                if (distractOneMatchTargetOne) {
+                    tDistractOneGratingDirectionDeg = targetOneGratingDirectionDeg
+                    tDistractOneGratingContrast = targetOneGratingContrast
+                    tDistractOneGratingPhaseDeg = targetOneGratingPhaseDeg
+                    tDistractOneGratingTemporalFreqCPS = targetOneGratingTemporalFreqCPS
+                    tDistractOneGratingSpatialFreqCPD = targetOneGratingSpatialFreqCPD
+                    tDistractOneGratingAzimuthDeg = targetOneGratingAzimuthDeg
+                    tDistractOneGratingElevationDeg = targetOneGratingElevationDeg
+                    tDistractOneGratingDiameterDeg = targetOneGratingDiameterDeg 
+                    tStimTwoDoVisualStim = stimTwoDoVisualStim
+                }
                 tDoMatrix = doMatrix
                 tDoRandISITime = doRandISITime
                 tDoRandStimOnTime = doRandStimOnTime
@@ -1083,13 +1100,24 @@ protocol JuiceOnHoldProtocol {
                     tTargetTwoGratingSpatialFreqCPD = targetOneGratingSpatialFreqCPD
                     tTargetTwoGratingTemporalFreqCPS = targetOneGratingTemporalFreqCPS
                     tTargetTwoGratingPhaseDeg = targetOneGratingPhaseDeg
-                    tDistractTwoGratingDirectionDeg = distractOneGratingDirectionDeg
-                    tDistractTwoGratingContrast = distractOneGratingContrast
-                    tDistractTwoGratingPhaseDeg = distractOneGratingPhaseDeg
-                    tDistractTwoGratingSpatialFreqCPD = distractOneGratingSpatialFreqCPD
-                    tDistractTwoGratingAzimuthDeg = distractOneGratingAzimuthDeg
-                    tDistractTwoGratingElevationDeg = distractOneGratingElevationDeg
-                    tDistractTwoGratingDiameterDeg = distractOneGratingDiameterDeg 
+                    if (!distractOneMatchTargetOne) {
+                        tDistractTwoGratingDirectionDeg = distractOneGratingDirectionDeg
+                        tDistractTwoGratingContrast = distractOneGratingContrast
+                        tDistractTwoGratingPhaseDeg = distractOneGratingPhaseDeg
+                        tDistractTwoGratingSpatialFreqCPD = distractOneGratingSpatialFreqCPD
+                        tDistractTwoGratingAzimuthDeg = distractOneGratingAzimuthDeg
+                        tDistractTwoGratingElevationDeg = distractOneGratingElevationDeg
+                        tDistractTwoGratingDiameterDeg = distractOneGratingDiameterDeg 
+                    }
+                    if (distractOneMatchTargetOne) {
+                        tDistractTwoGratingDirectionDeg = targetOneGratingDirectionDeg
+                        tDistractTwoGratingContrast = targetOneGratingContrast
+                        tDistractTwoGratingPhaseDeg = targetOneGratingPhaseDeg
+                        tDistractTwoGratingSpatialFreqCPD = targetOneGratingSpatialFreqCPD
+                        tDistractTwoGratingAzimuthDeg = targetOneGratingAzimuthDeg
+                        tDistractTwoGratingElevationDeg = targetOneGratingElevationDeg
+                        tDistractTwoGratingDiameterDeg = targetOneGratingDiameterDeg 
+                    }
                 }
                 if (!matchTargetOneParameters) {
                     tStimTwoGratingOnTimeMs = stimTwoGratingOnTimeMs
@@ -1148,13 +1176,25 @@ protocol JuiceOnHoldProtocol {
                 if (tDoRandDir) {
                     tTempStim1 = tStimulusNumber % targetOneGratingDirectionStepN
                     tTargetOneGratingDirectionDeg = targetOneGratingDirectionDeg + (targetOneGratingDirectionStepDeg * (tTempStim1))
-                    tDistractOneGratingDirectionDeg = tTargetOneGratingDirectionDeg + distractOneGratingDirectionDeg
+                    if (!distractOneMatchTargetOne) {
+                        tDistractOneGratingDirectionDeg = tTargetOneGratingDirectionDeg + distractOneGratingDirectionDeg
+                    }
+                    if (distractOneMatchTargetOne) {
+                        tDistractOneGratingDirectionDeg = tTargetOneGratingDirectionDeg
+                    }
                     if (matchTargetOneParameters) {
                         tTargetTwoGratingDirectionDeg = tTargetOneGratingDirectionDeg
+                        tDistractTwoGratingDirectionDeg = tDistractOneGratingDirectionDeg
                     }
                     if (!matchTargetOneParameters) {
                         tTempStim2 = tStimulusNumber2 % targetTwoGratingDirectionStepN
                         tTargetTwoGratingDirectionDeg = targetTwoGratingDirectionDeg + (targetTwoGratingDirectionStepDeg * (tTempStim2))
+                        if (!distractOneMatchTargetOne) {
+                            tDistractTwoGratingDirectionDeg = tTargetTwoGratingDirectionDeg + distractTwoGratingDirectionDeg
+                        }
+                        if (distractOneMatchTargetOne) {
+                            tDistractTwoGratingDirectionDeg = tTargetTwoGratingDirectionDeg
+                        }
                     }
                 }
                 if (tDoDistRandDir) {
@@ -1281,6 +1321,30 @@ protocol JuiceOnHoldProtocol {
                             tDistractTwoGratingAzimuthDeg = tDistractOneGratingAzimuthDeg
                         }        
                     }
+                    if (tDoRandDir && tDoRandSF) {
+                        tTempStim1 = tStimulusNumber % (targetOneGratingDirectionStepN * targetOneGratingSpatialFreqStepN)
+                        if (tTempStim1 < targetOneGratingDirectionStepN) {
+                            tTargetOneGratingDirectionDeg = targetOneGratingDirectionDeg + (targetOneGratingDirectionStepDeg * (tTempStim1))
+                            if (!distractOneMatchTargetOne) {
+                                tDistractOneGratingDirectionDeg = tTargetOneGratingDirectionDeg + distractOneGratingDirectionDeg
+                            }
+                            if (distractOneMatchTargetOne) {
+                                tDistractOneGratingDirectionDeg = tTargetOneGratingDirectionDeg
+                            }
+                        }
+                        if (tTempStim1 >= targetOneGratingDirectionStepN) {
+                            tTargetOneGratingDirectionDeg = targetOneGratingDirectionDeg+ (targetOneGratingDirectionStepDeg * ((tTempStim1) % targetOneGratingDirectionStepN))
+                            tTargetOneGratingSpatialFreqCPD = targetOneGratingSpatialFreqCPD * pow(targetOneGratingSpatialFreqStepLog, (floor(tTempStim1 / targetOneGratingDirectionStepN)))
+                            if (!distractOneMatchTargetOne) {
+                                tDistractOneGratingDirectionDeg = tTargetOneGratingDirectionDeg + distractOneGratingDirectionDeg
+                                tDistractOneGratingSpatialFreqCPD = distractOneGratingSpatialFreqCPD * pow(targetOneGratingSpatialFreqStepLog, (floor(tTempStim1 / distractOneGratingDirectionStepN)))
+                            }
+                            if (distractOneMatchTargetOne) {
+                                tDistractOneGratingDirectionDeg = tTargetOneGratingDirectionDeg
+                                tDistractOneGratingSpatialFreqCPD = tTargetOneGratingSpatialFreqCPD
+                            }
+                        } 
+                    }   
                 }        
                     
                 if (tDistractOneGratingContrast==0 || tTargetOneGratingContrast==0) {
