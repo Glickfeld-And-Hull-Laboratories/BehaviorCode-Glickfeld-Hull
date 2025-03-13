@@ -25,11 +25,11 @@ for iF = 1:length(matFields)
     tF = bs.(tFN);
     desDim = size(tF);
     
-    if length(desDim)<3
-        bs.(tFN) = tF{block2N};
-        tF = bs.(tFN);
-        desDim = size(tF);
-    end
+    % if length(desDim)<3
+    %     bs.(tFN) = tF{block2N};
+    %     tF = bs.(tFN);
+    %     desDim = size(tF);
+    % end
     
     assert(~isempty(desDim), ['bug: field #' num2str(iF) ' not found']);
     
