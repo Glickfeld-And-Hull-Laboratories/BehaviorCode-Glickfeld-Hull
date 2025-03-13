@@ -637,6 +637,10 @@ group 'Internal Variables' {
     var frameCountN = 0
     var DoWheelSpeed = (bool)(0)
     var speedIntervalUS = (float)(0)
+    var cStimOn = 0
+    var cStimOff = 0
+    var tStimOnTimeUs = 0
+    var tStimOffTimeUs = 0
     var usedList = []
     selection svRandStimNumber (
         values = 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89
@@ -1396,6 +1400,8 @@ protocol JuiceOnHoldProtocol {
                     }
                     // update display, finalize variables 
                     update_stimulus_display ()
+                    cStimOn = counter
+                    tStimOnTimeUs = now()
                     MIO0 = 1
                     report ('Visual Stim ON, presenting for $nScansOn scans.')
                     report ('Laser trial and power is $tTrialLaserPowerMw_trigger')
@@ -1463,9 +1469,12 @@ protocol JuiceOnHoldProtocol {
                     tGratingStartingPhaseDeg = tGratingStartingPhaseDeg+180
                     setGratingStartingPhaseDeg = tGratingStartingPhaseDeg
                     queue_stimulus (target_grating_gaussian)
+                    if (doPhotodiode) {
+                        queue_stimulus (photoDiodeGrating)
+                        dequeue_stimulus (photoDiodeMask)
+                    }
                     update_stimulus_display ()
                     report ('Phase reverse- phase is $setGratingStartingPhaseDeg')
-                    // <action type="report" message="Diameter is $tGratingDiameterDeg"/> 
                     goto (
                         target = EndTrial
                         when = counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)
@@ -1552,6 +1561,8 @@ protocol JuiceOnHoldProtocol {
                         live_queue_stimulus (base_grating)
                         update_stimulus_display ()
                     }
+                    cStimOff = counter
+                    tStimOffTimeUs = now()
                     MIO0 = 0
                     // Must use next selection and reset selection here to move through rand/seq
                     if (pythonStimSelect == 0) { 

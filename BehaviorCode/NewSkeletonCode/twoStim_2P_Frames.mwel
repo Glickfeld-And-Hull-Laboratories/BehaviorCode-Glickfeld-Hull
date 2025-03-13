@@ -2433,7 +2433,7 @@ protocol JuiceOnHoldProtocol {
                     }    
                 }
                 if (tDoMatrix) {                    
-                    if (tDoRandDir && tDoRandSF) {
+                    if (tDoRandDir && tDoRandSF && !tDoRandPos) {
                         tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingSpatialFreqStepN)
                         if (tTempStim1 < stimOneGratingDirectionStepN) {
                             tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
@@ -2461,6 +2461,35 @@ protocol JuiceOnHoldProtocol {
                                 tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg
                                 tStimTwoGratingSpatialFreqCPD = stimTwoGratingSpatialFreqCPD * pow(stimTwoGratingSpatialFreqStepLog, (floor(tTempStim2 / stimTwoGratingDirectionStepN)))
                             }    
+                        }
+                    }
+
+                    if (tDoRandDir && tDoRandSF && tDoRandPos) {
+                        tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingSpatialFreqStepN)
+                        if (tTempStim1 < stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
+                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
+                            tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD
+                        }
+                        if (tTempStim1 >= stimOneGratingDirectionStepN) {
+                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg+ (stimOneGratingDirectionStepDeg * ((tTempStim1) % stimOneGratingDirectionStepN))
+                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
+                            tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD * pow(stimOneGratingSpatialFreqStepLog, (floor(tTempStim1 / stimOneGratingDirectionStepN)))
+                        }
+                        tTempStim2 = tStimulusNumber2 % (stimOneGratingElevationStepN * stimOneGratingAzimuthStepN)
+                        if (tTempStim2 < stimOneGratingAzimuthStepN) {
+                            tStimOneGratingAzimuthDeg = stimOneGratingAzimuthDeg + (stimOneGratingAzimuthStepDeg * (tTempStim2))
+                            tStimOneGratingElevationDeg = stimOneGratingElevationDeg
+                        }
+                        if (tTempStim2 >= stimOneGratingAzimuthStepN) {
+                            tStimOneGratingAzimuthDeg = stimOneGratingAzimuthDeg+ (stimOneGratingAzimuthStepDeg * ((tTempStim2) % stimOneGratingAzimuthStepN))
+                            tStimOneGratingElevationDeg = stimOneGratingElevationDeg+ (stimOneGratingElevationStepDeg * (floor(tTempStim2 / stimOneGratingAzimuthStepN)))
+                        }
+                        if (matchStimOneParameters) {
+                            tStimTwoGratingAzimuthDeg = tStimOneGratingAzimuthDeg
+                            tStimTwoGratingElevationDeg = tStimOneGratingElevationDeg
+                            tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
+                            tStimTwoGratingSpatialFreqCPD = tStimOneGratingSpatialFreqCPD
                         }
                     }
 

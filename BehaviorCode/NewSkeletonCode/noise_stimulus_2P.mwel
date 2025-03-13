@@ -20,19 +20,17 @@ iodevice/labjacku6 LabJackU6 (
     )
 
 group 'Experiment variables' {
-var subjectNum = 999
-var folderName = '5min_2deg_3rep' (persistant = 1)
+var subjNum = 999
+var folderName = 'test'
 var capture_display_image = false
     }
     
 group 'Stimulus' {    
-var noise_duration = 300s (persistant = 1)
-var frames_per_second = 10 (persistant = 1)
-var noise_frames_per_trial = ceil(frames_per_second * noise_duration / 1e6)
+var noise_duration = 60s
+var noise_frames_per_trial = ceil(refresh_rate() * noise_duration / 1e6)
 var noise_frames_ended = false
-var grainDeg = 2 (persistant = 1)
-var num_trials = 1 (persistant = 1)
-var itiTime = 5s (persistant = 1)
+var grainDeg = 2
+var itiTime = 5s
     }
 
 group 'Hardware variables' {
@@ -58,8 +56,6 @@ group 'Hardware variables' {
     var sync = 0
     }
 
-python_file ('noise_stimulus.py')
-
 stimulus_display (
     capture_format = PNG
     capture_enabled = capture_display_image
@@ -67,10 +63,12 @@ stimulus_display (
 
 white_noise_background noise (
     randomize_on_draw = true
-    grain_size = grainDeg)
+    grain_size = grainDeg
+    )
 
-movie noise_frames (
-    frames_per_second = frames_per_second
+python_file ('noise_stimulus.py')
+
+frame_list noise_frames (
     ended = noise_frames_ended
     autoplay = true
     deferred = explicit
@@ -78,7 +76,7 @@ movie noise_frames (
     range_replicator (
         variable = rr_index
         from = 1
-        to = 3000 //hard code max frames
+        to = noise_frames_per_trial
         step = 1
     ) {
         image_file noise_frame_${rr_index} (
@@ -90,20 +88,20 @@ movie noise_frames (
 }
 
 
-
+var num_trials = 3
 
 var trial_number = 0
 var image_number = 0
 
 
 protocol 'Present noise' {
+    start_device_io (LabJackU6)
+    counter = 0
     task {
         state 'Start' {
-            trial_number = 1
-            start_device_io (LabJackU6)
+            trial_number += 1
             sync = 1
             load_stimulus (noise_frames)
-            report('Waiting for triggers')
             goto (
             target = 'Begin trial'
             when = counter >= 30
@@ -111,21 +109,17 @@ protocol 'Present noise' {
         }
 
         state 'ITI' {
-            start_timer (
-                    timer = interTrialTimer
-                    duration = itiTime
-                    )
+            
             trial_number += 1
             load_stimulus (noise_frames)
-            timer_expired (
-                    target = 'Begin trial'
-                    timer = interTrialTimer
-                    )
+
         }
 
         state 'Begin trial' {
-            report('Begin trial')
+            
+
             noise_frames_ended = false
+            
             queue_stimulus (noise_frames)
             update_display ()
 
@@ -139,7 +133,8 @@ protocol 'Present noise' {
             dequeue_stimulus (noise_frames)
             update_display ()
             unload_stimulus (noise_frames)
-            sync = 0
+            load_stimulus (noise_frames)
+
             goto (
                 target = 'ITI'
                 when = trial_number < num_trials
@@ -148,9 +143,11 @@ protocol 'Present noise' {
         }
 
         state 'Stop' {
+            sync = 0
             yield ()
         }
     }
+    stop_device_io (LabJackU6)
 }
 
 
