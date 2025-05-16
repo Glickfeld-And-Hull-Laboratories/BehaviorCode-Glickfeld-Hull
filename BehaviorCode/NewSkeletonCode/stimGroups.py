@@ -31,5 +31,10 @@ if 'grat_SF6_allen_nat8' in setsWanted:
 
 if 'allen_nat5' in setsWanted:
     imageList.extend([1, 2, 3, 4, 5])
-	
+
+if 'NatPlusNoise' in setsWanted:
+    imageList.extend([1, 2, 3, 4, 5, 6, 7, 8])
+if 'NoiseOnly' in setsWanted:
+    imageList.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])    
+
 setvar('stimList', imageList) #set list of images desired in mworks

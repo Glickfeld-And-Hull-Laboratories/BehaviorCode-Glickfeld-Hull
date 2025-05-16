@@ -49,7 +49,9 @@ group 'Behavioral Control' {
     var optic_device = 'led'
     var experimentXmlTrialId = 8 (persistant = 1)
     // n.b. it is forcibly set each trial below 
-    var subjectNum = 999
+    var subjectNum = 999 (
+        persistant = 1
+        )
 }
 group 'Hardware Variables' {
     var FIO1 = 0
@@ -77,7 +79,7 @@ group 'Stimuli Variables' {
     var ySize = 30.0 (persistant = 1)
     var xPosition = 0.0 (persistant = 1)
     var yPosition = 0.0 (persistant = 1)
-    var numImages = 14 (persistant = 1) // TODO: update when change stim
+    var numImages = 12 (persistant = 1) // TODO: update when change stim
     var maskType = 'gaussian' (
         persistant = 1
         groups = 'Grating Parameters'
@@ -141,7 +143,7 @@ group 'Trial Variables' {
     var stimOne = (float)(0) (persistant = 1)
     var stimTwo = (float)(0) (persistant = 1)
     var stimOneOffChance = 0
-    var stimList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] (persistant = 1) // this get rewritten by stimgroup.py - just here to initialize
+    var stimList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] (persistant = 1) // this get rewritten by stimgroup.py - just here to initialize
     var setList = ['grat_SF6_allen_nat8'] (persistant = 1) // stimgroup.py input setlist to get stimlist
     var tNStimAccepted = 0
     var tNStim2Accepted = 0	
@@ -201,7 +203,7 @@ stimulus_group images {
     // load image stimuli 
     range_replicator (
         from = 1 // always 1-based indexing, if meaningful img start from 1.png (and 0.png is a gray background)
-        to = 14 // update when using new paradigm. value should be n_img. TODO: update when change stim
+        to = 12 // update when using new paradigm. value should be n_img. TODO: update when change stim
         step = 1
         variable = index
         ) {
@@ -313,12 +315,12 @@ protocol 'New Protocol' {
                     tstimOne = 0
                 }
                 // loading images 
-                load_stimulus (images[tstimOne])
+                load_stimulus (images[tstimOne-1])
                 wait (
                     duration = 0.1
                     duration_units = s
                     )
-                load_stimulus (images[tstimTwo])
+                load_stimulus (images[tstimTwo-1])
                 wait (
                     duration = 0.1
                     duration_units = s
@@ -344,7 +346,7 @@ protocol 'New Protocol' {
             }
             state StimOneOn {
                 ntrials = ntrials + 1
-                queue_stimulus (images[tstimOne])
+                queue_stimulus (images[tstimOne-1])
                 if (maskType == 'gaussian') {
                     live_queue_stimulus (gray_surround) // draw masked rectangle after stim1 to be in the front
                 }
@@ -359,7 +361,7 @@ protocol 'New Protocol' {
             }
             state StimOneOff {
                 report (StimOneOff)
-                dequeue_stimulus (images[tstimOne])
+                dequeue_stimulus (images[tstimOne-1])
                 dequeue_stimulus (gray_surround)
                 dequeue_stimulus (photoDiodeWhite)
                 update_stimulus_display ()
@@ -370,7 +372,7 @@ protocol 'New Protocol' {
                     )
             }
             state StimTwoOn {
-                queue_stimulus (images[tstimTwo])
+                queue_stimulus (images[tstimTwo-1])
                 if (maskType == 'gaussian') {
                     live_queue_stimulus (gray_surround)
                 }
@@ -385,13 +387,13 @@ protocol 'New Protocol' {
             }
             state StimTwoOff {
                 report (StimTwoOff)
-                dequeue_stimulus (images[tstimTwo])
+                dequeue_stimulus (images[tstimTwo-1])
                 dequeue_stimulus (gray_surround)
                 dequeue_stimulus (photoDiodeWhite)
                 update_stimulus_display ()
                 cStimTwoOff = counter
-                unload_stimulus (images[tstimOne])
-                unload_stimulus (images[tstimTwo])
+                unload_stimulus (images[tstimOne-1])
+                unload_stimulus (images[tstimTwo-1])
                 goto (
                     target = 'End Trial'
                     when = counter  >= (cStimTwoOff + 3)
