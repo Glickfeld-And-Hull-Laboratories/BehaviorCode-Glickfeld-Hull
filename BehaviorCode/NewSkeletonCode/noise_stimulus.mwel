@@ -1,0 +1,253 @@
+iodevice/labjacku6 LabJackU6 (
+    pulse_duration = juice
+    pulse_on = juice
+    lever1 = FIO1
+    lever1_solenoid = MIO0
+    laser_trigger = laserTrigger
+    optic_device = optic_device
+    strobed_digital_word = strobedDigitalWord
+    counter = counter
+    do2led = do2led
+    led_seq = led_seq
+    LED_duration = LED_durationMS
+    led1_status = led1_status
+    led2_status = led2_status
+    do_wheelspeed = DoWheelSpeed
+    ws_durationUS = speedIntervalUS
+    wheel_speed = wheelSpeed
+    doCB = doCerebellarStim
+    quadrature = quadrature
+    )
+
+group 'Experiment variables' {
+var subjectNum = 999
+var folderName = '5min_2deg_3rep' (persistant = 1)
+var capture_display_image = false
+    }
+    
+group 'Stimulus' {  
+var start_trigger_number = 1 (persistant = 1)  
+var noise_duration = 300s (persistant = 1)
+var frames_per_second = 10 (persistant = 1)
+var noise_frames_per_trial = ceil(frames_per_second * noise_duration / 1e6)
+var noise_frames_ended = false
+var grainDeg = 2 (persistant = 1)
+var num_trials = 1 (persistant = 1)
+var itiTime = 5s (persistant = 1)
+var noiseSize = 50 (persistant = 1)
+var photo_frames_per_second = 20 (persistant = 1)
+var photoStimulusAzimuth = 46.8 (persistant = 1)
+var photoStimulusElevation = -24.5 (persistant = 1)
+    }
+
+group 'Hardware variables' {
+    var FIO1 = 0
+    var MIO0 = (bool)(0)
+    var laserTrigger = (bool)(0)
+    var strobedDigitalWord = 0
+    var juice = 0
+    var sendLaserParams = 0
+    var sendSerialParams = 0
+    var counter = 0
+    var do2led = (bool)(0)
+    var LED_durationMS = (float)(0)
+    var led1_status = (bool)(0)
+    var led2_status = (bool)(0)
+    var led_seq = [1,1,1,2]
+    var quadrature = 0 
+    var optic_device = 'led'
+    var doCerebellarStim = 0
+    var DoWheelSpeed = 0
+    var speedIntervalUS = 0
+    var wheelSpeed = 0
+    var sync = 0
+    }
+
+python_file ('noise_stimulus.py')
+
+stimulus_display (
+    capture_format = PNG
+    capture_enabled = capture_display_image
+    )
+
+white_noise_background noise (
+    randomize_on_draw = true
+    grain_size = grainDeg)
+
+movie noise_frames (
+    frames_per_second = frames_per_second
+    ended = noise_frames_ended
+    autoplay = true
+    deferred = explicit
+    ) {
+    range_replicator (
+        variable = rr_index
+        from = 1
+        to = 3000 //hard code max frames
+        step = 1
+    ) {
+        image_file noise_frame_${rr_index} (
+            path = 'images/trial_${trial_number}/frame_${rr_index}.png'
+            fullscreen = true
+            deferred = explicit
+            )
+        }
+    }
+
+movie photo_frames (
+    frames_per_second = photo_frames_per_second
+    ended = noise_frames_ended
+    autoplay = true
+    deferred = explicit
+    loop = true
+    ) {
+        rectangle photoRectOn (
+        color = 1,1,1
+        x_size = 8
+        y_size = 8
+        x_position = photoStimulusAzimuth
+        y_position = photoStimulusElevation
+        )
+        rectangle photoRectOff (
+        color = 0,0,0
+        x_size = 8
+        y_size = 8
+        x_position = photoStimulusAzimuth
+        y_position = photoStimulusElevation
+        )  
+    }
+    
+
+layer square_mask {
+    rectangle (
+    color = 0.5,0.5,0.5
+    x_size = 1000
+    ) 
+    mask (
+    mask = rectangle
+    inverted  = true
+    x_size = noiseSize
+    )
+}
+
+
+
+var trial_number = 0
+var image_number = 0
+
+
+protocol 'Present noise' {
+    task {
+        state 'Start' {
+            trial_number = 1
+            start_device_io (LabJackU6)
+            sync = 1
+            load_stimulus (noise_frames)
+            load_stimulus (photo_frames)
+            report('Waiting for triggers')
+            goto (
+            target = 'Begin trial'
+            when = counter >= start_trigger_number
+            )
+        }
+
+        state 'ITI' {
+            start_timer (
+                    timer = interTrialTimer
+                    duration = itiTime
+                    )
+            trial_number += 1
+            load_stimulus (noise_frames)
+            load_stimulus (photo_frames)
+            timer_expired (
+                    target = 'Begin trial'
+                    timer = interTrialTimer
+                    )
+        }
+
+        state 'Begin trial' {
+            report('Begin trial')
+            noise_frames_ended = false
+            queue_stimulus (noise_frames)
+            queue_stimulus (square_mask)
+            queue_stimulus (photo_frames)
+            update_display ()
+
+            goto (
+                target = 'End trial'
+                when = noise_frames_ended
+                )
+        }
+
+        state 'End trial' {
+            dequeue_stimulus (noise_frames)
+            dequeue_stimulus (square_mask)
+            dequeue_stimulus (photo_frames)
+            update_display ()
+            unload_stimulus (noise_frames)
+            unload_stimulus (photo_frames)
+            sync = 0
+            goto (
+                target = 'ITI'
+                when = trial_number < num_trials
+                )
+            goto ('Stop')
+        }
+
+        state 'Stop' {
+            yield ()
+        }
+    }
+}
+
+
+protocol 'Generate noise' {
+    task {
+        state 'Start' {
+            queue_stimulus (noise)
+            trial_number = 0
+
+            goto ('Begin trial')
+        }
+
+        state 'Begin trial' {
+            trial_number += 1
+            image_number = 0
+
+            goto ('Capture image')
+        }
+
+        state 'Capture image' {
+            image_number += 1
+            capture_display_image = true
+            update_display ()
+
+            goto (
+                target = 'Capture complete'
+                when = not capture_display_image
+                )
+        }
+
+        state 'Capture complete' {
+            goto (
+                target = 'Capture image'
+                when = image_number < noise_frames_per_trial
+                )
+            goto ('End trial')
+        }
+
+        state 'End trial' {
+            goto (
+                target = 'Begin trial'
+                when = trial_number < num_trials
+                )
+            goto ('Stop')
+        }
+
+        state 'Stop' {
+            clear_display ()
+
+            yield ()
+        }
+    }
+}

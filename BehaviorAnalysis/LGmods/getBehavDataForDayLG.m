@@ -61,13 +61,13 @@ else
     %compatibility with new naming HHMM
     if ~exist(fName)
         rtc = behavConstsHADC8;
-        n  = dir([fName(1:(length(rtc.pathStr)+17)) '*']);
+        n  = dir([fName(1:length(fName)-4) '*']);
         if size(n,1) == 1
             fName = fullfile(rtc.pathStr, n.name);
             ds =  mwLoadData(fName, dIndex, lDebug);
         elseif size(n,1) > 1
             if ~isnan(uo.ChooseMats)
-                fName = [fName(1:(length(rtc.pathStr)+17)) '-' num2str(uo.ChooseMats) '.mat'];
+                fName = [fName(1:length(fName)-4) '-' num2str(uo.ChooseMats) '.mat'];
                 ds =  mwLoadData(fName, dIndex, lDebug);
             elseif uo.MergeMats == 1
                 for ifile = 1:size(n,1)
@@ -154,6 +154,9 @@ if outS.is2AFC == 0
         end
         if ds.doContrastDetect
             doContrast(1) = true;
+            if ds.doBlock2
+                doContrast(2) = true;
+            end
         else
             doContrast(1) = false;
         end
@@ -163,8 +166,6 @@ if outS.is2AFC == 0
             else
                 doContrast(2) = false;
             end
-        else
-            doContrast(2) = false;
         end
         if isfield(ds, 'doAuditoryDetect')
             doAuditory(1) = true;
