@@ -63,6 +63,16 @@ group 'Hardware variables' {
     var sync = 0
     }
 
+<<<<<<< HEAD
+=======
+action pulse_MIO0 {
+    MIO0 = 1
+    report("MIO0 HIGH")
+    wait (10ms)
+    MIO0 = 0
+    report("MIO0 LOW")
+}
+>>>>>>> origin/Master
 
 python_file ('noise_stimulus.py')
 
@@ -91,6 +101,7 @@ movie noise_frames (
             path = 'images/trial_${trial_number}/frame_${rr_index}.png'
             fullscreen = true
             deferred = explicit
+            draw_actions = pulse_MIO0
             )
         }
     }
