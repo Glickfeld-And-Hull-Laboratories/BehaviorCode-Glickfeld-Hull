@@ -173,6 +173,8 @@ protocol 'Present noise' {
             queue_stimulus (square_mask)
             queue_stimulus (photo_frames)
             update_display ()
+            MIO0 = 1
+            report("MIO0 HIGH")
 
             goto (
                 target = 'End trial'
@@ -181,6 +183,7 @@ protocol 'Present noise' {
         }
 
         state 'End trial' {
+            MIO0 = 0
             dequeue_stimulus (noise_frames)
             dequeue_stimulus (square_mask)
             dequeue_stimulus (photo_frames)
