@@ -325,6 +325,10 @@ group Stimuli {
         persistant = 1
         groups = Block2
         )
+    var blockLength = 40 (
+        persistant = 1
+        groups = Block2
+        )    
     var doBlock2SeparateReward = 0 (
         persistant = 1
         groups = 'Block2 Reward'
@@ -829,270 +833,123 @@ protocol JuiceOnHoldProtocol {
                     tITIUnexpectRewardNum = (int)(disc_rand(0,itiRewardUnexpectEveryN-1))
                     report ('the tITIUnexpectRewardNum is $tITIUnexpectRewardNum')
                 }
+
+                 if (doBlock2) {
+                     tBlock2TrialNumber == int(floor((success+ignore+failure)/blockLength) % 2)
+                     }
                 // level 1 
-                if ((tSvStimNumber < (trPer80Level1))) {
+                if (!doBlock2SeparateOdds && tSvStimNumber < (trPer80Level1)) {
                     // if this is a block1 trial or if doBlock2SeparateOdds==0 
                     tStimulusNumber = 0
-                    if (doBlock2 && !doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level1-1)/2))
-                        if (doBlock2 && tBlock2TrialNumber == 0) {
-                            tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                        }
-                        if (doBlock2 && tBlock2TrialNumber) {
-                            // no reward omission trials in block 2 
-                            tRewardOmissionTrial = 0
-                        }
-                    }
+                    tTempStimOdds = tTempStimOdds + trPer80Level1
                 }
+
                 // level 1b: b2 sep odds on 
                 if (doBlock2 && doBlock2SeparateOdds) {
-                    tBlock2TrialNumber = (int)((tSvStimNumber) > ((int)trPer80Level1-1))
-                    tRewardOmissionTrial = 0
-                    tStimulusNumber = 0
-                    if (doBlock2 && tBlock2TrialNumber == 0) {
-                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                        report ('the tSvStimNumber is $tSvStimNumber and the tTempStimOdds is $tTempStimOdds')
-                    }
-                    if (doBlock2 && tBlock2TrialNumber) {
-                        tRewardOmissionTrial = 0
+                    (tSvStimNumber < (block2TrPer80Level1)) {
+                        tStimulusNumber = 0
                     }
                     tTempStimOdds = tTempStimOdds + block2TrPer80Level1
                 }
-                tTempStimOdds = tTempStimOdds + trPer80Level1
+                
                 // level 2 
-                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level2))) {
+                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level2))) {
                     tStimulusNumber = 1
-                    if (doBlock2 && !doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level2-1)/2))
-                    }
-                    if (doBlock2 && doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = 0
-                    }
-                    if (doBlock2 && tBlock2TrialNumber == 0) {
-                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                    }
-                    if (doBlock2 && tBlock2TrialNumber) {
-                        tRewardOmissionTrial = 0
-                    }
+                    tTempStimOdds = tTempStimOdds + trPer80Level2
                 }
-                tTempStimOdds = tTempStimOdds + trPer80Level2
+                
                 // level 2b: b2 sep odds on 
                 if (doBlock2 && doBlock2SeparateOdds) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level2))) {
                         tStimulusNumber = 1
-                        tBlock2TrialNumber = 1
+                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level2"/>
                     }
-                    /*
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
-                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
-                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
-              </action>
-              */
-              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level2"/>
                 }
+
                 // level3 
-                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level3))) {
+                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level3))) {
                     tStimulusNumber = 2
-                    if (doBlock2 && !doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level3-1)/2))
-                    }
-                    if (doBlock2 && doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = 0
-                    }
-                    if (doBlock2 && tBlock2TrialNumber == 0) {
-                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                    }
-                    if (doBlock2 && tBlock2TrialNumber) {
-                        tRewardOmissionTrial = 0
-                    }
+                    tTempStimOdds = tTempStimOdds + trPer80Level3
                 }
-                tTempStimOdds = tTempStimOdds + trPer80Level3
+
                 // level3b: b2 sep odds on 
                 if (doBlock2 && doBlock2SeparateOdds) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level3))) {
                         tStimulusNumber = 2
-                        tBlock2TrialNumber = 1
+                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level3"/>
                     }
-                    /*
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
-                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
-                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
-              </action>
-            */
-              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level3"/>
+                }
 
-                }
                 // level4 
-                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level4))) {
+                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level4))) {
                     tStimulusNumber = 3
-                    if (doBlock2 && !doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level4-1)/2))
-                    }
-                    if (doBlock2 && doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = 0
-                    }
-                    if (doBlock2 && tBlock2TrialNumber == 0) {
-                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                    }
-                    if (doBlock2 && tBlock2TrialNumber) {
-                        tRewardOmissionTrial = 0
-                    }
+                    tTempStimOdds = tTempStimOdds + trPer80Level4
                 }
-                tTempStimOdds = tTempStimOdds + trPer80Level4
+
                 // level4b: b2 sep odds on 
                 if (doBlock2 && doBlock2SeparateOdds) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level4))) {
                         tStimulusNumber = 3
-                        tBlock2TrialNumber = 1
+                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level4"/>
                     }
-                    /*
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
-                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
-                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
-              </action>
-            */
-                <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level4"/>
                 }
+
                 // level5 
-                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level5))) {
+                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level5))) {
                     tStimulusNumber = 4
-                    if (doBlock2 && !doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level5-1)/2))
-                    }
-                    if (doBlock2 && doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = 0
-                    }
-                    if (doBlock2 && tBlock2TrialNumber == 0) {
-                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                    }
-                    if (doBlock2 && tBlock2TrialNumber) {
-                        tRewardOmissionTrial = 0
-                    }
+                    tTempStimOdds = tTempStimOdds + trPer80Level5
                 }
-                tTempStimOdds = tTempStimOdds + trPer80Level5
+
                 // level5b: b2 sep odds on 
                 if (doBlock2 && doBlock2SeparateOdds) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level5))) {
                         tStimulusNumber = 4
-                        tBlock2TrialNumber = 1
+                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level5"/>
                     }
-                    /*
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
-                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
-                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
-              </action>
-            */
-                <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level5"/>
+                }
 
-                }
                 // level6 
-                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level6))) {
+                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level6))) {
                     tStimulusNumber = 5
-                    if (doBlock2 && !doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level6-1)/2))
-                    }
-                    if (doBlock2 && doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = 0
-                    }
-                    if (doBlock2 && tBlock2TrialNumber == 0) {
-                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                    }
-                    if (doBlock2 && tBlock2TrialNumber) {
-                        tRewardOmissionTrial = 0
-                    }
+                    tTempStimOdds = tTempStimOdds + trPer80Level6
                 }
-                tTempStimOdds = tTempStimOdds + trPer80Level6
+
                 // level6b: b2 sep odds on 
                 if (doBlock2 && doBlock2SeparateOdds) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level6))) {
                         tStimulusNumber = 5
-                        tBlock2TrialNumber = 1
+                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level6"/>
                     }
-                    /*
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
-                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
-                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
-              </action>
-            */
-              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level6"/>
                 }
+
                 // level7 
-                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level7))) {
+                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level7))) {
                     tStimulusNumber = 6
-                    if (doBlock2 && !doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level7-1)/2))
-                    }
-                    if (doBlock2 && doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = 0
-                    }
-                    if (doBlock2 && tBlock2TrialNumber == 0) {
-                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                    }
-                    if (doBlock2 && tBlock2TrialNumber) {
-                        tRewardOmissionTrial = 0
-                    }
+                    tTempStimOdds = tTempStimOdds + trPer80Level7
                 }
-                tTempStimOdds = tTempStimOdds + trPer80Level7
+
                 // level7b: b2 sep odds on 
                 if (doBlock2 && doBlock2SeparateOdds) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level7))) {
                         tStimulusNumber = 6
-                        tBlock2TrialNumber = 1
+                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level7"/>
                     }
-                    /*
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
-                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
-                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
-              </action>
-            */
-              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level7"/>
+                }
 
-                }
                 // level8 
-                if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level8))) {
+                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level8))) {
                     tStimulusNumber = 7
-                    if (doBlock2 && !doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = (int)((tSvStimNumber-tTempStimOdds) > (((int)trPer80Level8-1)/2))
-                    }
-                    if (doBlock2 && doBlock2SeparateOdds) {
-                        tBlock2TrialNumber = 0
-                    }
-                    if (doBlock2 && tBlock2TrialNumber == 0) {
-                        tRewardOmissionTrial = (int)((tSvStimNumber-tTempStimOdds) <= NumRewardOmissionPer80-1)
-                    }
-                    if (doBlock2 && tBlock2TrialNumber) {
-                        tRewardOmissionTrial = 0
-                    }
+                    tTempStimOdds = tTempStimOdds + trPer80Level8
                 }
-                tTempStimOdds = tTempStimOdds + trPer80Level8
+
                 // level8b: b2 sep odds on 
                 if (doBlock2 && doBlock2SeparateOdds) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level8))) {
                         tStimulusNumber = 7
-                        tBlock2TrialNumber = 1
+                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level8"/>
                     }
-                    /*
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber == 0">
-                <action type="assignment" variable="tRewardOmissionTrial" value="(int)((tSvStimNumber-tTempStimOdds) &lt;= NumRewardOmissionPer80-1)"/>
-              </action>
-              <action type="if" condition="doBlock2 &amp;&amp; tBlock2TrialNumber">
-                <action type="assignment" variable="tRewardOmissionTrial" value="0"/>  
-              </action>
-            */
-              <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level8"/>
                 }
+
                 // error checking                
                 assert (
                     stop_on_failure = 1
@@ -1100,48 +957,7 @@ protocol JuiceOnHoldProtocol {
                     message = 'stim odds must sum to 80!  (sum now is $tTempStimOdds )'
                     )
                 // stop_on_failure=0: allow slop so it can be changed while running 
-                if (doBlock2 && !doBlock2SeparateOdds) {
-                    assert (
-                        condition = trPer80Level1-(((int)trPer80Level1)/2)*2 == 0
-                        stop_on_failure = 1
-                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
-                        )
-                    assert (
-                        condition = trPer80Level2-(((int)trPer80Level2)/2)*2 == 0
-                        stop_on_failure = 1
-                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
-                        )
-                    assert (
-                        condition = trPer80Level3-(((int)trPer80Level3)/2)*2 == 0
-                        stop_on_failure = 1
-                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
-                        )
-                    assert (
-                        condition = trPer80Level4-(((int)trPer80Level4)/2)*2 == 0
-                        stop_on_failure = 1
-                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
-                        )
-                    assert (
-                        condition = trPer80Level5-(((int)trPer80Level5)/2)*2 == 0
-                        stop_on_failure = 1
-                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
-                        )
-                    assert (
-                        condition = trPer80Level6-(((int)trPer80Level6)/2)*2 == 0
-                        stop_on_failure = 1
-                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
-                        )
-                    assert (
-                        condition = trPer80Level7-(((int)trPer80Level7)/2)*2 == 0
-                        stop_on_failure = 1
-                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
-                        )
-                    assert (
-                        condition = trPer80Level8-(((int)trPer80Level8)/2)*2 == 0
-                        stop_on_failure = 1
-                        message = 'When doBlock2 and !doBlock2SeparateOdds, all odds must be div. by 2'
-                        )
-                }
+                
                 // Choose block 2 trial type 
                 if (doBlock2) {
                     assert (
