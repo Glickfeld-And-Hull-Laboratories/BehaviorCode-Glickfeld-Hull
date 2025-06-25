@@ -25,7 +25,8 @@ var folderName = '5min_2deg_3rep' (persistant = 1)
 var capture_display_image = false
     }
     
-group 'Stimulus' {    
+group 'Stimulus' {  
+var start_trigger_number = 1 (persistant = 1)  
 var noise_duration = 300s (persistant = 1)
 var frames_per_second = 10 (persistant = 1)
 var noise_frames_per_trial = ceil(frames_per_second * noise_duration / 1e6)
@@ -33,6 +34,10 @@ var noise_frames_ended = false
 var grainDeg = 2 (persistant = 1)
 var num_trials = 1 (persistant = 1)
 var itiTime = 5s (persistant = 1)
+var noiseSize = 50 (persistant = 1)
+var photo_frames_per_second = 20 (persistant = 1)
+var photoStimulusAzimuth = 46.8 (persistant = 1)
+var photoStimulusElevation = -24.5 (persistant = 1)
     }
 
 group 'Hardware variables' {
@@ -57,6 +62,7 @@ group 'Hardware variables' {
     var wheelSpeed = 0
     var sync = 0
     }
+
 
 python_file ('noise_stimulus.py')
 
@@ -86,9 +92,44 @@ movie noise_frames (
             fullscreen = true
             deferred = explicit
             )
+        }
     }
-}
 
+movie photo_frames (
+    frames_per_second = photo_frames_per_second
+    ended = noise_frames_ended
+    autoplay = true
+    deferred = explicit
+    loop = true
+    ) {
+        rectangle photoRectOn (
+        color = 1,1,1
+        x_size = 8
+        y_size = 8
+        x_position = photoStimulusAzimuth
+        y_position = photoStimulusElevation
+        )
+        rectangle photoRectOff (
+        color = 0,0,0
+        x_size = 8
+        y_size = 8
+        x_position = photoStimulusAzimuth
+        y_position = photoStimulusElevation
+        )  
+    }
+    
+
+layer square_mask {
+    rectangle (
+    color = 0.5,0.5,0.5
+    x_size = 1000
+    ) 
+    mask (
+    mask = rectangle
+    inverted  = true
+    x_size = noiseSize
+    )
+}
 
 
 
@@ -103,10 +144,11 @@ protocol 'Present noise' {
             start_device_io (LabJackU6)
             sync = 1
             load_stimulus (noise_frames)
+            load_stimulus (photo_frames)
             report('Waiting for triggers')
             goto (
             target = 'Begin trial'
-            when = counter >= 30
+            when = counter >= start_trigger_number
             )
         }
 
@@ -117,6 +159,7 @@ protocol 'Present noise' {
                     )
             trial_number += 1
             load_stimulus (noise_frames)
+            load_stimulus (photo_frames)
             timer_expired (
                     target = 'Begin trial'
                     timer = interTrialTimer
@@ -127,7 +170,11 @@ protocol 'Present noise' {
             report('Begin trial')
             noise_frames_ended = false
             queue_stimulus (noise_frames)
+            queue_stimulus (square_mask)
+            queue_stimulus (photo_frames)
             update_display ()
+            MIO0 = 1
+            report("MIO0 HIGH")
 
             goto (
                 target = 'End trial'
@@ -136,9 +183,13 @@ protocol 'Present noise' {
         }
 
         state 'End trial' {
+            MIO0 = 0
             dequeue_stimulus (noise_frames)
+            dequeue_stimulus (square_mask)
+            dequeue_stimulus (photo_frames)
             update_display ()
             unload_stimulus (noise_frames)
+            unload_stimulus (photo_frames)
             sync = 0
             goto (
                 target = 'ITI'
