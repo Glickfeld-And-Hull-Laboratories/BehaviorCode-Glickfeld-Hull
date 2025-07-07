@@ -288,14 +288,6 @@ group Stimuli {
         groups = 'Stimulus Parameters'
         )
     // sound variables 
-    var soundDuration200ms = 0 (
-        persistant = 1
-        groups = Sound
-        )
-    var soundDuration767ms = 1 (
-        persistant = 1
-        groups = Sound
-        )
     var soundPressAmplitude = 0.8 (
         persistant = 1
         groups = Sound
@@ -308,18 +300,7 @@ group Stimuli {
         persistant = 1
         groups = Sound
         )
-    var soundTargetAmplitude = 0.8 (
-        persistant = 1
-        groups = Sound
-        )
-    var block1ToneAmplitude = (float)(0) (
-        persistant = 1
-        groups = Sound
-        )
-    var block2ToneAmplitude = 0.8 (
-        persistant = 1
-        groups = Sound
-        )
+    
     // block 2 control 
     var doBlock2 = 0 (
         persistant = 1
@@ -508,6 +489,37 @@ group Stimuli {
     var trialLaserOnTimeMs = (float)(0) (persistant = 1)
     var trialLaserOffTimeMs = (float)(0) (persistant = 1)
 }
+
+group 'Photodiode' {
+    var doPhotodiode = (bool)(1) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusContrast = (float)(1) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusAzimuth = 46.8 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusElevation = -24.5 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusWidth = 8 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoStimulusHeight = 8 (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )
+    var photoMaskSpatialFreq = (float)(1e-8) (
+        persistant = 1
+        groups = 'Photodiode Variables'
+        )   
+}
 group 'Fake Mouse' {
     var doLever = (bool)(0) (
         persistant = 1
@@ -669,14 +681,7 @@ wav_file trialStartSound (
     path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.2s.wav'
     amplitude = soundStartCueAmplitude
     )
-wav_file targetSound200ms (
-    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.2s.wav'
-    amplitude = soundTargetAmplitude
-    )
-wav_file targetSound767ms (
-    path = '/Users/hullglick/Repositories/BehaviorCode-Glickfeld-Hull/BehaviorCode/NewSkeletonCode/wavs/5kHz_.767s.wav'
-    amplitude = soundTargetAmplitude
-    )
+
 
 //
 // Stimuli
@@ -716,6 +721,41 @@ drifting_grating target_grating (
     alpha_multiplier = tGratingContrast
     )
 
+drifting_grating photoDiodeGrating (
+    direction = 0
+    autoplay = YES
+    starting_phase = 0
+    spatial_frequency = .000000000001
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = photoStimulusContrast
+    )
+drifting_grating photoDiodeMask (
+    direction = 0
+    autoplay = YES
+    starting_phase = 180
+    spatial_frequency = photoMaskSpatialFreq
+    speed = 0
+    grating_type = sinusoid
+    mask = gaussian
+    std_dev = 0.3
+    mean = 0.1
+    x_size = photoStimulusWidth
+    y_size = photoStimulusHeight
+    x_position = photoStimulusAzimuth
+    y_position = photoStimulusElevation
+    rotation = 0
+    alpha_multiplier = 1
+    )           
+
 //
 // Protocols
 //
@@ -752,6 +792,10 @@ protocol JuiceOnHoldProtocol {
             state Intertrial {
                 if (success+ignore+failure > 0) {
                     isFirstTrial = 0
+                }
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    update_stimulus_display ()
                 }
                 tTrialStartMWTimestampMs = now()/1000
                 // integer valued ms timestamp 
@@ -834,120 +878,137 @@ protocol JuiceOnHoldProtocol {
                     report ('the tITIUnexpectRewardNum is $tITIUnexpectRewardNum')
                 }
 
-                 if (doBlock2) {
-                     tBlock2TrialNumber == int(floor((success+ignore+failure)/blockLength) % 2)
+                tBlock2TrialNumber = 0
+                if (doBlock2) {
+                     tBlock2TrialNumber = floor((success+ignore+failure)/blockLength) % 2
                      }
                 // level 1 
-                if (!doBlock2SeparateOdds && tSvStimNumber < (trPer80Level1)) {
-                    // if this is a block1 trial or if doBlock2SeparateOdds==0 
-                    tStimulusNumber = 0
+                if (!tBlock2TrialNumber || tBlock2TrialNumber && !doBlock2SeparateOdds) {
+                    if (tSvStimNumber < (trPer80Level1)) {
+                        // if this is a block1 trial or if doBlock2SeparateOdds==0 
+                        tStimulusNumber = 0
+                    }
                     tTempStimOdds = tTempStimOdds + trPer80Level1
                 }
 
                 // level 1b: b2 sep odds on 
-                if (doBlock2 && doBlock2SeparateOdds) {
-                    (tSvStimNumber < (block2TrPer80Level1)) {
+                if (doBlock2SeparateOdds && tBlock2TrialNumber) {
+                    if (tSvStimNumber < block2TrPer80Level1) {
                         tStimulusNumber = 0
                     }
                     tTempStimOdds = tTempStimOdds + block2TrPer80Level1
                 }
                 
                 // level 2 
-                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level2))) {
-                    tStimulusNumber = 1
+                if (!tBlock2TrialNumber || tBlock2TrialNumber && !doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level2))) {
+                        tStimulusNumber = 1
+                    }
                     tTempStimOdds = tTempStimOdds + trPer80Level2
                 }
                 
                 // level 2b: b2 sep odds on 
-                if (doBlock2 && doBlock2SeparateOdds) {
+                if (doBlock2SeparateOdds && tBlock2TrialNumber) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level2))) {
                         tStimulusNumber = 1
-                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level2"/>
                     }
+                    tTempStimOdds = tTempStimOdds + block2TrPer80Level2
                 }
 
                 // level3 
-                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level3))) {
-                    tStimulusNumber = 2
+                if (!tBlock2TrialNumber || tBlock2TrialNumber && !doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level3))) {
+                        tStimulusNumber = 2
+                    }
                     tTempStimOdds = tTempStimOdds + trPer80Level3
                 }
 
                 // level3b: b2 sep odds on 
-                if (doBlock2 && doBlock2SeparateOdds) {
+                if (doBlock2SeparateOdds && tBlock2TrialNumber) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level3))) {
                         tStimulusNumber = 2
-                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level3"/>
                     }
+                    tTempStimOdds = tTempStimOdds + block2TrPer80Level3
                 }
 
                 // level4 
-                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level4))) {
-                    tStimulusNumber = 3
+                if (!tBlock2TrialNumber || tBlock2TrialNumber && !doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level4))) {
+                        tStimulusNumber = 3
+                    }
                     tTempStimOdds = tTempStimOdds + trPer80Level4
                 }
 
                 // level4b: b2 sep odds on 
-                if (doBlock2 && doBlock2SeparateOdds) {
+                if (doBlock2SeparateOdds && tBlock2TrialNumber) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level4))) {
                         tStimulusNumber = 3
-                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level4"/>
                     }
+                    tTempStimOdds = tTempStimOdds + block2TrPer80Level4
                 }
 
                 // level5 
-                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level5))) {
-                    tStimulusNumber = 4
+                if (!tBlock2TrialNumber || tBlock2TrialNumber && !doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level5))) {
+                        tStimulusNumber = 4
+                    }
                     tTempStimOdds = tTempStimOdds + trPer80Level5
                 }
 
                 // level5b: b2 sep odds on 
-                if (doBlock2 && doBlock2SeparateOdds) {
+                if (doBlock2SeparateOdds && tBlock2TrialNumber) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level5))) {
                         tStimulusNumber = 4
-                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level5"/>
                     }
+                    tTempStimOdds = tTempStimOdds + block2TrPer80Level5
                 }
 
                 // level6 
-                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level6))) {
-                    tStimulusNumber = 5
+                if (!tBlock2TrialNumber || tBlock2TrialNumber && !doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level6))) {
+                        tStimulusNumber = 5
+                    }
                     tTempStimOdds = tTempStimOdds + trPer80Level6
                 }
 
                 // level6b: b2 sep odds on 
-                if (doBlock2 && doBlock2SeparateOdds) {
+                if (doBlock2SeparateOdds && tBlock2TrialNumber) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level6))) {
                         tStimulusNumber = 5
-                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level6"/>
                     }
+                    tTempStimOdds = tTempStimOdds + block2TrPer80Level6
                 }
 
                 // level7 
-                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level7))) {
-                    tStimulusNumber = 6
+                if (!tBlock2TrialNumber || tBlock2TrialNumber && !doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level7))) {
+                        tStimulusNumber = 6
+                    }
                     tTempStimOdds = tTempStimOdds + trPer80Level7
                 }
 
                 // level7b: b2 sep odds on 
-                if (doBlock2 && doBlock2SeparateOdds) {
+                if (doBlock2SeparateOdds && tBlock2TrialNumber) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level7))) {
                         tStimulusNumber = 6
-                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level7"/>
                     }
+                    tTempStimOdds = tTempStimOdds + block2TrPer80Level7
                 }
 
                 // level8 
-                if (!doBlock2SeparateOdds && tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level8))) {
-                    tStimulusNumber = 7
+                if (!tBlock2TrialNumber || tBlock2TrialNumber && !doBlock2SeparateOdds) {
+                    if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+trPer80Level8))) {
+                        tStimulusNumber = 7
+                    }
                     tTempStimOdds = tTempStimOdds + trPer80Level8
                 }
 
                 // level8b: b2 sep odds on 
-                if (doBlock2 && doBlock2SeparateOdds) {
+                if (doBlock2SeparateOdds && tBlock2TrialNumber) {
                     if (tSvStimNumber >= tTempStimOdds && (tSvStimNumber < (tTempStimOdds+block2TrPer80Level8))) {
                         tStimulusNumber = 7
-                        <action type="assignment" variable="tTempStimOdds" value="tTempStimOdds + block2TrPer80Level8"/>
                     }
+                    tTempStimOdds = tTempStimOdds + block2TrPer80Level8
                 }
 
                 // error checking                
@@ -990,7 +1051,6 @@ protocol JuiceOnHoldProtocol {
                             tGratingSpatialFreqCPD = gratingSpatialFreqCPD
                             tGratingSpeedDPS = gratingSpeedDPS
                             tGratingDurationMs = gratingDurationMs
-                            soundTargetAmplitude = block1ToneAmplitude
                             // allow different tone amplitude in block 1 and 2
                         }
                         if (tBlock2TrialNumber == 1) {
@@ -1007,7 +1067,6 @@ protocol JuiceOnHoldProtocol {
                             tGratingSpatialFreqCPD = block2GratingSpatialFreqCPD
                             tGratingSpeedDPS = block2GratingSpeedDPS
                             tGratingDurationMs = block2GratingDurationMs
-                            soundTargetAmplitude = block2ToneAmplitude
                         }
                     }
                     // ramp length for block 2 
@@ -1117,8 +1176,6 @@ protocol JuiceOnHoldProtocol {
                 // end doBlock2 
                 // if no block 2 randomization, just set all affected vars to fixed values 
                 if (! doBlock2) {
-                    soundTargetAmplitude = block1ToneAmplitude
-                    soundTargetAmplitude = block1ToneAmplitude
                     tBaseGratingDirectionDeg = baseGratingDirectionDeg
                     tBaseGratingContrast = baseGratingContrast
                     tGratingElevationDeg = gratingElevationDeg
@@ -1431,7 +1488,6 @@ protocol JuiceOnHoldProtocol {
                 }
                 soundTrialStartAmplitude = soundTrialStartAmplitude
                 // modify amplitude manually each trial
-                report ('soundAmplitude = $soundTargetAmplitude')
                 if (doStartCueSound) {
                     play_sound (trialStartSound)
                 }
@@ -1450,21 +1506,16 @@ protocol JuiceOnHoldProtocol {
                 // vis stim on 
                 if (doVisualStim && tDoNoStimulusChange == 0) {
                     dequeue_stimulus (base_grating)
-                    update_stimulus_display ()
                     queue_stimulus (target_grating)
                     play_dynamic_stimulus (target_grating)
-                    update_stimulus_display ()
                     strobedDigitalWord = 4
+                    if (doPhotodiode) {
+                        live_queue_stimulus (photoDiodeGrating)
+                        dequeue_stimulus (photoDiodeMask)
+                    }
+                    update_stimulus_display ()
                 }
-                soundTargetAmplitude = soundTargetAmplitude
-                // modify amplitude manually each trial
-                report ('soundAmplitude = $soundTargetAmplitude')
-                if (soundDuration200ms) {
-                    play_sound (targetSound200ms)
-                }
-                if (soundDuration767ms) {
-                    play_sound (targetSound767ms)
-                }
+                
                 // laser stim on 
                 if (doLaserStim) {
                     laserTrigger = 1
@@ -1496,10 +1547,13 @@ protocol JuiceOnHoldProtocol {
             }
             state EndTrialStimOff {
                 dequeue_stimulus (target_grating)
-                update_stimulus_display ()
                 if (doITIStim==1) {
                     live_queue_stimulus (base_grating)
                     play_dynamic_stimulus (base_grating)
+                }
+                if (doPhotodiode) {
+                    dequeue_stimulus (photoDiodeGrating)
+                    live_queue_stimulus (photoDiodeMask)
                 }
                 update_stimulus_display ()
                 tStimTurnedOn = 0
@@ -1584,15 +1638,16 @@ protocol JuiceOnHoldProtocol {
                     strobedDigitalWord = 12
                 }
                 dequeue_stimulus (target_grating)
-                update_stimulus_display ()
                 if (doITIStim==1) {
                     live_queue_stimulus (base_grating)
                     play_dynamic_stimulus (base_grating)
-                    update_stimulus_display ()
                 }
                 if (doITIStim==0) {
                     dequeue_stimulus (base_grating)
-                    update_stimulus_display ()
+                }
+                if (doPhotodiode) {
+                    dequeue_stimulus (photoDiodeGrating)
+                    live_queue_stimulus (photoDiodeMask)
                 }
                 update_stimulus_display ()
                 goto (
@@ -1664,6 +1719,10 @@ protocol JuiceOnHoldProtocol {
                 if (doITIStim==1) {
                     live_queue_stimulus (base_grating)
                     play_dynamic_stimulus (base_grating)
+                }
+                if (doPhotodiode) {
+                    dequeue_stimulus (photoDiodeGrating)
+                    live_queue_stimulus (photoDiodeMask)
                 }
                 update_stimulus_display ()
                 goto (GiveReward)
@@ -1773,6 +1832,10 @@ protocol JuiceOnHoldProtocol {
                     live_queue_stimulus (base_grating)
                     play_dynamic_stimulus (base_grating)
                 }
+                if (doPhotodiode) {
+                    dequeue_stimulus (photoDiodeGrating)
+                    live_queue_stimulus (photoDiodeMask)
+                }
                 update_stimulus_display ()
                 goto (
                     target = EndTrial
@@ -1808,11 +1871,14 @@ protocol JuiceOnHoldProtocol {
                 tTrialLaserPowerMw = 0
                 cTrialEnd = counter
                 dequeue_stimulus (target_grating)
-                update_stimulus_display ()
                 if (doITIStim == 0) {
                     dequeue_stimulus (base_grating)
-                    update_stimulus_display ()
                 }
+                if (doPhotodiode) {
+                    dequeue_stimulus (photoDiodeGrating)
+                    live_queue_stimulus (photoDiodeMask)
+                }
+                update_stimulus_display ()
                 sync = 0
                 // allow two trials after each timeout is over 
                 if (tConsecErrors == nConsecErrorsCauseTimeout) {
