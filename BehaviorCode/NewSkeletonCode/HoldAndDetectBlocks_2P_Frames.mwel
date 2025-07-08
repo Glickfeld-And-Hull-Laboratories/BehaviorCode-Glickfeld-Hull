@@ -1470,32 +1470,11 @@ protocol JuiceOnHoldProtocol {
                     when = (counter >= (cLeverDown + tFakeMouseReactFrames)) && !doLever
                     )
                 goto (
-                    target = StartCueOn
-                    when = counter  >= cLeverDown + tTotalBaselineFrames && doStartCueSound
-                    )
-                goto (
-                    target = StimOn
-                    when = counter  >= cLeverDown + tTotalReqHoldFrames && !doStartCueSound
-                    )
-            }
-            // startCueStimulus on
-            state StartCueOn {
-                startCueOn = 1
-                report ('Start Cue On (still holding; signaling release ok)')
-                cStartCueOn = counter
-                if (rewardUnexpectPercent !=0 && (success+ignore+failure) == tUnexpectRewardNum) {
-                    tDoNoStimulusChange = 1
-                }
-                soundTrialStartAmplitude = soundTrialStartAmplitude
-                // modify amplitude manually each trial
-                if (doStartCueSound) {
-                    play_sound (trialStartSound)
-                }
-                goto (
                     target = StimOn
                     when = counter  >= cLeverDown + tTotalReqHoldFrames
                     )
             }
+            
             state StimOn {
                 stimulusOn = 1
                 report ('StimOn (still holding; signaling release ok)')
@@ -1515,6 +1494,16 @@ protocol JuiceOnHoldProtocol {
                     }
                     update_stimulus_display ()
                 }
+                start_timer (
+                    timer = tooFastTimer
+                    duration = tooFastTimeMs
+                    duration_units = ms
+                    )
+                start_timer (
+                    timer = reactTimer
+                    duration = reactTimeMs
+                    duration_units = ms
+                    )
                 
                 // laser stim on 
                 if (doLaserStim) {
@@ -1536,9 +1525,9 @@ protocol JuiceOnHoldProtocol {
                     target = EarlyRelease
                     when = (counter >= (cLeverDown + tFakeMouseReactFrames)) && !doLever
                     )
-                goto (
+                timer_expired (
+                    timer = tooFastTimer
                     target = React
-                    when = (counter >= (cTargetOn + nFramesTooFast))
                     )
                 goto (
                     target = EndTrialStimOff
@@ -1581,13 +1570,13 @@ protocol JuiceOnHoldProtocol {
                     target = Reward
                     when = (counter >= (cLeverDown + tFakeMouseReactFrames))&& !doLever && isTooFast == 0
                     )
-                goto (
+                timer_expired (
+                    timer = tooFastTimer
                     target = React
-                    when = (isTooFast==1) && (counter >= (cTargetOn + nFramesTooFast))
                     )
-                goto (
-                    target = Missed
-                    when = (counter >= (cTargetOn + nFramesReact))
+                timer_expired (
+                    timer = reactTimer
+                    target = React
                     )
             }
             state React {
@@ -1608,9 +1597,9 @@ protocol JuiceOnHoldProtocol {
                     target = Reward
                     when = !doLever && (counter >= (cLeverDown + tFakeMouseReactFrames))
                     )
-                goto (
-                    target = Missed
-                    when = (counter >= (cTargetOn + nFramesReact))
+                timer_expired (
+                    timer = reactTimer
+                    target = React
                     )
                 goto (
                     target = EndTrialStimOff
