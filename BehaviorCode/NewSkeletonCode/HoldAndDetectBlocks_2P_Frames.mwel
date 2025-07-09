@@ -1576,7 +1576,7 @@ protocol JuiceOnHoldProtocol {
                     )
                 timer_expired (
                     timer = reactTimer
-                    target = React
+                    target = Missed
                     )
             }
             state React {
@@ -1599,11 +1599,11 @@ protocol JuiceOnHoldProtocol {
                     )
                 timer_expired (
                     timer = reactTimer
-                    target = React
+                    target = Missed
                     )
                 goto (
                     target = EndTrialStimOff
-                    when = (counter >= (cTargetOn + nFramesOn))
+                    when = (tStimTurnedOn && counter >= (cTargetOn + nFramesOn))
                     )
             }
             state EarlyRelease {
