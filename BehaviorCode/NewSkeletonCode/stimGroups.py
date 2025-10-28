@@ -31,6 +31,9 @@ if 'grat_SF6_allen_nat8' in setsWanted:
 
 if 'allen_nat5' in setsWanted:
     imageList.extend([1, 2, 3, 4, 5])
+    
+if 'allen_nat6' in setsWanted:
+    imageList.extend([1, 2, 3, 4, 5, 6])
 
 if 'NatPlusNoise' in setsWanted:
     imageList.extend([1, 2, 3, 4, 5, 6, 7, 8])
