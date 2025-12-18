@@ -141,14 +141,6 @@ group Stimuli {
         persistant = 1
         groups = GratingExptStruct
         )
-    var doGaussianMask = (bool)(1) (
-        persistant = 1
-        groups = GratingExptStruct
-        )
-    var doEllipseMask = (bool)(0) (
-        persistant = 1
-        groups = GratingExptStruct
-        )
     var baseGratingContrast = (float)(0) (
         persistant = 1
         groups = GratingSpecs
@@ -158,10 +150,6 @@ group Stimuli {
         groups = GratingSpecs
         )
     var baseGratingStartingPhaseDeg = (float)(0) (
-        persistant = 1
-        groups = GratingSpecs
-        )
-    var target_mask = 'none' (
         persistant = 1
         groups = GratingSpecs
         )
@@ -285,6 +273,26 @@ group Stimuli {
         persistant = 1
         groups = GratingSpecs
         )
+    var gratingType = 'sinusoid' (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var maskType = 'ellipse' (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingMean = 0.1 (
+        persistant = 1
+        groups = GratingSpecs
+        )
+    var gratingStd = 0.3 (
+        persistant = 1
+        groups = GratingSpecs
+        ) 
+    var gratingEdge = 0.125 (
+        persistant = 1
+        groups = GratingSpecs
+        )     
     var surroundGratingDiameterDeg = (float)(60) (
         persistant = 1
         groups = SurroundGratingSpecs
@@ -422,6 +430,7 @@ group 'Internal Variables' {
     var tGratingStartingPhaseDeg = (float)(0)
     var tSurroundGratingContrast = (float)(0)
     var tSurroundGratingDiameterDeg = (float)(0)
+    var tSurroundGratingDirectionDeg = (float)(0)
     var tDoCenterGrating = (float)(0)
     var tDoSurroundGrating = (float)(0)
     var tTrialLaserPowerMw = (float)(0)
@@ -519,7 +528,7 @@ blank_screen background ()
 
 opaque_grating base (
     direction_deg = tBaseGratingDirectionDeg
-    phase_deg = tBaseGratingStartingPhaseDeg + 360 * tGratingSpatialFreqCPD * (tGratingWidthDeg / 2)
+    phase_deg = baseGratingStartingPhaseDeg + 360 * tGratingSpatialFreqCPD * (tGratingDiameterDeg / 2)
     spatial_freq_cpd = tGratingSpatialFreqCPD
     speed_dps = tGratingSpeedDPS
     width_deg = tGratingDiameterDeg
@@ -531,7 +540,7 @@ opaque_grating base (
 
 opaque_grating center (
     direction_deg = tGratingDirectionDeg
-    phase_deg = tGratingStartingPhaseDeg + 360 * tGratingSpatialFreqCPD * (tGratingWidthDeg / 2)
+    phase_deg = tGratingStartingPhaseDeg + 360 * tGratingSpatialFreqCPD * (tGratingDiameterDeg / 2)
     spatial_freq_cpd = tGratingSpatialFreqCPD
     speed_dps = tGratingSpeedDPS
     width_deg = tGratingDiameterDeg
@@ -543,7 +552,7 @@ opaque_grating center (
 
 opaque_grating surround (
     direction_deg = tSurroundGratingDirectionDeg
-    phase_deg = tGratingStartingPhaseDeg + 360 * tGratingSpatialFreqCPD * (tSurroundGratingWidthDeg / 2)
+    phase_deg = tGratingStartingPhaseDeg + 360 * tGratingSpatialFreqCPD * (tSurroundGratingDiameterDeg / 2)
     spatial_freq_cpd = tGratingSpatialFreqCPD
     speed_dps = tGratingSpeedDPS
     width_deg = tSurroundGratingDiameterDeg
@@ -734,28 +743,13 @@ protocol JuiceOnHoldProtocol {
                                 report ('Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg ; Con is $tGratingContrast ; SF is tGratingSpatialFreqCPD')
                             }
                         }
-                        /*
-                          <action type="if" condition="!doSFStim &amp;&amp; !doConStim">
-                            <action type="assignment" variable="tTempStim" value= "tStimulusNumber % (gratingElevationStepN * gratingAzimuthStepN)"/>    
-                            <action type="if" condition="tTempStim &lt; gratingAzimuthStepN">
-                             <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg + (gratingAzimuthStepDeg * (tTempStim))"/>
-                             <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg"/>
-                             <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
-                           </action>
-                           <action type="if" condition="tTempStim &gt;= gratingAzimuthStepN">
-                             <action type="assignment" variable="tGratingAzimuthDeg" value= "gratingAzimuthDeg+ (gratingAzimuthStepDeg * ((tTempStim) % gratingAzimuthStepN))"/>
-                             <action type="assignment" variable="tGratingElevationDeg" value= "gratingElevationDeg+ (gratingElevationStepDeg * (floor(tTempStim / gratingAzimuthStepN)))"/>
-                             <action type="report" message="Azimuth is $tGratingAzimuthDeg ; Elevation is $tGratingElevationDeg"/>
-                           </action>
-                         </action>
-                        */
                     }
                     if (doRetStim == 0) {
                         tGratingAzimuthDeg = gratingAzimuthDeg
                         tGratingElevationDeg = gratingElevationDeg
                     }
                     //Select features if not in matrix mode 
-                    if (doMatrix == 0) {
+                    if ('doMatrix == 0') {
                         //Select size 
                         if ('doSizeStim = 1') {
                             tTempStim = tStimulusNumber % gratingDiameterStepN
@@ -768,7 +762,7 @@ protocol JuiceOnHoldProtocol {
                             report ('Diameter is $tGratingDiameterDeg')
                         }
                         
-                        if (doSizeStim == 0) {
+                        if ('doSizeStim == 0') {
                             tGratingDiameterDeg = gratingDiameterDeg
                         }
                         //Select spatial frequency 
@@ -793,7 +787,7 @@ protocol JuiceOnHoldProtocol {
                             tGratingSpeedDPS = gratingSpeedDPS * (pow(gratingSpeedStepLog,(gratingSpeedStepDir*(tTempStim))))
                             report ('Temporal Frequency is $tGratingSpeedDPS')
                         }
-                        if (doSpeedStim == 0) {
+                        if ('doSpeedStim == 0') {
                             tGratingSpeedDPS = gratingSpeedDPS
                         }
                         //Select direction 
@@ -1072,7 +1066,6 @@ protocol JuiceOnHoldProtocol {
                         queue_stimulus (center)
                     }
 
-                    }
                     if (doPhotodiode) {
                         live_queue_stimulus (photoDiodeGrating)
                         dequeue_stimulus (photoDiodeMask)
@@ -1101,7 +1094,6 @@ protocol JuiceOnHoldProtocol {
                     if (counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)) {
                         tQuadrature = quadrature
                     }
-                    phaseCount = counter
                     start_timer (
                         timer = refreshTimer
                         duration = 300
@@ -1122,10 +1114,10 @@ protocol JuiceOnHoldProtocol {
                     }
                     
                     if (tDoSurroundGrating == 1) {
-                        queue_stimulus (surround)
+                        dequeue_stimulus (surround)
                     }
                     if (tDoCenterGrating == 1) {
-                        queue_stimulus (center)
+                        dequeue_stimulus (center)
                     }
                         
                     live_queue_stimulus (base)
