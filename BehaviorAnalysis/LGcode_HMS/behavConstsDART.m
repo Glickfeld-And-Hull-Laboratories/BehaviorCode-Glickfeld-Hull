@@ -40,9 +40,9 @@ switch tHostname
             rc.achData = 'Z:\home\ACh\Data';
         elseif tUsername(1:5) == 'th352'
             rc.name = 'jerry';
-            rootDir = 'G:\home\ACh';
-            rc.achAnalysis = fullfile(rootDir,'Analysis\2p_analysis');
-            rc.achData = 'G:\home\ACh\Data\2p_data';
+            rootDir = 'Z:\home\ACh';
+            rc.analysis = fullfile(rootDir,'Analysis\2p_analysis');
+            rc.data = 'Z:\home\ACh\Data\2p_data';
             
             
         end
