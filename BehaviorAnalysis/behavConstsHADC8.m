@@ -5,6 +5,28 @@ tHostname = lower(hostname);
 [s,tUsername] = dos('ECHO %USERNAME%');
 
 switch tHostname
+    case {'nb-hubel'}
+        isilonDir = '\\duhs-user-nc1.dhe.duke.edu\dusom_glickfeldlab\All_Staff';
+        if strcmp(tUsername(1:5), 'lw397')
+            rc.pathStr = fullfile(isilonDir,'Behavior','Data');
+            rc.dataPat = 'data-i%03d-%s.mat';
+            rootDir = fullfile(isilonDir, 'home\LindseyW\Analysis\Behavior');
+            rc.indexFilename = fullfile(rootDir, 'experimentIndexes\subj-days-lw.xls');
+            rc.fitOutputFilename = fullfile(rootDir, 'experimentIndexes\subj-fits-lw.xls');
+            rc.fitOutputSummary = fullfile(rootDir, 'output\summary');
+            rc.fitOutputPdfDir = fullfile(rootDir, 'output\pdfFits');
+            rc.fitOutputMatDir = fullfile(rootDir, 'output\fitMatStats');
+        end
+        if strcmp(tUsername(1:5), 'lg137')
+            rc.pathStr = fullfile(isilonDir,'Behavior','Data');
+            rc.dataPat = 'data-i%03d-%s.mat';
+            rootDir = fullfile(isilonDir, 'home\lindsey\Analysis\Behavior');
+            rc.indexFilename = fullfile(rootDir, 'experimentIndexes\subj-days-new.xls');
+            rc.fitOutputFilename = fullfile(rootDir, 'experimentIndexes\subj-fits-new.xls');
+            rc.fitOutputSummary = fullfile(rootDir, 'output\summary');
+            rc.fitOutputPdfDir = fullfile(rootDir, 'output\pdfFits');
+            rc.fitOutputMatDir = fullfile(rootDir, 'output\fitMatStats');
+        end
     case {'zbook'}
         rc.pathStr = '/Users/lindsey/Desktop/Data';
         rc.dataPat = 'data-i%03d-%s.mat';

@@ -32,7 +32,7 @@ def replaceStrWithUserdir(inObj):
             inObj[i] = replaceStrWithUserdir(inObj[i])
         return inObj
     else:
-        print type(inObj)
+        print(type(inObj))
         #import pdb; pdb.set_trace()
         raise Exception('Error: Type unknown')
     return 

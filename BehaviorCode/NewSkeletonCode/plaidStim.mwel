@@ -274,11 +274,11 @@ group 'Behavioral Control' {
         persistant = 1
         groups = 'Block2 Trial Structure'
         )
-    var frameRateHz = (float)(30) (
+    var nScansOn = (float)(1) (
         persistant = 1
         groups = 'Trial Structure'
-        )
-    var itiTimeMs = (float)(5000) (
+        )    
+    var nScansOff = (float)(1) (
         persistant = 1
         groups = 'Trial Structure'
         )
@@ -1176,6 +1176,7 @@ group 'Hardware variables' {
 }
 group 'Internal Variables' {
     var ntrials = 0
+    var tTrialsDoneSinceStart = 0
     var tTrialStartMWTimestampMs = 0
     var tItiWaitTimeMs = 0
     var tThisTrialStartTimeMs = 0
@@ -1553,6 +1554,7 @@ protocol JuiceOnHoldProtocol {
         tLastTrialStartTimeMs = -1
         tThisTrialStartTimeMs = -1
         lastTrialTimeMs = 0
+        tTrialsDoneSinceStart = 0
         isFirstTrial = 1
         // reset selection var 
         reset_selection (svStimNumber)
@@ -1581,7 +1583,6 @@ protocol JuiceOnHoldProtocol {
                 report ('Initializing Trial')
                 led_seq = LED_sequence
                 do2led = Do2LED
-                LED_durationMS = round(1/frameRateHz*1000)
                 // Reset t_____RemainingOn/Off to 0ms 
                 tempMs = 0
                 tTrialStartMWTimestampMs = now()/1000
@@ -2433,7 +2434,7 @@ protocol JuiceOnHoldProtocol {
                     }    
                 }
                 if (tDoMatrix) {                    
-                    if (tDoRandDir && tDoRandSF && !tDoRandPos) {
+                    if (tDoRandDir && tDoRandSF) {
                         tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingSpatialFreqStepN)
                         if (tTempStim1 < stimOneGratingDirectionStepN) {
                             tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
@@ -2461,35 +2462,6 @@ protocol JuiceOnHoldProtocol {
                                 tMaskTwoGratingDirectionDeg = tStimTwoGratingDirectionDeg + maskTwoGratingDirectionDeg
                                 tStimTwoGratingSpatialFreqCPD = stimTwoGratingSpatialFreqCPD * pow(stimTwoGratingSpatialFreqStepLog, (floor(tTempStim2 / stimTwoGratingDirectionStepN)))
                             }    
-                        }
-                    }
-
-                    if (tDoRandDir && tDoRandSF && tDoRandPos) {
-                        tTempStim1 = tStimulusNumber % (stimOneGratingDirectionStepN * stimOneGratingSpatialFreqStepN)
-                        if (tTempStim1 < stimOneGratingDirectionStepN) {
-                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg + (stimOneGratingDirectionStepDeg * (tTempStim1))
-                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
-                            tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD
-                        }
-                        if (tTempStim1 >= stimOneGratingDirectionStepN) {
-                            tStimOneGratingDirectionDeg = stimOneGratingDirectionDeg+ (stimOneGratingDirectionStepDeg * ((tTempStim1) % stimOneGratingDirectionStepN))
-                            tMaskOneGratingDirectionDeg = tStimOneGratingDirectionDeg + maskOneGratingDirectionDeg
-                            tStimOneGratingSpatialFreqCPD = stimOneGratingSpatialFreqCPD * pow(stimOneGratingSpatialFreqStepLog, (floor(tTempStim1 / stimOneGratingDirectionStepN)))
-                        }
-                        tTempStim2 = tStimulusNumber2 % (stimOneGratingElevationStepN * stimOneGratingAzimuthStepN)
-                        if (tTempStim2 < stimOneGratingAzimuthStepN) {
-                            tStimOneGratingAzimuthDeg = stimOneGratingAzimuthDeg + (stimOneGratingAzimuthStepDeg * (tTempStim2))
-                            tStimOneGratingElevationDeg = stimOneGratingElevationDeg
-                        }
-                        if (tTempStim2 >= stimOneGratingAzimuthStepN) {
-                            tStimOneGratingAzimuthDeg = stimOneGratingAzimuthDeg+ (stimOneGratingAzimuthStepDeg * ((tTempStim2) % stimOneGratingAzimuthStepN))
-                            tStimOneGratingElevationDeg = stimOneGratingElevationDeg+ (stimOneGratingElevationStepDeg * (floor(tTempStim2 / stimOneGratingAzimuthStepN)))
-                        }
-                        if (matchStimOneParameters) {
-                            tStimTwoGratingAzimuthDeg = tStimOneGratingAzimuthDeg
-                            tStimTwoGratingElevationDeg = tStimOneGratingElevationDeg
-                            tStimTwoGratingDirectionDeg = tStimOneGratingDirectionDeg
-                            tStimTwoGratingSpatialFreqCPD = tStimOneGratingSpatialFreqCPD
                         }
                     }
 
@@ -2715,10 +2687,8 @@ protocol JuiceOnHoldProtocol {
                 setMaskOneGratingDirectionDeg = tMaskOneGratingDirectionDeg
                 
                 // frame conversion 
-                nStimOneFramesOn = ceil((tStimOneGratingOnTimeMs/1000)*frameRateHz)
-                nStimTwoFramesOn = ceil((tStimTwoGratingOnTimeMs/1000)*frameRateHz)
-                nFramesISI = ceil((tISITimeMs/1000)*frameRateHz)
-                nDegRotationPerFrame = gratingRotateSpeedDPS/frameRateHz
+                
+
                 if (doRotate) {
                     nStimOneFramesOn = ceil(360/nDegRotationPerFrame)
                 }
@@ -2735,7 +2705,6 @@ protocol JuiceOnHoldProtocol {
                 tThisTrialStartTimeMs = now()/1000
                 // compute ITI time 
                 // initialize with a const value 
-                tItiWaitTimeMs = itiTimeMs
                 if (tDoRandStimOnTime) {
                     maxStimOnTime = (stimOneGratingOnTimeMs * pow(stimOneGratingOnTimeStepLog,stimOneGratingOnTimeStepN)) + (stimTwoGratingOnTimeMs * pow(stimTwoGratingOnTimeStepLog,stimTwoGratingOnTimeStepN))
                 }
@@ -2755,9 +2724,8 @@ protocol JuiceOnHoldProtocol {
                 }
                 if (tempMs >= 0) {
                     //add to ITI
-                    tItiWaitTimeMs = itiTimeMs+tempMs
                 }
-                tItiWaitFrames = ceil((tItiWaitTimeMs/1000)*frameRateHz)
+
                 // if trialLaser, send params to controller 
                 if (tTrialLaserPowerMw > 0) {
                     sendLaserParams = 1
@@ -2775,11 +2743,7 @@ protocol JuiceOnHoldProtocol {
                 report ('doMaskRotate is $tDoMaskRotate')
                 goto (
                     target = StimOneOn
-                    when = counter >= (cItiStart + tItiWaitFrames) && isFirstTrial && counter > 19
-                    )
-                goto (
-                    target = StimOneOn
-                    when = counter >= (cItiStart + tItiWaitFrames) && !isFirstTrial
+                    when = counter >= ((nScansOff+nScansOn) * tTrialsDoneSinceStart) + nScansOff
                     )
             }
             state StimOneOn {
@@ -2793,7 +2757,7 @@ protocol JuiceOnHoldProtocol {
                     live_queue_stimulus (photoDiodeGrating)
                     dequeue_stimulus (photoDiodeMask)
                 }
-
+                MIO0 = 1
                 update_stimulus_display ()
                 play_sound (stimOneSound)
                 play_sound (stimOneSound1)
@@ -2804,96 +2768,22 @@ protocol JuiceOnHoldProtocol {
                 cStimOneOn = counter
                 mwStimOneOnMs = now()/1000
                 report ('StimOne on')
-                goto (
-                    target = StimOneOff
-                    when = counter >= (cStimOneOn + nStimOneFramesOn)
-                    )
-                goto (
-                    target = Rotate
-                    when = counter >= (cStimOneOn + 1) && tDoRotate
-                    )    
-            }
-            state Rotate {
-                cNow = counter
-                setStimOneGratingDirectionDeg = tStimOneGratingDirectionDeg + ((cNow-cStimOneOn)*nDegRotationPerFrame)
-                if (tDoMaskRotate) {
-                setMaskOneGratingDirectionDeg = setStimOneGratingDirectionDeg + maskOneGratingDirectionDeg - stimOneGratingDirectionDeg
-                }
-
-                update_stimulus_display ()
-                goto (
-                    target = StimOneOff
-                    when = counter >= (cStimOneOn + nStimOneFramesOn) 
-                    )
-                goto (
-                    target = Rotate
-                    when = counter >= (cNow + 1) && tDoRotate
-                    )    
-            }
-            state StimOneOff {
-                dequeue_stimulus (stimOne)
-                dequeue_stimulus (stimTwo)
-
-                if (doPhotodiode) {
-                    live_queue_stimulus (photoDiodeMask)
-                    dequeue_stimulus (photoDiodeGrating)
-                }
-
-                update_stimulus_display ()
-                cStimOneOff = counter
-                mwStimOneOffMs = (now()/1000)
-                goto (
-                    target = StimTwoOn
-                    when = counter  >= (cStimOneOff + nFramesISI)
-                    )
-            }
-            state StimTwoOn {
-            if (!doTwoStimTogether) {
-                live_queue_stimulus (stimTwo)
-
-
-                if (doPhotodiode && stimTwoDoVisualStim) {
-                    live_queue_stimulus (photoDiodeGrating)
-                    dequeue_stimulus (photoDiodeMask)
-                }
-
-                update_stimulus_display ()
-                play_sound (stimTwoSound)
-                play_sound (stimTwoSound1)
-                play_sound (stimTwoSound2)
-                play_sound (stimTwoSound3)
-                play_sound (stimTwoSound4)
-                play_sound (stimTwoSound5)
-                cStimTwoOn = counter
-                mwStimTwoOnMs = now()/1000
-                report ('StimTwo on')
-                }
-
-                goto (
-                    target = StimTwoOff
-                    when = counter >= (cStimTwoOn + nStimTwoFramesOn)
-                    )
-            }
-            state StimTwoOff {
-            if (!doTwoStimTogether) {
-                dequeue_stimulus (stimTwo)
-
-                if (doPhotodiode) {
-                    live_queue_stimulus (photoDiodeMask)
-                    dequeue_stimulus (photoDiodeGrating)
-                }
                 
-                update_stimulus_display ()
-                cStimTwoOff = counter
-                mwStimTwoOffMs = (now()/1000)
-                }
                 goto (
                     target = EndTrial
-                    when = counter  >= (cStimTwoOff + 3)
+                    when = counter >= (nScansOff+nScansOn) * (1+tTrialsDoneSinceStart)
                     )
-            }
+                }
             state EndTrial {
                 report ('Trial Ended')
+                dequeue_stimulus (stimOne)
+                if (doPhotodiode) {
+                    live_queue_stimulus (photoDiodeMask)
+                    dequeue_stimulus (photoDiodeGrating)
+                }
+                MIO0 = 0
+                update_stimulus_display ()
+                cStimOneOff = counter
                 // accept stim selection 
                 accept_selections (svStimNumber)
                 tNStimAccepted = tNStimAccepted + 1
@@ -2940,6 +2830,7 @@ protocol JuiceOnHoldProtocol {
                 if (doWheelSpeed == 1) {
                     DoWheelSpeed = 0
                 }
+                tTrialsDoneSinceStart = tTrialsDoneSinceStart+1
                 sync = 0
                 yield ()
             }
